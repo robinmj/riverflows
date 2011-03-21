@@ -1,0 +1,19 @@
+#---------------------------- Provisional Data -------------------------------
+#This system is maintained by the Colorado Division of Water Resources.
+#Contact: Colorado Division of Water Resources (303) 866-3581
+#
+#All data presented on the Colorado Surface Water Conditions web site are 
+#provisional and subject to revision. Data users are cautioned to consider
+#carefully the provisional nature of the information before using it for 
+#decisions that concern personal or public safety or the conduct of business
+#that involves substantial monetary or operational consequences.
+#
+#Data is returned in TAB delimited format. Data miners may find help on automating
+#queries and formatting parameters at http://www.dwr.state.co.us/help
+##Gaging Station: CLEAR CREEK ABOVE CLEAR CREEK RESERVOIR (CCACCRCO)
+#Retrieved: 3/12/2011 08:57
+#-----------------------------------------------------------------------------
+Station	Date/Time	DISCHRG (cfs)	GAGE_HT (ft)
+CCACCRCO	2011-03-07 13:00	B	-541.18
+CCACCRCO	2011-03-07 13:30	B	-312.08
+CCACCRCO	2011-03-07 13:45	E	1077.06

@@ -1,0 +1,24 @@
+# ---------------------------------- WARNING ----------------------------------------
+# The data you have obtained from this automated U.S. Geological Survey database
+# have not received Director's approval and as such are provisional and subject to
+# revision.  The data are released on the condition that neither the USGS nor the
+# United States Government may be held liable for any damages resulting from its use.
+# Additional info: http://waterdata.usgs.gov/nwis/help/?provisional
+#
+# File-format description:  http://waterdata.usgs.gov/nwis/?tab_delimited_format_info
+# Automated-retrieval info: http://waterdata.usgs.gov/nwis/?automated_retrieval_info
+#
+# Contact:   gs-w_support_nwisweb@usgs.gov
+# retrieved: 2011-03-12 11:06:40 EST	(vaas01)
+#
+# Data for the following site(s) are contained in this file
+#    USGS 07083710 ARKANSAS RIVER BELOW EMPIRE GULCH NEAR MALTA, CO
+# -----------------------------------------------------------------------------------
+#
+# Data provided for site 07083710
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    06   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	06_00065	06_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
