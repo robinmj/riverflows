@@ -1,0 +1,2550 @@
+# ---------------------------------- WARNING ----------------------------------------
+# The data you have obtained from this automated U.S. Geological Survey database
+# have not received Director's approval and as such are provisional and subject to
+# revision.  The data are released on the condition that neither the USGS nor the
+# United States Government may be held liable for any damages resulting from its use.
+# Additional info: http://waterdata.usgs.gov/nwis/help/?provisional
+#
+# File-format description:  http://waterdata.usgs.gov/nwis/?tab_delimited_format_info
+# Automated-retrieval info: http://waterdata.usgs.gov/nwis/?automated_retrieval_info
+#
+# Contact:   gs-w_support_nwisweb@usgs.gov
+# retrieved: 2010-11-06 10:32:05 EDT	(caas01)
+#
+# Data for the following site(s) are contained in this file
+#    USGS 06614800 MICHIGAN RIVER NEAR CAMERON PASS, CO
+#    USGS 06620000 NORTH PLATTE RIVER NEAR NORTHGATE, CO
+#    USGS 06659580 SAND CREEK AT COLORADO-WYOMING STATE LINE
+#    USGS 06696980 TARRYALL CREEK AT UPPER STATION NEAR COMO, CO
+#    USGS 06700000 SOUTH PLATTE RIVER ABOVE CHEESMAN LAKE, CO.
+#    USGS 06701620 TROUT CREEK BLW FERN CR NR WESTCREEK, CO.
+#    USGS 06701700 WEST CR. ABV SHREWSBURY GULCH NR WESTCREEK CO
+#    USGS 06701900 SO. PLATTE R. BLW BRUSH CR. NR TRUMBULL CO
+#    USGS 06708600 WEST PLUM CREEK NEAR PERRY PARK, CO
+#    USGS 06708800 EAST PLUM CR ABV HASKINS GULCH NR CASTLE ROCK, CO
+#    USGS 06709000 PLUM CREEK NEAR SEDALIA, CO.
+#    USGS 06709530 PLUM CREEK AT TITAN ROAD NEAR LOUVIERS, CO
+#    USGS 06710150 BIG DRY CREEK BELOW C-470 AT HIGHLANDS RANCH, CO
+#    USGS 06710247 SOUTH PLATTE RIVER BELOW UNION AVE, AT ENGLEWOOD,C
+#    USGS 06710385 BEAR CREEK ABOVE EVERGREEN, CO
+#    USGS 06710605 BEAR CREEK ABOVE BEAR CREEK LAKE NEAR MORRISON, CO
+#    USGS 06711565 SOUTH PLATTE RIVER AT ENGLEWOOD, CO.
+#    USGS 06712000 CHERRY CREEK NEAR FRANKTOWN, CO.
+#    USGS 06713500 CHERRY CREEK AT DENVER, CO.
+#    USGS 06714215 SOUTH PLATTE R AT 64TH AVE. COMMERCE CITY, CO.
+#    USGS 06714800 LEAVENWORTH CREEK AT MOUTH NEAR GEORGETOWN, CO
+#    USGS 06715000 CLEAR CREEK ABV WEST FORK CLEAR CREEK NR EMPIRE CO
+#    USGS 06716100 WEST FORK CLEAR CREEK ABV MOUTH NR EMPIRE, CO
+#    USGS 06716500 CLEAR CREEK NEAR LAWSON, CO
+#    USGS 06717400 CHICAGO CREEK BLW DEVILS CANYON NR IDAHO SPRGS, CO
+#    USGS 06718550 NORTH CLEAR CREEK ABOVE MOUTH NR BLACK HAWK, CO
+#    USGS 06719505 CLEAR CREEK AT GOLDEN, CO
+#    USGS 06720255 UVALDA INTERCEPT BL 56TH AV AT ROCKY MTN ARS, CO
+#    USGS 06720280 PEORIA INTERCEPT BL 56TH AV, AT ROCKY MTN ARS, CO
+#    USGS 06720285 HAVANA INTERCEPT BL 56TH AV, AT ROCKY MTN ARS, CO
+#    USGS 06720460 FIRST CR BEL BUCKLEY RD, AT ROCKY MTN ARSENAL, CO
+#    USGS 06720480 FIRST CR AB 96TH AVE, AT ROCKY MTN ARSENAL, CO
+#    USGS 06720490 FIRST CR AT HWY 2, NEAR ROCKY MTN ARSENAL, CO
+#    USGS 06720820 BIG DRY CREEK AT WESTMINSTER, CO
+#    USGS 06720990 BIG DRY CREEK AT MOUTH NEAR FORT LUPTON, CO
+#    USGS 06721000 SOUTH PLATTE RIVER AT FORT LUPTON, CO.
+#    USGS 06725450 ST. VRAIN CREEK BELOW LONGMONT, CO.
+#    USGS 06730200 BOULDER CREEK AT NORTH 75TH ST. NEAR BOULDER, CO
+#    USGS 06730500 BOULDER CREEK AT MOUTH NEAR LONGMONT, CO
+#    USGS 06741510 BIG THOMPSON RIVER AT LOVELAND, CO.
+#    USGS 06746095 JOE WRIGHT CREEK ABOVE JOE WRIGHT RESERVOIR, CO
+#    USGS 06746110 JOE WRIGHT CREEK BELOW JOE WRIGHT RESERVOIR, CO
+#    USGS 06751150 N FK CACHE LA POUDRE R BLW HALLIGAN RES NR VA DALE
+#    USGS 06751490 NORTH FORK CACHE LA POUDRE RIVER AT LIVERMORE, CO
+#    USGS 06752260 CACHE LA POUDRE RIVER AT FORT COLLINS, CO
+#    USGS 06752280 CACHE LA POUDRE RIV AB BOXELDER CRK NR TIMNATH, CO
+#    USGS 06759500 SOUTH PLATTE RIVER AT FORT MORGAN, CO.
+#    USGS 07079300 EF ARKANSAS R AT US HIGHWAY 24, NR LEADVILLE, CO.
+#    USGS 07081200 ARKANSAS RIVER NEAR LEADVILLE, CO.
+#    USGS 07083000 HALFMOON CREEK NEAR MALTA, CO
+#    USGS 07083200 HALFMOON CR BL HALFMOON DIVERSION NR LEADVILLE, CO
+#    USGS 07083710 ARKANSAS RIVER BELOW EMPIRE GULCH NEAR MALTA, CO
+#    USGS 07087050 ARKANSAS RIVER BELOW GRANITE, CO
+#    USGS 07091200 ARKANSAS RIVER NEAR NATHROP, CO
+#    USGS 07094500 ARKANSAS RIVER AT PARKDALE, CO.
+#    USGS 07096250 FOURMILE CREEK BELOW CRIPPLE CREEK NEAR VICTOR, CO
+#    USGS 07099050 BEAVER CR ABV UPPER BEAVER CEMETERY NR PENROSE, CO
+#    USGS 07099060 BEAVER CREEK ABOVE HIGHWAY 115 NEAR PENROSE, CO
+#    USGS 07099215 TURKEY CREEK NEAR FOUNTAIN, CO
+#    USGS 07099230 TURKEY CREEK AB TELLER RES NEAR STONE CITY, CO.
+#    USGS 07099235 TURKEY CREEK NR STONE CITY, CO
+#    USGS 07099238 TELLER RESERVOIR SPILLWAY NEAR STONE CITY, CO
+#    USGS 07099970 ARKANSAS RIVER AT MOFFAT STREET AT PUEBLO, CO
+#    USGS 07099973 ARKANSAS RIVER TRIBUTARY ABOVE HWY 227 AT PUEBLO
+#    USGS 07103700 FOUNTAIN CREEK NEAR COLORADO SPRINGS, CO.
+#    USGS 07103703 CAMP CREEK AT GARDEN OF THE GODS, CO
+#    USGS 07103747 MONUMENT CREEK AT PALMER LAKE, CO
+#    USGS 07103755 MONUMENT CREEK BELOW MONUMENT LAKE NR MONUMENT, CO
+#    USGS 07103780 MONUMENT C AB N.GATE BLVD AT USAF ACADEMY, CO.
+#    USGS 07103797 WEST MONUMENT CREEK BELOW RAMPART RESERVOIR, CO
+#    USGS 07103800 WEST MONUMENT CREEK AT U.S. AIR FORCE ACADEMY, CO
+#    USGS 07103970 MONUMENT CR ABV WOODMEN RD AT COLORADO SPRINGS, CO
+#    USGS 07103980 COTTONWOOD CREEK AT WOODMEN RD NR COLO SPRINGS, CO
+#    USGS 07103990 COTTONWOOD CREEK AT MOUTH AT PIKEVIEW, CO
+#    USGS 07104000 MONUMENT CREEK AT PIKEVIEW, CO.
+#    USGS 07104905 MONUMENT CREEK AT BIJOU ST. AT COLO. SPRINGS, CO
+#    USGS 07105000 BEAR CREEK NEAR COLORADO SPRINGS, CO
+#    USGS 07105490 CHEYENNE CREEK AT EVANS AVE AT COLORADO SPRINGS,CO
+#    USGS 07105500 FOUNTAIN CREEK AT COLORADO SPRINGS, CO
+#    USGS 07105530 FOUNTAIN CR BLW JANITELL RD BLW COLO. SPRINGS, CO
+#    USGS 07105600 SAND CREEK ABOVE MOUTH AT COLORADO SPRINGS, CO
+#    USGS 07105800 FOUNTAIN CREEK AT SECURITY, CO
+#    USGS 07105900 JIMMY CAMP CREEK AT FOUNTAIN, CO.
+#    USGS 07105945 ROCK CREEK ABOVE FORT CARSON RESERVATION, CO.
+#    USGS 07106000 FOUNTAIN CREEK NEAR FOUNTAIN, CO.
+#    USGS 07106300 FOUNTAIN CREEK NEAR PINON, CO
+#    USGS 07106500 FOUNTAIN CREEK AT PUEBLO, CO.
+#    USGS 07108900 ST. CHARLES RIVER AT VINELAND, CO.
+#    USGS 07109500 ARKANSAS RIVER NEAR AVONDALE, CO.
+#    USGS 07116500 HUERFANO RIVER NEAR BOONE, CO.
+#    USGS 07119500 APISHAPA RIVER NEAR FOWLER, CO.
+#    USGS 07121500 TIMPAS CREEK AT MOUTH NEAR SWINK, CO.
+#    USGS 07124000 ARKANSAS RIVER AT LAS ANIMAS, CO.
+#    USGS 07124200 PURGATOIRE RIVER AT MADRID, CO.
+#    USGS 07124410 PURGATOIRE RIVER BELOW TRINIDAD LAKE, CO.
+#    USGS 07126200 VAN BREMER ARROYO NEAR MODEL, CO.
+#    USGS 07126300 PURGATOIRE RIVER NEAR THATCHER, CO.
+#    USGS 07126325 TAYLOR ARROYO BL ROCK CROSSING, NR THATCHER, CO.
+#    USGS 07126390 LOCKWOOD CANYON CREEK NEAR THATCHER, CO.
+#    USGS 07126415 RED ROCK CANYON CREEK AT MOUTH NR THATCHER, CO.
+#    USGS 07126480 BENT CANYON CREEK AT MOUTH NEAR TIMPAS, CO
+#    USGS 07126485 PURGATOIRE RIVER AT ROCK CROSSING NR TIMPAS, CO.
+#    USGS 07128500 PURGATOIRE RIVER NEAR LAS ANIMAS, CO.
+#    USGS 07130500 ARKANSAS RIVER BELOW JOHN MARTIN RESERVOIR, CO.
+#    USGS 07133000 ARKANSAS RIVER AT LAMAR, CO.
+#    USGS 07134100 BIG SANDY CREEK NEAR LAMAR, CO.
+#    USGS 07134180 ARKANSAS RIVER NEAR GRANADA, CO.
+#    USGS 07134990 WILD HORSE CREEK ABOVE HOLLY, CO
+#    USGS 08261000 COSTILLA CREEK NEAR GARCIA, CO
+#    USGS 09010500 COLORADO RIVER BELOW BAKER GULCH NR GRAND LAKE, CO
+#    USGS 09014050 GRAND LAKE OUTLET BLW CHIPMUNK LN AT GRAND LK, CO
+#    USGS 09019500 COLORADO RIVER NEAR GRANBY, CO
+#    USGS 09022000 FRASER RIVER AT UPPER STA, NEAR WINTER PARK, CO.
+#    USGS 09024000 FRASER RIVER AT WINTER PARK, CO.
+#    USGS 09025000 VASQUEZ CREEK AT WINTER PARK, CO
+#    USGS 09025300 ELK CREEK AT UPPER STATION, NEAR FRASER, CO
+#    USGS 09026500 ST. LOUIS CREEK NEAR FRASER, CO.
+#    USGS 09032000 RANCH CREEK NEAR FRASER, CO.
+#    USGS 09033300 FRASER RIVER BLW CROOKED CR AT TABERNASH CO
+#    USGS 09034250 COLORADO RIVER AT WINDY GAP, NEAR GRANBY, CO.
+#    USGS 09034900 BOBTAIL CREEK NEAR JONES PASS, CO
+#    USGS 09035700 WILLIAMS FORK ABOVE DARLING CREEK, NEAR LEAL, CO
+#    USGS 09036000 WILLIAMS FORK NEAR LEAL, CO.
+#    USGS 09037500 WILLIAMS FORK NEAR PARSHALL, CO
+#    USGS 09038500 WILLIAMS FORK BELOW WILLIAMS FORK RESERVOIR, CO
+#    USGS 09041090 MUDDY CREEK ABOVE ANTELOPE CREEK NR. KREMMLING, CO
+#    USGS 09041400 MUDDY CRK BLW WOLFORD MTN RESER. NR KREMMLING, CO
+#    USGS 09041900 MONTE CRISTO DIVERSION NEAR HOOSIER PASS, CO
+#    USGS 09044300 BEMROSE-HOOSIER DIVERSION NEAR HOOSIER PASS, CO
+#    USGS 09044800 MCCULLOUGH-SP-CRYS-DIVERSION NEAR HOOSIER PASS, CO
+#    USGS 09046490 BLUE RIVER AT BLUE RIVER, CO.
+#    USGS 09046600 BLUE RIVER NEAR DILLON, CO
+#    USGS 09047500 SNAKE RIVER NEAR MONTEZUMA, CO.
+#    USGS 09047700 KEYSTONE GULCH NEAR DILLON, CO.
+#    USGS 09050100 TENMILE CREEK BL NORTH TENMILE C, AT FRISCO, CO.
+#    USGS 09050700 BLUE RIVER BELOW DILLON, CO.
+#    USGS 09051050 STRAIGHT CR BLW LASKEY GULCH NR DILLON, CO
+#    USGS 09056500 ELLIOTT CREEK FEEDER CANAL TO GREEN MTN RES, CO
+#    USGS 09057500 BLUE RIVER BELOW GREEN MOUNTAIN RESERVOIR, CO.
+#    USGS 09058000 COLORADO RIVER NEAR KREMMLING, CO
+#    USGS 09059500 PINEY RIVER NEAR STATE BRIDGE, CO
+#    USGS 09061600 EAST FORK EAGLE RIVER NEAR CLIMAX, CO
+#    USGS 09063000 EAGLE RIVER AT RED CLIFF, CO.
+#    USGS 09064000 HOMESTAKE CREEK AT GOLD PARK, CO.
+#    USGS 09064600 EAGLE RIVER NEAR MINTURN, CO
+#    USGS 09065100 CROSS CREEK NEAR MINTURN, CO
+#    USGS 09065500 GORE CREEK AT UPPER STATION, NEAR MINTURN, CO.
+#    USGS 09066200 BOOTH CREEK NEAR MINTURN, CO.
+#    USGS 09066325 GORE CREEK ABV RED SANDSTONE CREEK AT VAIL, CO
+#    USGS 09066400 RED SANDSTONE CREEK NEAR MINTURN, CO.
+#    USGS 09066510 GORE CREEK AT MOUTH NEAR MINTURN, CO
+#    USGS 09067000 BEAVER CREEK AT AVON, CO
+#    USGS 09067020 EAGLE R BL WASTEWATER TREATMENT PLANT AT AVON, CO
+#    USGS 09067200 LAKE CREEK NEAR EDWARDS, CO
+#    USGS 09070000 EAGLE RIVER BELOW GYPSUM, CO.
+#    USGS 09070500 COLORADO RIVER NEAR DOTSERO, CO
+#    USGS 09072550 ROARING FORK RIVER ABV LOST MAN CR NEAR ASPEN, CO
+#    USGS 09073005 LINCOLN CREEK BELOW GRIZZLY RESERVOIR NR ASPEN, CO
+#    USGS 09073300 ROARING FORK RIVER AB DIFFICULT C NR ASPEN, CO.
+#    USGS 09073400 ROARING FORK RIVER NEAR ASPEN, CO.
+#    USGS 09074000 HUNTER CREEK NEAR ASPEN, CO.
+#    USGS 09074500 HUNTER CREEK AT ASPEN, CO
+#    USGS 09080400 FRYINGPAN RIVER NEAR RUEDI, CO.
+#    USGS 09081000 ROARING FORK RIVER NEAR EMMA, CO
+#    USGS 09081600 CRYSTAL RIVER ABV AVALANCHE CRK, NEAR REDSTONE, CO
+#    USGS 09083800 CRYSTAL RIVER BELOW CARBONDALE, CO.
+#    USGS 09085000 ROARING FORK RIVER AT GLENWOOD SPRINGS, CO.
+#    USGS 09085100 COLORADO RIVER BELOW GLENWOOD SPRINGS, CO.
+#    USGS 09095500 COLORADO RIVER NEAR CAMEO, CO.
+#    USGS 09097900 PLATEAU CREEK BELOW COLLBRAN, CO
+#    USGS 09105000 PLATEAU CREEK NEAR CAMEO, CO
+#    USGS 09106150 COLO RIVER BELOW GRAND VALLEY DIV NR PALISADE, CO
+#    USGS 09107000 TAYLOR RIVER AT TAYLOR PARK, CO.
+#    USGS 09109000 TAYLOR RIVER BELOW TAYLOR PARK RESERVOIR, CO.
+#    USGS 09110000 TAYLOR RIVER AT ALMONT, CO.
+#    USGS 09112200 EAST RIVER BELOW CEMENT CREEK NR CRESTED BUTTE, CO
+#    USGS 09112500 EAST RIVER AT ALMONT, CO
+#    USGS 09113980 OHIO CREEK ABOVE MOUTH NR GUNNISON, CO
+#    USGS 09114500 GUNNISON RIVER NEAR GUNNISON, CO.
+#    USGS 09115500 TOMICHI CREEK AT SARGENTS, CO
+#    USGS 09118450 COCHETOPA CREEK BELOW ROCK CREEK NEAR PARLIN, CO
+#    USGS 09119000 TOMICHI CREEK AT GUNNISON, CO
+#    USGS 09124500 LAKE FORK AT GATEVIEW, CO.
+#    USGS 09126000 CIMARRON RIVER NEAR CIMARRON, CO
+#    USGS 09128000 GUNNISON RIVER BELOW GUNNISON TUNNEL, CO
+#    USGS 09132500 NORTH FORK GUNNISON RIVER NEAR SOMERSET, CO.
+#    USGS 09132940 HUBBARD CREEK ABOVE IRON POINT GULCH NR BOWIE, CO
+#    USGS 09132960 HUBBARD CREEK AT HIGHWAY 133 AT MOUTH NR BOWIE, CO
+#    USGS 09132985 E FORK TERROR CR BLW COTTONWOOD STOMP NR BOWIE, CO
+#    USGS 09132995 TERROR CREEK AT MOUTH NEAR BOWIE, CO
+#    USGS 09134000 MINNESOTA CREEK NEAR PAONIA, CO.
+#    USGS 09134100 NORTH FORK GUNNISON RIVER BELOW PAONIA, CO
+#    USGS 09135950 N.F. GUNNISON R BLW LEROUX CR, NR HOTCHKISS, CO
+#    USGS 09136100 NORTH FK GUNNISON RIVER ABOVE MOUTH NR LAZEAR, CO
+#    USGS 09143000 SURFACE CREEK NEAR CEDAREDGE, CO
+#    USGS 09143500 SURFACE CREEK AT CEDAREDGE, CO.
+#    USGS 09144250 GUNNISON RIVER AT DELTA, CO.
+#    USGS 09146020 UNCOMPAHGRE RIVER NEAR OURAY, CO
+#    USGS 09146200 UNCOMPAHGRE RIVER NEAR RIDGWAY, CO.
+#    USGS 09147000 DALLAS CREEK NEAR RIDGWAY, CO
+#    USGS 09147025 UNCOMPAHGRE RIVER BELOW RIDGWAY RESERVOIR, CO
+#    USGS 09147500 UNCOMPAHGRE RIVER AT COLONA, CO.
+#    USGS 09149500 UNCOMPAHGRE RIVER AT DELTA, CO.
+#    USGS 09152500 GUNNISON RIVER NEAR GRAND JUNCTION, CO.
+#    USGS 09163500 COLORADO RIVER NEAR COLORADO-UTAH STATE LINE
+#    USGS 09165000 DOLORES RIVER BELOW RICO, CO.
+#    USGS 09166500 DOLORES RIVER AT DOLORES, CO.
+#    USGS 09166950 LOST CANYON CREEK NEAR DOLORES, C0.
+#    USGS 09168730 DOLORES RIVER NEAR SLICK ROCK, CO
+#    USGS 09169500 DOLORES RIVER AT BEDROCK, CO
+#    USGS 09171100 DOLORES RIVER NEAR BEDROCK, CO.
+#    USGS 09172500 SAN MIGUEL RIVER NEAR PLACERVILLE, CO
+#    USGS 09174600 SAN MIGUEL RIVER AT BROOKS BRIDGE NEAR NUCLA CO
+#    USGS 09177000 SAN MIGUEL RIVER AT URAVAN, CO.
+#    USGS 09237450 YAMPA RIVER ABOVE STAGECOACH RESERVOIR, CO
+#    USGS 09237500 YAMPA RIVER BELOW STAGECOACH RESERVOIR, CO
+#    USGS 09238900 FISH CR AT UPPER STA NR STEAMBOAT SPRINGS, CO
+#    USGS 09239500 YAMPA RIVER AT STEAMBOAT SPRINGS, CO
+#    USGS 09240020 YAMPA RIVER BELOW SODA CREEK AT STEAMBOAT SPGS, CO
+#    USGS 09242500 ELK RIVER NEAR MILNER, CO.
+#    USGS 09244490 YAMPA RIVER ABOVE ELKHEAD CREEK NEAR HAYDEN, CO
+#    USGS 09246200 ELKHEAD CREEK ABOVE LONG GULCH, NEAR HAYDEN, CO
+#    USGS 09246500 ELKHEAD CREEK NEAR CRAIG, CO
+#    USGS 09247600 YAMPA RIVER BELOW CRAIG, CO.
+#    USGS 09251000 YAMPA RIVER NEAR MAYBELL, CO
+#    USGS 09253000 LITTLE SNAKE RIVER NEAR SLATER, CO
+#    USGS 09255000 SLATER FORK NEAR SLATER, CO
+#    USGS 09260000 LITTLE SNAKE RIVER NEAR LILY, CO
+#    USGS 09260050 YAMPA RIVER AT DEERLODGE PARK, CO
+#    USGS 09304200 WHITE RIVER ABOVE COAL CREEK, NEAR MEEKER, CO.
+#    USGS 09304500 WHITE RIVER NEAR MEEKER, CO.
+#    USGS 09304800 WHITE RIVER BELOW MEEKER, CO
+#    USGS 09306200 PICEANCE CREEK BL RYAN GULCH, NR RIO BLANCO, CO.
+#    USGS 09306222 PICEANCE CREEK AT WHITE RIVER, CO
+#    USGS 09306224 WHITE RIV AB CROOKED WASH NR WHITE RIVER CITY, CO
+#    USGS 09306242 CORRAL GULCH NEAR RANGELY, CO
+#    USGS 09306255 YELLOW CREEK NEAR WHITE RIVER, CO.
+#    USGS 09306290 WHITE RIVER BELOW BOISE CREEK, NEAR RANGELY, CO.
+#    USGS 09342500 SAN JUAN RIVER AT PAGOSA SPRINGS, CO
+#    USGS 09346400 SAN JUAN RIVER NEAR CARRACAS, CO.
+#    USGS 09349800 PIEDRA RIVER NEAR ARBOLES, CO.
+#    USGS 09352900 VALLECITO CREEK NEAR BAYFIELD, CO.
+#    USGS 09353800 LOS PINOS RIVER NEAR IGNACIO, CO
+#    USGS 09354500 LOS PINOS RIVER AT LA BOCA, CO.
+#    USGS 09355000 SPRING CREEK AT LA BOCA, CO
+#    USGS 09358000 ANIMAS RIVER AT SILVERTON, CO.
+#    USGS 09358550 CEMENT CREEK AT SILVERTON, CO
+#    USGS 09359010 MINERAL CREEK AT SILVERTON, CO
+#    USGS 09359020 ANIMAS RIVER BELOW SILVERTON, CO
+#    USGS 09359500 ANIMAS RIVER AT TALL TIMBER RESORT ABOVE TACOMA,CO
+#    USGS 09361500 ANIMAS RIVER AT DURANGO, CO
+#    USGS 09362520 ANIMAS RIVER BLW DURANGO PUMP PLANT NR DURANGO, CO
+#    USGS 09363500 ANIMAS RIVER NEAR CEDAR HILL, NM
+#    USGS 09370600 MANCOS RIVER AT ANITAS FLAT BELOW MANCOS, CO
+#    USGS 09371000 MANCOS RIVER NEAR TOWAOC, CO.
+#    USGS 09371010 SAN JUAN RIVER AT FOUR CORNERS, CO
+#    USGS 09371492 MUD CREEK AT STATE HIGHWAY 32, NEAR CORTEZ, CO.
+#    USGS 09371520 MCELMO CREEK ABOVE TRAIL CANYON NEAR CORTEZ, CO
+#    USGS 09372000 MCELMO CREEK NEAR COLORADO-UTAH STATE LINE
+#    USGS 373947105421101 CLOSED BASIN PROJECT CANAL ABV HWY 150 NR MOSCA CO
+#    USGS 382628104493700 TURKEY CR WEST SEEP BL TELLER RES NR STONE CITY,CO
+#    USGS 382629104493000 TURKEY C EAST SEEP BL TELLER RES NR STONE CITY, CO
+#    USGS 383619104520401 LYTLE DITCH AT FT. CARSON, CO
+#    USGS 383637104531301 STROBEL DITCH FROM TURKEY CR AT FT. CARSON, CO
+#    USGS 383944104474201 MERRIAMS L. FOUNTAIN DITCH AT FT. CARSON, CO
+#    USGS 384037104472001 MERRIAMS ROCK CREEK DITCH AT FT. CARSON, CO
+#    USGS 384047104510301 RIPLEY DITCH FROM L. FOUNTAIN CR AT FT. CARSON, CO
+#    USGS 384048104504901 WOMACK DITCH FROM L. FOUNTAIN CR NR FT. CARSON, CO
+#    USGS 384220104503701 GALE DITCH FROM ROCK CR NR FORT CARSON, CO
+#    USGS 384936107571901 ALFALFA RUN BELOW FRUIT GROWERS RESERVOIR, CO
+#    USGS 384945107553401 TRANSFER DITCH NEAR ECKERT, CO
+#    USGS 385106106571000 SLATE R AB BAXTER GL @HWY 135 NR CRESTED BUTTE, CO
+#    USGS 385117107554501 ALFALFA DITCH NEAR ECKERT, CO
+#    USGS 391435106230801 SIWATCH MINE DRAINAGE TUNNEL BLW TURQ LAKE NR LEAD
+#    USGS 391517106223801 BARTLETT MINE DRAINAGE TUNNEL BLW TURQ LAKE NR LEA
+#    USGS 392547106023400 BLUE RIVER ABV PENNSYLVANIA CR NR BLUE RIVER, CO
+#    USGS 393109104464500 CHERRY CREEK NEAR PARKER, CO
+#    USGS 394220106431500 EAGLE RIVER BELOW MILK CREEK NEAR WOLCOTT, CO
+#    USGS 394308105413800 CLEAR CR. ABV. GEORGETOWN LAKE NR GEORGETOWN, CO
+#    USGS 394839104570300 SAND CREEK AT MOUTH NR COMMERCE CITY,CO
+#    USGS 401733105392404 THE LOCH OUTLET - LOCH VALE
+#    USGS 402114105350101 BIG THOMPSON BL MORAINE PARK NR ESTES PARK, CO
+# -----------------------------------------------------------------------------------
+#
+# Data provided for site 06614800
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06614800	2010-11-06 08:00	MDT	0.64		2.22	
+# Data provided for site 06620000
+#    DD parameter   Description
+#    05   00060     Streamflow, ft&#179;/s
+#    18   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	05_00060	05_00060_cd	18_00065	18_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06620000	2010-11-06 07:45	MDT	215		2.62	
+# Data provided for site 06659580
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06659580	2010-10-01 09:45	MDT	1.3		0.38	
+# Data provided for site 06696980
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06696980	2010-11-06 07:45	MDT	Ssn		Ssn	
+# Data provided for site 06700000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06700000	2010-11-06 07:45	MDT	Ssn		Ssn	
+# Data provided for site 06701620
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06701620	2010-11-06 08:00	MDT	Ssn		Ssn	
+# Data provided for site 06701700
+#    DD parameter   Description
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s
+USGS	06701700	2010-11-06 07:30	MDT	Ssn	
+# Data provided for site 06701900
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06701900	2010-11-06 07:45	MDT	125		2.94	
+# Data provided for site 06708600
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06708600	2010-11-06 07:30	MDT	Ssn		Ssn	
+# Data provided for site 06708800
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06708800	2010-11-06 07:45	MDT	5.7		3.81	
+# Data provided for site 06709000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06709000	2010-11-06 08:00	MDT	14		4.13	
+# Data provided for site 06709530
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06709530	2010-11-06 07:45	MDT	10		8.27	
+# Data provided for site 06710150
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06710150	2010-11-06 07:30	MDT	1.6		1.74	
+# Data provided for site 06710247
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06710247	2010-11-06 07:45	MDT	68		11.02	
+# Data provided for site 06710385
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06710385	2010-11-06 08:00	MDT	15		4.31	
+# Data provided for site 06710605
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd
+5s	15s	16d	6s	12n	10s
+USGS	06710605	2010-10-12 13:45	MDT	Dis	
+# Data provided for site 06711565
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    08   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	08_00065	08_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06711565	2010-11-06 08:00	MDT	83		1.64	
+# Data provided for site 06712000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06712000	2010-11-06 08:00	MDT	4.7		2.58	
+# Data provided for site 06713500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06713500	2010-11-06 07:45	MDT	17		3.34	
+# Data provided for site 06714215
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    06   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	06_00065	06_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06714215	2010-11-06 07:45	MDT	157		2.60	
+# Data provided for site 06714800
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06714800	2010-11-06 08:00	MDT	4.2		3.50	
+# Data provided for site 06715000
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06715000	2010-11-06 08:00	MDT	29		3.83	
+# Data provided for site 06716100
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06716100	2010-11-06 08:00	MDT	18		4.19	
+# Data provided for site 06716500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06716500	2010-11-06 07:45	MDT	51		2.77	
+# Data provided for site 06717400
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+# Data provided for site 06718550
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06718550	2010-11-06 07:15	MDT	6.7		3.85	
+# Data provided for site 06719505
+#    DD parameter   Description
+#    05   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	05_00060	05_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06719505	2010-11-06 07:45	MDT	62		3.83	
+# Data provided for site 06720255
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06720255	2010-11-06 07:15	MDT	0.22		0.40	
+# Data provided for site 06720280
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06720280	2010-11-06 07:30	MDT	0.00		1.06	
+# Data provided for site 06720285
+#    DD parameter   Description
+#    18   00060     Streamflow, ft&#179;/s
+#    17   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	18_00060	18_00060_cd	17_00065	17_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06720285	2010-11-06 07:30	MDT	0.00		10.04	
+# Data provided for site 06720460
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06720460	2010-11-06 07:30	MDT	1.6		1.62	
+# Data provided for site 06720480
+#    DD parameter   Description
+#    11   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	11_00060	11_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06720480	2010-11-06 07:30	MDT	0.00		0.45	
+# Data provided for site 06720490
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06720490	2010-11-06 07:30	MDT	0.00		0.58	
+# Data provided for site 06720820
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06720820	2010-11-06 07:30	MDT	2.1		1.47	
+# Data provided for site 06720990
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06720990	2010-11-06 07:30	MDT	41		4.27	
+# Data provided for site 06721000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06721000	2010-11-06 08:00	MDT	440		4.05	
+# Data provided for site 06725450
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06725450	2010-11-06 08:00	MDT	54		2.50	
+# Data provided for site 06730200
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06730200	2010-11-06 08:15	MDT	8.3		4.17	
+# Data provided for site 06730500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06730500	2010-11-06 08:00	MDT	39		1.59	
+# Data provided for site 06741510
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06741510	2010-11-06 07:30	MDT	12		0.82	
+# Data provided for site 06746095
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06746095	2010-11-06 07:30	MDT	Ice		Ice	
+# Data provided for site 06746110
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06746110	2010-11-06 07:30	MDT	1.2		0.73	
+# Data provided for site 06751150
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06751150	2010-11-06 07:45	MDT	7.7		1.85	
+# Data provided for site 06751490
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    06   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	06_00065	06_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06751490	2010-11-06 08:00	MDT	14		7.00	
+# Data provided for site 06752260
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06752260	2010-11-06 08:15	MDT	36		1.72	
+# Data provided for site 06752280
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06752280	2010-11-06 08:00	MDT	14		1.87	
+# Data provided for site 06759500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	06759500	2010-11-06 07:30	MDT	351		9.11	
+# Data provided for site 07079300
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    08   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	08_00065	08_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07079300	2010-11-06 08:15	MDT	20		2.21	
+# Data provided for site 07081200
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    06   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	06_00065	06_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07081200	2010-11-06 08:15	MDT	25		4.02	
+# Data provided for site 07083000
+#    DD parameter   Description
+#    05   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	05_00060	05_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07083000	2010-11-06 07:30	MDT	12		1.57	
+# Data provided for site 07083200
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07083200	2010-10-06 11:15	MDT	Ssn		Ssn	
+# Data provided for site 07083710
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    06   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	06_00065	06_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07083710	2010-09-09 16:00	MDT	Ssn		Ssn	
+# Data provided for site 07087050
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07087050	2010-10-06 17:45	MDT	Ssn		Ssn	
+# Data provided for site 07091200
+#    DD parameter   Description
+#    03   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	03_00060	03_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07091200	2010-10-07 09:45	MDT	334		3.87	
+# Data provided for site 07094500
+#    DD parameter   Description
+#    06   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	06_00060	06_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07094500	2010-10-07 15:45	MDT	400		2.65	
+# Data provided for site 07096250
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07096250	2010-11-06 07:45	MDT	14		3.19	
+# Data provided for site 07099050
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07099050	2010-11-06 07:45	MDT	11		2.50	
+# Data provided for site 07099060
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07099060	2010-11-06 08:15	MDT	0.00		0.55	
+# Data provided for site 07099215
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+# Data-value qualification codes included in this output:
+#     e  Value has been estimated by USGS personnel.
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07099215	2010-10-28 16:00	MDT			1.20	
+USGS	07099215	2010-11-01 07:00	MDT	Ssn	e		
+# Data provided for site 07099230
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    12   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	12_00065	12_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07099230	2010-11-06 08:15	MDT	0.00		2.59	
+# Data provided for site 07099235
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07099235	2010-11-06 08:00	MDT	0.00		3.00	
+# Data provided for site 07099238
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07099238	2010-11-06 08:00	MDT	0.00		2.97	
+# Data provided for site 07099970
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    08   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	08_00065	08_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07099970	2010-11-06 07:45	MDT	184		8.44	
+# Data provided for site 07099973
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07099973	2010-11-06 07:30	MDT	45		2.63	
+# Data provided for site 07103700
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07103700	2010-11-06 08:00	MDT	11		3.23	
+# Data provided for site 07103703
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07103703	2010-11-06 07:45	MDT	0.00		2.09	
+# Data provided for site 07103747
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07103747	2010-11-06 08:00	MDT	0.62		2.59	
+# Data provided for site 07103755
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07103755	2010-11-06 08:15	MDT	0.47		1.85	
+# Data provided for site 07103780
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07103780	2010-11-06 07:45	MDT	3.6		6.68	
+# Data provided for site 07103797
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    06   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	06_00065	06_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07103797	2010-11-06 07:30	MDT	5.4		4.54	
+# Data provided for site 07103800
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07103800	2010-11-06 07:45	MDT	0.50		1.13	
+# Data provided for site 07103970
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07103970	2010-11-06 07:30	MDT	11		3.77	
+# Data provided for site 07103980
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07103980	2010-11-06 07:45	MDT	0.71		0.47	
+# Data provided for site 07103990
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    12   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	12_00065	12_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07103990	2010-11-06 07:45	MDT	2.8		3.37	
+# Data provided for site 07104000
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07104000	2010-11-06 07:30	MDT	14		5.64	
+# Data provided for site 07104905
+#    DD parameter   Description
+#    03   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	03_00060	03_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07104905	2010-11-06 07:45	MDT	18		2.11	
+# Data provided for site 07105000
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07105000	2010-11-06 07:45	MDT	1.8		1.17	
+# Data provided for site 07105490
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07105490	2010-11-06 07:45	MDT	0.94		1.24	
+# Data provided for site 07105500
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07105500	2010-11-06 07:45	MDT	34		1.42	
+# Data provided for site 07105530
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07105530	2010-11-06 07:45	MDT	68		2.41	
+# Data provided for site 07105600
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07105600	2010-11-02 09:30	MDT	Ssn		Ssn	
+# Data provided for site 07105800
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07105800	2010-11-06 07:45	MDT	75		2.55	
+# Data provided for site 07105900
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07105900	2010-11-06 07:45	MDT	0.94		4.30	
+# Data provided for site 07105945
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07105945	2010-11-06 07:45	MDT	0.13		2.10	
+# Data provided for site 07106000
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07106000	2010-11-06 08:00	MDT	102		4.11	
+# Data provided for site 07106300
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07106300	2010-11-06 08:15	MDT	92		2.42	
+# Data provided for site 07106500
+#    DD parameter   Description
+#    06   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	06_00060	06_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07106500	2010-11-06 08:15	MDT	98		3.96	
+# Data provided for site 07108900
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07108900	2010-11-06 07:45	MDT	9.1		2.11	
+# Data provided for site 07109500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07109500	2010-11-06 08:15	MDT	406		1.82	
+# Data provided for site 07116500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07116500	2010-11-06 07:45	MDT	0.68		6.20	
+# Data provided for site 07119500
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07119500	2010-11-06 08:15	MDT	17		2.29	
+# Data provided for site 07121500
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07121500	2010-11-06 07:45	MDT	61		4.25	
+# Data provided for site 07124000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07124000	2010-11-06 07:45	MDT	39		4.85	
+# Data provided for site 07124200
+#    DD parameter   Description
+#    08   00060     Streamflow, ft&#179;/s
+#    07   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	08_00060	08_00060_cd	07_00065	07_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07124200	2010-11-06 07:45	MDT	29		3.05	
+# Data provided for site 07124410
+#    DD parameter   Description
+#    06   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	06_00060	06_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07124410	2010-11-06 07:30	MDT	0.03		4.02	
+# Data provided for site 07126200
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07126200	2010-11-06 08:00	MDT	0.12		1.55	
+# Data provided for site 07126300
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07126300	2010-11-06 07:45	MDT	16		2.44	
+# Data provided for site 07126325
+#    DD parameter   Description
+#    18   00060     Streamflow, ft&#179;/s
+#    17   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	18_00060	18_00060_cd	17_00065	17_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07126325	2010-11-06 08:00	MDT	0.00		3.61	
+# Data provided for site 07126390
+#    DD parameter   Description
+#    12   00060     Streamflow, ft&#179;/s
+#    11   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	12_00060	12_00060_cd	11_00065	11_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07126390	2010-11-06 08:00	MDT	0.00		6.11	
+# Data provided for site 07126415
+#    DD parameter   Description
+#    06   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	06_00060	06_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07126415	2010-11-06 08:00	MDT	0.00		5.20	
+# Data provided for site 07126480
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    07   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	07_00065	07_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07126480	2010-11-06 08:00	MDT	0.00		2.68	
+# Data provided for site 07126485
+#    DD parameter   Description
+#    09   00060     Streamflow, ft&#179;/s
+#    08   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	09_00060	09_00060_cd	08_00065	08_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07126485	2010-11-06 08:15	MDT	21		5.96	
+# Data provided for site 07128500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07128500	2010-11-06 08:15	MDT	6.9		2.63	
+# Data provided for site 07130500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07130500	2010-11-06 08:00	MDT	1.9		0.75	
+# Data provided for site 07133000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    06   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	06_00065	06_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07133000	2010-11-06 08:00	MDT	9.9		4.32	
+# Data provided for site 07134100
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07134100	2010-11-06 07:45	MDT	52		3.99	
+# Data provided for site 07134180
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07134180	2010-11-06 08:15	MDT	20		4.97	
+# Data provided for site 07134990
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	07134990	2010-11-06 08:15	MDT	11		2.14	
+# Data provided for site 08261000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	08261000	2010-10-07 10:15	MDT	1.4		2.10	
+# Data provided for site 09010500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09010500	2010-11-06 07:45	MDT	25		3.94	
+# Data provided for site 09014050
+#    DD parameter   Description
+#    06   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	06_00060	06_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09014050	2010-11-06 07:40	MDT	Ssn		Ssn	
+# Data provided for site 09019500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09019500	2010-10-10 13:45	MDT	Ssn		Ssn	
+# Data provided for site 09022000
+#    DD parameter   Description
+#    03   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	03_00060	03_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09022000	2010-11-06 07:15	MDT	4.4		0.65	
+# Data provided for site 09024000
+#    DD parameter   Description
+#    03   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	03_00060	03_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09024000	2010-11-06 07:45	MDT	6.53		0.52	
+# Data provided for site 09025000
+#    DD parameter   Description
+#    03   00060     Streamflow, ft&#179;/s
+#    14   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	03_00060	03_00060_cd	14_00065	14_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09025000	2010-11-06 07:45	MDT	2.5		1.43	
+# Data provided for site 09025300
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09025300	2010-11-06 07:15	MDT	***		Ssn	
+# Data provided for site 09026500
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09026500	2010-11-06 07:30	MDT	6.9		1.11	
+# Data provided for site 09032000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09032000	2010-11-06 07:30	MDT	4.0		4.54	
+# Data provided for site 09033300
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09033300	2010-11-06 07:15	MDT	Ssn		Ssn	
+# Data provided for site 09034250
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09034250	2010-11-06 07:15	MDT	104		3.05	
+# Data provided for site 09034900
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09034900	2010-11-06 08:00	MDT	1.8		2.64	
+# Data provided for site 09035700
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09035700	2010-11-06 07:30	MDT	7.4		4.71	
+# Data provided for site 09036000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09036000	2010-11-06 07:30	MDT	29		0.56	
+# Data provided for site 09037500
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    06   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	06_00065	06_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09037500	2010-11-06 07:30	MDT	Rat		3.15	
+# Data provided for site 09038500
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09038500	2010-11-06 07:45	MDT	121		1.50	
+# Data provided for site 09041090
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09041090	2010-11-06 07:30	MDT	8.2		2.22	
+# Data provided for site 09041400
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09041400	2010-11-06 07:30	MDT	20		4.12	
+# Data provided for site 09041900
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09041900	2010-11-06 08:00	MDT	21		1.12	
+# Data provided for site 09044300
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09044300	2010-11-06 08:00	MDT	0.00		0.00	
+# Data provided for site 09044800
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09044800	2010-11-06 08:00	MDT	0.00		0.00	
+# Data provided for site 09046490
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09046490	2010-11-06 07:45	MDT	14		0.69	
+# Data provided for site 09046600
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09046600	2010-11-06 08:00	MDT	43		4.46	
+# Data provided for site 09047500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09047500	2010-11-06 08:15	MDT	Ssn		Ssn	
+# Data provided for site 09047700
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09047700	2010-11-06 07:15	MDT	2.5		2.04	
+# Data provided for site 09050100
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09050100	2010-11-06 08:00	MDT	***		Ice	
+# Data provided for site 09050700
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09050700	2010-11-06 08:15	MDT	53		0.85	
+# Data provided for site 09051050
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09051050	2010-11-06 08:00	MDT	7.3		4.10	
+# Data provided for site 09056500
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09056500	2010-11-06 08:15	MDT	Ssn		Ssn	
+# Data provided for site 09057500
+#    DD parameter   Description
+#    05   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	05_00060	05_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09057500	2010-11-06 08:00	MDT	154		3.25	
+# Data provided for site 09058000
+#    DD parameter   Description
+#    05   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	05_00060	05_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09058000	2010-11-06 07:15	MDT	519		4.30	
+# Data provided for site 09059500
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09059500	2010-11-06 07:45	MDT	21		2.79	
+# Data provided for site 09061600
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09061600	2010-11-06 07:30	MDT	0.80		1.49	
+# Data provided for site 09063000
+#    DD parameter   Description
+#    07   00060     Streamflow, ft&#179;/s
+#    06   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	07_00060	07_00060_cd	06_00065	06_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09063000	2010-11-06 08:00	MDT	14		2.77	
+# Data provided for site 09064000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09064000	2010-11-06 05:00	MDT	9.4		4.01	
+# Data provided for site 09064600
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09064600	2010-11-06 07:15	MDT	45		2.85	
+# Data provided for site 09065100
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+# Data provided for site 09065500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09065500	2010-11-06 07:15	MDT	Rat		3.18	
+# Data provided for site 09066200
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09066200	2010-11-06 07:15	MDT	Rat		2.54	
+# Data provided for site 09066325
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09066325	2010-11-06 07:45	MDT	28		4.77	
+# Data provided for site 09066400
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+# Data provided for site 09066510
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09066510	2010-11-06 07:15	MDT	36		5.15	
+# Data provided for site 09067000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09067000	2010-11-06 07:15	MDT	Rat		1.86	
+# Data provided for site 09067020
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09067020	2010-11-06 07:30	MDT	113		3.13	
+# Data provided for site 09067200
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09067200	2010-11-06 07:45	MDT	26		0.72	
+# Data provided for site 09070000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09070000	2010-11-06 07:00	MDT	235		4.45	
+# Data provided for site 09070500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09070500	2010-11-06 08:00	MDT	924		2.42	
+# Data provided for site 09072550
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09072550	2010-11-06 08:15	MDT	Ssn		Ssn	
+# Data provided for site 09073005
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09073005	2010-11-06 08:15	MDT	2.9		1.21	
+# Data provided for site 09073300
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09073300	2010-11-06 07:45	MDT	13		0.92	
+# Data provided for site 09073400
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09073400	2010-11-06 07:30	MDT	31		0.80	
+# Data provided for site 09074000
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09074000	2010-11-06 07:15	MDT	11		1.15	
+# Data provided for site 09074500
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09074500	2010-11-06 07:30	MDT	13		3.15	
+# Data provided for site 09080400
+#    DD parameter   Description
+#    14   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	14_00060	14_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09080400	2010-11-06 07:15	MDT	78		1.32	
+# Data provided for site 09081000
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09081000	2010-11-06 07:45	MDT	340		5.32	
+# Data provided for site 09081600
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09081600	2010-11-06 08:00	MDT	90		1.07	
+# Data provided for site 09083800
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09083800	2010-11-06 08:00	MDT	Dis		Dis	
+# Data provided for site 09085000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09085000	2010-11-06 04:45	MDT	566		2.98	
+# Data provided for site 09085100
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09085100	2010-11-06 07:15	MDT	1770		3.97	
+# Data provided for site 09095500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09095500	2010-11-06 08:00	MDT	1950		4.69	
+# Data provided for site 09097900
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+# Data provided for site 09105000
+#    DD parameter   Description
+#    06   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	06_00060	06_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09105000	2010-11-06 08:15	MDT	98		2.57	
+# Data provided for site 09106150
+#    DD parameter   Description
+#    15   00060     Streamflow, ft&#179;/s
+#    14   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	15_00060	15_00060_cd	14_00065	14_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09106150	2010-11-06 08:15	MDT	1970		4.57	
+# Data provided for site 09107000
+#    DD parameter   Description
+#    13   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	13_00060	13_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09107000	2010-11-06 08:00	MDT	38		1.28	
+# Data provided for site 09109000
+#    DD parameter   Description
+#    06   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	06_00060	06_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09109000	2010-11-06 08:00	MDT	76		3.41	
+# Data provided for site 09110000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09110000	2010-11-06 08:00	MDT	136		1.60	
+# Data provided for site 09112200
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09112200	2010-11-06 07:15	MDT	115		1.21	
+# Data provided for site 09112500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09112500	2010-11-06 08:15	MDT	97		2.74	
+# Data provided for site 09113980
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09113980	2010-11-06 08:00	MDT	27		2.73	
+# Data provided for site 09114500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09114500	2010-11-06 08:15	MDT	294		1.37	
+# Data provided for site 09115500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09115500	2010-11-06 08:00	MDT	21		0.80	
+# Data provided for site 09118450
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09118450	2010-11-06 08:15	MDT	34		2.01	
+# Data provided for site 09119000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09119000	2010-11-06 07:45	MDT	106		1.39	
+# Data provided for site 09124500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09124500	2010-11-06 08:00	MDT	69		1.29	
+# Data provided for site 09126000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09126000	2010-11-06 07:15	MDT	23		1.10	
+# Data provided for site 09128000
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09128000	2010-11-06 07:45	MDT	503		2.34	
+# Data provided for site 09132500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09132500	2010-11-06 07:15	MDT	97		1.89	
+# Data provided for site 09132940
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09132940	2010-11-06 07:30	MDT	4.5		1.97	
+# Data provided for site 09132960
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09132960	2010-11-06 08:15	MDT	3.7		0.32	
+# Data provided for site 09132985
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09132985	2010-10-28 04:30	MDT	0.64		0.73	
+# Data provided for site 09132995
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09132995	2010-11-06 07:45	MDT	0.67		2.10	
+# Data provided for site 09134000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09134000	2010-11-06 08:00	MDT	3.4		0.90	
+# Data provided for site 09134100
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09134100	2010-11-06 04:45	MDT	100		1.07	
+# Data provided for site 09135950
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+# Data provided for site 09136100
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09136100	2010-11-06 07:15	MDT	241		3.28	
+# Data provided for site 09143000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09143000	2010-11-06 07:30	MDT	4.4		2.24	
+# Data provided for site 09143500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09143500	2010-11-06 07:15	MDT	5.7		0.77	
+# Data provided for site 09144250
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09144250	2010-11-06 07:15	MDT	802		1.81	
+# Data provided for site 09146020
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09146020	2010-11-06 08:00	MDT	43		1.50	
+# Data provided for site 09146200
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09146200	2010-11-06 08:00	MDT	77		2.03	
+# Data provided for site 09147000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09147000	2010-11-06 08:00	MDT	27		2.42	
+# Data provided for site 09147025
+#    DD parameter   Description
+#    11   00060     Streamflow, ft&#179;/s
+#    10   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	11_00060	11_00060_cd	10_00065	10_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09147025	2010-11-06 08:00	MDT	48		1.85	
+# Data provided for site 09147500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09147500	2010-11-06 08:15	MDT	68		0.34	
+# Data provided for site 09149500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    06   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	06_00065	06_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09149500	2010-11-06 07:15	MDT	371		4.10	
+# Data provided for site 09152500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09152500	2010-11-06 07:30	MDT	1510		3.25	
+# Data provided for site 09163500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09163500	2010-11-06 07:45	MDT	3720		3.89	
+# Data provided for site 09165000
+#    DD parameter   Description
+#    06   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	06_00060	06_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09165000	2010-11-06 07:45	MDT	27		1.87	
+# Data provided for site 09166500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09166500	2010-11-06 07:45	MDT	90		2.19	
+# Data provided for site 09166950
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09166950	2010-11-06 07:15	MDT	5.0		2.14	
+# Data provided for site 09168730
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09168730	2010-11-06 08:00	MDT	22		3.77	
+# Data provided for site 09169500
+#    DD parameter   Description
+#    06   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	06_00060	06_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09169500	2010-11-06 07:30	MDT	37		1.31	
+# Data provided for site 09171100
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09171100	2010-11-06 07:45	MDT	41		2.39	
+# Data provided for site 09172500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09172500	2010-11-06 08:05	MDT	97		2.27	
+# Data provided for site 09174600
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09174600	2010-11-06 07:45	MDT	93		2.01	
+# Data provided for site 09177000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09177000	2010-11-06 07:30	MDT	121		2.85	
+# Data provided for site 09237450
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09237450	2010-11-06 07:15	MDT	47		3.54	
+# Data provided for site 09237500
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09237500	2010-10-29 17:30	MDT	***			
+USGS	09237500	2010-11-06 07:45	MDT			***	
+# Data provided for site 09238900
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09238900	2010-11-06 07:45	MDT	21		0.76	
+# Data provided for site 09239500
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09239500	2010-11-06 08:15	MDT	139		1.41	
+# Data provided for site 09240020
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09240020	2010-11-06 08:00	MDT	Ssn		Ssn	
+# Data provided for site 09242500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09242500	2010-11-06 07:30	MDT	Ssn		Ssn	
+# Data provided for site 09244490
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09244490	2010-11-06 07:45	MDT	392		1.32	
+# Data provided for site 09246200
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09246200	2010-11-06 07:15	MDT	11		2.53	
+# Data provided for site 09246500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09246500	2010-11-06 07:45	MDT	4.6		1.73	
+# Data provided for site 09247600
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09247600	2010-11-06 08:15	MDT	373		2.42	
+# Data provided for site 09251000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09251000	2010-11-06 07:15	MDT	441		2.30	
+# Data provided for site 09253000
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09253000	2010-11-06 07:45	MDT	49		3.54	
+# Data provided for site 09255000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09255000	2010-11-06 07:45	MDT	25		2.59	
+# Data provided for site 09260000
+#    DD parameter   Description
+#    06   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	06_00060	06_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09260000	2010-11-06 07:15	MDT	187		1.77	
+# Data provided for site 09260050
+#    DD parameter   Description
+#    06   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	06_00060	06_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09260050	2010-11-06 07:15	MDT	646		3.15	
+# Data provided for site 09304200
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    06   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	06_00065	06_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09304200	2010-11-06 07:15	MDT	329		2.19	
+# Data provided for site 09304500
+#    DD parameter   Description
+#    03   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	03_00060	03_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09304500	2010-11-06 08:00	MDT	360		2.58	
+# Data provided for site 09304800
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    06   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	06_00065	06_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09304800	2010-11-06 07:30	MDT	402		2.91	
+# Data provided for site 09306200
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    07   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	07_00065	07_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09306200	2010-11-06 07:45	MDT	12		3.58	
+# Data provided for site 09306222
+#    DD parameter   Description
+#    03   00060     Streamflow, ft&#179;/s
+#    08   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	03_00060	03_00060_cd	08_00065	08_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09306222	2010-11-06 07:30	MDT	17		2.15	
+# Data provided for site 09306224
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09306224	2010-11-06 07:45	MDT	440		2.62	
+# Data provided for site 09306242
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    07   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	07_00065	07_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09306242	2010-11-06 06:45	MDT	0.11		1.14	
+# Data provided for site 09306255
+#    DD parameter   Description
+#    03   00060     Streamflow, ft&#179;/s
+#    08   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	03_00060	03_00060_cd	08_00065	08_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09306255	2010-11-06 05:00	MDT	2.8		5.15	
+# Data provided for site 09306290
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09306290	2010-11-06 07:45	MDT	422		3.00	
+# Data provided for site 09342500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09342500	2010-11-06 08:00	MDT	114		3.84	
+# Data provided for site 09346400
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09346400	2010-11-06 08:15	MDT	188		2.65	
+# Data provided for site 09349800
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09349800	2010-11-06 08:15	MDT	138		1.20	
+# Data provided for site 09352900
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09352900	2010-11-06 07:45	MDT	57		1.16	
+# Data provided for site 09353800
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09353800	2010-11-06 07:45	MDT	20		2.51	
+# Data provided for site 09354500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09354500	2010-11-06 07:30	MDT	39		3.36	
+# Data provided for site 09355000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09355000	2010-11-06 07:15	MDT	1.7		1.08	
+# Data provided for site 09358000
+#    DD parameter   Description
+#    13   00060     Streamflow, ft&#179;/s
+#    12   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	13_00060	13_00060_cd	12_00065	12_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09358000	2010-11-06 07:45	MDT	39		0.68	
+# Data provided for site 09358550
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09358550	2010-11-06 08:00	MDT	14		0.63	
+# Data provided for site 09359010
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09359010	2010-11-06 07:30	MDT	37		1.16	
+# Data provided for site 09359020
+#    DD parameter   Description
+#    08   00060     Streamflow, ft&#179;/s
+#    07   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	08_00060	08_00060_cd	07_00065	07_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09359020	2010-11-06 08:00	MDT	110		2.00	
+# Data provided for site 09359500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09359500	2010-11-06 07:45	MDT	174		3.44	
+# Data provided for site 09361500
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09361500	2010-11-06 07:30	MDT	250		2.41	
+# Data provided for site 09362520
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09362520	2010-11-06 08:00	MDT	232		3.17	
+# Data provided for site 09363500
+#    DD parameter   Description
+#    04   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	04_00060	04_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09363500	2010-11-06 07:30	MDT	246		4.02	
+# Data provided for site 09370600
+#    DD parameter   Description
+#    05   00060     Streamflow, ft&#179;/s
+#    04   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	05_00060	05_00060_cd	04_00065	04_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09370600	2010-11-06 06:15	MDT	22		0.83	
+# Data provided for site 09371000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09371000	2010-11-06 08:00	MDT	38		1.90	
+# Data provided for site 09371010
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09371010	2010-11-06 08:00	MDT	794		5.95	
+# Data provided for site 09371492
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    02   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	02_00065	02_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09371492	2010-11-06 07:30	MDT	2.2		1.43	
+# Data provided for site 09371520
+#    DD parameter   Description
+#    06   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	06_00060	06_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09371520	2010-11-06 07:45	MDT	23		2.36	
+# Data provided for site 09372000
+#    DD parameter   Description
+#    01   00060     Streamflow, ft&#179;/s
+#    05   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00060	01_00060_cd	05_00065	05_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	09372000	2010-11-06 07:30	MDT	42		2.99	
+# Data provided for site 373947105421101
+#    DD parameter   Description
+#    13   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	13_00060	13_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	373947105421101	2010-11-06 07:30	MDT	16		7.76	
+# Data provided for site 382628104493700
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	382628104493700	2010-11-06 07:45	MDT	0.000		9.71	
+# Data provided for site 382629104493000
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	382629104493000	2010-11-06 07:45	MDT	0.000		5.35	
+# Data provided for site 383619104520401
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	383619104520401	2010-11-06 07:45	MDT	0.19		0.37	
+# Data provided for site 383637104531301
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	383637104531301	2010-11-06 07:45	MDT	0.00		0.00	
+# Data provided for site 383944104474201
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	383944104474201	2010-11-06 07:45	MDT	0.00		0.00	
+# Data provided for site 384037104472001
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	384037104472001	2010-11-06 07:45	MDT	0.57		0.25	
+# Data provided for site 384047104510301
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	384047104510301	2010-11-06 07:45	MDT	0.00		0.00	
+# Data provided for site 384048104504901
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	384048104504901	2010-11-06 07:45	MDT	0.00		-0.05	
+# Data provided for site 384220104503701
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	384220104503701	2010-11-06 07:45	MDT	0.00		0.00	
+# Data provided for site 384936107571901
+#    DD parameter   Description
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s
+USGS	384936107571901	2010-11-06 08:00	MDT	0.04	
+# Data provided for site 384945107553401
+#    DD parameter   Description
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s
+USGS	384945107553401	2010-11-06 08:00	MDT	0.43	
+# Data provided for site 385106106571000
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	385106106571000	2010-11-06 08:00	MDT	41		3.04	
+# Data provided for site 385117107554501
+#    DD parameter   Description
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s
+USGS	385117107554501	2010-11-06 08:00	MDT	0.57	
+# Data provided for site 391435106230801
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	391435106230801	2010-11-06 07:15	MDT	0.09		0.36	
+# Data provided for site 391517106223801
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	391517106223801	2010-11-06 07:45	MDT	0.04		8.79	
+# Data provided for site 392547106023400
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	392547106023400	2010-11-06 08:15	MDT	5.0		3.72	
+# Data provided for site 393109104464500
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	393109104464500	2010-11-06 08:15	MDT	3.6		3.91	
+# Data provided for site 394220106431500
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	394220106431500	2010-11-06 08:15	MDT	157		3.63	
+# Data provided for site 394308105413800
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	394308105413800	2010-11-06 08:00	MDT	23		2.84	
+# Data provided for site 394839104570300
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    21   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	21_00065	21_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	394839104570300	2010-11-06 07:45	MDT	14		3.63	
+# Data provided for site 401733105392404
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    01   00065     Gage height, ft
+#    03   00065     Gage height, ft(transducer)
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	01_00065	01_00065_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s	12n	10s
+USGS	401733105392404	2010-11-06 08:00	MDT	1.7				0.31	
+# Data provided for site 402114105350101
+#    DD parameter   Description
+#    02   00060     Streamflow, ft&#179;/s
+#    03   00065     Gage height, ft
+#
+agency_cd	site_no	datetime	tz_cd	02_00060	02_00060_cd	03_00065	03_00065_cd
+5s	15s	16d	6s	12n	10s	12n	10s
+USGS	402114105350101	2010-11-06 07:45	MDT	16		3.96	
