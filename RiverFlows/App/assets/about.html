@@ -1,0 +1,41 @@
+<html>
+<head><title></title>
+<script type="text/javascript">
+
+function setVersionNum(versionNum) {
+	document.getElementById("version").innerHTML = '' + versionNum;
+}
+
+window.onload = function() {
+	versionProvider.initializeVersion();
+};
+</script>
+<style type="text/css">
+a {
+	color: rgb(0,0,0);
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+</style>
+</head>
+<body>
+	<a href="http://www.riverflowsapp.mobi"><img src="launcher-large.png" style="margin-left: 30%;"/></a>
+	<h4><a href="http://www.riverflowsapp.mobi">RiverFlows, version <span id="version">$versionNum$</span></a></h4>
+	<p id="copyright">Copyright &copy; 2011 Robin Johnson, All rights reserved</p>
+	<h4>Disclaimer</h4>
+	<p id="disclaimer">Whitewater sports are inherently dangerous.  This software is for informational purposes only and is NOT a substitute for use of proper equipment, training, or common sense when practicing said sports.  This software should not be relied upon as a definitive source of information in determining the safety of a waterway.</p>
+	<h4>Data Sources</h4>
+	<p id="data_source_info">
+	  Hydrological data is retrieved from the following public agencies:<ul>
+	  <li><a href="http://waterdata.usgs.gov/nwis">United States Geological Survey National Water Information System</a><br/>See their <a href="http://www.usgs.gov/laws/info_policies.html">information policies</a> page for the terms under which this data is provided.</li>
+	  <li><a href="http://www.dwr.state.co.us">Colorado Department of Water Resources</a><br/><a href="http://www.dwr.state.co.us/SurfaceWater/provisionaldata.aspx">All of this data is provisional and subject to revision</a>.</li>
+  </ul>To see the raw data and its accompanying disclosures, use the "Primary Source" menu item when viewing a graph.</p>
+	<p id="additional_credits">This application makes use of an icon set published by <a href="http://www.androidicons.com/">www.androidicons.com</a> under a <a href="http://creativecommons.org/licenses/by/3.0/">Creative Commons license</a>.</p>
+	<h4>Feedback</h4>
+	<p>Bug reports, feature suggestions, and other feedback may be sent to <a href="mailto:info@riverflowsapp.com">info@riverflowsapp.com</a>.</p>
+</body>
+</html>

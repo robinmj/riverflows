@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    >
+    <LinearLayout
+	    android:orientation="horizontal"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+        android:layout_gravity="center_vertical"
+        android:padding="6dip"
+        android:background="#666">
+		<TextView
+			android:id="@+id/title"
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content"
+		    android:layout_weight="1"
+			android:textSize="15dip"
+		    android:textStyle="bold"
+		    android:textColor="#eee"
+		    android:maxLines="3"
+		    android:ellipsize="marquee"
+		    android:layout_gravity="center"
+		    android:gravity="center"
+		    android:paddingRight="10dip"
+		/>
+		<CheckBox
+			android:id="@+id/favorite_btn"
+        	style="?android:attr/starStyle"
+		    android:layout_width="wrap_content" 
+		    android:layout_height="wrap_content" 
+		    android:layout_gravity="center"
+		/>
+	        
+	    <ProgressBar
+	    	android:id="@+id/progressBar"
+	    	android:indeterminate="true"
+	    	android:layout_height="wrap_content"
+	    	android:layout_width="wrap_content"
+		    android:layout_gravity="center"
+	    	/>
+	</LinearLayout>
+	
+    <LinearLayout android:id="@+id/chart"
+    	android:orientation="horizontal"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_weight="1"
+		android:padding="0px"
+		android:background="#fff">
+	</LinearLayout>
+	
+	<TextView android:id="@+id/lastReading"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:padding="5dip"
+		
+	/>
+</LinearLayout>

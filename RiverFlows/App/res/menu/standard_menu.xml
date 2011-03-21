@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/mi_home"
+		android:title="Home Screen"
+		android:icon="@drawable/ic_menu_home" />
+	<item android:id="@+id/mi_reload"
+		android:title="Reload"
+		android:icon="@drawable/ic_menu_refresh" />
+	<item android:id="@+id/mi_about"
+		android:title="About RiverFlows"
+		android:icon="@drawable/ic_menu_info_details" />
+	<item android:id="@+id/mi_other_variables"
+    android:title="Other Measurements"
+    android:icon="@drawable/ic_menu_measurements"
+    android:visible="false"/>
+  <item android:id="@+id/mi_primary_source"
+    android:title="Primary Source"
+    android:icon="@drawable/ic_menu_info_details"
+    android:visible="false"/>
+</menu>
