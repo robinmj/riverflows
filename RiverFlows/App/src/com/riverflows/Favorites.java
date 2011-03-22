@@ -52,7 +52,7 @@ public class Favorites extends ListActivity {
 	public static final int DIALOG_ID_MASTER_LOADING_ERROR = 4;
 	public static final int DIALOG_ID_UPGRADE_FAVORITES = 5;
 	
-	private LoadSitesTask loadTask = null;
+	LoadSitesTask loadTask = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -221,7 +221,7 @@ public class Favorites extends ListActivity {
 		public final Date loadTime = new Date();
 		public List<SiteData> gauges = null;
 		
-		private String errorMsg = null;
+		public String errorMsg = null;
 		
 		protected void setLoadErrorMsg(String errorMsg) {
 			this.errorMsg = errorMsg;

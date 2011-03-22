@@ -156,6 +156,7 @@ public class UsgsCsvDataSource implements RESTDataSource {
 		//since we can't associate variables with sites when retrieving data,
 		// datasets for variables not explicitly specified by the favorite will
 		// have to be removed.
+		//TODO don't throw this data away- filter in the UI instead
 		for(SiteData siteData: result.values()) {
 			Iterator<Entry<CommonVariable,Series>> datasets = siteData.getDatasets().entrySet().iterator();
 			while(datasets.hasNext()) {

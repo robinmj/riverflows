@@ -9,6 +9,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -85,10 +86,26 @@ public class AHPSXmlDataSource implements RESTDataSource {
 	@Override
 	public Map<SiteId, SiteData> getSiteData(List<Favorite> sites)
 			throws ClientProtocolException, IOException {
+		
 		HashMap<SiteId, SiteData> result = new HashMap<SiteId, SiteData>();
 		
 		for(Favorite currentFav: sites) {
-			result.put(currentFav.getSite().getSiteId(), getSiteData(currentFav.getSite(), null));
+			SiteData favData = getSiteData(currentFav.getSite(), null);
+			
+			//limit data returned to the variables associated with the favorites
+			//TODO don't throw this data away- filter in the UI instead
+			Iterator<Entry<CommonVariable,Series>> datasets = favData.getDatasets().entrySet().iterator();
+			while(datasets.hasNext()) {
+				Entry<CommonVariable,Series> curDataset = datasets.next();
+				
+				if(currentFav.getVariable().equals(curDataset.getValue().getVariable().getId())) {
+					continue;
+				}
+				
+				datasets.remove();
+			}
+			
+			result.put(currentFav.getSite().getSiteId(), favData);
 		}
 		return result;
 	}
