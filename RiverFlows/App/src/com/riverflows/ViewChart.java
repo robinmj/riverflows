@@ -100,13 +100,16 @@ public class ViewChart extends Activity {
         
         chartLayout = (LinearLayout) findViewById(R.id.chart);
 
+        //see onRetainNonConfigurationInstance()
     	final Object data = getLastNonConfigurationInstance();
         
     	if(data == null) {
     		//make the request for site data
     		new GenerateDataSetTask().execute(this.station);
     	} else {
-    		this.data = (SiteData)data;
+    		Object[] prevState = (Object[])data;
+    		this.variable = (Variable)prevState[0];
+    		this.data = (SiteData)prevState[1];
     		//use stored data instead
     		displayData();
     	}
@@ -237,7 +240,7 @@ public class ViewChart extends Activity {
     
     @Override
     public Object onRetainNonConfigurationInstance() {
-        return data;
+        return new Object[]{variable,data};
     }
 
     @Override
