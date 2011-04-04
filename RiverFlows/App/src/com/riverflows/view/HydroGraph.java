@@ -11,6 +11,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
+import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.Paint.Align;
 import android.util.Log;
@@ -43,6 +44,18 @@ public class HydroGraph extends View {
 	
 	//space between left side of canvas and graph area
 	private static final int rightPadding = 10;
+
+	private static final int LEGEND_WIDTH = 95;
+	private static final int LEGEND_HEIGHT = 50;
+	private static final int LEGEND_TOP_MARGIN = 10;
+	private static final int LEGEND_LEFT_MARGIN = 10;
+	
+	private static final int LEGEND_PADDING = 10;
+	
+	/**
+	 * if xPixelsPerMs is below this number, then only include the day of week label for every other day
+	 */
+	private static final double LABEL_DAY_OF_WEEK_EVERY_OTHER_DAY_THRESHOLD = 0.000000292397661d;
 	
 	/**
 	 * Size of the tick marks, in pixels.
@@ -55,6 +68,21 @@ public class HydroGraph extends View {
 	private static final Paint tickPaint = new Paint();
 	
 	private static final Paint guideLinePaint = new Paint();
+	
+	private static final Paint plotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+	private static final Paint noDataPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
+	private static final Paint forecastPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+	
+	static {
+		tickPaint.setColor(Color.BLACK);
+		guideLinePaint.setColor(Color.LTGRAY);
+		plotPaint.setColor(Color.BLUE);
+		noDataPaint.setColor(Color.LTGRAY);
+		forecastPaint.setColor(Color.CYAN);
+		forecastPaint.setStrokeWidth(4.0f);
+	}
 	
 	private Series series;
 	
@@ -115,9 +143,6 @@ public class HydroGraph extends View {
 
 	public HydroGraph(Context c) {
 		super(c);
-
-		tickPaint.setColor(Color.BLACK);
-		guideLinePaint.setColor(Color.LTGRAY);
 	}
 	
 	@Override
@@ -135,6 +160,10 @@ public class HydroGraph extends View {
         //assumes that yMin is 0
 		this.pixelsPerYUnit = graphAreaH / yMax;
 		this.xPixelsPerMs = graphAreaW / (double)(this.xMax - this.xMin);
+		
+		if(Log.isLoggable(TAG, Log.DEBUG)) {
+			Log.d(TAG, "xPixelsPerMs: " + xPixelsPerMs + " pixelsPerYUnit: " + pixelsPerYUnit);
+		}
 		
 		Paint axisPaint = new Paint();
 		axisPaint.setColor(Color.BLACK);
@@ -166,24 +195,20 @@ public class HydroGraph extends View {
 		drawXLabels(canvas);
 		drawYLabels(canvas, 11);
 		
-		drawPlot(canvas);
+		if(drawPlot(canvas)) {
+			drawLegend(canvas);
+		}
 	}
 	
-	private void drawPlot(Canvas canvas) {
-		
-		Paint plotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		plotPaint.setColor(Color.BLUE);
-		
-
-		Paint noDataPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		noDataPaint.setColor(Color.LTGRAY);
-
-		Paint forecastPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
-		forecastPaint.setColor(Color.CYAN);
+	/**
+	 * @param canvas
+	 * @return true if the plot contains forecasted data
+	 */
+	private boolean drawPlot(Canvas canvas) {
 		
 		if(series.getReadings() == null || series.getReadings().size() == 0) {
 			Log.e(getClass().getSimpleName(), "no data");
-			return;
+			return false;
 		}
 		
 		//find the first reading that falls within the range of the graph
@@ -204,6 +229,8 @@ public class HydroGraph extends View {
 		float nextX;
 		float nextY;
 		Paint paint = plotPaint;
+		boolean hasForecast = false;
+		Reading lastObserved = null;
 		for(;index < series.getReadings().size(); index++) {
 			Reading r = series.getReadings().get(index);
 			if(r.getValue() == null || r.getValue() < 0.0d) {
@@ -211,7 +238,14 @@ public class HydroGraph extends View {
 				continue;
 			}
 			if(r instanceof Forecast) {
+				if(lastObserved != null && r.getDate().before(lastObserved.getDate())) {
+					//don't show forecasts that come before the observed data
+					continue;
+				}
 				paint = forecastPaint;
+				hasForecast = true;
+			} else {
+				lastObserved = r;
 			}
 			
 			nextX = convertXValue(r.getDate());
@@ -221,6 +255,7 @@ public class HydroGraph extends View {
 			prevX = nextX;
 			prevY = nextY;
 		}
+		return hasForecast;
 	}
 	
 	private float convertXValue(Date d) {
@@ -337,7 +372,10 @@ public class HydroGraph extends View {
 	        }
 			
 			//label the range between this tick and the previous one
-			canvas.drawText(labelDayOfWeek, (xCoord + prevXCoord) / 2.0f, zeroYCoord + 14, labelPaint);
+	        if(xPixelsPerMs >= LABEL_DAY_OF_WEEK_EVERY_OTHER_DAY_THRESHOLD
+	        		|| labelCalc.get(Calendar.DAY_OF_YEAR) % 2 == 0) {
+	        	canvas.drawText(labelDayOfWeek, (xCoord + prevXCoord) / 2.0f, zeroYCoord + 14, labelPaint);
+	        }
 			canvas.drawText(labelDayOfMonth, (xCoord + prevXCoord) / 2.0f, zeroYCoord + 25, labelPaint);
 
 			//draw the guideline
@@ -417,5 +455,35 @@ public class HydroGraph extends View {
         }
         
         return labelStr + suffix;
+	}
+	
+	private void drawLegend(Canvas canvas) {
+		Rect legendOutline = new Rect(yAxisOffset + LEGEND_LEFT_MARGIN,
+				topPadding + LEGEND_TOP_MARGIN,
+				yAxisOffset + LEGEND_LEFT_MARGIN + LEGEND_WIDTH,
+				topPadding + LEGEND_TOP_MARGIN + LEGEND_HEIGHT);
+		//draw legend box
+		canvas.drawRect(legendOutline, guideLinePaint);
+		Rect legendFill = new Rect(legendOutline.left + 1, legendOutline.top + 1, legendOutline.right - 1, legendOutline.bottom - 1);
+		
+		Paint background = new Paint();
+		background.setColor(Color.WHITE);
+		
+		//fill legend box
+		canvas.drawRect(legendFill, background);
+
+		Paint labelPaint = new Paint(Paint.ANTI_ALIAS_FLAG + Paint.SUBPIXEL_TEXT_FLAG);
+		labelPaint.setColor(Color.BLACK);
+		labelPaint.setTextAlign(Align.LEFT);
+		
+		canvas.drawLine(legendFill.left + LEGEND_PADDING, legendFill.top + LEGEND_PADDING + 5.0f,
+				legendFill.left + LEGEND_PADDING + 10.0f, legendFill.top + LEGEND_PADDING + 5.0f, plotPaint);
+
+		canvas.drawText("Observed", legendFill.left + LEGEND_PADDING + 15.0f, legendFill.top + LEGEND_PADDING + 10.0f, labelPaint);
+		
+		canvas.drawLine(legendFill.left + LEGEND_PADDING, legendFill.top + LEGEND_PADDING + 20.0f,
+				legendFill.left + LEGEND_PADDING + 10.0f, legendFill.top + LEGEND_PADDING + 20.0f, forecastPaint);
+
+		canvas.drawText("Forecast", legendFill.left + LEGEND_PADDING + 15.0f, legendFill.top + LEGEND_PADDING + 25.0f, labelPaint);
 	}
 }
