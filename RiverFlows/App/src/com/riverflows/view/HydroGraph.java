@@ -32,6 +32,9 @@ public class HydroGraph extends View {
 	private long xMax;
 	
 	private double yMax;
+	private double yMin;
+	
+	private boolean forceZeroMinimum = true;
 	
 	//space between left side of canvas and y-axis
 	private static final int yAxisOffset = 40;
@@ -63,7 +66,7 @@ public class HydroGraph extends View {
 	private static final int tickSize = 3;
 	
 	private static final DateFormat DATE_LBL_WEEK_FORMAT = new SimpleDateFormat("EEE");
-	private static final DateFormat DATE_LBL_MONTH_FORMAT = new SimpleDateFormat("dd");
+	private static final DateFormat DATE_LBL_MONTH_FORMAT = new SimpleDateFormat("d");
 	
 	private static final Paint tickPaint = new Paint();
 	
@@ -93,7 +96,12 @@ public class HydroGraph extends View {
 	public void setSeries(Series series) {
 		this.series = series;
 		
-		this.yMax  = getFriendlyYLimit();
+		forceZeroMinimum = this.series.getVariable().getCommonVariable().isGraphAgainstZeroMinimum();
+		
+		double[] limits = getFriendlyYLimits();
+
+		this.yMin  = limits[0];
+		this.yMax  = limits[1];
 		
 		//calculate x boundaries
         GregorianCalendar dayRangeCalc = new GregorianCalendar();
@@ -157,8 +165,7 @@ public class HydroGraph extends View {
 		final float graphAreaH = getHeight() - (topPadding + xAxisOffset);
 		final float graphAreaW = getWidth() - (rightPadding + yAxisOffset);
 		
-        //assumes that yMin is 0
-		this.pixelsPerYUnit = graphAreaH / yMax;
+		this.pixelsPerYUnit = graphAreaH / (this.yMax - this.yMin);
 		this.xPixelsPerMs = graphAreaW / (double)(this.xMax - this.xMin);
 		
 		if(Log.isLoggable(TAG, Log.DEBUG)) {
@@ -233,7 +240,7 @@ public class HydroGraph extends View {
 		Reading lastObserved = null;
 		for(;index < series.getReadings().size(); index++) {
 			Reading r = series.getReadings().get(index);
-			if(r.getValue() == null || r.getValue() < 0.0d) {
+			if(r.getValue() == null) {
 				paint = noDataPaint;
 				continue;
 			}
@@ -267,7 +274,7 @@ public class HydroGraph extends View {
 	}
 	
 	private float convertYValue(double v) {
-		float result = (float)((getHeight() - xAxisOffset) - (v * pixelsPerYUnit));
+		float result = (float)((getHeight() - xAxisOffset) - ((v - this.yMin) * pixelsPerYUnit));
 		if(result < 0 || result > getHeight()) {
 			Log.e(getClass().getSimpleName(), "Y coordinate out of bounds: " + result + " value: " + v, new Exception());
 		}
@@ -275,15 +282,15 @@ public class HydroGraph extends View {
 	}
 	
 	/**
-	 * Generate a nice round number to use as a Y limit without throwing the data out of proportion.
+	 * Generate a nice round numbers to use as a Y limits without throwing the data out of proportion.
+	 * TODO make this work properly for a labelCount of other than 11
 	 * @param dataYLimit
 	 * @return
 	 */
-	private double getFriendlyYLimit() {
-		
+	private double[] getFriendlyYLimits() {
+
 		double maxValue = Double.MIN_VALUE;
-		//double minValue = Double.MAX_VALUE;
-		
+		double minValue = Double.MAX_VALUE;
 		
 		for(Reading point:series.getReadings()){
 			if(point.getValue() == null) {
@@ -294,32 +301,41 @@ public class HydroGraph extends View {
 			if(point.getValue() > maxValue) {
 				maxValue = point.getValue();
 			} 
-
-			/*if(point.getValue() < minValue) {
+	
+			if(point.getValue() < minValue) {
 				minValue = point.getValue();
-			}*/
+			}
 		}
-		
-
-        if(Log.isLoggable(TAG, Log.DEBUG)) {
-			//Log.d(TAG, "minValue=" + minValue);
+			
+	
+	    if(Log.isLoggable(TAG, Log.DEBUG)) {
+			Log.d(TAG, "minValue=" + minValue);
 			Log.d(TAG, "maxValue=" + maxValue);
-        }
-		
-		/*
-		//prevent dataYLimit from getting constricted by anomalous negative values
-		if(minValue < 0) {
-			minValue = 0;
-		}
-		
-		//ensures that the graph will be vertically centered
-		double dataYLimit = maxValue + minValue;*/
-		
+	    }
+	    
+	    double[] limits = new double[2];
+
 		//rule of thumb for keeping the graph from being too close to the top of the grid
-		double dataYLimit = maxValue * 1.3d;
+	    limits[1] = maxValue + Math.abs(maxValue * 0.2d);
+		
+	    if(forceZeroMinimum) {
+	    	limits[0] = 0.0d;
+	    } else {
+			//rule of thumb for keeping the graph from being too close to the bottom of the grid
+		    limits[0] = minValue - Math.abs(minValue * 0.2d);
+	    }
+	    
+		double yRange = limits[1] - limits[0];
+		
+		if(yRange == 0.0d) {
+			//this will only happen if minValue and maxValue are both 0
+			limits[1] = 0.0d;
+			limits[1] = 1.0d;
+			return limits;
+		}
 		
 		//find the nearest power of 10, rounding up
-		double zeroCount = Math.ceil(Math.log10(dataYLimit));
+		double zeroCount = Math.ceil(Math.log10(yRange));
 
         if(Log.isLoggable(TAG, Log.DEBUG)) {
         	Log.d(TAG, "zeroCount=" + zeroCount);
@@ -327,11 +343,27 @@ public class HydroGraph extends View {
 		
 		double result = Math.pow(10.0, zeroCount);
 		
-		//it is acceptable to return a multiple of 5 if dataYLimit is less
-		// than half of the closest power of 10
+		//it is acceptable to return a multiple of 5 or 2 if yRange is less
+		// than half or a fifth of the closest power of 10
 		double halfResult = result / 2;
+		if(yRange < halfResult) {
+			double fifthResult = result / 5;
+			yRange = (yRange < fifthResult) ? fifthResult : halfResult;
+		} else {
+			yRange = result;
+		}
 		
-		return (dataYLimit > halfResult) ? result : halfResult;
+		if(!forceZeroMinimum) {
+			//make sure the y minimum has a common factor with 1/10th of yRange
+			
+			double factor = yRange / 10.0d;
+			
+			limits[0] = Math.floor(limits[0] / factor) * factor;
+		}
+		
+		limits[1] = yRange + limits[0];
+		
+		return limits;
 	}
 	
 	private void drawXLabels(Canvas canvas) {
@@ -392,7 +424,7 @@ public class HydroGraph extends View {
 		labelPaint.setColor(Color.BLACK);
 		labelPaint.setTextAlign(Align.RIGHT);
 		
-		double labelValueIncr = this.yMax / (double)(labelCount - 1);
+		double labelValueIncr = (this.yMax - this.yMin) / (double)(labelCount - 1);
 		
 		float zeroXCoord = yAxisOffset;
 		
@@ -400,20 +432,21 @@ public class HydroGraph extends View {
 		
 		float yCoord = (float)(getHeight() - xAxisOffset);
 
-		//draw the tickmark and label for the zero value
+		//draw the tickmark and label for the minimum value - no guideline required since it is
+		// on the x-axis
 		canvas.drawLine(zeroXCoord, yCoord, zeroXCoord - tickSize, yCoord, tickPaint);
-		canvas.drawText("0", zeroXCoord - (tickSize + 2), yCoord + 5.0f, labelPaint);
+		canvas.drawText(formatYLabel(this.yMin), zeroXCoord - (tickSize + 2), yCoord + 5.0f, labelPaint);
 		
 		double labelValue;
 		for(int a = 1; a < labelCount; a++) {
-			labelValue = (double)a * labelValueIncr;
+			labelValue = (double)a * labelValueIncr + this.yMin;
 			yCoord = convertYValue(labelValue);
 
 	        if(Log.isLoggable(TAG, Log.DEBUG)) {
 	        	Log.d(TAG, "drawing y axis label at " + zeroXCoord + "," + yCoord);
 	        }
 
-			//draw the guideline
+	        //draw the guideline
 			canvas.drawLine(zeroXCoord + 1, yCoord, maxXCoord, yCoord, guideLinePaint);
 			
 			//draw the tickmark
@@ -427,8 +460,12 @@ public class HydroGraph extends View {
 	
 	private String formatYLabel(double value) {
 		
+		if(value == 0.0d) {
+			return "0";
+		}
+		
 		//limit to 3 significant figures
-		double magnitude = Math.pow(10, Math.floor(Math.log10(value)) - 2);
+		double magnitude = Math.pow(10, Math.floor(Math.log10(Math.abs(value))) - 2);
 		value = Math.floor(value / magnitude);
 		
 		//downcast to float to chop off any dangling digits
@@ -439,10 +476,10 @@ public class HydroGraph extends View {
 		//abbreviate thousands and millions- the effectiveness of the abbreviations
 		// depends upon whether getFriendlyYLimit() to produce a limit that is evenly
 		// divisible by 10.
-		if(valueF >= 1000000.0f) {
+		if(Math.abs(valueF) >= 1000000.0f) {
 			valueF = (valueF / 1000000.0f);
 			suffix = "M";
-		} else if(valueF >= 1000.0d) {
+		} else if(Math.abs(valueF) >= 1000.0d) {
 			valueF = (valueF / 1000.0f);
 			suffix = "K";
 		}
