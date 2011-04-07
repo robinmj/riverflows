@@ -85,29 +85,77 @@ public class AHPSXmlDataSource implements RESTDataSource {
 		this.httpClientWrapper = source;
 	}
 	
+	private class GetFavoriteDataThread extends Thread {
+		Favorite favorite;
+		IOException ioe;
+		SiteData favData;
+		boolean complete = false;
+		
+		public GetFavoriteDataThread(Favorite f) {
+			this.favorite = f;
+		}
+		
+		@Override
+		public void run() {
+			try {
+				this.favData = getSiteData(favorite.getSite(), null);
+				
+				//limit data returned to the variables associated with the favorites
+				//TODO don't throw this data away- filter in the UI instead
+				Iterator<Entry<CommonVariable,Series>> datasets = this.favData.getDatasets().entrySet().iterator();
+				while(datasets.hasNext()) {
+					Entry<CommonVariable,Series> curDataset = datasets.next();
+					
+					if(favorite.getVariable().equals(curDataset.getValue().getVariable().getId())) {
+						continue;
+					}
+					
+					datasets.remove();
+				}
+			} catch(IOException ioe) {
+				this.ioe = ioe;
+			}
+			this.complete = true;
+		}
+	}
+	
 	@Override
 	public Map<SiteId, SiteData> getSiteData(List<Favorite> sites)
 			throws ClientProtocolException, IOException {
 		
 		HashMap<SiteId, SiteData> result = new HashMap<SiteId, SiteData>();
 		
+		List<GetFavoriteDataThread> threads = new ArrayList<GetFavoriteDataThread>(sites.size());
+		
+		//call each request in a separate thread
 		for(Favorite currentFav: sites) {
-			SiteData favData = getSiteData(currentFav.getSite(), null);
-			
-			//limit data returned to the variables associated with the favorites
-			//TODO don't throw this data away- filter in the UI instead
-			Iterator<Entry<CommonVariable,Series>> datasets = favData.getDatasets().entrySet().iterator();
-			while(datasets.hasNext()) {
-				Entry<CommonVariable,Series> curDataset = datasets.next();
-				
-				if(currentFav.getVariable().equals(curDataset.getValue().getVariable().getId())) {
-					continue;
+			GetFavoriteDataThread t = new GetFavoriteDataThread(currentFav);
+			threads.add(t);
+			t.start();
+		}
+		
+		while(threads.size() > 0) {
+			//poll the threads until they're all complete
+			Iterator<GetFavoriteDataThread> threadsI = threads.iterator();
+			while(threadsI.hasNext()) {
+				GetFavoriteDataThread currentThread = threadsI.next();
+				try {
+					Thread.sleep(100);
+				} catch(InterruptedException ie) {
+					//wake up
 				}
 				
-				datasets.remove();
+				if(currentThread.complete) {
+					//if any of the threads experiences an IOException, abort the whole request
+					// since it is probably a connectivity problem that affects all the threads
+					if(currentThread.ioe != null) {
+						throw currentThread.ioe;
+					}
+					
+					result.put(currentThread.favorite.getSite().getSiteId(), currentThread.favData);
+					threadsI.remove();
+				}
 			}
-			
-			result.put(currentFav.getSite().getSiteId(), favData);
 		}
 		return result;
 	}
