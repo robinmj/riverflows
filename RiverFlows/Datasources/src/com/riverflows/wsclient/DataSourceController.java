@@ -35,6 +35,7 @@ import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 
 import com.riverflows.data.Favorite;
+import com.riverflows.data.Forecast;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
@@ -409,6 +410,27 @@ public class DataSourceController {
 		if(LOG.isDebugEnabled()) LOG.debug("no dataset found for any of the accepted variables");
 		return data.getDatasets().values().iterator().next();
 	}
+
+    /**
+     * @param s cannot be null
+     * @return the last non-forecasted reading in a series, or null if the series has no
+     *  non-forecasted readings
+     */
+	public static Reading getLastObservation(Series s) {
+
+        int readingIndex = s.getReadings().size() - 1;
+        Reading mostRecentReading = null;
+        
+        do {
+        	if(readingIndex < 0) {
+        		break;
+        	}
+        	mostRecentReading = s.getReadings().get(readingIndex--);
+        } while(mostRecentReading instanceof Forecast);
+        
+        return mostRecentReading;
+	}
+	
 	/**
 	 * @param site
 	 * @param variableTypes a suggestion of the variables to retrieve, in order of preference.  The DataSource

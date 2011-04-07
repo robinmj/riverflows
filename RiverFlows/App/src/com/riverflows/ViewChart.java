@@ -29,7 +29,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.riverflows.data.Favorite;
-import com.riverflows.data.Forecast;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
@@ -168,18 +167,7 @@ public class ViewChart extends Activity {
     		this.variable = displayedSeries.getVariable();
     	}
 
-        
-        int readingIndex = displayedSeries.getReadings().size() - 1;
-        Reading mostRecentReading = null;
-        
-        //get the last non-forecasted reading
-        do {
-        	if(readingIndex < 0) {
-        		break;
-        	}
-        	mostRecentReading = displayedSeries.getReadings().get(readingIndex--);
-        } while(mostRecentReading instanceof Forecast);
-        
+        Reading mostRecentReading = DataSourceController.getLastObservation(displayedSeries);
         
         Date mostRecentReadingTime = mostRecentReading.getDate();
         

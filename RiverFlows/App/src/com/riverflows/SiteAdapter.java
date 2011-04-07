@@ -15,14 +15,21 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Filter;
 import android.widget.Filterable;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.SiteData;
+import com.riverflows.wsclient.AHPSXmlDataSource;
+import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.DataSourceController;
+import com.riverflows.wsclient.UsgsCsvDataSource;
 
 public class SiteAdapter extends BaseAdapter implements Filterable {
+	
+	public static final String TAG = SiteAdapter.class.getSimpleName();
+	
     private LayoutInflater inflater;
     private List<SiteData> stations;
     private List<SiteData> displayedStations;
@@ -86,6 +93,7 @@ public class SiteAdapter extends BaseAdapter implements Filterable {
             holder = new ViewHolder();
             holder.text = (TextView) convertView.findViewById(R.id.list_item_txt);
             holder.subtext = (TextView) convertView.findViewById(R.id.subtext);
+            holder.agencyIcon = (ImageView)convertView.findViewById(R.id.agencyIcon);
 
             convertView.setTag(holder);
         } else {
@@ -97,6 +105,18 @@ public class SiteAdapter extends BaseAdapter implements Filterable {
         // Bind the data efficiently with the holder.
         holder.station = this.displayedStations.get(position);
         holder.text.setText(holder.station.getSite().getName());
+        String siteAgency = holder.station.getSite().getAgency();
+        holder.agencyIcon.setVisibility(View.VISIBLE);
+        if(UsgsCsvDataSource.AGENCY.equals(siteAgency)) {
+            holder.agencyIcon.setImageResource(R.drawable.usgs);
+        } else if(AHPSXmlDataSource.AGENCY.equals(siteAgency)) {
+            holder.agencyIcon.setImageResource(R.drawable.ahps);
+        } else if(CODWRDataSource.AGENCY.equals(siteAgency)) {
+            holder.agencyIcon.setImageResource(R.drawable.codwr);
+        } else {
+        	Log.e(TAG, "no icon for agency: " + siteAgency);
+            holder.agencyIcon.setVisibility(View.GONE);
+        }
         
         //display the last reading for this site, if present
         Series flowSeries = DataSourceController.getPreferredSeries(holder.station);
@@ -112,7 +132,24 @@ public class SiteAdapter extends BaseAdapter implements Filterable {
             		holder.subtext.setText(lastReading.getQualifiers());
         		}
         	} else {
-        		holder.subtext.setText(lastReading.getValue().intValue() + " " + flowSeries.getVariable().getUnit());
+        		String readingStr = null;
+        		
+        		if(lastReading.getValue() >= 100.0d) {
+        			//round down to the nearest whole number, drop the trailing zero
+        			readingStr = lastReading.getValue().intValue() + " ";
+        		} else {
+            		//round down to 4 significant figures
+        			int sigfigs = 4;
+            		double value = lastReading.getValue();
+            		double magnitude = Math.pow(10, sigfigs - Math.ceil(Math.log10(Math.abs(value))));
+            		value = Math.floor(value * magnitude);
+            		value = value / magnitude;
+        			
+            		//drop the trailing zero if it is not a significant figure
+            		readingStr = ((value >= Math.log10(sigfigs - 1)) ? (int)value : value) + " ";
+        		}
+        		
+        		holder.subtext.setText(readingStr + flowSeries.getVariable().getUnit());
         	}
         
         	//TODO come up with a better way of conveying a stale reading
@@ -132,15 +169,15 @@ public class SiteAdapter extends BaseAdapter implements Filterable {
 			return null;
 		
 		if(s.getReadings() == null) {
-			Log.e(getClass().getSimpleName(), "null readings");
+			Log.e(TAG, "null readings");
 			return null;
 		}
 		
 		try {
-			Reading lastReading = s.getReadings().get(0);
+			Reading lastReading = DataSourceController.getLastObservation(s);
 			
 			if(lastReading == null) {
-				Log.e(getClass().getSimpleName(), "null reading");
+				Log.e(TAG, "null reading");
 				return null;
 			}
 			
@@ -218,5 +255,6 @@ public class SiteAdapter extends BaseAdapter implements Filterable {
     	SiteData station;
         TextView text;
         TextView subtext;
+        ImageView agencyIcon;
     }
 }
