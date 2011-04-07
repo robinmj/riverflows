@@ -34,6 +34,8 @@ import com.riverflows.data.Variable.CommonVariable;
 public class CODWRDataSource implements RESTDataSource {
 	private static final Log LOG = LogFactory.getLog(CODWRDataSource.class);
 	
+	public static final String AGENCY = "CODWR";
+	
 	public static final Variable VTYPE_STREAMFLOW_CFS = new Variable(CommonVariable.STREAMFLOW_CFS,"DISCHRG", -99999d);
 	public static final Variable VTYPE_STREAMFLOW_CFS_1 = new Variable(CommonVariable.STREAMFLOW_CFS,"DISCHRG1", -99999d);
 	public static final Variable VTYPE_STREAMFLOW_CFS_2 = new Variable(CommonVariable.STREAMFLOW_CFS,"DISCHRG2", -99999d);
@@ -78,7 +80,7 @@ public class CODWRDataSource implements RESTDataSource {
 	private TimeZone codwrTimeZone = TimeZone.getTimeZone("America/Denver");
 	
 	public String getAgency() {
-		return "CODWR";
+		return AGENCY;
 	}
 	
 	public Variable getVariable(String id) {

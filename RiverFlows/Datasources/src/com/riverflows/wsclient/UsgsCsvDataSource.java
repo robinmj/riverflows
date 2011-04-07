@@ -39,6 +39,8 @@ public class UsgsCsvDataSource implements RESTDataSource {
 	
 	private static final Log LOG = LogFactory.getLog(UsgsCsvDataSource.class);
 	
+	public static final String AGENCY = "USGS";
+	
 	public static final Variable VTYPE_STREAMFLOW_CFS = new Variable(CommonVariable.STREAMFLOW_CFS, "00060", -99999d);
 	public static final Variable VTYPE_GAUGE_HEIGHT_FT = new Variable(CommonVariable.GAUGE_HEIGHT_FT, "00065", -99999d);
 	public static final Variable VTYPE_GAUGE_HEIGHT_ABOVE_DATUM_M = new Variable(CommonVariable.GAUGE_HEIGHT_ABOVE_DATUM_M, "99065", -99999d);//Gage height, above datum, m
@@ -115,7 +117,7 @@ public class UsgsCsvDataSource implements RESTDataSource {
 		VTYPE_DCP_SIGNAL_MODULATION_INDEX_DB};
 	
 	public String getAgency() {
-		return "USGS";
+		return AGENCY;
 	}
 	
 	public Variable getVariable(String id) {

@@ -45,6 +45,8 @@ import com.riverflows.data.Variable.CommonVariable;
 public class AHPSXmlDataSource implements RESTDataSource {
 	private static final Log LOG = LogFactory.getLog(AHPSXmlDataSource.class);
 	
+	public static final String AGENCY = "AHPS";
+	
 	public static final Variable VTYPE_FLOW = new Variable(CommonVariable.STREAMFLOW_CFS, "Flow", -999999.0d);
 	public static final Variable VTYPE_STAGE = new Variable(CommonVariable.GAUGE_HEIGHT_FT, "Stage", -999999.0d);
 	
@@ -61,7 +63,7 @@ public class AHPSXmlDataSource implements RESTDataSource {
 
 	@Override
 	public String getAgency() {
-		return "AHPS";
+		return AGENCY;
 	}
 	
 	public Variable getVariable(String id) {
