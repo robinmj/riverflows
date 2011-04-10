@@ -43,6 +43,11 @@ public class AHPSXmlDataSourceTest extends TestCase {
 		assertEquals(satsop.getSupportedVariables().length, result.getSite().getSupportedVariables().length);
 		assertTrue(Arrays.equals(satsop.getSupportedVariables(), result.getSite().getSupportedVariables()));
 		
+		System.out.println(result.getDataInfo());
+		
+		assertTrue(result.getDataInfo().contains("Forecast data shown here are guidance values only. Please refer to your local NWS office for the latest official public river forecasts."));
+		assertTrue(result.getDataInfo().contains("Satsop (satw1)"));
+		
 		GregorianCalendar cal = new GregorianCalendar();
 		cal.set(2011, 2, 9, 0, 0, 0);
 		cal.set(Calendar.MILLISECOND, 0);

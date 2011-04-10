@@ -210,6 +210,8 @@ public class AHPSXmlDataSource implements RESTDataSource {
 	}
 	
 	private class AHPSXmlParser implements ContentHandler {
+		public static final String EN_DISCLAIMERS = "disclaimers";
+		public static final String EN_STANDING = "standing";
 		public static final String EN_OBSERVED = "observed";
 		public static final String EN_FORECAST = "forecast";
 		public static final String EN_DATUM = "datum";
@@ -239,6 +241,7 @@ public class AHPSXmlDataSource implements RESTDataSource {
 		private Reading curSecondaryReading;
 		private boolean inObservedSeries = false;
 		private boolean inForecastSeries = false;
+		private boolean inDisclaimer = false;
 		
 		public AHPSXmlParser(Site site, String srcUrl) {
 			this.srcUrl = srcUrl;
@@ -253,11 +256,13 @@ public class AHPSXmlDataSource implements RESTDataSource {
 		public void startElement(String uri, String localName, String qName,
 				Attributes atts) throws SAXException {
 			curElement = localName;
-			if(!(inForecastSeries || inObservedSeries)) {
+			if(!(inForecastSeries || inObservedSeries || inDisclaimer)) {
 				if(curElement.equals(EN_OBSERVED)) {
 					inObservedSeries = true;
 				} else if(curElement.equals(EN_FORECAST)) {
 					inForecastSeries = true;
+				} else if(curElement.equals(EN_DISCLAIMERS)) {
+					inDisclaimer = true;
 				}
 				return;
 			}
@@ -330,13 +335,19 @@ public class AHPSXmlDataSource implements RESTDataSource {
 		@Override
 		public void characters(char[] ch, int start, int length)
 				throws SAXException {
-			//we're only interested in characters if we're going to collect a reading
-			if(curPrimaryReading == null) {
-				return;
-			}
-			if(curSecondaryReading == null) {
-				LOG.error("secondary reading not initialized!? Ignoring datum");
-				return;
+			//make sure we're in an element whose value we care about
+			if(!inDisclaimer) {
+				if(curPrimaryReading == null) {
+					return;
+				}
+				if(curSecondaryReading == null) {
+					LOG.error("secondary reading not initialized!? Ignoring datum");
+					return;
+				}
+			} else {
+				if(!curElement.equals(EN_STANDING)) {
+					return;
+				}
 			}
 			
 			if(curStr == null) {
@@ -407,6 +418,22 @@ public class AHPSXmlDataSource implements RESTDataSource {
 						return;
 					}
 				}
+			}
+			
+			if(inDisclaimer) {
+				if(localName.equals(EN_STANDING)  && curStr != null) {
+					StringBuilder info = new StringBuilder();
+					info.append("<h2>" + resultData.getSite().getName() + " (" + resultData.getSite().getId() + ")</h2>");
+					info.append("<p>url: " + srcUrl + "</p>");
+					info.append("<h4>Source: <a href=\"http://water.weather.gov/ahps/\">NOAA Advanced Hydrologic Prediction Service</a></h4>");
+					info.append("<p><b>" + curStr.trim() + "</b></p>");
+					
+					resultData.setDataInfo(info.toString());
+					curStr = null;
+				} else if(localName.equals(EN_DISCLAIMERS)) {
+					inDisclaimer = false;
+				}
+				return;
 			}
 			
 			//when leaving certain elements, set flags so that data collection stops until we hit another target element

@@ -33,13 +33,7 @@ public class FileHttpClientWrapper implements HttpClientWrapper {
 			IOException {
 		String requestUrl = getCmd.getURI().toString();
 		
-		if(!requestUrl.startsWith(baseUrl)) {
-			throw new IllegalArgumentException("url not supported by this mock http client: " + requestUrl);
-		}
-		
-		requestUrl = requestUrl.substring(this.baseUrl.length());
-		
-		File responseFile = new File(sourceDir, requestUrl);
+		File responseFile = new File(sourceDir, getFileName(requestUrl));
 		
 		if(!responseFile.exists()) {
 			LOG.error("no such file: " + responseFile);
@@ -58,5 +52,13 @@ public class FileHttpClientWrapper implements HttpClientWrapper {
 		response.setEntity(new InputStreamEntity(new FileInputStream(responseFile), responseFile.length()));
 		
 		return response;
+	}
+	
+	public String getFileName(String requestUrl) {
+		if(!requestUrl.startsWith(baseUrl)) {
+			throw new IllegalArgumentException("url not supported by this mock http client: " + requestUrl);
+		}
+		
+		return requestUrl.substring(this.baseUrl.length());
 	}
 }

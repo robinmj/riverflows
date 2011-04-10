@@ -29,6 +29,10 @@ public class UsgsCsvDataSourceTest extends TestCase {
 		
 		SiteData result = src.getSiteData(mfFlathead,  mfFlatheadVars);
 		
+		System.out.println(result.getDataInfo());
+		assertTrue(result.getDataInfo().contains(mfFlathead.getSiteId().getId()));
+		assertTrue(result.getDataInfo().contains(mfFlathead.getName()));
+		
 		GregorianCalendar cal = new GregorianCalendar();
 		cal.set(2011, 2, 5, 9, 45, 0);
 		cal.set(Calendar.MILLISECOND, 0);

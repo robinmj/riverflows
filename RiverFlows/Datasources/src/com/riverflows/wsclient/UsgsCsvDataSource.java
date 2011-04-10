@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -268,19 +267,9 @@ public class UsgsCsvDataSource implements RESTDataSource {
 			HttpResponse response = httpClientWrapper.doGet(getCmd);
 			contentInputStream = response.getEntity().getContent();
 			bufferedStream = new BufferedInputStream(contentInputStream, 8192);
-			data = parse(sites, variables, bufferedStream);
+			data = parse(sites, variables, bufferedStream, urlStr);
 			
-			if(LOG.isDebugEnabled()) LOG.debug("loaded site data in " + (System.currentTimeMillis() - startTime) + "ms");
-
-			//set the source URL for all datasets
-			Collection<SiteData> collectedSiteData = data.values();
-			Collection<Series> siteDatasets;
-			for(SiteData currentSiteData:collectedSiteData) {
-				siteDatasets = currentSiteData.getDatasets().values();
-				for(Series currentSeries: siteDatasets) {
-					currentSeries.setSourceUrl(urlStr);
-				}
-			}
+			if(LOG.isInfoEnabled()) LOG.info("loaded site data in " + (System.currentTimeMillis() - startTime) + "ms");
 			
 		} finally {
 			try {
@@ -303,7 +292,7 @@ public class UsgsCsvDataSource implements RESTDataSource {
 		"tz_cd"
 	};
 	
-	private Map<SiteId,SiteData> parse(Site[] sites, Variable[] variables, InputStream s) throws IOException {
+	private Map<SiteId,SiteData> parse(Site[] sites, Variable[] variables, InputStream s, String sourceUrl) throws IOException {
 
 		HashMap<SiteId,SiteData> siteDataMap = new HashMap<SiteId,SiteData>();
 		
@@ -311,13 +300,45 @@ public class UsgsCsvDataSource implements RESTDataSource {
 		
 		String line;
 		
-		//find the header line
-		do {
+		StringBuilder dataInfo = new StringBuilder();
+		dataInfo.append("<h3>Notes From Data Source</h3>");
+		dataInfo.append("<div><strong>Warning:</strong>");
+		
+		//find the header line, save boilerplate comment
+		 while(true) {
 			line = ds.readLine();
 			if(line == null) {
 				throw new RuntimeException("unexpected EOF");
 			}
-		} while(line.trim().startsWith("#"));
+			if(!line.trim().startsWith("#")) {
+				break;
+			}
+			
+			if(line.startsWith("# ------")) {
+				dataInfo.append("<hr/>");
+				continue;
+			}
+			//put heavily indented info on its own line
+			if(line.startsWith("#    ")) {
+				dataInfo.append("<p>" + line.substring(5) + "</p>");
+				continue;
+			}
+			//put label: value info on its own line
+			if(line.contains(":")) {
+				dataInfo.append("<p>" + line.substring(1) + "</p>");
+				continue;
+			}
+			
+			if(line.trim().equals("#")) {
+				dataInfo.append("<br/>");
+				continue;
+			}
+			
+			dataInfo.append(line.substring(1));
+		}
+		
+		dataInfo.append("</div>");
+		dataInfo.append("<p>url: " + sourceUrl + "</p>");
 		
 		if(LOG.isDebugEnabled()) LOG.debug( "boilerplate end");
 		
@@ -343,7 +364,7 @@ public class UsgsCsvDataSource implements RESTDataSource {
 				if(LOG.isDebugEnabled()) LOG.debug( "found site header");
 				
 				titleOrder = new ArrayList<String>();
-				currentSiteData = parseHeaders(variables, line, titleOrder);
+				currentSiteData = parseHeaders(variables, line, titleOrder, sourceUrl, dataInfo.toString());
 				
 				//changing sites, ergo changing timezones
 				valueDateFormat = null;
@@ -446,7 +467,7 @@ public class UsgsCsvDataSource implements RESTDataSource {
 		return siteDataMap;
 	}
 	
-	private SiteData parseHeaders(Variable[] variables, String headerLine, List<String> titleOrder) {
+	private SiteData parseHeaders(Variable[] variables, String headerLine, List<String> titleOrder, String sourceUrl, String dataInfo) {
 		String[] headers = headerLine.split("\t");
 		if(headers.length <= EXPECTED_COLUMNS.length) {
 			throw new DataParseException("missing reading column(s)");
@@ -460,6 +481,7 @@ public class UsgsCsvDataSource implements RESTDataSource {
 		}
 		
 		SiteData currentSiteData = new SiteData();
+		currentSiteData.setDataInfo(dataInfo);
 		
 		//get variable types
 		for(; a < headers.length; a++) {
@@ -490,6 +512,7 @@ public class UsgsCsvDataSource implements RESTDataSource {
 			Series s = new Series();
 			s.setVariable(v);
 			s.setReadings(new ArrayList<Reading>());
+			s.setSourceUrl(sourceUrl);
 			currentSiteData.getDatasets().put(v.getCommonVariable(), s);
 		}
 		

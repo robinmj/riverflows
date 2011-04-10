@@ -23,6 +23,7 @@ public class SiteData {
 	
 	private Site site;
 	private Map<CommonVariable,Series> datasets = new HashMap<CommonVariable, Series>();
+	private String dataInfo;
 
 	/**
 	 * return datasets variable type -> series mappings
@@ -42,5 +43,16 @@ public class SiteData {
 	@Override
 	public String toString() {
 		return site.toString();
+	}
+
+	/**
+	 * @return HTML snippet describing this data
+	 */
+	public String getDataInfo() {
+		return dataInfo;
+	}
+
+	public void setDataInfo(String dataInfo) {
+		this.dataInfo = dataInfo;
 	}
 }

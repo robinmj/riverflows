@@ -8,7 +8,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
@@ -118,15 +117,15 @@ public class CODWRDataSource implements RESTDataSource {
 				continue;
 			}
 			
-			Map<SiteId,SiteData> newdata = getSiteData(favorite.getSite(), variables, 3, new Date(), null);
+			SiteData newdata = getSiteData(favorite.getSite(), variables, 3, new Date(), null);
 			
 			SiteData existingData = result.get(favorite.getSite().getSiteId());
 			
 			if(existingData != null) {
-				Map<CommonVariable, Series> newDataSets = newdata.get(favorite.getSite().getSiteId()).getDatasets();
+				Map<CommonVariable, Series> newDataSets = newdata.getDatasets();
 				existingData.getDatasets().putAll(newDataSets);
 			} else {
-				result.putAll(newdata);
+				result.put(favorite.getSite().getSiteId(), newdata);
 			}
 		}
 		return result;
@@ -151,15 +150,11 @@ public class CODWRDataSource implements RESTDataSource {
 			variableTypes = trimmedVarTypes;
 		}
 		
-		Map<SiteId,SiteData> result = getSiteData(site, variableTypes, 1, startDate.getTime(), new Date());
-		if(result == null) {
-			return null;
-		}
-		return result.get(site.getSiteId());
+		return getSiteData(site, variableTypes, 1, startDate.getTime(), new Date());
 	}
 	
 
-	public Map<SiteId,SiteData> getSiteData(Site site, Variable[] variableTypes, int interval, Date startDate, Date endDate) throws ClientProtocolException, IOException {
+	public SiteData getSiteData(Site site, Variable[] variableTypes, int interval, Date startDate, Date endDate) throws ClientProtocolException, IOException {
 
 		String[] variableIds = new String[variableTypes.length];
 		for(int a = 0; a < variableIds.length; a++) {
@@ -180,11 +175,11 @@ public class CODWRDataSource implements RESTDataSource {
 		return getSiteData(site, variableTypes, sourceUrl);
 	}
 	
-	private Map<SiteId,SiteData> getSiteData(Site site, Variable[] variables, String urlStr) throws ClientProtocolException, IOException {
+	private SiteData getSiteData(Site site, Variable[] variables, String urlStr) throws ClientProtocolException, IOException {
 		
 		if(LOG.isInfoEnabled()) LOG.info("site data URL: " + urlStr);
 		
-		Map<SiteId,SiteData> data = null;
+		SiteData data = null;
 		
 		InputStream contentInputStream = null;
 		BufferedInputStream bufferedStream = null;
@@ -196,19 +191,9 @@ public class CODWRDataSource implements RESTDataSource {
 			HttpResponse response = httpClientWrapper.doGet(getCmd);
 			contentInputStream = response.getEntity().getContent();
 			bufferedStream = new BufferedInputStream(contentInputStream, 8192);
-			data = parse(site, variables, bufferedStream);
+			data = parse(site, variables, bufferedStream, urlStr);
 			
-			if(LOG.isDebugEnabled()) LOG.debug("loaded site data in " + (System.currentTimeMillis() - startTime) + "ms");
-			
-			//set the source URL for all datasets
-			Collection<SiteData> collectedSiteData = data.values();
-			Collection<Series> siteDatasets;
-			for(SiteData currentSiteData:collectedSiteData) {
-				siteDatasets = currentSiteData.getDatasets().values();
-				for(Series currentSeries: siteDatasets) {
-					currentSeries.setSourceUrl(urlStr);
-				}
-			}
+			if(LOG.isInfoEnabled()) LOG.info("loaded site data in " + (System.currentTimeMillis() - startTime) + "ms");
 			
 		} finally {
 			try {
@@ -229,21 +214,64 @@ public class CODWRDataSource implements RESTDataSource {
 		"Date/Time"
 	};
 	
-	private Map<SiteId,SiteData> parse(Site site, Variable[] variables, InputStream s) throws IOException {
-
-		HashMap<SiteId,SiteData> siteDataMap = new HashMap<SiteId,SiteData>();
+	/**
+	 * @param site
+	 * @param variables
+	 * @param s
+	 * @param sourceUrl
+	 * @return
+	 * @throws IOException
+	 */
+	private SiteData parse(Site site, Variable[] variables, InputStream s, String sourceUrl) throws IOException {
 		
 		DataInputStream ds = new DataInputStream(s);
 		
 		String line;
+		String trimmedLine;
 		
-		//find the header line
-		do {
+		StringBuilder dataInfo = new StringBuilder();
+		dataInfo.append("<h2>" + site.getName() + " (" + site.getId() + ")</h2>");
+		dataInfo.append("<h3>Notes From Data Source</h3>");
+		dataInfo.append("<div><strong>Provisional Data</strong>");
+		
+		//find the header line, save boilerplate comment
+		 while(true) {
 			line = ds.readLine();
 			if(line == null) {
 				throw new RuntimeException("unexpected EOF");
 			}
-		} while(line.trim().startsWith("#"));
+			trimmedLine = line.trim();
+			if(!trimmedLine.startsWith("#")) {
+				break;
+			}
+
+			if(line.startsWith("#------")) {
+				dataInfo.append("<hr/>");
+				continue;
+			}
+			
+			if(trimmedLine.length() == 1) {
+				dataInfo.append("<br/>");
+				continue;
+			}
+			
+			//put label: value info on its own line
+			int colonLoc = line.indexOf(":");
+			if(colonLoc >= 0) {
+				//avoid mistaking URLs for label: value pairs
+				int urlLoc = line.indexOf("http:");
+				if(urlLoc == -1 || colonLoc < urlLoc) {
+					dataInfo.append("<p>" + line.substring(1) + "</p>");
+					continue;
+				}
+			}
+
+			dataInfo.append(" ");
+			dataInfo.append(line.substring(1));
+		}
+
+		dataInfo.append("</div>");
+		dataInfo.append("<p>url: " + sourceUrl + "</p>");
 		
 		SiteData currentSiteData = null;
 		List<String> titleOrder = null;
@@ -254,7 +282,9 @@ public class CODWRDataSource implements RESTDataSource {
 			}
 			if(line.startsWith(EXPECTED_COLUMNS[0])) {
 				titleOrder = new ArrayList<String>();
-				currentSiteData = parseHeaders(variables, line, titleOrder);
+				currentSiteData = parseHeaders(variables, line, titleOrder, sourceUrl);
+				currentSiteData.setSite(site);
+				currentSiteData.setDataInfo(dataInfo.toString());
 				continue;
 			}
 			
@@ -266,9 +296,9 @@ public class CODWRDataSource implements RESTDataSource {
 			
 			String siteId = values[0];
 			
-			currentSiteData.setSite(site);
-
-			siteDataMap.put(new SiteId(getAgency(), siteId), currentSiteData);
+			if(!siteId.equals(site.getSiteId().getId())) {
+				throw new DataParseException("expected site: " + site.getSiteId().getId() + " found: " + siteId);
+			}
 			
 			String readingTimeStr = values[1];
 			
@@ -303,10 +333,10 @@ public class CODWRDataSource implements RESTDataSource {
 			}
 		}while((line = ds.readLine()) != null);
 		
-		return siteDataMap;
+		return currentSiteData;
 	}
 	
-	private SiteData parseHeaders(Variable[] variables, String headerLine, List<String> titleOrder) {
+	private SiteData parseHeaders(Variable[] variables, String headerLine, List<String> titleOrder, String sourceUrl) {
 		String[] headers = headerLine.split("\t");
 		if(headers.length <= EXPECTED_COLUMNS.length) {
 			throw new DataParseException("missing reading column(s)");
@@ -337,6 +367,7 @@ public class CODWRDataSource implements RESTDataSource {
 			Series s = new Series();
 			s.setVariable(v);
 			s.setReadings(new ArrayList<Reading>());
+			s.setSourceUrl(sourceUrl);
 			currentSiteData.getDatasets().put(v.getCommonVariable(), s);
 		}
 		
