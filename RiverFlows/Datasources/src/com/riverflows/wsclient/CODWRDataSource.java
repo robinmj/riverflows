@@ -231,7 +231,6 @@ public class CODWRDataSource implements RESTDataSource {
 		
 		StringBuilder dataInfo = new StringBuilder();
 		dataInfo.append("<h2>" + site.getName() + " (" + site.getId() + ")</h2>");
-		dataInfo.append("<h3>Notes From Data Source</h3>");
 		dataInfo.append("<div><strong>Provisional Data</strong>");
 		
 		//find the header line, save boilerplate comment

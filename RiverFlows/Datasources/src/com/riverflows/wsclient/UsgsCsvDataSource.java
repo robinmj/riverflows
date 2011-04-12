@@ -301,7 +301,6 @@ public class UsgsCsvDataSource implements RESTDataSource {
 		String line;
 		
 		StringBuilder dataInfo = new StringBuilder();
-		dataInfo.append("<h3>Notes From Data Source</h3>");
 		dataInfo.append("<div><strong>Warning:</strong>");
 		
 		//find the header line, save boilerplate comment
