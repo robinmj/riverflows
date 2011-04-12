@@ -9,33 +9,28 @@ import android.view.MenuItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-import com.riverflows.data.Site;
-
-public class OriginalData extends Activity {
+public class DataSrcInfo extends Activity {
 	
-	public static final String KEY_SITE = "site";
-	public static final String KEY_SOURCE_URL = "srcUrl";
+	public static final String KEY_INFO = "info";
 	
 	private WebView webview;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		setTitle("Data Source Info");
 
 		Bundle extras = getIntent().getExtras();
-
-        Site site = (Site)extras.get(KEY_SITE);
-        String sourceUrl = (String)extras.get(KEY_SOURCE_URL);
 		
-		setTitle(sourceUrl);
+        String info = (String)extras.get(KEY_INFO);
 		
 		webview = new WebView(this);
 		setContentView(webview);
         WebSettings webSettings = webview.getSettings();
-        webSettings.setAllowFileAccess(false);
         webSettings.setJavaScriptEnabled(true);
         
-		webview.loadUrl(sourceUrl);
+		webview.loadData(info, "text/html", "UTF-8");
 	}
     
     public boolean onCreateOptionsMenu(Menu menu) {

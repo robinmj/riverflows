@@ -14,8 +14,4 @@
     android:title="Other Measurements"
     android:icon="@drawable/ic_menu_measurements"
     android:visible="false"/>
-  <item android:id="@+id/mi_primary_source"
-    android:title="Primary Source"
-    android:icon="@drawable/ic_menu_info_details"
-    android:visible="false"/>
 </menu>

@@ -20,13 +20,14 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Reading;
@@ -36,8 +37,11 @@ import com.riverflows.data.SiteData;
 import com.riverflows.data.Variable;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.view.HydroGraph;
+import com.riverflows.wsclient.AHPSXmlDataSource;
+import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.DataParseException;
 import com.riverflows.wsclient.DataSourceController;
+import com.riverflows.wsclient.UsgsCsvDataSource;
 
 /**
  * Experimenting with using AChartEngine for displaying the hydrograph
@@ -73,6 +77,16 @@ public class ViewChart extends Activity {
     		} else {
     			FavoritesDaoImpl.deleteFavorite(getApplicationContext(), ViewChart.this.station.getSiteId(), ViewChart.this.variable);
     		}
+    	}
+    }
+    
+    private class DataSrcInfoButtonListener implements OnClickListener {
+    	@Override
+    	public void onClick(View v) {
+			Intent viewOriginalData = new Intent(ViewChart.this, DataSrcInfo.class);
+			viewOriginalData.putExtra(DataSrcInfo.KEY_INFO, ViewChart.this.data.getDataInfo());
+			startActivity(viewOriginalData);
+	        return;
     	}
     }
 
@@ -141,6 +155,27 @@ public class ViewChart extends Activity {
             progressBar.setVisibility(View.GONE);
             initContingencyFavoriteBtn(favoriteBtn);
             return;
+		}
+		
+		String siteAgency = this.data.getSite().getAgency();
+		
+		ImageView dataSrcInfoButton = (ImageView)findViewById(R.id.dataSrcInfoB);
+		
+		if(ViewChart.this.data.getDataInfo() != null) {
+			dataSrcInfoButton.setVisibility(View.VISIBLE);
+			dataSrcInfoButton.setOnClickListener(new DataSrcInfoButtonListener());
+	        if(UsgsCsvDataSource.AGENCY.equals(siteAgency)) {
+	        	dataSrcInfoButton.setImageResource(R.drawable.usgs);
+	        } else if(AHPSXmlDataSource.AGENCY.equals(siteAgency)) {
+	        	dataSrcInfoButton.setImageResource(R.drawable.ahps);
+	        } else if(CODWRDataSource.AGENCY.equals(siteAgency)) {
+	        	dataSrcInfoButton.setImageResource(R.drawable.codwr);
+	        } else {
+	        	Log.e(TAG, "no icon for agency: " + siteAgency);
+	        	dataSrcInfoButton.setVisibility(View.GONE);
+	        }
+		} else {
+        	dataSrcInfoButton.setVisibility(View.GONE);
 		}
 		
 		Series displayedSeries = null;
@@ -321,21 +356,7 @@ public class ViewChart extends Activity {
         otherVarsItem.setVisible(true);
 		otherVarsItem.setEnabled(ViewChart.this.station.getSupportedVariables().length > 1);
 		
-		menu.findItem(R.id.mi_primary_source).setVisible(true);
-		
         return true;
-    }
-    
-    @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-    	MenuItem primarySourceItem = menu.findItem(R.id.mi_primary_source);
-	    try {
-	    	String sourceUrl = this.data.getDatasets().get(this.variable.getCommonVariable()).getSourceUrl();
-	    	primarySourceItem.setEnabled(sourceUrl != null);
-	    } catch(NullPointerException npe) {
-	    	primarySourceItem.setEnabled(false);
-	    }
-	    return true;
     }
 	
 	private class ErrorMsgDialog extends AlertDialog {
@@ -375,20 +396,6 @@ public class ViewChart extends Activity {
 		    	return true;
 	    	}
 	    	return false;
-	    case R.id.mi_primary_source:
-	    	String sourceUrl = null;
-	    	try {
-	    		sourceUrl = this.data.getDatasets().get(this.variable.getCommonVariable()).getSourceUrl();
-	    	} catch(NullPointerException npe) {
-				Toast.makeText(getApplicationContext(),  "Cannot view primary source if the data failed to load", Toast.LENGTH_LONG).show();
-				return true;
-	    	}
-	    	
-			Intent viewOriginalData = new Intent(this, OriginalData.class);
-			viewOriginalData.putExtra(OriginalData.KEY_SITE, this.station);
-			viewOriginalData.putExtra(OriginalData.KEY_SOURCE_URL, sourceUrl);
-			startActivity(viewOriginalData);
-	        return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
