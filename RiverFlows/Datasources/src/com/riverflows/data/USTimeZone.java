@@ -4,6 +4,8 @@ import java.util.TimeZone;
 
 public enum USTimeZone {
 	UTC("GMT+00:00"),
+	ADT("GMT-03:00"),
+	AST("GMT-04:00"),
 	EDT("GMT-04:00"),
 	EST("GMT-05:00"),
 	CDT("GMT-05:00"),
