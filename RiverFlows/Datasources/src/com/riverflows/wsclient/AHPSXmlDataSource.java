@@ -47,8 +47,8 @@ public class AHPSXmlDataSource implements RESTDataSource {
 	
 	public static final String AGENCY = "AHPS";
 	
-	public static final Variable VTYPE_FLOW = new Variable(CommonVariable.STREAMFLOW_CFS, "Flow", -999999.0d);
-	public static final Variable VTYPE_STAGE = new Variable(CommonVariable.GAUGE_HEIGHT_FT, "Stage", -999999.0d);
+	public static final Variable VTYPE_FLOW = new Variable(CommonVariable.STREAMFLOW_CFS, "Flow", -999000.0d);
+	public static final Variable VTYPE_STAGE = new Variable(CommonVariable.GAUGE_HEIGHT_FT, "Stage", -999000.0d);
 	
 	public static final String SITE_DATA_URL = "http://water.weather.gov/ahps2/hydrograph_to_xml.php?";
 	
@@ -206,6 +206,15 @@ public class AHPSXmlDataSource implements RESTDataSource {
 			}
 		}
 		
+		//ensure that dataInfo gets set even if there is no standing element
+		if(dataSource.resultData != null
+				&& dataSource.resultData.getDataInfo() == null
+				&& dataSource.resultData.getDatasets() != null
+				&& dataSource.resultData.getDatasets().size() > 0) {
+			String info = getDataInfo(site, dataSource.resultData.getDatasets().values().iterator().next().getSourceUrl(), null);
+			dataSource.resultData.setDataInfo(info);
+		}
+		
 		return dataSource.resultData;
 	}
 	
@@ -319,6 +328,11 @@ public class AHPSXmlDataSource implements RESTDataSource {
 				return null;
 			}
 			
+			//null out flag values
+			if(primaryVar.getMagicNullValue().equals(currentReading.getValue())) {
+				currentReading.setValue(null);
+			}
+			
 			Series result = resultData.getDatasets().get(primaryVar.getCommonVariable());
 			if(result == null) {
 				result = new Series();
@@ -422,13 +436,10 @@ public class AHPSXmlDataSource implements RESTDataSource {
 			
 			if(inDisclaimer) {
 				if(localName.equals(EN_STANDING)  && curStr != null) {
-					StringBuilder info = new StringBuilder();
-					info.append("<h2>" + resultData.getSite().getName() + " (" + resultData.getSite().getId() + ")</h2>");
-					info.append("<p>url: " + srcUrl + "</p>");
-					info.append("<h4>Source: <a href=\"http://water.weather.gov/ahps/\">NOAA Advanced Hydrologic Prediction Service</a></h4>");
-					info.append("<p><b>" + curStr.trim() + "</b></p>");
 					
-					resultData.setDataInfo(info.toString());
+					String info = getDataInfo(resultData.getSite(), srcUrl, curStr);
+					
+					resultData.setDataInfo(info);
 					curStr = null;
 				} else if(localName.equals(EN_DISCLAIMERS)) {
 					inDisclaimer = false;
@@ -493,7 +504,17 @@ public class AHPSXmlDataSource implements RESTDataSource {
 		@Override
 		public void skippedEntity(String name) throws SAXException {
 		}
-		
+	}
+	
+	private String getDataInfo(Site site, String srcUrl, String standing) {
+		StringBuilder info = new StringBuilder();
+		info.append("<h2>" + site.getName() + " (" + site.getId() + ")</h2>");
+		info.append("<p>url: " + srcUrl + "</p>");
+		info.append("<h4>Source: <a href=\"http://water.weather.gov/ahps/\">NOAA Advanced Hydrologic Prediction Service</a></h4>");
+		if(standing != null) {
+			info.append("<p><b>" + standing + "</b></p>");
+		}
+		return info.toString();
 	}
 	
 }

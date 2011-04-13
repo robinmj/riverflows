@@ -24,8 +24,45 @@ public class AHPSXmlDataSourceTest extends TestCase {
 		ds.setHttpClientWrapper(new MockAHPSHttpClient());
 	}
 	
+	public void testGetARGGP4() throws Throwable {
+		Site dosBocas = new Site(new SiteId(AHPSXmlDataSource.AGENCY,"argp4"),
+				"Lago Dos Bocas at Utuado", -11.1111d, 11.1111d, USState.PR,
+				AHPSXmlDataSource.ACCEPTED_VARIABLES);
+		SiteData result = ds.getSiteData(dosBocas,
+				null);
+		Series streamflowDataset = result.getDatasets().get(CommonVariable.STREAMFLOW_CFS);
+		
+		assertNotNull(result.getSite());
+		assertEquals(dosBocas.getKey(), result.getSite().getKey());
+		assertEquals(dosBocas.getId(), result.getSite().getId());
+		assertEquals(dosBocas.getAgency(), result.getSite().getAgency());
+		assertEquals(dosBocas.getName(), result.getSite().getName());
+		assertEquals(dosBocas.getLatitude(), result.getSite().getLatitude());
+		assertEquals(dosBocas.getLongitude(), result.getSite().getLongitude());
+		assertEquals(dosBocas.getState(), result.getSite().getState());
+		assertEquals(dosBocas.getSupportedVariables().length, result.getSite().getSupportedVariables().length);
+		assertTrue(Arrays.equals(dosBocas.getSupportedVariables(), result.getSite().getSupportedVariables()));
+		
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.set(2011, 3, 12, 7, 45, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		cal.setTimeZone(TimeZone.getTimeZone("GMT-00:00"));
+		
+		Reading r = streamflowDataset.getReadings().get(0);
+		assertEquals(cal.getTime(), r.getDate());
+		assertNull(r.getValue());
+		assertFalse(r instanceof Forecast);
+		
+		Series gaugeHeightDataset = result.getDatasets().get(CommonVariable.GAUGE_HEIGHT_FT);
+		
+		r = gaugeHeightDataset.getReadings().get(0);
+		assertEquals(cal.getTime(), r.getDate());
+		assertEquals(290.8d, r.getValue());
+		assertFalse(r instanceof Forecast);
+	}
+	
 	public void testGetSATW1() throws Throwable {
-		Site satsop = new Site(new SiteId("AHPS","satw1"),
+		Site satsop = new Site(new SiteId(AHPSXmlDataSource.AGENCY,"satw1"),
 				"Satsop", -123.493611d, 47.000833d, USState.WA,
 				AHPSXmlDataSource.ACCEPTED_VARIABLES);
 		SiteData result = ds.getSiteData(satsop,

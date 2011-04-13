@@ -1,0 +1,2415 @@
+<?xml version="1.0" standalone="yes"?>
+<site xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" generationtime="2011-04-12T15:09:04+00:00" timezone="GMT" originator="SJU" name="LAGO DOS BOCAS 6 NNE LAGO DOS BOCAS nr UTUADO" id="ARGP4" xsi:noNamespaceSchemaLocation="http://weather.gov/ohd/hydroxc/schemas/hydrogen/HydroGenData.xsd">
+  <sigstages>
+    <low/>
+    <action units="ft">295</action>
+    <bankfull/>
+    <flood/>
+    <moderate/>
+    <major/>
+    <record/>
+  </sigstages>
+  <sigflows>
+    <low/>
+    <action/>
+    <bankfull/>
+    <flood/>
+    <moderate/>
+    <major/>
+    <record/>
+  </sigflows>
+  <zerodatum units="ft MSL">326.92</zerodatum>
+  <rating/>
+  <alt_rating/>
+  <observed>
+    <datum>
+      <valid timezone="UTC">2011-04-12T07:45:00-00:00</valid>
+      <primary name="Stage" units="ft">290.8</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-12T07:30:00-00:00</valid>
+      <primary name="Stage" units="ft">290.8</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-12T06:45:00-00:00</valid>
+      <primary name="Stage" units="ft">290.78</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-12T06:30:00-00:00</valid>
+      <primary name="Stage" units="ft">290.78</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-12T06:15:00-00:00</valid>
+      <primary name="Stage" units="ft">290.77</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-12T06:00:00-00:00</valid>
+      <primary name="Stage" units="ft">290.77</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-12T05:45:00-00:00</valid>
+      <primary name="Stage" units="ft">290.76</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-12T05:30:00-00:00</valid>
+      <primary name="Stage" units="ft">290.76</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-12T05:15:00-00:00</valid>
+      <primary name="Stage" units="ft">290.75</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-12T05:00:00-00:00</valid>
+      <primary name="Stage" units="ft">290.75</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-12T04:45:00-00:00</valid>
+      <primary name="Stage" units="ft">290.75</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-12T04:15:00-00:00</valid>
+      <primary name="Stage" units="ft">290.73</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-12T04:00:00-00:00</valid>
+      <primary name="Stage" units="ft">290.73</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-12T03:45:00-00:00</valid>
+      <primary name="Stage" units="ft">290.73</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-12T03:30:00-00:00</valid>
+      <primary name="Stage" units="ft">290.72</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-12T03:15:00-00:00</valid>
+      <primary name="Stage" units="ft">290.71</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-12T00:45:00-00:00</valid>
+      <primary name="Stage" units="ft">290.88</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-12T00:30:00-00:00</valid>
+      <primary name="Stage" units="ft">290.92</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-12T00:15:00-00:00</valid>
+      <primary name="Stage" units="ft">290.96</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-12T00:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T23:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.04</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T23:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.09</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T23:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.13</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T23:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.18</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T22:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.2</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T22:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.19</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T22:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.19</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T22:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.18</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T21:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.17</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T21:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.17</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T21:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.16</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T21:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.16</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T20:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.16</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T20:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.15</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T20:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.14</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T20:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.15</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T19:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.13</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T19:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.13</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T19:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.13</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T19:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.12</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T18:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.11</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T18:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.1</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T18:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.13</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T18:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.17</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T17:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.21</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T17:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.25</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T17:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.29</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T17:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.33</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T16:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.38</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T16:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.41</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T16:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.45</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T16:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.5</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T15:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.54</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T15:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.59</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T15:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.59</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T15:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.58</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T14:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.57</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T14:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.57</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T14:29:00-00:00</valid>
+      <primary name="Stage" units="ft">291.57</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T14:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.56</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-11T14:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.56</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-10T22:31:00-00:00</valid>
+      <primary name="Stage" units="ft">291.27</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-10T08:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-10T08:30:00-00:00</valid>
+      <primary name="Stage" units="ft">290.99</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-10T08:15:00-00:00</valid>
+      <primary name="Stage" units="ft">290.99</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-10T08:00:00-00:00</valid>
+      <primary name="Stage" units="ft">290.98</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-10T07:45:00-00:00</valid>
+      <primary name="Stage" units="ft">290.98</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-10T07:30:00-00:00</valid>
+      <primary name="Stage" units="ft">290.97</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-10T07:15:00-00:00</valid>
+      <primary name="Stage" units="ft">290</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T22:31:00-00:00</valid>
+      <primary name="Stage" units="ft">291.42</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T09:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.86</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T09:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.85</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T09:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.85</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T09:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.84</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T08:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.84</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T08:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.83</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T08:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.83</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T08:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.82</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T06:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.8</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T06:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.79</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T06:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.79</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T06:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.78</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T05:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.78</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T05:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.78</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T05:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.77</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T05:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.76</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T03:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.74</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T03:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.73</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T03:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.73</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T03:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.72</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T02:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.72</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T02:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.71</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T02:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.71</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T02:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.7</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T01:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.69</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T01:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.69</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T01:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.69</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T00:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.68</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T00:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.67</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T00:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.67</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-09T00:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.67</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T22:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.64</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T22:31:00-00:00</valid>
+      <primary name="Stage" units="ft">291.63</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T22:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.63</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T22:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.63</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T22:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.62</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T21:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.62</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T21:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.61</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T19:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.58</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T19:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.57</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T19:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.57</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T19:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.56</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T18:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.56</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T18:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.55</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T18:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.55</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T18:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.54</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T17:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.54</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T17:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.53</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T17:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.53</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T17:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.52</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T16:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.52</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T16:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.51</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T16:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.51</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T16:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.5</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T13:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.46</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T13:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.45</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T13:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.44</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T13:11:00-00:00</valid>
+      <primary name="Stage" units="ft">291.44</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T13:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.44</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T12:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.43</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T12:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.43</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T12:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.42</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T12:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.42</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T11:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.42</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T11:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.41</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T11:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.4</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T11:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.4</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T05:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.29</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T05:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.29</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T05:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.28</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T05:12:00-00:00</valid>
+      <primary name="Stage" units="ft">291.28</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T05:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.28</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T04:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.27</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T04:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.27</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T04:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.26</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T04:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.26</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T03:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.25</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T03:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.25</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T03:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.24</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T03:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.23</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T02:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.23</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T02:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.22</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T02:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.21</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T02:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.2</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T00:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.14</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-08T00:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.12</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T23:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.08</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T23:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.07</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T23:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.06</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T22:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.05</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T22:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.04</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T22:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.04</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T22:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.04</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T21:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.03</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T21:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.03</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T21:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.02</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T21:11:00-00:00</valid>
+      <primary name="Stage" units="ft">291.02</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T21:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.01</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T20:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.01</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T20:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T20:15:00-00:00</valid>
+      <primary name="Stage" units="ft">290.99</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T20:00:00-00:00</valid>
+      <primary name="Stage" units="ft">290.98</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T19:45:00-00:00</valid>
+      <primary name="Stage" units="ft">290.98</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T19:30:00-00:00</valid>
+      <primary name="Stage" units="ft">290.97</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T19:15:00-00:00</valid>
+      <primary name="Stage" units="ft">290.97</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T19:00:00-00:00</valid>
+      <primary name="Stage" units="ft">290.96</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T18:45:00-00:00</valid>
+      <primary name="Stage" units="ft">290.99</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T18:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.04</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T18:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.08</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T18:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.12</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T17:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.16</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T17:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.2</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T17:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.24</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T17:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.29</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T16:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.33</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T16:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.37</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T16:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.42</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T16:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.45</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T15:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.49</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T15:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.53</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T11:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.98</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T11:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.98</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T11:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.97</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T11:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.97</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T10:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.96</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T10:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.96</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T10:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.95</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T10:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.95</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T09:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.94</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T09:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.94</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T09:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.93</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T09:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.92</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T08:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.92</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T08:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.91</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T06:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.88</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T06:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.87</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T06:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.86</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T06:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.86</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T05:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.85</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T05:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.85</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T05:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.84</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-07T05:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.83</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T23:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.04</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T23:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.03</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T23:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.02</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T23:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.02</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T22:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.01</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T22:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T22:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.99</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T22:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.98</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T21:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.97</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T21:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.97</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T21:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.96</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T21:12:00-00:00</valid>
+      <primary name="Stage" units="ft">291.96</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T21:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.95</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T05:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.61</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T05:10:00-00:00</valid>
+      <primary name="Stage" units="ft">291.6</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T02:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.55</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T02:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.54</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T02:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.54</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T02:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.53</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T01:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.53</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T01:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.52</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T01:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.52</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T01:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.51</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T00:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.5</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T00:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.5</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T00:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.49</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-06T00:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.49</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T22:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.46</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T22:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.45</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T22:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.45</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T22:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.44</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T21:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.44</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T21:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.43</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T21:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.43</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T21:09:00-00:00</valid>
+      <primary name="Stage" units="ft">291.45</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T21:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.42</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T20:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.42</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T20:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.41</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T20:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.41</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T20:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.4</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T19:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.4</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T19:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.39</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T19:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.38</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T19:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.38</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T18:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.37</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T18:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.36</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T18:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.35</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T18:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.34</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T17:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.34</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T17:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.35</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T17:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.35</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T17:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.35</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T16:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.34</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T16:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.33</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T16:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.33</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T16:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.32</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T15:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.31</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T15:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.31</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T15:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.31</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T15:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.3</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T14:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.29</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T14:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.29</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T14:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.28</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T14:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.28</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T05:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.08</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T05:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.07</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T05:09:00-00:00</valid>
+      <primary name="Stage" units="ft">291.06</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T05:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.06</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T04:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.05</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T04:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.04</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T04:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.04</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T04:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.03</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T03:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.03</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T03:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.02</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T03:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.01</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T03:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.01</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T02:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.01</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T01:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.01</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T01:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.05</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T01:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.1</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T01:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.16</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T00:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.2</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T00:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.25</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T00:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.3</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-05T00:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.36</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T23:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.4</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T23:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.45</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T23:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.5</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T23:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.54</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T22:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.55</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T22:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.54</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T22:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.54</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T12:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.58</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T12:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.57</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T12:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.56</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T12:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.55</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T11:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.55</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T11:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.54</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T11:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.53</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T11:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.52</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T10:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.51</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T10:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.5</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T10:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.49</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T10:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.48</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T09:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.47</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T09:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.44</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T06:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.33</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T06:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.31</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T06:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.3</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T06:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.28</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T05:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.26</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T05:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.24</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T05:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.22</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T05:09:00-00:00</valid>
+      <primary name="Stage" units="ft">292.19</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T05:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.19</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T02:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.97</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T02:30:00-00:00</valid>
+      <primary name="Stage" units="ft">291.96</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T02:15:00-00:00</valid>
+      <primary name="Stage" units="ft">291.95</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T02:00:00-00:00</valid>
+      <primary name="Stage" units="ft">291.94</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T01:45:00-00:00</valid>
+      <primary name="Stage" units="ft">291.96</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T01:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T01:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.05</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T01:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.1</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T00:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.15</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T00:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.19</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T00:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.24</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-04T00:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.29</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T23:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.34</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T23:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.38</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T23:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.44</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T23:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.47</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T21:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.46</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T21:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.45</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T21:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.45</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T21:09:00-00:00</valid>
+      <primary name="Stage" units="ft">292.45</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T21:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.44</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T20:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.44</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T20:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.43</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T20:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.43</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T20:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.42</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T19:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.42</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T19:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.41</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T19:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.41</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T19:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.4</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T18:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.4</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T18:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.4</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T18:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.38</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T18:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.39</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T17:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.38</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T17:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.38</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T17:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.37</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T17:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.37</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T15:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.33</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T15:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.32</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T15:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.31</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T14:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.31</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T14:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.31</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T14:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.3</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T13:09:00-00:00</valid>
+      <primary name="Stage" units="ft">292.28</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T09:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.22</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T09:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.21</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T09:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.21</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T09:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.2</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T08:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.2</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T07:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.17</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T07:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.17</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T07:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.16</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T07:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.16</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T06:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.15</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T06:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.15</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T06:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.14</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T06:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.14</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T04:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.11</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T04:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.11</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T04:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.1</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T04:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.1</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T03:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.09</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T03:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.08</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T03:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.08</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T02:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.07</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T02:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.06</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T02:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.06</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T00:45:00-00:00</valid>
+      <primary name="Stage" units="ft">292.26</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T00:30:00-00:00</valid>
+      <primary name="Stage" units="ft">292.31</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T00:15:00-00:00</valid>
+      <primary name="Stage" units="ft">292.36</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+    <datum>
+      <valid timezone="UTC">2011-04-03T00:00:00-00:00</valid>
+      <primary name="Stage" units="ft">292.41</primary>
+      <secondary name="Flow" units="kcfs">-999</secondary>
+      <pedts>HPIRG</pedts>
+    </datum>
+  </observed>
+  <forecast/>
+</site>
