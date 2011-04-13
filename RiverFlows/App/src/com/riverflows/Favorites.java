@@ -185,8 +185,17 @@ public class Favorites extends ListActivity {
 	 */
 	public void loadSites(boolean hardRefresh) {
 		showDialog(DIALOG_ID_LOADING);
+
+		List<SiteData> currentGauges = null;
+		
+		if(this.loadTask != null) {
+			currentGauges = this.loadTask.gauges;
+		}
 		
 		this.loadTask = new LoadSitesTask();
+		
+		//preserve existing gauges in case load fails
+		this.loadTask.gauges = currentGauges;
 		
 		if(hardRefresh) {
 			this.loadTask.execute(HARD_REFRESH);
