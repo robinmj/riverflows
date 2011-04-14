@@ -61,6 +61,7 @@ public class ViewChart extends Activity {
 	private Variable variable;
 	private LinearLayout chartLayout;
 	private HydroGraph chartView;
+	private GenerateDataSetTask runningTask = null;
 	SiteData data;
 	String errorMsg;
 
@@ -118,13 +119,20 @@ public class ViewChart extends Activity {
         
     	if(data == null) {
     		//make the request for site data
-    		new GenerateDataSetTask().execute(this.station);
+    		new GenerateDataSetTask(this).execute(this.station);
     	} else {
     		Object[] prevState = (Object[])data;
     		this.variable = (Variable)prevState[0];
     		this.data = (SiteData)prevState[1];
+    		this.runningTask = (GenerateDataSetTask)prevState[2];
+    		clearData();
+    		if(runningTask != null) {
+    			this.runningTask.setActivity(this);
+    		}
     		//use stored data instead
-    		displayData();
+    		if(this.data != null) {
+    			displayData();
+    		}
     	}
     }
     
@@ -140,7 +148,7 @@ public class ViewChart extends Activity {
     
     private void reloadData() {
         clearData();
-        new GenerateDataSetTask().execute(this.station);
+        new GenerateDataSetTask(this).execute(this.station);
     }
     
     private void displayData() {
@@ -263,7 +271,7 @@ public class ViewChart extends Activity {
     
     @Override
     public Object onRetainNonConfigurationInstance() {
-        return new Object[]{variable,data};
+        return new Object[]{variable,data,runningTask};
     }
 
     @Override
@@ -274,47 +282,58 @@ public class ViewChart extends Activity {
       }
     }
     
-    private class GenerateDataSetTask extends AsyncTask<Site, Integer, SiteData> {
+    private static class GenerateDataSetTask extends AsyncTask<Site, Integer, SiteData> {
     	
 		private String errorMsg = null;
+		private ViewChart activity;
+		private Variable variable;
+		private Site site;
     	
-    	public GenerateDataSetTask() {
+    	public GenerateDataSetTask(ViewChart activity) {
 			super();
+    		this.activity = activity;
+    		this.activity.runningTask = this;
+    		this.variable = this.activity.variable;
+    		this.site = this.activity.station;
 		}
+    	
+    	public void setActivity(ViewChart activity) {
+    		this.activity = activity;
+    	}
 
 		@Override
     	protected SiteData doInBackground(Site... params) {
     		Site station = params[0];
     		
             try {            	
-            	Variable[] variables = ViewChart.this.station.getSupportedVariables();
+            	Variable[] variables = site.getSupportedVariables();
         		if(variables.length == 0) {
-        			if(ViewChart.this.variable != null) {
-                		variables = new Variable[]{ViewChart.this.variable};
+        			if(variable != null) {
+                		variables = new Variable[]{variable};
                 	} else {
 	        			//TODO send user to update site
 	        			errorMsg = "Sorry, this version of RiverFlows doesn't support any of the gauges at '" + station.toString() + "'";
 	        			return null;
                 	}
-        		} else if(ViewChart.this.variable != null) {
+        		} else if(variable != null) {
         			//ensure that the specified variable comes first so it is
         			// guaranteed that the datasource will attempt to retrieve its data.
         			boolean found = false;
         			for(int a = 0; a < variables.length; a++) {
-        				if(variables[a].equals(ViewChart.this.variable)) {
+        				if(variables[a].equals(variable)) {
         					variables[a] = variables[0];
-        					variables[0] = ViewChart.this.variable;
+        					variables[0] = variable;
         					found = true;
         					break;
         				}
         			}
         			if(!found) {
-        				Log.e(TAG, "could not find " + ViewChart.this.variable.getId() + " in supported vars for " + ViewChart.this.station.getSiteId());
-        				variables = new Variable[]{ViewChart.this.variable};
+        				Log.e(TAG, "could not find " + variable.getId() + " in supported vars for " + site.getSiteId());
+        				variables = new Variable[]{variable};
         			}
             	}
             	
-                return DataSourceController.getSiteData(ViewChart.this.station, variables);
+                return DataSourceController.getSiteData(site, variables);
             } catch(UnknownHostException uhe) {
             	errorMsg = "Lost network connection.";
             	return null;
@@ -331,9 +350,10 @@ public class ViewChart extends Activity {
 		
 		@Override
 		protected void onPostExecute(SiteData result) {
-			ViewChart.this.errorMsg = errorMsg;
-			ViewChart.this.data = result;
-			ViewChart.this.displayData();
+			this.activity.errorMsg = errorMsg;
+			this.activity.data = result;
+			this.activity.displayData();
+			this.activity.runningTask = null;
 		}
     }
     
