@@ -18,7 +18,7 @@ public class Home extends TabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    
-	    //Logger.getLogger("").setLevel(Level.WARNING);
+	    Logger.getLogger("").setLevel(Level.WARNING);
 	    
 	    requestWindowFeature(Window.FEATURE_NO_TITLE);
 	    setContentView(R.layout.main);
