@@ -2,6 +2,7 @@ package com.riverflows.wsclient;
 
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TimeZone;
 
 import junit.framework.TestCase;
@@ -11,6 +12,7 @@ import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
+import com.riverflows.data.USTimeZone;
 import com.riverflows.data.Variable;
 import com.riverflows.data.Variable.CommonVariable;
 
@@ -71,5 +73,31 @@ public class UsgsCsvDataSourceTest extends TestCase {
 		assertEquals(cal.getTime(), r.getDate());
 		assertNull(r.getValue());
 		assertEquals("Eqp", r.getQualifiers());
+	}
+
+	
+	public void testGetEDTSite() throws Throwable {
+		Variable[] clinchVars = DataSourceController.getVariablesFromStrings("USGS", new String[]{"00010","00095", "00065","00060"});
+		Site clinch = new Site(new SiteId("USGS", "03524000"), "CLINCH RIVER AT CLEVELAND, VA", USState.MT,
+				clinchVars);
+		
+		SiteData result = src.getSiteData(clinch,  clinchVars);
+		
+		System.out.println(result.getDataInfo());
+		assertTrue(result.getDataInfo().contains(clinch.getSiteId().getId()));
+		assertTrue(result.getDataInfo().contains(clinch.getName()));
+		
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.set(2011, 3, 13, 20, 30, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		cal.setTimeZone(USTimeZone.MDT.getTimeZone());
+		System.out.println("Expected date: " + cal.getTime());
+		
+		List<Reading> gaugeHeightReadings = result.getDatasets().get(CommonVariable.GAUGE_HEIGHT_FT).getReadings();
+		
+		Reading r = gaugeHeightReadings.get(gaugeHeightReadings.size() - 1);
+		assertEquals(cal.getTime(), r.getDate());
+		assertEquals(4.58d, r.getValue());
+		assertNull(r.getQualifiers());
 	}
 }
