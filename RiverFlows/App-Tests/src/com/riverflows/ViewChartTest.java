@@ -3,14 +3,18 @@ package com.riverflows;
 import android.content.Intent;
 import android.test.ActivityInstrumentationTestCase2;
 import android.util.Log;
+import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
 import com.riverflows.data.Variable;
+import com.riverflows.db.FavoritesDaoImpl;
+import com.riverflows.test.AssetAhpsXmlHttpClient;
 import com.riverflows.test.AssetCoDwrCsvHttpClient;
 import com.riverflows.test.AssetUsgsCsvHttpClient;
+import com.riverflows.wsclient.AHPSXmlDataSource;
 import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.RESTDataSource;
@@ -31,6 +35,7 @@ public class ViewChartTest extends ActivityInstrumentationTestCase2<ViewChart> {
 		
 		((RESTDataSource)DataSourceController.getDataSource("USGS")).setHttpClientWrapper(new AssetUsgsCsvHttpClient(getInstrumentation().getContext().getAssets()));
 		((RESTDataSource)DataSourceController.getDataSource("CODWR")).setHttpClientWrapper(new AssetCoDwrCsvHttpClient(getInstrumentation().getContext().getAssets()));
+		((RESTDataSource)DataSourceController.getDataSource("AHPS")).setHttpClientWrapper(new AssetAhpsXmlHttpClient(getInstrumentation().getContext().getAssets()));
 	    setActivityInitialTouchMode(false);
 	}
 	
@@ -142,10 +147,26 @@ public class ViewChartTest extends ActivityInstrumentationTestCase2<ViewChart> {
 	}
 	
 	
-	/*
 	public void testFavoriteCheckbox() {
+		Site animasAtDurango = new Site(new SiteId("AHPS", "DRGC2"), "Animas River at Durango", USState.CO, AHPSXmlDataSource.ACCEPTED_VARIABLES);
+		Intent viewAnimasAtDurango = new Intent(getInstrumentation().getContext(), ViewChart.class);
+		viewAnimasAtDurango.putExtra(ViewChart.KEY_SITE, animasAtDurango);
+		viewAnimasAtDurango.putExtra(ViewChart.KEY_VARIABLE, AHPSXmlDataSource.VTYPE_FLOW);
+		this.setActivityIntent(viewAnimasAtDurango);
 		
-        CheckBox favoriteBtn = (CheckBox)getActivity().findViewById(R.id.favorite_btn);
+		//make this a favorite
+		getActivity().runOnUiThread(new Runnable() {
+			@Override
+			public void run() {
+		        CheckBox favoriteBtn = (CheckBox)getActivity().findViewById(R.id.favorite_btn);
+		        favoriteBtn.setChecked(true);
+				//favoriteBtn.dispatchTouchEvent(MotionEvent.obtain(1000, SystemClock.uptimeMillis(), MotionEvent.ACTION_DOWN, -1, -1, 0));
+		        
+		        //make sure the favorite was saved
+		        assertTrue(FavoritesDaoImpl.isFavorite(getActivity().getApplicationContext(), new SiteId("AHPS", "DRGC2"), AHPSXmlDataSource.VTYPE_FLOW));
+		        assertEquals(1, FavoritesDaoImpl.getFavorites(getActivity().getApplicationContext()).size());
+			}
+		});
         
-	}*/
+	}
 }
