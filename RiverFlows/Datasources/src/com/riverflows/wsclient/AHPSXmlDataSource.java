@@ -192,9 +192,9 @@ public class AHPSXmlDataSource implements RESTDataSource {
 			reader.parse(new InputSource(bufferedStream));
 			if(LOG.isInfoEnabled()) LOG.info("loaded site data in " + (System.currentTimeMillis() - startTime) + "ms");
 		} catch(ParserConfigurationException pce) {
-			throw new RuntimeException(pce);
+			throw new RuntimeException(urlStr, pce);
 		} catch(SAXException se) {
-			throw new RuntimeException(se);
+			throw new RuntimeException(urlStr, se);
 		} finally {
 			try {
 				contentInputStream.close();
