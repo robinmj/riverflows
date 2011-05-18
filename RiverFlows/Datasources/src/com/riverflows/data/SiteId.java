@@ -18,6 +18,13 @@ public class SiteId implements Serializable {
 		this.key = agency + "/" + id;
 	}
 	
+	public SiteId(String agency, String id, int primaryKey) {
+		this.agency = agency;
+		this.id = id;
+		this.key = agency + "/" + id;
+		this.primaryKey = primaryKey;
+	}
+	
 	public String getId() {
 		return id;
 	}
