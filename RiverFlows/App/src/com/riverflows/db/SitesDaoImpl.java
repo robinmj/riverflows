@@ -141,8 +141,7 @@ public class SitesDaoImpl {
 				}
 				
 				Site site = new Site();
-				SiteId siteId = new SiteId(c.getString(3), c.getString(1));
-				siteId.setPrimaryKey(c.getInt(0));
+				SiteId siteId = new SiteId(c.getString(3), c.getString(1), c.getInt(0));
 				site.setSiteId(siteId);
 				
 				site.setName(c.getString(2));
@@ -223,7 +222,7 @@ public class SitesDaoImpl {
 			inClause.append(")");
 			
 			
-			Cursor c = db.query(NAME, new String[] { SITE_ID, SITE_NAME, AGENCY, TIME_FOUND, LAST_READING, LAST_READING_TIME, LAST_READING_VAR, SUPPORTED_VARS },
+			Cursor c = db.query(NAME, new String[] { ID, SITE_ID, SITE_NAME, AGENCY, TIME_FOUND, LAST_READING, LAST_READING_TIME, LAST_READING_VAR, SUPPORTED_VARS },
 					"(" + AGENCY + " || '/' || " + SITE_ID + ") in " + inClause, inClauseParams, null, null, SITE_NAME);
 			
 			result = new ArrayList<SiteData>(c.getCount());
@@ -238,10 +237,10 @@ public class SitesDaoImpl {
 			do {
 				
 				Site site = new Site();
-				site.setSiteId(new SiteId(c.getString(2), c.getString(0)));
-				site.setName(c.getString(1));
+				site.setSiteId(new SiteId(c.getString(3), c.getString(1), c.getInt(0)));
+				site.setName(c.getString(2));
 				
-				String supportedVarsStr = c.getString(7);
+				String supportedVarsStr = c.getString(8);
 				
 				site.setSupportedVariables(DataSourceController.getVariablesFromString(site.getAgency(), supportedVarsStr));
 				
@@ -255,12 +254,12 @@ public class SitesDaoImpl {
 				SiteData data = new SiteData();
 				data.setSite(site);
 				
-				if(!c.isNull(4)) {
+				if(!c.isNull(5)) {
 					Series s = new Series();
-					s.setVariable(DataSourceController.getVariable(site.getAgency(), c.getString(6)));
+					s.setVariable(DataSourceController.getVariable(site.getAgency(), c.getString(7)));
 					Reading lastReading = new Reading();
-					lastReading.setDate(new Date(c.getLong(5)));
-					lastReading.setValue(c.getDouble(4));
+					lastReading.setDate(new Date(c.getLong(6)));
+					lastReading.setValue(c.getDouble(5));
 					s.setReadings(Collections.singletonList(lastReading));
 					
 					data.getDatasets().put(s.getVariable().getCommonVariable(), s);
@@ -346,7 +345,8 @@ public class SitesDaoImpl {
 				favoriteValues.put(LAST_READING_VAR, preferredSeries.getVariable().getId());
 			}
 			
-			writeableDb.insert(SitesDaoImpl.NAME,null, favoriteValues);
+			long primaryKey = writeableDb.insert(SitesDaoImpl.NAME,null, favoriteValues);
+			currentSite.getSiteId().setPrimaryKey((int)primaryKey);
 		}
 	}
 }

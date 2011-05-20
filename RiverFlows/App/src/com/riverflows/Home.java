@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.Window;
 import android.widget.TabHost;
 
+import com.riverflows.db.DatasetsDaoImpl;
 import com.riverflows.db.DbMaintenance;
 import com.riverflows.db.FavoritesDaoImpl;
 
@@ -18,7 +19,7 @@ public class Home extends TabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    
-	    Logger.getLogger("").setLevel(Level.WARNING);
+	    //Logger.getLogger("").setLevel(Level.WARNING);
 	    
 	    requestWindowFeature(Window.FEATURE_NO_TITLE);
 	    setContentView(R.layout.main);
@@ -42,6 +43,8 @@ public class Home extends TabActivity {
 	    tabHost.addTab(spec);
 
 	    DbMaintenance.upgradeIfNecessary(getApplicationContext());
+	    
+	    DatasetsDaoImpl.deleteExpiredDatasets(getApplicationContext());
 	    
 	    if(FavoritesDaoImpl.hasFavorites(getCurrentActivity())) {
 	    	tabHost.setCurrentTab(1);

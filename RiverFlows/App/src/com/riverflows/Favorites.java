@@ -4,12 +4,11 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.Map.Entry;
 
 import org.apache.http.conn.HttpHostConnectException;
 
@@ -29,6 +28,7 @@ import android.view.View;
 import android.view.WindowManager.BadTokenException;
 import android.widget.ListView;
 
+import com.riverflows.data.CachedDataset;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
@@ -36,7 +36,7 @@ import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
 import com.riverflows.data.Variable;
-import com.riverflows.data.Variable.CommonVariable;
+import com.riverflows.db.DatasetsDaoImpl;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.db.SitesDaoImpl;
 import com.riverflows.wsclient.DataSourceController;
@@ -248,44 +248,37 @@ public class Favorites extends ListActivity {
 				//migrate any favorites without a variable set
 				checkForOldFavorites(favorites);
 				
-				List<SiteId> siteIds = new ArrayList<SiteId>(favorites.size());
+
+				boolean hardRefresh = (params.length > 0 && params[0].equals(HARD_REFRESH));
+
+				
+				Map<SiteId,SiteData> allSiteDataMap = new HashMap<SiteId,SiteData>();
+				
+				ArrayList<Favorite> sitesToReload = new ArrayList<Favorite>(favorites.size());
+				
+				//first, try to use cached data
 				for(int a = 0; a < favorites.size(); a++) {
-					siteIds.add(favorites.get(a).getSite().getSiteId());
-				}
-				
-				List<SiteData> siteDataList = SitesDaoImpl.getSites(getApplicationContext(), siteIds);
-				
-				List<Site> stations = new ArrayList<Site>(siteDataList.size());
-
-				//TODO use ReadingsDaoImpl for loading recent readings
-				//boolean reloadRecentReadings = false;
-				boolean reloadRecentReadings = true;
-				
-				for(SiteData currentData: siteDataList) {
-					if(!reloadRecentReadings && SitesDaoImpl.hasStaleReading(currentData)) {
-						reloadRecentReadings = true;
-					}
-					stations.add(currentData.getSite());
-				}
-				
-				if(reloadRecentReadings) {
-					Map<SiteId,SiteData> siteDataMap = DataSourceController.getSiteData(favorites);
-
-					siteDataList = new ArrayList<SiteData>(stations.size());
 					
-					//build a list of SiteData objects, retaining the order of the stations
-					for(Site station: stations) {
-						SiteData currentData = siteDataMap.get(station.getSiteId());
-						if(currentData == null) {
-							Log.e(Favorites.class.getSimpleName(), "failed to retrieve data for site " + station.getId());
-							currentData = new SiteData();
-							currentData.setSite(station);
-						}
-						siteDataList.add(currentData);
+					SiteData cachedData = hardRefresh ? null : getCachedDataset(favorites.get(a));
+					
+					if(cachedData == null) {
+						sitesToReload.add(favorites.get(a));
+					} else {
+						allSiteDataMap.put(cachedData.getSite().getSiteId(), cachedData);
 					}
 				}
 				
-				return expandDatasets(siteDataList);
+				//download fresh data for sites where no cached data was found
+				if(sitesToReload.size() > 0) {
+					Map<SiteId,SiteData> siteDataMap = DataSourceController.getSiteData(sitesToReload);
+					
+					for(SiteData currentData: siteDataMap.values()) {
+						DatasetsDaoImpl.saveDatasets(getApplicationContext(), currentData);
+						allSiteDataMap.put(currentData.getSite().getSiteId(), currentData);
+					}
+				}
+				
+				return expandDatasets(favorites, allSiteDataMap);
 			} catch (UnknownHostException uhe) {
 				setLoadErrorMsg("no network access");
 			} catch(Exception e) {
@@ -295,24 +288,26 @@ public class Favorites extends ListActivity {
 			return null;
 		}
 		
-		private List<SiteData> expandDatasets(List<SiteData> data) {
-			ArrayList<SiteData> expandedDatasets = new ArrayList<SiteData>(data.size());
+		private List<SiteData> expandDatasets(List<Favorite> favorites, Map<SiteId,SiteData> siteDataMap) {
+			ArrayList<SiteData> expandedDatasets = new ArrayList<SiteData>(favorites.size());
 			
-			for(SiteData current: data) {
+			//build a list of SiteData objects corresponding to the list of favorites
+			for(Favorite favorite: favorites) {
+				SiteData current = siteDataMap.get(favorite.getSite().getSiteId());
+				
 				if(current.getDatasets().size() <= 1) {
 					expandedDatasets.add(current);
 					continue;
 				}
 				
-				//if this site has more than one dataset, split it into separate SiteData objects so
-				// the datasets will show up as separate items in the list
-				Set<Entry<CommonVariable,Series>> datasets = current.getDatasets().entrySet();
-				for(Entry<CommonVariable,Series> dataset: datasets) {
-					SiteData expandedDataset = new SiteData();
-					expandedDataset.setSite(current.getSite());
-					expandedDataset.getDatasets().put(dataset.getKey(), dataset.getValue());
-					expandedDatasets.add(expandedDataset);
-				}
+				Variable favoriteVar = DataSourceController.getVariable(favorite.getSite().getAgency(), favorite.getVariable());
+				
+				//use the dataset for this favorite's variable
+				Series dataset = current.getDatasets().get(favoriteVar.getCommonVariable());
+				SiteData expandedDataset = new SiteData();
+				expandedDataset.setSite(current.getSite());
+				expandedDataset.getDatasets().put(favoriteVar.getCommonVariable(), dataset);
+				expandedDatasets.add(expandedDataset);
 			}
 			return expandedDatasets;
 		}
@@ -446,6 +441,41 @@ public class Favorites extends ListActivity {
 					showDialog(DIALOG_ID_LOADING);
 				}
 			}
+		}
+		
+		private SiteData getCachedDataset(Favorite f) {
+
+			CachedDataset cachedDataset = DatasetsDaoImpl.getDataset(getApplicationContext(), f.getSite().getSiteId().getPrimaryKey(), f.getVariable());
+			
+			if(cachedDataset == null) {
+				return null;
+			}
+		
+			Date staleReadingDate = new Date(System.currentTimeMillis() - (30 * 60 * 1000));
+			
+			if(cachedDataset.getTimestamp().before(staleReadingDate)) {
+				//decided not to delete this dataset even if it is stale because it would be nice to have readings
+				// stil available if it isn't possible to reload data.
+				return null;
+			}
+			
+			/*
+			Reading lastReading = DataSourceController.getLastObservation(cachedDataset.getSeries());
+			
+			if(lastReading == null) {
+				return null;
+			}
+			
+			if(lastReading.getDate().before(staleReadingDate)) {
+				return null;
+			}*/
+			
+			SiteData cachedData = new SiteData();
+			cachedData.setSite(f.getSite());
+			cachedData.setDataInfo(cachedDataset.getDataInfo());
+			cachedData.getDatasets().put(cachedDataset.getSeries().getVariable().getCommonVariable(), cachedDataset.getSeries());
+			
+			return cachedData;
 		}
 	}
 	

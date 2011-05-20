@@ -9,6 +9,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 
+import com.riverflows.data.Forecast;
 import com.riverflows.data.Reading;
 
 public class ReadingsDaoImpl {
@@ -23,13 +24,16 @@ public class ReadingsDaoImpl {
 	static final String VALUE = "value";
 	
 	static final String QUALIFIERS = "qualifiers";
+	
+	static final String IS_FORECAST = "isForecast";
 
     static final String CREATE_SQL = "CREATE TABLE " + NAME
 		+ " ( " + ID + " INTEGER PRIMARY KEY,"
 		+ DATASET_ID + " INTEGER,"
 		+ TIME + " REAL,"
 		+ VALUE + " REAL,"
-		+ QUALIFIERS + " TEXT);";
+		+ QUALIFIERS + " TEXT,"
+		+ IS_FORECAST + " INTEGER );";
     
     public static List<Reading> getReadings(Context ctx, long datasetId) {
 
@@ -37,12 +41,19 @@ public class ReadingsDaoImpl {
 		SQLiteDatabase db = helper.getReadableDatabase();
     	
     	try {
-    		Cursor c = db.query(NAME, new String[]{ DATASET_ID, TIME, VALUE, QUALIFIERS }, DATASET_ID + " = ?", new String[]{ datasetId + ""}, null, null, TIME);
+    		Cursor c = db.query(NAME, new String[]{ DATASET_ID, TIME, VALUE, QUALIFIERS, IS_FORECAST }, DATASET_ID + " = ?", new String[]{ datasetId + ""}, null, null, TIME);
     		
     		List<Reading> readings = new ArrayList<Reading>(c.getCount());
     		
     		 while(c.moveToNext()) {
-    			Reading r = new Reading();
+    			boolean isForecast = c.getInt(4) > 0;
+    			 
+    			Reading r = null;
+    			if(isForecast) {
+    				r = new Forecast();
+    			} else {
+    				r = new Reading();
+    			}
     			r.setDate(new Date(c.getLong(1)));
     			r.setValue(c.getDouble(2));
     			r.setQualifiers(c.getString(3));
@@ -74,6 +85,7 @@ public class ReadingsDaoImpl {
     			readingRow.put(TIME, r.getDate().getTime());
     			readingRow.put(VALUE, r.getValue());
     			readingRow.put(QUALIFIERS, r.getQualifiers());
+    			readingRow.put(IS_FORECAST, (r instanceof Forecast) ? 1 : 0);
         		
         		db.insert(NAME, null, readingRow);
     		}
