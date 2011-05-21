@@ -49,6 +49,7 @@ public abstract class SiteList extends ListActivity {
 	public static final int DIALOG_ID_UPGRADE_FAVORITES = 5;
 	
 	private LoadSitesTask loadTask = null;
+	private String errorMsg = null;
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -115,8 +116,27 @@ public abstract class SiteList extends ListActivity {
 
 		ListView lv = getListView();
 		lv.setTextFilterEnabled(true);
-		
-		loadSites(false);
+
+        //see onRetainNonConfigurationInstance()
+    	final Object[] data = (Object[])getLastNonConfigurationInstance();
+        
+    	if(data == null) {
+    		//make the request for site data
+    		loadSites(false);
+    	} else {
+    		this.loadTask = (LoadSitesTask)data[0];
+    		if(this.loadTask != null) {
+    			this.loadTask.setActivity(this);
+        		this.errorMsg = this.loadTask.errorMsg;
+    		}
+    		this.gauges = (List<SiteData>)data[1];
+    		displaySites();
+    	}
+	}
+	
+	@Override
+	public Object[] onRetainNonConfigurationInstance() {
+		return new Object[]{this.loadTask, this.gauges};
 	}
 	
 	@Override
@@ -129,7 +149,7 @@ public abstract class SiteList extends ListActivity {
 	        dialog.setCancelable(true);
 	        return dialog;
 		case DIALOG_ID_LOADING_ERROR:
-			ErrorMsgDialog errorDialog = new ErrorMsgDialog(this, loadTask.errorMsg);
+			ErrorMsgDialog errorDialog = new ErrorMsgDialog(this, errorMsg);
 			return errorDialog;
 		case DIALOG_ID_MASTER_LOADING:
 			ProgressDialog masterDialog = new ProgressDialog(this);
@@ -138,7 +158,7 @@ public abstract class SiteList extends ListActivity {
 			masterDialog.setCancelable(true);
 	        return masterDialog;
 		case DIALOG_ID_MASTER_LOADING_ERROR:
-			ErrorMsgDialog masterErrorDialog = new ErrorMsgDialog(this, loadTask.errorMsg);
+			ErrorMsgDialog masterErrorDialog = new ErrorMsgDialog(this, errorMsg);
 			return masterErrorDialog;
 		case DIALOG_ID_UPGRADE_FAVORITES:
 			ProgressDialog favoritesDialog = new ProgressDialog(this);
@@ -165,16 +185,6 @@ public abstract class SiteList extends ListActivity {
 	    return true;
 	}
 	
-	@Override
-	protected void onStart() {
-		super.onStart();
-		
-		//discard the cached list items after 2 hours
-		if((System.currentTimeMillis() - this.loadTask.loadTime.getTime()) > (2 * 60 * 60 * 1000)) {
-			loadSites(false);
-		}
-	}
-	
 	/**
 	 * @param hardRefresh if true, discard persisted site data as well
 	 */
@@ -182,11 +192,28 @@ public abstract class SiteList extends ListActivity {
 		showDialog(DIALOG_ID_LOADING);
 		
 		this.loadTask = createLoadStationsTask();
+		this.loadTask.setActivity(this);
 		
 		if(hardRefresh) {
 			this.loadTask.execute(HARD_REFRESH);
 		} else {
 			this.loadTask.execute();
+		}
+	}
+	
+	public void displaySites() {
+		if(gauges != null) {
+			setListAdapter(new SiteAdapter(getApplicationContext(), gauges));
+		}
+		removeDialog(DIALOG_ID_LOADING);
+		if(gauges == null || errorMsg != null) {
+			try {
+				showDialog(DIALOG_ID_LOADING_ERROR);
+			} catch(BadTokenException bte) {
+				if(Log.isLoggable(TAG, Log.INFO)) {
+					Log.i(TAG, "can't display dialog; activity no longer active");
+				}
+			}
 		}
 	}
 
@@ -199,6 +226,12 @@ public abstract class SiteList extends ListActivity {
 
 		public final Date loadTime = new Date();
 		private String errorMsg = null;
+		private SiteList activity;
+		
+		public void setActivity(SiteList activity) {
+			this.activity = activity;
+			this.activity.loadTask = this;
+		}
 		
 		protected void setLoadErrorMsg(String errorMsg) {
 			this.errorMsg = errorMsg;
@@ -209,37 +242,25 @@ public abstract class SiteList extends ListActivity {
 		
 		@Override
 		protected void onPostExecute(List<SiteData> result) {
-			super.onPostExecute(result);
-			SiteList.this.gauges = result;
-			if(result != null) {
-				setListAdapter(new SiteAdapter(getApplicationContext(), result));
-			}
-			removeDialog(DIALOG_ID_LOADING);
-			if(result == null || errorMsg != null) {
-				try {
-					showDialog(DIALOG_ID_LOADING_ERROR);
-				} catch(BadTokenException bte) {
-					if(Log.isLoggable(TAG, Log.INFO)) {
-						Log.i(TAG, "can't display dialog; activity no longer active");
-					}
-				}
-			}
+			this.activity.gauges = result;
+			this.activity.displaySites();
+			this.activity.loadTask = null;
+			this.activity.errorMsg = this.errorMsg;
 		}
 		
 		@Override
 		protected void onProgressUpdate(Integer... values) {
-			super.onProgressUpdate(values);
 			if(values == null || values.length == 0) {
 				return;
 			}
 			if(values.length == 2 && values[0] == STATUS_UPGRADING_FAVORITES) {
 				if(values[1] == 0) {
-					removeDialog(DIALOG_ID_LOADING);
-					showDialog(DIALOG_ID_UPGRADE_FAVORITES);
+					this.activity.removeDialog(DIALOG_ID_LOADING);
+					this.activity.showDialog(DIALOG_ID_UPGRADE_FAVORITES);
 				}
 				if(values[1] == 100) {
-					removeDialog(DIALOG_ID_UPGRADE_FAVORITES);
-					showDialog(DIALOG_ID_LOADING);
+					this.activity.removeDialog(DIALOG_ID_UPGRADE_FAVORITES);
+					this.activity.showDialog(DIALOG_ID_LOADING);
 				}
 			}
 		}
