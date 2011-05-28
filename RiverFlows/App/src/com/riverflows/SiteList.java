@@ -1,6 +1,7 @@
 package com.riverflows;
 
 import java.net.UnknownHostException;
+import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -15,18 +16,25 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.WindowManager.BadTokenException;
+import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.Toast;
 
+import com.riverflows.data.Favorite;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.Variable;
+import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.db.SitesDaoImpl;
 import com.riverflows.wsclient.DataSourceController;
 
@@ -204,6 +212,8 @@ public abstract class SiteList extends ListActivity {
 	public void displaySites() {
 		if(gauges != null) {
 			setListAdapter(new SiteAdapter(getApplicationContext(), gauges));
+
+			registerForContextMenu(getListView());
 		}
 		removeDialog(DIALOG_ID_LOADING);
 		if(gauges == null || errorMsg != null) {
@@ -296,6 +306,84 @@ public abstract class SiteList extends ListActivity {
 		}
 		
 		return this.loadTask.loadTime;
+	}
+	
+
+	
+	private class ViewVariableListener implements MenuItem.OnMenuItemClickListener {
+
+		private Site selectedStation = null;
+		private Variable selectedVariable = null;
+		
+		public ViewVariableListener(Site selectedStation, Variable selectedVariable) {
+			this.selectedStation = selectedStation;
+			this.selectedVariable = selectedVariable;
+		}
+		
+		@Override
+		public boolean onMenuItemClick(MenuItem item) {
+			
+			Intent i = new Intent(getBaseContext(), ViewChart.class);
+			
+	        i.putExtra(ViewChart.KEY_SITE, selectedStation);
+	        i.putExtra(ViewChart.KEY_VARIABLE, selectedVariable);
+	        startActivity(i);
+	        return true;
+		}
+	}
+	
+	private class AddToFavoritesListener implements MenuItem.OnMenuItemClickListener{
+
+		private Site selectedStation = null;
+		private Variable selectedVariable = null;
+		
+		public AddToFavoritesListener(Site selectedStation, Variable selectedVariable) {
+			this.selectedStation = selectedStation;
+			this.selectedVariable = selectedVariable;
+		}
+
+		
+		@Override
+		public boolean onMenuItemClick(MenuItem item) {
+			
+			if(item.isChecked()) {
+				FavoritesDaoImpl.deleteFavorite(getApplicationContext(), selectedStation.getSiteId(), selectedVariable);
+				item.setChecked(false);
+			} else {
+				FavoritesDaoImpl.createFavorite(getApplicationContext(), new Favorite(selectedStation, selectedVariable.getId()));
+				item.setChecked(true);
+			}
+
+			String confirmation =  MessageFormat.format(getString(R.string.add_favorite_confirmation), selectedVariable.getName(), selectedStation.getName());
+			
+			Toast.makeText(getApplicationContext(), confirmation, Toast.LENGTH_SHORT).show();
+			
+			return true;
+		}
+	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		
+		SiteAdapter adapter = (SiteAdapter)((ListView)v).getAdapter();
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+		
+		SiteData siteData = adapter.getItem(info.position);
+		
+		Variable[] supportedVars = siteData.getSite().getSupportedVariables();
+		
+		SubMenu submenu = menu.addSubMenu(ContextMenu.NONE, supportedVars.length, supportedVars.length, "Add To Favorites");
+		
+		for(int a = 0; a < supportedVars.length; a++) {
+			MenuItem viewVariableItem = menu.add(ContextMenu.NONE,a,a,supportedVars[a].getName() + ", " + supportedVars[a].getCommonVariable().getUnit());
+			viewVariableItem.setOnMenuItemClickListener(new ViewVariableListener(siteData.getSite(), supportedVars[a]));
+			
+			MenuItem addFavoriteItem = submenu.add(ContextMenu.NONE,a,a,supportedVars[a].getName() + ", " + supportedVars[a].getCommonVariable().getUnit());
+			addFavoriteItem.setCheckable(true);
+			addFavoriteItem.setChecked(FavoritesDaoImpl.isFavorite(getApplicationContext(), siteData.getSite().getSiteId(), supportedVars[a]));
+			addFavoriteItem.setOnMenuItemClickListener(new AddToFavoritesListener(siteData.getSite(), supportedVars[a]));
+		}
 	}
 	
 	protected abstract LoadSitesTask createLoadStationsTask();
