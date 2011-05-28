@@ -5,6 +5,7 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.KeyStore;
@@ -506,13 +507,17 @@ public class DataSourceController {
 				continue;
 			}
 			
-			Map<SiteId,SiteData> agencyDataMap= ds.getSiteData(agencySitesMap.get(agency));
-			
-			Collection<SiteData> agencyData = agencyDataMap.values();
-			
-			//copy results into consolidated map
-			for(SiteData siteData: agencyData) {
-				allData.put(siteData.getSite().getSiteId(), siteData);
+			try {
+				Map<SiteId,SiteData> agencyDataMap= ds.getSiteData(agencySitesMap.get(agency));
+				
+				Collection<SiteData> agencyData = agencyDataMap.values();
+				
+				//copy results into consolidated map
+				for(SiteData siteData: agencyData) {
+					allData.put(siteData.getSite().getSiteId(), siteData);
+				}
+			} catch(SocketException se) {
+				LOG.error("could not access agency: " + agency, se);
 			}
 		}
 		
