@@ -7,6 +7,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.http.conn.HttpHostConnectException;
+
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Toast;
@@ -93,6 +95,10 @@ public class RiverSelect extends SiteList {
 							//re-use cached site info
 							return sites;
 						}
+						return null;
+					} catch(HttpHostConnectException hhce) {
+						setLoadErrorMsg("could not reach RiverFlows server");
+						Log.e(TAG, "",hhce);
 						return null;
 					} catch(Exception e) {
 						setLoadErrorMsg(e.getMessage());
