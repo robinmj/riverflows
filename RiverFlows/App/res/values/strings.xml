@@ -3,4 +3,5 @@
     <string name="app_name">RiverFlows</string>
     <string name="variable_context_menu_title">Other Measurements At This Site</string>
     <string name="list_filter_tip">press and hold the &quot;menu&quot; button or start typing to filter by name</string>
+    <string name="add_favorite_confirmation">the gauge {0} at {1} has been added to your favorites</string>
 </resources>
