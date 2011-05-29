@@ -30,6 +30,7 @@ import android.widget.ListView;
 
 import com.riverflows.data.CachedDataset;
 import com.riverflows.data.Favorite;
+import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
@@ -62,10 +63,19 @@ public class Favorites extends ListActivity {
 		lv.setTextFilterEnabled(true);
 		this.loadTask = getLastNonConfigurationInstance();
 		
-		if(this.loadTask == null || this.loadTask.gauges == null) {
-			loadSites(false);
+		if(this.loadTask != null) {
+			if(!this.loadTask.running) {
+				if(this.loadTask.gauges == null) {
+					loadSites(false);
+				} else {
+					displayFavorites();
+				}
+			} else {
+				//if the loadTask is running, just wait until it finishes
+				showDialog(DIALOG_ID_LOADING);
+			}
 		} else {
-			displayFavorites();
+			loadSites(false);
 		}
 		
 		setTitle("Favorites");
@@ -98,6 +108,10 @@ public class Favorites extends ListActivity {
 		Intent i = new Intent(this, ViewChart.class);
 		Site selectedStation = null;
 		Variable selectedVariable = null;
+		
+		if(this.loadTask == null || this.loadTask.gauges == null) {
+			return;
+		}
 		
 		for(SiteData currentData: this.loadTask.gauges) {
 			if(SiteAdapter.getItemId(currentData) == id){
@@ -230,6 +244,8 @@ public class Favorites extends ListActivity {
 		public final Date loadTime = new Date();
 		public List<SiteData> gauges = null;
 		
+		public boolean running = false;
+		
 		public String errorMsg = null;
 		
 		protected void setLoadErrorMsg(String errorMsg) {
@@ -238,6 +254,7 @@ public class Favorites extends ListActivity {
 		
 		@Override
 		protected List<SiteData> doInBackground(Integer... params) {
+			running = true;
 			try {
 				List<Favorite> favorites = FavoritesDaoImpl.getFavorites(getApplicationContext());
 				
@@ -295,12 +312,37 @@ public class Favorites extends ListActivity {
 			for(Favorite favorite: favorites) {
 				SiteData current = siteDataMap.get(favorite.getSite().getSiteId());
 				
-				if(current.getDatasets().size() <= 1) {
+				Variable favoriteVar = DataSourceController.getVariable(favorite.getSite().getAgency(), favorite.getVariable());
+				
+				if(favoriteVar == null) {
+					throw new NullPointerException("could not find variable: " + favorite.getSite().getAgency() + " " + favorite.getVariable());
+				}
+				
+				if(current == null) {
+					//failed to get data for this site- create a placeholder item
+					current = new SiteData();
+					current.setSite(favorite.getSite());
+					
+					Series nullSeries = new Series();
+					nullSeries.setVariable(favoriteVar);
+					
+					Reading placeHolderReading = new Reading();
+					placeHolderReading.setDate(new Date());
+					placeHolderReading.setQualifiers("Datasource Down");
+					
+					nullSeries.setReadings(Collections.singletonList(placeHolderReading));
+					nullSeries.setSourceUrl("");
+					
+					current.getDatasets().put(favoriteVar.getCommonVariable(), nullSeries);
+					
 					expandedDatasets.add(current);
 					continue;
 				}
 				
-				Variable favoriteVar = DataSourceController.getVariable(favorite.getSite().getAgency(), favorite.getVariable());
+				if(current.getDatasets().size() <= 1) {
+					expandedDatasets.add(current);
+					continue;
+				}
 				
 				//use the dataset for this favorite's variable
 				Series dataset = current.getDatasets().get(favoriteVar.getCommonVariable());
@@ -423,6 +465,7 @@ public class Favorites extends ListActivity {
 			super.onPostExecute(result);
 			this.gauges = result;
 			Favorites.this.displayFavorites();
+			running = false;
 		}
 		
 		@Override
