@@ -29,7 +29,7 @@ public class CODWRDataSourceTest extends TestCase {
 		clearCreek.setState(USState.CO);
 		clearCreek.setSupportedVariables(new Variable[]{CODWRDataSource.VTYPE_STREAMFLOW_CFS, CODWRDataSource.VTYPE_GAUGE_HEIGHT_FT});
 		
-		SiteData result = src.getSiteData(clearCreek, new Variable[]{CODWRDataSource.VTYPE_STREAMFLOW_CFS, CODWRDataSource.VTYPE_GAUGE_HEIGHT_FT});
+		SiteData result = src.getSiteData(clearCreek, new Variable[]{CODWRDataSource.VTYPE_STREAMFLOW_CFS, CODWRDataSource.VTYPE_GAUGE_HEIGHT_FT}, true);
 		
 		System.out.println(result.getDataInfo());
 		

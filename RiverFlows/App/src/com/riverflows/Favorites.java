@@ -28,7 +28,6 @@ import android.view.View;
 import android.view.WindowManager.BadTokenException;
 import android.widget.ListView;
 
-import com.riverflows.data.CachedDataset;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
@@ -37,7 +36,6 @@ import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
 import com.riverflows.data.Variable;
-import com.riverflows.db.DatasetsDaoImpl;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.db.SitesDaoImpl;
 import com.riverflows.wsclient.DataSourceController;
@@ -267,32 +265,13 @@ public class Favorites extends ListActivity {
 				
 
 				boolean hardRefresh = (params.length > 0 && params[0].equals(HARD_REFRESH));
-
 				
 				Map<SiteId,SiteData> allSiteDataMap = new HashMap<SiteId,SiteData>();
 				
-				ArrayList<Favorite> sitesToReload = new ArrayList<Favorite>(favorites.size());
+				Map<SiteId,SiteData> siteDataMap = DataSourceController.getSiteData(favorites, hardRefresh);
 				
-				//first, try to use cached data
-				for(int a = 0; a < favorites.size(); a++) {
-					
-					SiteData cachedData = hardRefresh ? null : getCachedDataset(favorites.get(a));
-					
-					if(cachedData == null) {
-						sitesToReload.add(favorites.get(a));
-					} else {
-						allSiteDataMap.put(cachedData.getSite().getSiteId(), cachedData);
-					}
-				}
-				
-				//download fresh data for sites where no cached data was found
-				if(sitesToReload.size() > 0) {
-					Map<SiteId,SiteData> siteDataMap = DataSourceController.getSiteData(sitesToReload);
-					
-					for(SiteData currentData: siteDataMap.values()) {
-						DatasetsDaoImpl.saveDatasets(getApplicationContext(), currentData);
-						allSiteDataMap.put(currentData.getSite().getSiteId(), currentData);
-					}
+				for(SiteData currentData: siteDataMap.values()) {
+					allSiteDataMap.put(currentData.getSite().getSiteId(), currentData);
 				}
 				
 				return expandDatasets(favorites, allSiteDataMap);
@@ -484,41 +463,6 @@ public class Favorites extends ListActivity {
 					showDialog(DIALOG_ID_LOADING);
 				}
 			}
-		}
-		
-		private SiteData getCachedDataset(Favorite f) {
-
-			CachedDataset cachedDataset = DatasetsDaoImpl.getDataset(getApplicationContext(), f.getSite().getSiteId().getPrimaryKey(), f.getVariable());
-			
-			if(cachedDataset == null) {
-				return null;
-			}
-		
-			Date staleReadingDate = new Date(System.currentTimeMillis() - (30 * 60 * 1000));
-			
-			if(cachedDataset.getTimestamp().before(staleReadingDate)) {
-				//decided not to delete this dataset even if it is stale because it would be nice to have readings
-				// stil available if it isn't possible to reload data.
-				return null;
-			}
-			
-			/*
-			Reading lastReading = DataSourceController.getLastObservation(cachedDataset.getSeries());
-			
-			if(lastReading == null) {
-				return null;
-			}
-			
-			if(lastReading.getDate().before(staleReadingDate)) {
-				return null;
-			}*/
-			
-			SiteData cachedData = new SiteData();
-			cachedData.setSite(f.getSite());
-			cachedData.setDataInfo(cachedDataset.getDataInfo());
-			cachedData.getDatasets().put(cachedDataset.getSeries().getVariable().getCommonVariable(), cachedDataset.getSeries());
-			
-			return cachedData;
 		}
 	}
 	

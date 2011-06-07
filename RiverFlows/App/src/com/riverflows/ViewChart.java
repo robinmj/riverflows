@@ -29,14 +29,12 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.riverflows.data.CachedDataset;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
 import com.riverflows.data.Variable;
-import com.riverflows.db.DatasetsDaoImpl;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.view.HydroGraph;
 import com.riverflows.wsclient.AHPSXmlDataSource;
@@ -339,35 +337,7 @@ public class ViewChart extends Activity {
         			}
             	}
         		
-        		if(hardRefresh) {
-        			return DataSourceController.getSiteData(site, variables);
-        		}
-        		
-    			//try to use cached data instead
-        		CachedDataset cachedDataset =  DatasetsDaoImpl.getDataset(this.activity.getApplicationContext(), site.getSiteId().getPrimaryKey(), variables[0].getId());
-        		
-        		if(cachedDataset != null) {
-            		Series cachedSeries = cachedDataset.getSeries();
-        			if(cachedSeries != null) {
-
-        				//20 minutes ago
-        				Date staleDate = new Date(System.currentTimeMillis() - (20 * 60 * 1000));
-        				
-        				if(cachedDataset.getTimestamp().before(staleDate) || cachedDataset.getSeries().getReadings().size() < 20) {
-        					//cached data is expired, or only a single reading was cached- retrieve new data
-        					result = DataSourceController.getSiteData(site, variables);
-        				} else {
-							result = new SiteData();
-							result.setSite(site);
-							result.getDatasets().put(cachedSeries.getVariable().getCommonVariable(), cachedSeries);
-							result.setDataInfo(cachedDataset.getDataInfo());
-							usingCachedData = true;
-	        			}
-        			}
-        		} else {
-        			//no cached data
-        			return DataSourceController.getSiteData(site, variables);
-        		}
+        		return DataSourceController.getSiteData(site, variables, this.hardRefresh);
             } catch(UnknownHostException uhe) {
             	errorMsg = "Lost network connection.";
             } catch(IOException ioe) {
@@ -386,38 +356,8 @@ public class ViewChart extends Activity {
 			this.activity.data = result;
 			this.activity.displayData();
 			
-			if(!usingCachedData && this.activity.data != null) {
-				int siteId = this.activity.data.getSite().getSiteId().getPrimaryKey();
-				this.activity.new SaveDatasetTask(siteId, this.activity.data).start();
-			}
-			
 			this.activity.runningTask = null;
 		}
-    }
-    
-    private class SaveDatasetTask extends Thread {
-    	
-    	private int siteId;
-    	private SiteData data;
-    	
-    	public SaveDatasetTask(int siteId, SiteData data) {
-			super();
-			this.siteId = siteId;
-			this.data = data;
-		}
-    	
-		@Override
-    	public void run() {
-			
-			long startTime = System.currentTimeMillis();
-			
-			//cache datasets for later reuse
-			for(Series currentSeries: data.getDatasets().values()) {
-				DatasetsDaoImpl.saveDataset(ViewChart.this.getApplicationContext(), siteId, currentSeries, data.getDataInfo());
-			}
-			
-			Log.i(TAG,"saved dataset in " + (System.currentTimeMillis() - startTime) + "ms");
-    	}
     }
     
     private boolean isFavorite() {

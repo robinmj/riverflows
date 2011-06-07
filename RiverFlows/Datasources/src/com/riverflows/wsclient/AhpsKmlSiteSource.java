@@ -71,7 +71,7 @@ public class AhpsKmlSiteSource {
 			//InputStream contentInputStream = connection.getInputStream();
 			
 			HttpGet getCmd = new HttpGet(SITE_LIST_URL);
-			HttpResponse response = httpClientWrapper.doGet(getCmd);
+			HttpResponse response = httpClientWrapper.doGet(getCmd, true);
 			contentInputStream = response.getEntity().getContent();
 			zipStream = new ZipInputStream(contentInputStream);
 			ZipEntry currentEntry = null;

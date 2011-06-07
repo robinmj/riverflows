@@ -11,7 +11,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 public class DefaultHttpClientWrapper implements HttpClientWrapper {
 
 	@Override
-	public HttpResponse doGet(HttpGet getCmd) throws ClientProtocolException, IOException {
+	public HttpResponse doGet(HttpGet getCmd, boolean hardRefresh) throws ClientProtocolException, IOException {
 		HttpClient client = new DefaultHttpClient();
 		HttpResponse response = client.execute(getCmd);
 		return response;

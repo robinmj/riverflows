@@ -29,7 +29,7 @@ public class UsgsCsvDataSourceTest extends TestCase {
 		Site mfFlathead = new Site(new SiteId("USGS", "12358500"), "M F Flathead River near West Glacier MT", USState.MT,
 				mfFlatheadVars);
 		
-		SiteData result = src.getSiteData(mfFlathead,  mfFlatheadVars);
+		SiteData result = src.getSiteData(mfFlathead,  mfFlatheadVars, true);
 		
 		System.out.println(result.getDataInfo());
 		assertTrue(result.getDataInfo().contains(mfFlathead.getSiteId().getId()));
@@ -81,7 +81,7 @@ public class UsgsCsvDataSourceTest extends TestCase {
 		Site clinch = new Site(new SiteId("USGS", "03524000"), "CLINCH RIVER AT CLEVELAND, VA", USState.MT,
 				clinchVars);
 		
-		SiteData result = src.getSiteData(clinch,  clinchVars);
+		SiteData result = src.getSiteData(clinch,  clinchVars, true);
 		
 		System.out.println(result.getDataInfo());
 		assertTrue(result.getDataInfo().contains(clinch.getSiteId().getId()));

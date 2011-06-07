@@ -29,7 +29,7 @@ public class AHPSXmlDataSourceTest extends TestCase {
 				"Lago Dos Bocas at Utuado", -11.1111d, 11.1111d, USState.PR,
 				AHPSXmlDataSource.ACCEPTED_VARIABLES);
 		SiteData result = ds.getSiteData(dosBocas,
-				null);
+				null, true);
 		Series streamflowDataset = result.getDatasets().get(CommonVariable.STREAMFLOW_CFS);
 		
 		assertNotNull(result.getSite());
@@ -66,7 +66,7 @@ public class AHPSXmlDataSourceTest extends TestCase {
 				"Satsop", -123.493611d, 47.000833d, USState.WA,
 				AHPSXmlDataSource.ACCEPTED_VARIABLES);
 		SiteData result = ds.getSiteData(satsop,
-				null);
+				null, true);
 		Series streamflowDataset = result.getDatasets().get(CommonVariable.STREAMFLOW_CFS);
 		
 		assertNotNull(result.getSite());

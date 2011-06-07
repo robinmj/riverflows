@@ -1,6 +1,8 @@
 package com.riverflows.wsclient;
 
 import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
@@ -21,6 +23,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -98,7 +101,7 @@ public class AHPSXmlDataSource implements RESTDataSource {
 		@Override
 		public void run() {
 			try {
-				this.favData = getSiteData(favorite.getSite(), null);
+				this.favData = getSiteData(favorite.getSite(), null, true);
 				
 				//limit data returned to the variables associated with the favorites
 				//TODO don't throw this data away- filter in the UI instead
@@ -120,7 +123,7 @@ public class AHPSXmlDataSource implements RESTDataSource {
 	}
 	
 	@Override
-	public Map<SiteId, SiteData> getSiteData(List<Favorite> sites)
+	public Map<SiteId, SiteData> getSiteData(List<Favorite> sites, boolean hardRefresh)
 			throws ClientProtocolException, IOException {
 		
 		HashMap<SiteId, SiteData> result = new HashMap<SiteId, SiteData>();
@@ -161,7 +164,7 @@ public class AHPSXmlDataSource implements RESTDataSource {
 	}
 
 	@Override
-	public SiteData getSiteData(Site site, Variable[] variableTypes)
+	public SiteData getSiteData(Site site, Variable[] variableTypes, boolean hardRefresh)
 			throws ClientProtocolException, IOException {
 		
 		String urlStr = SITE_DATA_URL + "gage=" + site.getId();
@@ -170,7 +173,7 @@ public class AHPSXmlDataSource implements RESTDataSource {
 		
 		if(LOG.isInfoEnabled()) LOG.info("site data URL: " + urlStr);
 		
-		AHPSXmlParser dataSource = new AHPSXmlParser(site,urlStr);
+		AHPSXmlParser dataSource = null;
 		
 		InputStream contentInputStream = null;
 		BufferedInputStream bufferedStream = null;
@@ -182,12 +185,23 @@ public class AHPSXmlDataSource implements RESTDataSource {
 			factory.setFeature("http://xml.org/sax/features/namespaces", true);
 			
 			reader = factory.newSAXParser().getXMLReader();
-			reader.setContentHandler(dataSource);
 			
 			HttpGet getCmd = new HttpGet(urlStr);
-			HttpResponse response = httpClientWrapper.doGet(getCmd);
+			HttpResponse response = httpClientWrapper.doGet(getCmd, hardRefresh);
+			
+			dataSource = new AHPSXmlParser(site,urlStr);
+			reader.setContentHandler(dataSource);
+			
 			contentInputStream = response.getEntity().getContent();
-			bufferedStream = new BufferedInputStream(contentInputStream, 8192);
+
+			Header cacheFileHeader = response.getLastHeader(HttpClientWrapper.PN_CACHE_FILE);
+			
+			if(cacheFileHeader == null) {
+				bufferedStream = new BufferedInputStream(contentInputStream, 8192);
+			} else {
+				File cacheFile = new File(cacheFileHeader.getValue());
+				bufferedStream = new CachingBufferedInputStream(contentInputStream, 8192, cacheFile);
+			}
 			
 			reader.parse(new InputSource(bufferedStream));
 			if(LOG.isInfoEnabled()) LOG.info("loaded site data in " + (System.currentTimeMillis() - startTime) + "ms");
@@ -252,7 +266,7 @@ public class AHPSXmlDataSource implements RESTDataSource {
 		private boolean inForecastSeries = false;
 		private boolean inDisclaimer = false;
 		
-		public AHPSXmlParser(Site site, String srcUrl) {
+		public AHPSXmlParser(Site site, String srcUrl) throws FileNotFoundException{
 			this.srcUrl = srcUrl;
 			this.resultData.setSite(site);
 		}

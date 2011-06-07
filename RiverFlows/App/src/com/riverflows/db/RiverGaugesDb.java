@@ -25,7 +25,6 @@ class RiverGaugesDb extends SQLiteOpenHelper {
 		db.execSQL(FavoritesDaoImpl.CREATE_SQL);
 		db.execSQL(SitesDaoImpl.CREATE_SQL);
 		db.execSQL(DatasetsDaoImpl.CREATE_SQL);
-		db.execSQL(ReadingsDaoImpl.CREATE_SQL);
 	}
 
 	@Override
@@ -99,11 +98,12 @@ class RiverGaugesDb extends SQLiteOpenHelper {
 		}
 		if(fromVersion < 4) {
 			db.execSQL(DatasetsDaoImpl.CREATE_SQL);
-			db.execSQL(ReadingsDaoImpl.CREATE_SQL);
+			//db.execSQL(ReadingsDaoImpl.CREATE_SQL);
 		}
 		if(fromVersion < 5) {
-			db.execSQL("ALTER TABLE " + DatasetsDaoImpl.NAME + " ADD COLUMN " + DatasetsDaoImpl.DATA_INFO + " TEXT;");
-			db.execSQL("ALTER TABLE " + ReadingsDaoImpl.NAME + " ADD COLUMN " + ReadingsDaoImpl.IS_FORECAST + " INTEGER;");
+			db.execSQL("DROP TABLE " + DatasetsDaoImpl.NAME + ";");
+			db.execSQL(DatasetsDaoImpl.CREATE_SQL);
+			db.execSQL("DROP TABLE readings;");
 		}
 	}
 

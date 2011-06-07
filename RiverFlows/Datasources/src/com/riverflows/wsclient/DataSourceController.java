@@ -58,7 +58,7 @@ public class DataSourceController {
 	
 	public static final DateFormat RECENT_READING_TIME_FMT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
-	private static final Map<String,DataSource> dataSources = new HashMap<String,DataSource>();
+	private static final Map<String,RESTDataSource> dataSources = new HashMap<String,RESTDataSource>();
 	
 	private static class MyHttpClient extends DefaultHttpClient {
 		@Override
@@ -106,6 +106,12 @@ public class DataSourceController {
 		dataSources.put(ahpsDataSource.getAgency(), ahpsDataSource);
 		
 		RECENT_READING_TIME_FMT.setTimeZone(TimeZone.getTimeZone("GMT-00:00"));
+	}
+	
+	public static void setHttpClientWrapper(HttpClientWrapper wrapper) {
+		for(RESTDataSource src: dataSources.values()) {
+			src.setHttpClientWrapper(wrapper);
+		}
 	}
 	
 	public static Map<SiteId,SiteData> getAllSites() throws ClientProtocolException, IOException {
@@ -434,18 +440,19 @@ public class DataSourceController {
 	
 	/**
 	 * @param site
+	 * @param hardRefresh TODO
 	 * @param variableTypes a suggestion of the variables to retrieve, in order of preference.  The DataSource
 	 * implementation may truncate this array if it only supports retrieving data for a limited number of variables
 	 * at once, but it will always attempt to retrieve data for the first variable.
 	 * @return TODO do we need to return a map here?
 	 */
-	public static SiteData getSiteData(Site site, Variable[] variables) throws ClientProtocolException, IOException {
+	public static SiteData getSiteData(Site site, Variable[] variables, boolean hardRefresh) throws ClientProtocolException, IOException {
 		DataSource ds = dataSources.get(site.getAgency());
 		if(ds == null) {
 			LOG.error(site.getSiteId() + " has no associated datasource");
 			return null;
 		}
-		return ds.getSiteData(site, variables);
+		return ds.getSiteData(site, variables, hardRefresh);
 	}
 	
 	/**
@@ -470,6 +477,7 @@ public class DataSourceController {
 	
 	/**
 	 * 
+	 * @param hardRefresh TODO
 	 * @param sites
 	 * @param variables respective variables for each site
 	 * @return 
@@ -478,7 +486,7 @@ public class DataSourceController {
 	 * @throws NullPointerException if sites or variables is null
 	 * @throws IllegalArgumentException if sites and variables are of differing lengths
 	 */
-	public static Map<SiteId,SiteData> getSiteData(List<Favorite> gauges) throws ClientProtocolException, IOException {
+	public static Map<SiteId,SiteData> getSiteData(List<Favorite> gauges, boolean hardRefresh) throws ClientProtocolException, IOException {
 		
 		//get single readings from a number of different agencies
 		
@@ -508,7 +516,7 @@ public class DataSourceController {
 			}
 			
 			try {
-				Map<SiteId,SiteData> agencyDataMap= ds.getSiteData(agencySitesMap.get(agency));
+				Map<SiteId,SiteData> agencyDataMap= ds.getSiteData(agencySitesMap.get(agency), hardRefresh);
 				
 				Collection<SiteData> agencyData = agencyDataMap.values();
 				

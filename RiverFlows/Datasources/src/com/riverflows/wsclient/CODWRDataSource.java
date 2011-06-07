@@ -2,6 +2,7 @@ package com.riverflows.wsclient;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
@@ -17,6 +18,7 @@ import java.util.TimeZone;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -106,7 +108,7 @@ public class CODWRDataSource implements RESTDataSource {
 	}
 	
 	@Override
-	public Map<SiteId, SiteData> getSiteData(List<Favorite> favorites)
+	public Map<SiteId, SiteData> getSiteData(List<Favorite> favorites, boolean hardRefresh)
 			throws ClientProtocolException, IOException {
 		Map<SiteId,SiteData> result = new HashMap<SiteId,SiteData>();
 		Variable[] variables = new Variable[1];
@@ -117,7 +119,7 @@ public class CODWRDataSource implements RESTDataSource {
 				continue;
 			}
 			
-			SiteData newdata = getSiteData(favorite.getSite(), variables, 3, new Date(), null);
+			SiteData newdata = getSiteData(favorite.getSite(), variables, 3, new Date(), null, hardRefresh);
 			
 			SiteData existingData = result.get(favorite.getSite().getSiteId());
 			
@@ -131,7 +133,7 @@ public class CODWRDataSource implements RESTDataSource {
 		return result;
 	}
 	
-	public SiteData getSiteData(Site site, Variable[] variableTypes) throws ClientProtocolException, IOException {
+	public SiteData getSiteData(Site site, Variable[] variableTypes, boolean hardRefresh) throws ClientProtocolException, IOException {
 
 		GregorianCalendar startDate = new GregorianCalendar();
 		startDate.setTime(new Date());
@@ -150,11 +152,11 @@ public class CODWRDataSource implements RESTDataSource {
 			variableTypes = trimmedVarTypes;
 		}
 		
-		return getSiteData(site, variableTypes, 1, startDate.getTime(), new Date());
+		return getSiteData(site, variableTypes, 1, startDate.getTime(), new Date(), hardRefresh);
 	}
 	
 
-	public SiteData getSiteData(Site site, Variable[] variableTypes, int interval, Date startDate, Date endDate) throws ClientProtocolException, IOException {
+	public SiteData getSiteData(Site site, Variable[] variableTypes, int interval, Date startDate, Date endDate, boolean hardRefresh) throws ClientProtocolException, IOException {
 
 		String[] variableIds = new String[variableTypes.length];
 		for(int a = 0; a < variableIds.length; a++) {
@@ -172,10 +174,10 @@ public class CODWRDataSource implements RESTDataSource {
 			sourceUrl += "&END=" + rangeDateFormat.format(endDate);
 		}
 		
-		return getSiteData(site, variableTypes, sourceUrl);
+		return getSiteData(site, variableTypes, sourceUrl, hardRefresh);
 	}
 	
-	private SiteData getSiteData(Site site, Variable[] variables, String urlStr) throws ClientProtocolException, IOException {
+	private SiteData getSiteData(Site site, Variable[] variables, String urlStr, boolean hardRefresh) throws ClientProtocolException, IOException {
 		
 		if(LOG.isInfoEnabled()) LOG.info("site data URL: " + urlStr);
 		
@@ -188,9 +190,18 @@ public class CODWRDataSource implements RESTDataSource {
 			long startTime = System.currentTimeMillis();
 			
 			HttpGet getCmd = new HttpGet(urlStr);
-			HttpResponse response = httpClientWrapper.doGet(getCmd);
+			HttpResponse response = httpClientWrapper.doGet(getCmd, hardRefresh);
 			contentInputStream = response.getEntity().getContent();
-			bufferedStream = new BufferedInputStream(contentInputStream, 8192);
+
+			Header cacheFileHeader = response.getLastHeader(HttpClientWrapper.PN_CACHE_FILE);
+			
+			if(cacheFileHeader == null) {
+				bufferedStream = new BufferedInputStream(contentInputStream, 8192);
+			} else {
+				File cacheFile = new File(cacheFileHeader.getValue());
+				bufferedStream = new CachingBufferedInputStream(contentInputStream, 8192, cacheFile);
+			}
+			
 			data = parse(site, variables, bufferedStream, urlStr);
 			
 			if(LOG.isInfoEnabled()) LOG.info("loaded site data in " + (System.currentTimeMillis() - startTime) + "ms");

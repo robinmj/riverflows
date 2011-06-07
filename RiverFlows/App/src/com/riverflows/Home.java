@@ -10,16 +10,25 @@ import android.os.Bundle;
 import android.view.Window;
 import android.widget.TabHost;
 
+import com.riverflows.db.CachingHttpClientWrapper;
 import com.riverflows.db.DatasetsDaoImpl;
 import com.riverflows.db.DbMaintenance;
 import com.riverflows.db.FavoritesDaoImpl;
+import com.riverflows.wsclient.DataSourceController;
 
 public class Home extends TabActivity {
+	
+	/**
+	 * 20 minutes
+	 */
+	public static final long CACHE_TTL = 20 * 60 * 1000;
 	
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    
-	    //Logger.getLogger("").setLevel(Level.WARNING);
+		DataSourceController.setHttpClientWrapper(new CachingHttpClientWrapper(getApplicationContext(), getCacheDir(), CACHE_TTL));
+	    
+	    Logger.getLogger("").setLevel(Level.WARNING);
 	    
 	    requestWindowFeature(Window.FEATURE_NO_TITLE);
 	    setContentView(R.layout.main);
@@ -44,12 +53,17 @@ public class Home extends TabActivity {
 
 	    DbMaintenance.upgradeIfNecessary(getApplicationContext());
 	    
-	    DatasetsDaoImpl.deleteExpiredDatasets(getApplicationContext());
-	    
 	    if(FavoritesDaoImpl.hasFavorites(getCurrentActivity())) {
 	    	tabHost.setCurrentTab(1);
 	    } else {
 	    	tabHost.setCurrentTab(0);
 	    }
+	}
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+	    
+	    DatasetsDaoImpl.deleteExpiredDatasets(getApplicationContext(), getCacheDir());
 	}
 }

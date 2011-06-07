@@ -2,6 +2,7 @@ package com.riverflows.wsclient;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
@@ -19,6 +20,7 @@ import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -143,7 +145,7 @@ public class UsgsCsvDataSource implements RESTDataSource {
 	}
 	
 	@Override
-	public Map<SiteId, SiteData> getSiteData(List<Favorite> favorites)
+	public Map<SiteId, SiteData> getSiteData(List<Favorite> favorites, boolean hardRefresh)
 			throws ClientProtocolException, IOException {
 		Site[] sitesArray = new Site[favorites.size()];
 		Variable[] vars = new Variable[favorites.size()];
@@ -152,7 +154,7 @@ public class UsgsCsvDataSource implements RESTDataSource {
 			vars[a] = getVariable(favorites.get(a).getVariable());
 		}
 		
-		Map<SiteId,SiteData> result = getSiteData(sitesArray, vars, true);
+		Map<SiteId,SiteData> result = getSiteData(sitesArray, vars, true, hardRefresh);
 		
 		//since we can't associate variables with sites when retrieving data,
 		// datasets for variables not explicitly specified by the favorite will
@@ -189,7 +191,7 @@ public class UsgsCsvDataSource implements RESTDataSource {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public Map<SiteId, SiteData> getSiteData(USState state, Site[] sites)
+	public Map<SiteId, SiteData> getSiteData(USState state, Site[] sites, boolean hardRefresh)
 			throws ClientProtocolException, IOException {
 		
 		String[] variableTypes = new String[ACCEPTED_VARIABLES.length];
@@ -200,21 +202,21 @@ public class UsgsCsvDataSource implements RESTDataSource {
 		String sourceSite = SITE_DATA_URL + "stateCd=" + state.getAbbrev();
 		sourceSite += "&parameterCd=" + Utils.join(",", variableTypes);
 
-		return getSiteData(sites, ACCEPTED_VARIABLES, sourceSite);
+		return getSiteData(sites, ACCEPTED_VARIABLES, sourceSite, hardRefresh);
 	}
 	
 	@Override
 	public SiteData getSiteData(Site site,
-			Variable[] variableTypes) throws ClientProtocolException,
+			Variable[] variableTypes, boolean hardRefresh) throws ClientProtocolException,
 			IOException {
-		Map<SiteId,SiteData> result = getSiteData(new Site[]{site}, variableTypes, false);
+		Map<SiteId,SiteData> result = getSiteData(new Site[]{site}, variableTypes, false, hardRefresh);
 		if(result == null) {
 			return null;
 		}
 		return result.get(site.getSiteId());
 	}
 
-	public Map<SiteId,SiteData> getSiteData(Site[] sites, Variable[] variableTypes, boolean singleReading) throws ClientProtocolException, IOException {
+	public Map<SiteId,SiteData> getSiteData(Site[] sites, Variable[] variableTypes, boolean singleReading, boolean hardRefresh) throws ClientProtocolException, IOException {
 		
 		//remove duplicate sites
 		Set<String> siteIdsSet = new HashSet<String>(sites.length);
@@ -239,7 +241,7 @@ public class UsgsCsvDataSource implements RESTDataSource {
 			sourceUrl += "&period=P7D";
 		}
 		
-		return getSiteData(sites, variableTypes, sourceUrl);
+		return getSiteData(sites, variableTypes, sourceUrl, hardRefresh);
 	}
 	
 	/*
@@ -251,7 +253,7 @@ public class UsgsCsvDataSource implements RESTDataSource {
 		return getSiteData(sourceSite);
 	}*/
 	
-	private Map<SiteId,SiteData> getSiteData(Site[] sites, Variable[] variables, String urlStr) throws ClientProtocolException, IOException {
+	private Map<SiteId,SiteData> getSiteData(Site[] sites, Variable[] variables, String urlStr, boolean hardRefresh) throws ClientProtocolException, IOException {
 		
 		if(LOG.isInfoEnabled()) LOG.info("site data URL: " + urlStr);
 		
@@ -264,9 +266,18 @@ public class UsgsCsvDataSource implements RESTDataSource {
 			long startTime = System.currentTimeMillis();
 			
 			HttpGet getCmd = new HttpGet(urlStr);
-			HttpResponse response = httpClientWrapper.doGet(getCmd);
+			HttpResponse response = httpClientWrapper.doGet(getCmd, hardRefresh);
 			contentInputStream = response.getEntity().getContent();
-			bufferedStream = new BufferedInputStream(contentInputStream, 8192);
+
+			Header cacheFileHeader = response.getLastHeader(HttpClientWrapper.PN_CACHE_FILE);
+			
+			if(cacheFileHeader == null) {
+				bufferedStream = new BufferedInputStream(contentInputStream, 8192);
+			} else {
+				File cacheFile = new File(cacheFileHeader.getValue());
+				bufferedStream = new CachingBufferedInputStream(contentInputStream, 8192, cacheFile);
+			}
+			
 			data = parse(sites, variables, bufferedStream, urlStr);
 			
 			if(LOG.isInfoEnabled()) LOG.info("loaded site data in " + (System.currentTimeMillis() - startTime) + "ms");

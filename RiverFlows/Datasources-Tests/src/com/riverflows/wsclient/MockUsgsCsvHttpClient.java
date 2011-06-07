@@ -22,7 +22,7 @@ public class MockUsgsCsvHttpClient implements HttpClientWrapper {
 	public static File sourceDir = new File("testdata/usgs/csv/");
 	
 	@Override
-	public HttpResponse doGet(HttpGet getCmd) throws ClientProtocolException,
+	public HttpResponse doGet(HttpGet getCmd, boolean hardRefresh) throws ClientProtocolException,
 			IOException {
 		String requestUrl = getCmd.getURI().toString();
 		

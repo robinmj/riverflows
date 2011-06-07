@@ -3,13 +3,18 @@ package com.riverflows.db;
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+
+import com.riverflows.data.USState;
 
 public class RiverFlowsContentProvider extends ContentProvider {
 	
 	public static final Uri CONTENT_URI = 
         Uri.parse("content://com.riverflows");
 
+	public static final String sitesPathPrefix = "/sites/";
+	
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
 		// TODO Auto-generated method stub
@@ -37,7 +42,16 @@ public class RiverFlowsContentProvider extends ContentProvider {
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
-		// TODO Auto-generated method stub
+		if(uri.getPath().startsWith(sitesPathPrefix)) {
+			if(selection.equals("state")) {
+				USState state = USState.getUSStateText(selectionArgs[1]);
+				
+				RiverGaugesDb helper = new RiverGaugesDb(getContext());
+				SQLiteDatabase db = helper.getReadableDatabase();
+//				return db.query(SitesDaoImpl.NAME, new String[] { ID, SITE_ID, SITE_NAME, AGENCY, TIME_FOUND, LAST_READING, LAST_READING_TIME, LAST_READING_VAR, SUPPORTED_VARS },
+//						STATE + " = ?", new String[] {state.getAbbrev()}, null, null, SITE_NAME + " COLLATE NOCASE");
+			}
+		}
 		return null;
 	}
 
