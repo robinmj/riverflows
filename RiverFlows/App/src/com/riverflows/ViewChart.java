@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -434,7 +435,11 @@ public class ViewChart extends Activity {
 			if(variable.equals(otherVariables[a])) {
 				continue;
 			}
-			menu.add(1,a,a,otherVariables[a].getName() + ", " + otherVariables[a].getCommonVariable().getUnit());
+			if(TextUtils.isEmpty(otherVariables[a].getCommonVariable().getUnit())) {
+				menu.add(1,a,a,otherVariables[a].getName());
+			} else {
+				menu.add(1,a,a,otherVariables[a].getName() + ", " + otherVariables[a].getCommonVariable().getUnit());
+			}
 		}
 	}
 	
