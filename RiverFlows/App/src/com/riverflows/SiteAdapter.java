@@ -25,6 +25,7 @@ import com.riverflows.wsclient.AHPSXmlDataSource;
 import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.UsgsCsvDataSource;
+import com.riverflows.Utils;
 
 public class SiteAdapter extends BaseAdapter implements Filterable {
 	
@@ -132,24 +133,13 @@ public class SiteAdapter extends BaseAdapter implements Filterable {
             		holder.subtext.setText(lastReading.getQualifiers());
         		}
         	} else {
-        		String readingStr = null;
+
+        		//use this many significant figures for decimal values
+    			int sigfigs = 4;
+    			
+    			String readingStr = Utils.abbreviateNumber(lastReading.getValue(), sigfigs);
         		
-        		if(lastReading.getValue() >= 100.0d) {
-        			//round down to the nearest whole number, drop the trailing zero
-        			readingStr = lastReading.getValue().intValue() + " ";
-        		} else {
-            		//round down to 4 significant figures
-        			int sigfigs = 4;
-            		double value = lastReading.getValue();
-            		double magnitude = Math.pow(10, sigfigs - Math.ceil(Math.log10(Math.abs(value))));
-            		value = Math.floor(value * magnitude);
-            		value = value / magnitude;
-        			
-            		//drop the trailing zero if it is not a significant figure
-            		readingStr = ((value >= Math.log10(sigfigs - 1)) ? (int)value : value) + " ";
-        		}
-        		
-        		holder.subtext.setText(readingStr + flowSeries.getVariable().getUnit());
+        		holder.subtext.setText(readingStr + " " + flowSeries.getVariable().getUnit());
         	}
         
         	//TODO come up with a better way of conveying a stale reading

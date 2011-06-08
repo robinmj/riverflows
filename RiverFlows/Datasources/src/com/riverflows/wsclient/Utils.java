@@ -50,4 +50,30 @@ public class Utils {
 		
 		return result.toString();
 	}
+	
+	public static String abbreviateNumber(double number, int sigfigs) {
+		
+		if(number == 0.0) {
+			return "0";
+		}
+		
+		double value = number;
+		double magnitude = Math.log10(Math.abs(value));
+		
+		if(magnitude >= (sigfigs - 1)) {
+			//round down to the nearest whole number, drop the trailing zero
+			return ((int)number) + "";
+		}
+		
+		double factor = Math.pow(10, sigfigs - Math.ceil(magnitude));
+		
+		if(value > 0.0) {
+			value = Math.floor(value * factor);
+		} else {
+			value = Math.ceil(value * factor);
+		}
+		value = value / factor;
+		
+		return value + "";
+	}
 }
