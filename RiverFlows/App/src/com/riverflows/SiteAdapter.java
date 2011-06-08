@@ -25,7 +25,7 @@ import com.riverflows.wsclient.AHPSXmlDataSource;
 import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.UsgsCsvDataSource;
-import com.riverflows.Utils;
+import com.riverflows.wsclient.Utils;
 
 public class SiteAdapter extends BaseAdapter implements Filterable {
 	
