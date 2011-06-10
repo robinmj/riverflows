@@ -344,7 +344,7 @@ public class DataSourceController {
 		return dataSources.get(agency).getVariable(varId);
 	}
 	
-	public static final DataSource getDataSource(String agency) {
+	public static final RESTDataSource getDataSource(String agency) {
 		return dataSources.get(agency);
 	}
 	

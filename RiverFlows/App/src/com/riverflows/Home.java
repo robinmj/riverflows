@@ -26,7 +26,10 @@ public class Home extends TabActivity {
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
 	    
-		DataSourceController.setHttpClientWrapper(new CachingHttpClientWrapper(getApplicationContext(), getCacheDir(), CACHE_TTL));
+		DataSourceController.setHttpClientWrapper(new CachingHttpClientWrapper(
+				getApplicationContext(), getCacheDir(), CACHE_TTL, "text/plain"));
+		DataSourceController.getDataSource("AHPS").setHttpClientWrapper(new CachingHttpClientWrapper(
+				getApplicationContext(), getCacheDir(), CACHE_TTL, "text/xml"));
 	    
 	    Logger.getLogger("").setLevel(Level.WARNING);
 	    

@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Random;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.client.ClientProtocolException;
@@ -30,11 +31,13 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
 	private File cacheDir;
 	private long lifetimeMs;
 	private Context dbContext;
+	private String contentType;
 	
-	public CachingHttpClientWrapper(Context dbContext, File cacheDir, long lifetimeMs) {
+	public CachingHttpClientWrapper(Context dbContext, File cacheDir, long lifetimeMs, String contentType) {
 		this.cacheDir = cacheDir;
 		this.lifetimeMs = lifetimeMs;
 		this.dbContext = dbContext;
+		this.contentType = contentType;
 	}
 	
 	@Override
@@ -64,6 +67,10 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
 					    		  new ProtocolVersion("HTTP", 1, 1), 200, ""));
 						response.setStatusCode(200);
 						response.setEntity(new InputStreamEntity(new FileInputStream(cacheFile), cacheFile.length()));
+						
+						if(contentType != null) {
+							response.setHeader("Content-Type", contentType);
+						}
 						
 						return response;
 					} else {
