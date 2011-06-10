@@ -1,5 +1,6 @@
 package com.riverflows;
 
+import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -99,6 +100,10 @@ public class RiverSelect extends SiteList {
 					} catch(HttpHostConnectException hhce) {
 						setLoadErrorMsg("could not reach RiverFlows server");
 						Log.e(TAG, "",hhce);
+						return null;
+					} catch(SocketException se) {
+						setLoadErrorMsg("could not connect to RiverFlows server");
+						Log.e(TAG, "",se);
 						return null;
 					} catch(Exception e) {
 						setLoadErrorMsg(e.getMessage());
