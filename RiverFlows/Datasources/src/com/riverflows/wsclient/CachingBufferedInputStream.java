@@ -22,6 +22,7 @@ class CachingBufferedInputStream extends BufferedInputStream {
 	
 	@Override
 	public synchronized int read() throws IOException {
+		//WARNING: super.read() better not call one of the other read() methods!
 		int ch = super.read();
 		if(ch != -1) {
 			cacheFile.write(ch);
@@ -33,13 +34,7 @@ class CachingBufferedInputStream extends BufferedInputStream {
 	
 	@Override
 	public int read(byte[] buffer) throws IOException {
-		int count = super.read(buffer);
-		if(count != -1) {
-			cacheFile.write(buffer, 0, count);
-		} else {
-			cacheFile.close();
-		}
-		return count;
+		return this.read(buffer, 0, buffer.length);
 	}
 	
 	@Override
@@ -52,5 +47,25 @@ class CachingBufferedInputStream extends BufferedInputStream {
 			cacheFile.close();
 		}
 		return count;
+	}
+	
+	@Override
+	public synchronized void mark(int readlimit) {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public boolean markSupported() {
+		return false;
+	}
+	
+	@Override
+	public synchronized void reset() throws IOException {
+		throw new UnsupportedOperationException();
+	}
+	
+	@Override
+	public synchronized long skip(long amount) throws IOException {
+		throw new UnsupportedOperationException();
 	}
 }
