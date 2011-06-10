@@ -160,6 +160,7 @@ public class ViewChart extends Activity {
 			if(errorMsg == null) {
 				errorMsg = "Error: No Data";
 			}
+			//TODO address BadTokenException thrown here
 			showDialog(DIALOG_ID_LOADING_ERROR);
             progressBar.setVisibility(View.GONE);
             initContingencyFavoriteBtn(favoriteBtn);
@@ -347,6 +348,9 @@ public class ViewChart extends Activity {
             } catch(DataParseException dpe) {
             	errorMsg = "Could not process data from " + station + "; " + dpe.getMessage();
             	Log.e(TAG, station.toString(), dpe);
+            } catch(Exception e) {
+            	errorMsg = "Error loading data from " + station + "; " + e.getMessage();
+            	Log.e(TAG, station.toString(), e);
             }
             return result;
     	}
