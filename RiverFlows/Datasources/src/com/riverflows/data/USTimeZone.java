@@ -17,7 +17,9 @@ public enum USTimeZone {
 	AKDT("GMT-08:00"),
 	AKST("GMT-09:00"),
 	HADT("GMT-09:00"),
-	HAST("GMT-10:00");
+	HDT("GMT-09:00"),
+	HAST("GMT-10:00"),
+	HST("GMT-10:00");
 	
 	private String offsetString;
 	
