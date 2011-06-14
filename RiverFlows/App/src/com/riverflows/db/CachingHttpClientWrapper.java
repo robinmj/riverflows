@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.Random;
 
-import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.ProtocolVersion;
 import org.apache.http.client.ClientProtocolException;
@@ -48,16 +47,15 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
 		
 		File cacheFile = null;
 		
-		if(!hardRefresh) {
-			//try to build a response from a cache entry
+		String requestUrl = getCmd.getURI().toString();
+		
+		CachedDataset cacheEntry = DatasetsDaoImpl.getDataset(dbContext, requestUrl);
+		
+		if(cacheEntry != null) {
+			cacheFile = new File(cacheDir, cacheEntry.getCacheFileName());
 			
-			String requestUrl = getCmd.getURI().toString();
-			
-			CachedDataset cacheEntry = DatasetsDaoImpl.getDataset(dbContext, requestUrl);
-			
-			if(cacheEntry != null) {
-				
-				cacheFile = new File(cacheDir, cacheEntry.getCacheFileName());
+			if(!hardRefresh) {
+				//try to build a response from a cache entry
 
 				if(cacheEntry.getTimestamp().after(new Date(System.currentTimeMillis() - lifetimeMs))) {
 					if(cacheFile.exists()) {
@@ -79,9 +77,9 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
 				} else {
 					Log.d(TAG, "expired cache entry");
 				}
-			} else {
-				Log.d(TAG, "cache miss");
 			}
+		} else {
+			Log.d(TAG, "cache miss");
 		}
 
 		//no cached response found- make a new request
@@ -92,14 +90,15 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
 		
 		if(cacheFile == null) {
 			cacheFile = new File(cacheDir, "" + filenameGenerator.nextLong());
+			
 			DatasetsDaoImpl.saveDataset(dbContext, url, cacheFile.getName());
+			
+			response.addHeader(PN_CACHE_FILE, cacheFile.getAbsolutePath());
 		} else {
 			DatasetsDaoImpl.updateDatasetTimestamp(dbContext, url);
 		}
 		
 		Log.i(TAG, "caching " + url + " to " + cacheFile.getAbsolutePath());
-		
-		response.addHeader(PN_CACHE_FILE, cacheFile.getAbsolutePath());
 		
 		return response;
 	}
