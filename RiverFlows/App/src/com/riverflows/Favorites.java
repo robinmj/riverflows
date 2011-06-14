@@ -84,9 +84,10 @@ public class Favorites extends ListActivity {
 		super.onStart();
 		
 		//discard the cached list items after 2 hours
-		if((System.currentTimeMillis() - this.loadTask.loadTime.getTime()) > (2 * 60 * 60 * 1000)
-				|| FavoritesDaoImpl.hasNewFavorites(getApplicationContext(), getLastLoadTime())) {
+		if((System.currentTimeMillis() - this.loadTask.loadTime.getTime()) > (2 * 60 * 60 * 1000)) {
 			loadSites(true);
+		} else if(FavoritesDaoImpl.hasNewFavorites(getApplicationContext(), getLastLoadTime())) {
+			loadSites(false);
 		}
 	}
 	
