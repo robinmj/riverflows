@@ -76,6 +76,7 @@ public class DatasetsDaoImpl {
 						int datasetId = c.getInt(0);
 						Log.i(TAG, "deleting dataset " + datasetId);
 						File datasetFile = new File(dataDir, c.getString(1));
+						Log.i(TAG, "deleting dataset file: " + datasetFile);
 						if(!datasetFile.delete()) {
 							Log.e(TAG, "failed to delete dataset file: " + datasetFile);
 						}
