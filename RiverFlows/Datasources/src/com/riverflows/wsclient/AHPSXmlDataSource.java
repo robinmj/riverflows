@@ -89,19 +89,19 @@ public class AHPSXmlDataSource implements RESTDataSource {
 	}
 	
 	private class GetFavoriteDataThread extends Thread {
-		Favorite favorite;
+		public ArrayList<Favorite> favorites = new ArrayList<Favorite>();
 		IOException ioe;
 		SiteData favData;
 		boolean complete = false;
 		
 		public GetFavoriteDataThread(Favorite f) {
-			this.favorite = f;
+			this.favorites.add(f);
 		}
 		
 		@Override
 		public void run() {
 			try {
-				this.favData = getSiteData(favorite.getSite(), null, true);
+				this.favData = getSiteData(favorites.get(0).getSite(), null, true);
 				
 				//limit data returned to the variables associated with the favorites
 				//TODO don't throw this data away- filter in the UI instead
@@ -109,11 +109,17 @@ public class AHPSXmlDataSource implements RESTDataSource {
 				while(datasets.hasNext()) {
 					Entry<CommonVariable,Series> curDataset = datasets.next();
 					
-					if(favorite.getVariable().equals(curDataset.getValue().getVariable().getId())) {
-						continue;
+					boolean found = false;
+					for(Favorite favorite: favorites) {
+						if(favorite.getVariable().equals(curDataset.getValue().getVariable().getId())) {
+							found = true;
+							break;
+						}
 					}
 					
-					datasets.remove();
+					if(!found) {
+						datasets.remove();
+					}
 				}
 			} catch(IOException ioe) {
 				this.ioe = ioe;
@@ -128,18 +134,30 @@ public class AHPSXmlDataSource implements RESTDataSource {
 		
 		HashMap<SiteId, SiteData> result = new HashMap<SiteId, SiteData>();
 		
-		List<GetFavoriteDataThread> threads = new ArrayList<GetFavoriteDataThread>(sites.size());
+		Map<SiteId, GetFavoriteDataThread> threads = new HashMap<SiteId, GetFavoriteDataThread>(sites.size());
 		
-		//call each request in a separate thread
+		//make a different request for each SiteId
 		for(Favorite currentFav: sites) {
-			GetFavoriteDataThread t = new GetFavoriteDataThread(currentFav);
-			threads.add(t);
-			t.start();
+			GetFavoriteDataThread t = threads.get(currentFav.getSite().getSiteId());
+			
+			if(t == null) {
+				t = new GetFavoriteDataThread(currentFav);
+				threads.put(currentFav.getSite().getSiteId(), t);
+			} else {
+				t.favorites.add(currentFav);
+			}
+		}
+		
+		//start all the threads
+		Iterator<GetFavoriteDataThread> threadsI = threads.values().iterator();
+		while(threadsI.hasNext()) {
+			GetFavoriteDataThread currentThread = threadsI.next();
+			currentThread.start();
 		}
 		
 		while(threads.size() > 0) {
 			//poll the threads until they're all complete
-			Iterator<GetFavoriteDataThread> threadsI = threads.iterator();
+			threadsI = threads.values().iterator();
 			while(threadsI.hasNext()) {
 				GetFavoriteDataThread currentThread = threadsI.next();
 				try {
@@ -155,7 +173,7 @@ public class AHPSXmlDataSource implements RESTDataSource {
 						throw currentThread.ioe;
 					}
 					
-					result.put(currentThread.favorite.getSite().getSiteId(), currentThread.favData);
+					result.put(currentThread.favorites.get(0).getSite().getSiteId(), currentThread.favData);
 					threadsI.remove();
 				}
 			}
@@ -522,8 +540,7 @@ public class AHPSXmlDataSource implements RESTDataSource {
 	
 	private String getDataInfo(Site site, String srcUrl, String standing) {
 		StringBuilder info = new StringBuilder();
-		info.append("<h2>" + site.getName() + " (" + site.getId() + ")</h2>");
-		info.append("<p>url: " + srcUrl + "</p>");
+		info.append("<h2> <a href=\"" + srcUrl + "\">" + site.getName() + " (" + site.getId() + ")</a></h2>");
 		info.append("<h4>Source: <a href=\"http://water.weather.gov/ahps/\">NOAA Advanced Hydrologic Prediction Service</a></h4>");
 		if(standing != null) {
 			info.append("<p><b>" + standing + "</b></p>");
