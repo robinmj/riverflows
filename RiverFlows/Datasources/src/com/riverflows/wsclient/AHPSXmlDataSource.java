@@ -96,6 +96,7 @@ public class AHPSXmlDataSource implements RESTDataSource {
 		
 		public GetFavoriteDataThread(Favorite f) {
 			this.favorites.add(f);
+			setName("loadfav-" + f.getSite().getId() + "-" + f.getVariable());
 		}
 		
 		@Override
