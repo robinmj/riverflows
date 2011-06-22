@@ -108,7 +108,7 @@ public class DatasetsDaoImpl {
 					+ NAME + "." + URL + ", "
 					+ FILE + ", "
 					+ TIMESTAMP + " FROM " + NAME + " WHERE "
-					+ URL + " = ?",
+					+ URL + " = ? ORDER BY " + TIMESTAMP + " DESC",
 					new String[]{"" + url});
 			
 			if(c.getCount() > 0) {
@@ -154,7 +154,7 @@ public class DatasetsDaoImpl {
     	return null;
     }
     
-    public static void updateDatasetTimestamp(Context ctx, String url) {
+    public static void updateDatasetTimestamp(Context ctx, String url, String fileName) {
 		RiverGaugesDb helper = new RiverGaugesDb(ctx);
 		SQLiteDatabase db = helper.getReadableDatabase();
 		
@@ -162,7 +162,7 @@ public class DatasetsDaoImpl {
 		datasetRow.put(TIMESTAMP, new Date().getTime());
 		
 		try {
-			db.update(NAME, datasetRow, URL + " = ?", new String[]{ url });
+			db.update(NAME, datasetRow, URL + " = ? AND " + FILE + " = ?", new String[]{ url, fileName });
 		} catch (Throwable t) {
 			throw new RuntimeException(t);
 		} finally {
