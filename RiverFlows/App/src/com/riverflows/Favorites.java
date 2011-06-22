@@ -63,7 +63,7 @@ public class Favorites extends ListActivity {
 		
 		if(this.loadTask != null) {
 			if(!this.loadTask.running) {
-				if(this.loadTask.gauges == null) {
+				if(this.loadTask.gauges == null || this.loadTask.errorMsg != null) {
 					loadSites(false);
 				} else {
 					displayFavorites();
@@ -443,7 +443,9 @@ public class Favorites extends ListActivity {
 		@Override
 		protected void onPostExecute(List<SiteData> result) {
 			super.onPostExecute(result);
-			this.gauges = result;
+			if(result != null) {
+				this.gauges = result;
+			}
 			Favorites.this.displayFavorites();
 			running = false;
 		}
