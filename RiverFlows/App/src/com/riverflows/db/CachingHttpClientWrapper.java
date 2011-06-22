@@ -92,11 +92,11 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
 			cacheFile = new File(cacheDir, "" + filenameGenerator.nextLong());
 			
 			DatasetsDaoImpl.saveDataset(dbContext, url, cacheFile.getName());
-			
-			response.addHeader(PN_CACHE_FILE, cacheFile.getAbsolutePath());
 		} else {
-			DatasetsDaoImpl.updateDatasetTimestamp(dbContext, url);
+			DatasetsDaoImpl.updateDatasetTimestamp(dbContext, url, cacheEntry.getCacheFileName());
 		}
+		
+		response.addHeader(PN_CACHE_FILE, cacheFile.getAbsolutePath());
 		
 		Log.i(TAG, "caching " + url + " to " + cacheFile.getAbsolutePath());
 		
