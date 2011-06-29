@@ -7,6 +7,7 @@ import java.util.Random;
 
 import android.test.AndroidTestCase;
 
+import com.riverflows.data.CachedDataset;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
@@ -97,24 +98,12 @@ public class DatasetsDaoTest extends AndroidTestCase {
 		
 		int siteId = testSite.getSiteId().getPrimaryKey();
 		
-		DatasetsDaoImpl.saveDataset(getContext(), siteId, testDataSet);
+		String fileName = "" + System.currentTimeMillis();
 		
-		Series result = DatasetsDaoImpl.getDataset(getContext(), siteId, var.getId());
+		DatasetsDaoImpl.saveDataset(getContext(), "" + siteId, fileName);
 		
-		assertEquals(result.getVariable().getId(), var.getId());
+		CachedDataset result = DatasetsDaoImpl.getDataset(getContext(), "" + siteId);
 		
-		Reading r0 = result.getReadings().get(0);
-		assertEquals(1.4d, r0.getValue());
-		assertEquals("",r0.getQualifiers());
-		
-		Reading r1 = result.getReadings().get(1);
-		assertEquals(5.4d, r1.getValue());
-		assertEquals("Ice", r1.getQualifiers());
-		
-		Reading r2 = result.getReadings().get(2);
-		assertEquals(0.4d, r2.getValue());
-		assertEquals("",r2.getQualifiers());
-		
-		assertEquals(3, result.getReadings().size());
+		assertNotNull(result);
 	}
 }

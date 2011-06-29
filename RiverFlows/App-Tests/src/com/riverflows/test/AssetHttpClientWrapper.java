@@ -41,8 +41,8 @@ public abstract class AssetHttpClientWrapper extends MockUsgsCsvHttpClient {
 	}
 	
 	@Override
-	public HttpResponse doGet(HttpGet getCmd) throws ClientProtocolException,
-			IOException {
+	public HttpResponse doGet(HttpGet getCmd, boolean hardRefresh) throws ClientProtocolException,
+	IOException {
 		String fileName = getFileNameFromUrl(getCmd.getURI().toString());
 		
 		try {
