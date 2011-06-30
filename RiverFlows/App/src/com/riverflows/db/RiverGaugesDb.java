@@ -101,9 +101,9 @@ class RiverGaugesDb extends SQLiteOpenHelper {
 			//db.execSQL(ReadingsDaoImpl.CREATE_SQL);
 		}
 		if(fromVersion < 5) {
-			db.execSQL("DROP TABLE " + DatasetsDaoImpl.NAME + ";");
+			db.execSQL("DROP TABLE IF EXISTS " + DatasetsDaoImpl.NAME + ";");
 			db.execSQL(DatasetsDaoImpl.CREATE_SQL);
-			db.execSQL("DROP TABLE readings;");
+			db.execSQL("DROP TABLE IF EXISTS readings;");
 		}
 	}
 
