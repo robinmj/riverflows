@@ -56,6 +56,8 @@ public class Favorites extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		setContentView(R.layout.favorites);
 
 		ListView lv = getListView();
 		lv.setTextFilterEnabled(true);

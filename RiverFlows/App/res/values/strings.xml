@@ -4,4 +4,8 @@
     <string name="variable_context_menu_title">Other Measurements At This Site</string>
     <string name="list_filter_tip">press and hold the &quot;menu&quot; button or start typing to filter by name</string>
     <string name="add_favorite_confirmation">the gauge {0} at {1} has been added to your favorites</string>
+    <string name="favorite_instructions_title">Welcome to RiverFlows!</string>
+    <string name="favorite_instructions_subheader">You have not yet selected any favorite gauges.</string>
+    <string name="favorite_instructions">To select a favorite gauge, browse by state, touch-hold the site you are interested in, and select &quot;Add To Favorites&quot; from the context menu.</string>
+    <string name="favorite_instructions_2">Alternatively, a gauge can be flagged as a favorite by touching the star in the upper right-hand corner of the graph screen.</string>
 </resources>
