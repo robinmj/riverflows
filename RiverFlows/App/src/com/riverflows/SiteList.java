@@ -15,6 +15,8 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -25,6 +27,7 @@ import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.WindowManager.BadTokenException;
 import android.widget.AdapterView;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -58,6 +61,21 @@ public abstract class SiteList extends ListActivity {
 	
 	private LoadSitesTask loadTask = null;
 	private String errorMsg = null;
+	
+	private TextWatcher filterFieldWatcher = new TextWatcher() {
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count,
+                int after) { }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            ((SiteAdapter)getListAdapter()).getFilter().filter(s.toString());
+
+        }
+    };
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
@@ -111,6 +129,8 @@ public abstract class SiteList extends ListActivity {
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		setContentView(R.layout.site_list);
+		
 		/* probably not necessary anymore now that we can reload on a state-by-state basis
 		//check to see if the master list needs to be reloaded
 		SharedPreferences prefs = getPreferences(MODE_PRIVATE);
@@ -124,6 +144,9 @@ public abstract class SiteList extends ListActivity {
 
 		ListView lv = getListView();
 		lv.setTextFilterEnabled(true);
+
+		EditText siteFilterField = (EditText)findViewById(R.id.site_filter_field);
+		siteFilterField.addTextChangedListener(filterFieldWatcher);
 
         //see onRetainNonConfigurationInstance()
     	final Object[] data = (Object[])getLastNonConfigurationInstance();

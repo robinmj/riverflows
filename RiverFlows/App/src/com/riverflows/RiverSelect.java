@@ -120,15 +120,6 @@ public class RiverSelect extends SiteList {
 		        
 		        return sites;
 			}
-			
-			@Override
-			protected void onPostExecute(List<SiteData> result) {
-				super.onPostExecute(result);
-
-				if(result != null ) {
-					Toast.makeText(getApplicationContext(),  R.string.list_filter_tip, Toast.LENGTH_LONG).show();
-				}
-			}
 		};
 	}
 }
