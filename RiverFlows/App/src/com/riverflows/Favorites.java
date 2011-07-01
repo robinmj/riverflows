@@ -60,6 +60,9 @@ public class Favorites extends ListActivity {
 		setContentView(R.layout.favorites);
 
 		ListView lv = getListView();
+		
+		lv.getEmptyView().setVisibility(View.INVISIBLE);
+		
 		lv.setTextFilterEnabled(true);
 		this.loadTask = getLastNonConfigurationInstance();
 		
@@ -207,6 +210,8 @@ public class Favorites extends ListActivity {
 			currentGauges = this.loadTask.gauges;
 		}
 		
+		getListView().getEmptyView().setVisibility(View.INVISIBLE);
+		
 		this.loadTask = new LoadSitesTask();
 		
 		//preserve existing gauges in case load fails
@@ -232,6 +237,8 @@ public class Favorites extends ListActivity {
 					Log.i(TAG, "can't display dialog; activity no longer active");
 				}
 			}
+		} else if(this.loadTask.gauges.size() == 0) {
+			getListView().getEmptyView().setVisibility(View.VISIBLE);
 		}
 	}
 
