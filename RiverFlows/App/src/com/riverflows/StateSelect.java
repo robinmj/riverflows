@@ -4,33 +4,49 @@ import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.Toast;
 
 import com.riverflows.data.USState;
 
 public class StateSelect extends ListActivity {
 	
+	private TextWatcher filterFieldWatcher = new TextWatcher() {
+        @Override
+        public void onTextChanged(CharSequence s, int start, int before, int count) { }
+
+        @Override
+        public void beforeTextChanged(CharSequence s, int start, int count,
+                int after) { }
+
+        @Override
+        public void afterTextChanged(Editable s) {
+            ((StateAdapter)getListAdapter()).getFilter().filter(s.toString());
+
+        }
+    };
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		setListAdapter(new StateAdapter(this));
+		setContentView(R.layout.state_select);
+		
+		StateAdapter adapter = new StateAdapter(this);
+		setListAdapter(adapter);
 
 		ListView lv = getListView();
 		lv.setTextFilterEnabled(true);
 		
-	}
-	
-	@Override
-	protected void onResume() {
-		super.onResume();
-		Toast.makeText(getApplicationContext(), R.string.list_filter_tip, Toast.LENGTH_LONG).show();
+		EditText stateFilterField = (EditText)findViewById(R.id.state_filter);
+		stateFilterField.addTextChangedListener(filterFieldWatcher);
 	}
 	
 	@Override
