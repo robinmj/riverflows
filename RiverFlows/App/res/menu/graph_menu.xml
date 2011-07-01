@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/mi_fit_y_axis"
+	    android:title="Fit Y Minimum to Data"
+	    android:visible="false"/>
+	<item android:id="@+id/mi_zero_y_minimum"
+	    android:title="Set Y Minimum to Zero"
+	    android:visible="false"/>
+	<item android:id="@+id/sm_other_variables"
+	    android:title="Other Measurements"
+	    android:visible="false">
+		<menu></menu>
+	</item>
+</menu>

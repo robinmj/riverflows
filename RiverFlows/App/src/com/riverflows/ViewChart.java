@@ -18,6 +18,7 @@ import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -59,6 +60,7 @@ public class ViewChart extends Activity {
 	public static final int DIALOG_ID_LOADING_ERROR = 1;
 	
 	private Site station;
+	private Boolean zeroYMin = null;
 	private Variable variable;
 	private LinearLayout chartLayout;
 	private HydroGraph chartView;
@@ -126,6 +128,7 @@ public class ViewChart extends Activity {
     		this.variable = (Variable)prevState[0];
     		this.data = (SiteData)prevState[1];
     		this.runningTask = (GenerateDataSetTask)prevState[2];
+    		this.zeroYMin = (Boolean)prevState[3];
     		clearData();
     		if(runningTask != null) {
     			this.runningTask.setActivity(this);
@@ -246,7 +249,16 @@ public class ViewChart extends Activity {
         lastReading.setText("Last Reading: " + mostRecentReadingStr + unit + ", on " + lastReadingDateFmt.format(mostRecentReadingTime));
         
         chartView = new HydroGraph(ViewChart.this);
-        chartView.setSeries(displayedSeries);
+		
+		if(zeroYMin == null) {
+			//automatically determine the y-axis ranging mode using the variable
+			chartView.setSeries(displayedSeries, variable.getCommonVariable().isGraphAgainstZeroMinimum());
+		} else if(zeroYMin) {
+			chartView.setSeries(displayedSeries, true);
+		} else {
+			chartView.setSeries(displayedSeries, false);
+		}
+        
         chartLayout.addView(chartView, new LayoutParams(LayoutParams.FILL_PARENT,
             LayoutParams.FILL_PARENT));
         
@@ -273,7 +285,7 @@ public class ViewChart extends Activity {
     
     @Override
     public Object onRetainNonConfigurationInstance() {
-        return new Object[]{variable,data,runningTask};
+        return new Object[]{variable,data,runningTask,zeroYMin};
     }
 
     @Override
@@ -291,7 +303,6 @@ public class ViewChart extends Activity {
 		private Variable variable;
 		private Site site;
 		private boolean hardRefresh = false;
-		private boolean usingCachedData = false;
     	
     	public GenerateDataSetTask(ViewChart activity, boolean hardRefresh) {
 			super();
@@ -432,7 +443,25 @@ public class ViewChart extends Activity {
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		
-		menu.setHeaderTitle(R.string.variable_context_menu_title);
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.graph_menu, menu);
+		
+		if((zeroYMin == null && variable.getCommonVariable().isGraphAgainstZeroMinimum()) || zeroYMin) {
+			MenuItem fitYAxisItem = menu.findItem(R.id.mi_fit_y_axis);
+			fitYAxisItem.setVisible(true);
+		} else {
+			MenuItem zeroYMinItem = menu.findItem(R.id.mi_zero_y_minimum);
+			zeroYMinItem.setVisible(true);
+		}
+		
+        if(ViewChart.this.station.getSupportedVariables().length <= 1) {
+        	return;
+        }
+        
+        MenuItem otherVarsMenuItem = menu.findItem(R.id.sm_other_variables);
+        otherVarsMenuItem.setVisible(true);
+        SubMenu otherVariablesMenu = otherVarsMenuItem.getSubMenu();
+        otherVariablesMenu.setHeaderTitle(R.string.variable_context_menu_title);
 		
 		Variable[] otherVariables = ViewChart.this.station.getSupportedVariables();
 		for(int a = 0; a < otherVariables.length; a++) {
@@ -440,28 +469,42 @@ public class ViewChart extends Activity {
 				continue;
 			}
 			if(TextUtils.isEmpty(otherVariables[a].getCommonVariable().getUnit())) {
-				menu.add(1,a,a,otherVariables[a].getName());
+				otherVariablesMenu.add(1,getOtherVarMenuItemId(a),a + 1,otherVariables[a].getName());
 			} else {
-				menu.add(1,a,a,otherVariables[a].getName() + ", " + otherVariables[a].getCommonVariable().getUnit());
+				otherVariablesMenu.add(1,getOtherVarMenuItemId(a),a + 1,otherVariables[a].getName() + ", " + otherVariables[a].getCommonVariable().getUnit());
 			}
 		}
+	}
+	
+	private int getOtherVarMenuItemId(int index) {
+		return (R.id.mi_fit_y_axis | R.id.mi_zero_y_minimum) + index;
+	}
+	
+	private int getOtherVarIndex(int menuItemId) {
+		return menuItemId - (R.id.mi_fit_y_axis | R.id.mi_zero_y_minimum);
 	}
 	
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		
-		Site selectedStation = null;
-		
-		Variable[] otherVariables = this.station.getSupportedVariables();
-		for(int a = 0; a < otherVariables.length; a++) {
-			if(a == item.getItemId()){
-				selectedStation =ViewChart.this.station;
-				this.variable = otherVariables[a];
-				break;
-			}
+		switch(item.getItemId()) {
+		case R.id.mi_zero_y_minimum:
+			this.zeroYMin = true;
+			clearData();
+			displayData();
+			return true;
+		case R.id.mi_fit_y_axis:
+			this.zeroYMin = false;
+			clearData();
+			displayData();
+			return true;
 		}
 		
-		if(selectedStation == null) {
+		Variable[] otherVariables = this.station.getSupportedVariables();
+		
+		try {
+			this.variable = otherVariables[getOtherVarIndex(item.getItemId())];
+		} catch(ArrayIndexOutOfBoundsException aioobe) {
 			Log.w(TAG,"no variable at index " + item.getItemId());
 			return false;
 		}

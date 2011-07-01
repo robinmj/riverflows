@@ -34,7 +34,9 @@ public class HydroGraph extends View {
 	private double yMax;
 	private double yMin;
 	
-	private boolean forceZeroMinimum = true;
+	private boolean zeroMinimum = false;
+	
+	private boolean hasLegend = false;
 	
 	//space between left side of canvas and y-axis
 	private static final int yAxisOffset = 40;
@@ -93,18 +95,10 @@ public class HydroGraph extends View {
 		return series;
 	}
 
-	public void setSeries(Series series) {
+	public void setSeries(Series series, boolean zeroMinimum) {
 		this.series = series;
 		
-		forceZeroMinimum = this.series.getVariable().getCommonVariable().isGraphAgainstZeroMinimum();
-		
-		double[] limits = getFriendlyYLimits();
-
-		this.yMin  = limits[0];
-		this.yMax  = limits[1];
-		
-		//calculate x boundaries
-        GregorianCalendar dayRangeCalc = new GregorianCalendar();
+		this.zeroMinimum = zeroMinimum;
         
         long minDate = Long.MAX_VALUE;
         long maxDate = Long.MIN_VALUE;
@@ -116,7 +110,19 @@ public class HydroGraph extends View {
         	if(curReading.getDate().getTime() > maxDate) {
         		maxDate = curReading.getDate().getTime();
         	}
+        	
+        	if(curReading instanceof Forecast) {
+        		this.hasLegend = true;
+        	}
         }
+		
+		double[] limits = getFriendlyYLimits();
+
+		this.yMin  = limits[0];
+		this.yMax  = limits[1];
+		
+		//calculate x boundaries
+        GregorianCalendar dayRangeCalc = new GregorianCalendar();
         
         //x-axis minimum is the beginning of the after the day on which the first
         // point in the series falls.  This results in up to a day's worth
@@ -202,20 +208,21 @@ public class HydroGraph extends View {
 		drawXLabels(canvas);
 		drawYLabels(canvas, 11);
 		
-		if(drawPlot(canvas)) {
+		drawPlot(canvas);
+		
+		if(this.hasLegend) {
 			drawLegend(canvas);
 		}
 	}
 	
 	/**
 	 * @param canvas
-	 * @return true if the plot contains forecasted data
 	 */
-	private boolean drawPlot(Canvas canvas) {
+	private void drawPlot(Canvas canvas) {
 		
 		if(series.getReadings() == null || series.getReadings().size() == 0) {
 			Log.e(getClass().getSimpleName(), "no data");
-			return false;
+			return;
 		}
 		
 		//find the first reading that falls within the range of the graph
@@ -236,7 +243,6 @@ public class HydroGraph extends View {
 		float nextX;
 		float nextY;
 		Paint paint = plotPaint;
-		boolean hasForecast = false;
 		Reading lastObserved = null;
 		for(;index < series.getReadings().size(); index++) {
 			Reading r = series.getReadings().get(index);
@@ -250,7 +256,6 @@ public class HydroGraph extends View {
 					continue;
 				}
 				paint = forecastPaint;
-				hasForecast = true;
 			} else {
 				lastObserved = r;
 			}
@@ -262,7 +267,6 @@ public class HydroGraph extends View {
 			prevX = nextX;
 			prevY = nextY;
 		}
-		return hasForecast;
 	}
 	
 	private float convertXValue(Date d) {
@@ -316,13 +320,13 @@ public class HydroGraph extends View {
 	    double[] limits = new double[2];
 
 		//rule of thumb for keeping the graph from being too close to the top of the grid
-	    limits[1] = maxValue + Math.abs(maxValue * 0.2d);
+	    limits[1] = maxValue + Math.abs(maxValue * (this.hasLegend ? 0.2d : 0.02d));
 		
-	    if(forceZeroMinimum) {
+	    if(zeroMinimum) {
 	    	limits[0] = 0.0d;
 	    } else {
 			//rule of thumb for keeping the graph from being too close to the bottom of the grid
-		    limits[0] = minValue - Math.abs(minValue * 0.2d);
+		    limits[0] = minValue - Math.abs(minValue * 0.02d);
 	    }
 	    
 		double yRange = limits[1] - limits[0];
@@ -353,7 +357,7 @@ public class HydroGraph extends View {
 			yRange = result;
 		}
 		
-		if(!forceZeroMinimum) {
+		if(!zeroMinimum) {
 			//make sure the y minimum has a common factor with 1/10th of yRange
 			
 			double factor = yRange / 10.0d;
