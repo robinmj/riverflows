@@ -12,7 +12,6 @@ import org.apache.http.conn.HttpHostConnectException;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Toast;
 
 import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
