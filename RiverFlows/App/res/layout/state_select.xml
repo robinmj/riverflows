@@ -3,13 +3,14 @@
     android:orientation="vertical"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
-    	<EditText android:id="@+id/state_filter"
-    			android:hint="start typing to filter by name"
-	    		android:layout_width="fill_parent"
-	    		android:layout_height="wrap_content" 
-	   		 	android:inputType="textFilter"
-    		/>
-        <ListView android:id="@android:id/list"
-	    		android:layout_width="fill_parent"
-	    		android:layout_height="wrap_content" />
+    	<EditText
+   			android:id="@+id/state_filter_field"
+   			android:hint="filter by name"
+    		android:layout_width="fill_parent"
+    		android:layout_height="wrap_content" 
+   		 	android:inputType="textFilter"/>
+        <ListView
+        	android:id="@android:id/list"
+    		android:layout_width="fill_parent"
+    		android:layout_height="wrap_content" />
 </LinearLayout>

@@ -25,7 +25,9 @@ import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.View.OnFocusChangeListener;
 import android.view.WindowManager.BadTokenException;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -76,10 +78,19 @@ public abstract class SiteList extends ListActivity {
 
         }
     };
+	
+	private OnFocusChangeListener filterFieldFocusListener = new OnFocusChangeListener() {
+		public void onFocusChange(View v, boolean hasFocus) {
+			if(!hasFocus) {
+				hideSoftKeyboard();
+			}
+		}
+	};
 
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
+    	hideSoftKeyboard();
 		Intent i = new Intent(this, ViewChart.class);
 		Site selectedStation = null;
 		Variable selectedVariable = null;
@@ -108,6 +119,7 @@ public abstract class SiteList extends ListActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+    	hideSoftKeyboard();
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.mi_home:
@@ -147,6 +159,7 @@ public abstract class SiteList extends ListActivity {
 
 		EditText siteFilterField = (EditText)findViewById(R.id.site_filter_field);
 		siteFilterField.addTextChangedListener(filterFieldWatcher);
+		siteFilterField.setOnFocusChangeListener(filterFieldFocusListener);
 
         //see onRetainNonConfigurationInstance()
     	final Object[] data = (Object[])getLastNonConfigurationInstance();
@@ -222,6 +235,8 @@ public abstract class SiteList extends ListActivity {
 	public void loadSites(boolean hardRefresh) {
 		showDialog(DIALOG_ID_LOADING);
 		
+		findViewById(R.id.site_filter_field).setVisibility(View.INVISIBLE);
+		
 		this.loadTask = createLoadStationsTask();
 		this.loadTask.setActivity(this);
 		
@@ -247,6 +262,11 @@ public abstract class SiteList extends ListActivity {
 					Log.i(TAG, "can't display dialog; activity no longer active");
 				}
 			}
+		} else {
+			EditText siteFilterField = (EditText)findViewById(R.id.site_filter_field);
+			
+			siteFilterField.setVisibility(View.VISIBLE);
+			siteFilterField.requestFocus();
 		}
 	}
 
@@ -407,6 +427,13 @@ public abstract class SiteList extends ListActivity {
 			addFavoriteItem.setChecked(FavoritesDaoImpl.isFavorite(getApplicationContext(), siteData.getSite().getSiteId(), supportedVars[a]));
 			addFavoriteItem.setOnMenuItemClickListener(new AddToFavoritesListener(siteData.getSite(), supportedVars[a]));
 		}
+	}
+	
+	private void hideSoftKeyboard() {
+		InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+
+		EditText stateFilterField = (EditText)findViewById(R.id.site_filter_field);
+		imm.hideSoftInputFromWindow(stateFilterField.getWindowToken(), 0);
 	}
 	
 	protected abstract LoadSitesTask createLoadStationsTask();

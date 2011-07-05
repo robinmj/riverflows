@@ -6,10 +6,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -17,6 +20,8 @@ import android.widget.ListView;
 import com.riverflows.data.USState;
 
 public class StateSelect extends ListActivity {
+	
+	public static final String TAG = "StateSelect";
 	
 	private TextWatcher filterFieldWatcher = new TextWatcher() {
         @Override
@@ -33,6 +38,14 @@ public class StateSelect extends ListActivity {
         }
     };
 	
+	private OnFocusChangeListener filterFieldFocusListener = new OnFocusChangeListener() {
+		public void onFocusChange(View v, boolean hasFocus) {
+			if(!hasFocus) {
+				hideSoftKeyboard();
+			}
+		}
+	};
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -45,13 +58,16 @@ public class StateSelect extends ListActivity {
 		ListView lv = getListView();
 		lv.setTextFilterEnabled(true);
 		
-		EditText stateFilterField = (EditText)findViewById(R.id.state_filter);
+		EditText stateFilterField = (EditText)findViewById(R.id.state_filter_field);
 		stateFilterField.addTextChangedListener(filterFieldWatcher);
+		stateFilterField.setOnFocusChangeListener(filterFieldFocusListener);
+		stateFilterField.requestFocus();
 	}
 	
 	@Override
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
+		hideSoftKeyboard();
 		Intent i = new Intent(this, RiverSelect.class);
         i.putExtra(RiverSelect.KEY_STATE, USState.values()[(int)id]);
         startActivity(i);
@@ -84,6 +100,7 @@ public class StateSelect extends ListActivity {
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
+    	hideSoftKeyboard();
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.mi_about:
@@ -93,5 +110,14 @@ public class StateSelect extends ListActivity {
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
+	}
+	
+	private void hideSoftKeyboard() {
+		Log.d(TAG,"hiding soft keyboard");
+		
+		InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+
+		EditText stateFilterField = (EditText)findViewById(R.id.state_filter_field);
+		imm.hideSoftInputFromWindow(stateFilterField.getWindowToken(), 0);
 	}
 }
