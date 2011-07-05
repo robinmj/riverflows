@@ -4,12 +4,13 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
     	<EditText
-    			android:id="@+id/site_filter_field"
-    			android:hint="start typing to filter by name"
-	    		android:layout_width="fill_parent"
-	   		 	android:layout_height="wrap_content"
-	   		 	android:inputType="textFilter"/>
-        <ListView android:id="@android:id/list"
-	    		android:layout_width="fill_parent"
-	    		android:layout_height="fill_parent" />
+   			android:id="@+id/site_filter_field"
+   			android:hint="start typing to filter by name"
+    		android:layout_width="fill_parent"
+   		 	android:layout_height="wrap_content"
+   		 	android:inputType="textFilter"/>
+        <ListView
+        	android:id="@android:id/list"
+    		android:layout_width="fill_parent"
+    		android:layout_height="fill_parent" />
 </LinearLayout>
