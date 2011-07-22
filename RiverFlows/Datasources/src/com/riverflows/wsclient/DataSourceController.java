@@ -526,6 +526,8 @@ public class DataSourceController {
 				}
 			} catch(SocketException se) {
 				LOG.error("could not access agency: " + agency, se);
+			} catch(DataParseException dpe) {
+				LOG.error("failed to parse data from agency: " + agency + " for site " + dpe.getSiteId(), dpe);
 			}
 		}
 		

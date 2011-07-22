@@ -299,7 +299,7 @@ public class CODWRDataSource implements RESTDataSource {
 			}
 			
 			if(currentSiteData == null) {
-				throw new DataParseException("missing headers");
+				throw new DataParseException(site.getSiteId(),"missing headers");
 			}
 			
 			String[] values = line.split("\t");
@@ -307,7 +307,7 @@ public class CODWRDataSource implements RESTDataSource {
 			String siteId = values[0];
 			
 			if(!siteId.equals(site.getSiteId().getId())) {
-				throw new DataParseException("expected site: " + site.getSiteId().getId() + " found: " + siteId);
+				throw new DataParseException(site.getSiteId(), "expected site: " + site.getSiteId().getId() + " found: " + siteId);
 			}
 			
 			String readingTimeStr = values[1];
