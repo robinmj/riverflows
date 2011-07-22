@@ -21,10 +21,7 @@ import android.widget.TextView;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.SiteData;
-import com.riverflows.wsclient.AHPSXmlDataSource;
-import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.DataSourceController;
-import com.riverflows.wsclient.UsgsCsvDataSource;
 import com.riverflows.wsclient.Utils;
 
 public class SiteAdapter extends BaseAdapter implements Filterable {
@@ -108,12 +105,10 @@ public class SiteAdapter extends BaseAdapter implements Filterable {
         holder.text.setText(holder.station.getSite().getName());
         String siteAgency = holder.station.getSite().getAgency();
         holder.agencyIcon.setVisibility(View.VISIBLE);
-        if(UsgsCsvDataSource.AGENCY.equals(siteAgency)) {
-            holder.agencyIcon.setImageResource(R.drawable.usgs);
-        } else if(AHPSXmlDataSource.AGENCY.equals(siteAgency)) {
-            holder.agencyIcon.setImageResource(R.drawable.ahps);
-        } else if(CODWRDataSource.AGENCY.equals(siteAgency)) {
-            holder.agencyIcon.setImageResource(R.drawable.codwr);
+        
+        Integer agencyIconResId = Home.getAgencyIconResId(siteAgency);
+        if(agencyIconResId != null) {
+            holder.agencyIcon.setImageResource(agencyIconResId);
         } else {
         	Log.e(TAG, "no icon for agency: " + siteAgency);
             holder.agencyIcon.setVisibility(View.GONE);

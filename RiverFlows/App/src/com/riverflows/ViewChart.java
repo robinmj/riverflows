@@ -39,11 +39,8 @@ import com.riverflows.data.SiteData;
 import com.riverflows.data.Variable;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.view.HydroGraph;
-import com.riverflows.wsclient.AHPSXmlDataSource;
-import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.DataParseException;
 import com.riverflows.wsclient.DataSourceController;
-import com.riverflows.wsclient.UsgsCsvDataSource;
 
 /**
  * Experimenting with using AChartEngine for displaying the hydrograph
@@ -177,12 +174,11 @@ public class ViewChart extends Activity {
 		if(ViewChart.this.data.getDataInfo() != null) {
 			dataSrcInfoButton.setVisibility(View.VISIBLE);
 			dataSrcInfoButton.setOnClickListener(new DataSrcInfoButtonListener());
-	        if(UsgsCsvDataSource.AGENCY.equals(siteAgency)) {
-	        	dataSrcInfoButton.setImageResource(R.drawable.usgs);
-	        } else if(AHPSXmlDataSource.AGENCY.equals(siteAgency)) {
-	        	dataSrcInfoButton.setImageResource(R.drawable.ahps);
-	        } else if(CODWRDataSource.AGENCY.equals(siteAgency)) {
-	        	dataSrcInfoButton.setImageResource(R.drawable.codwr);
+			
+			Integer agencyIconResId = Home.getAgencyIconResId(siteAgency);
+			
+	        if(agencyIconResId != null) {
+	        	dataSrcInfoButton.setImageResource(agencyIconResId);
 	        } else {
 	        	Log.e(TAG, "no icon for agency: " + siteAgency);
 	        	dataSrcInfoButton.setVisibility(View.GONE);

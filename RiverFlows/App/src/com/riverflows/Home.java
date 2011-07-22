@@ -14,7 +14,10 @@ import com.riverflows.db.CachingHttpClientWrapper;
 import com.riverflows.db.DatasetsDaoImpl;
 import com.riverflows.db.DbMaintenance;
 import com.riverflows.db.FavoritesDaoImpl;
+import com.riverflows.wsclient.AHPSXmlDataSource;
+import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.DataSourceController;
+import com.riverflows.wsclient.UsgsCsvDataSource;
 
 public class Home extends TabActivity {
 	
@@ -68,5 +71,16 @@ public class Home extends TabActivity {
 		super.onDestroy();
 	    
 	    DatasetsDaoImpl.deleteExpiredDatasets(getApplicationContext(), getCacheDir());
+	}
+	
+	public static Integer getAgencyIconResId(String siteAgency) {
+		if(UsgsCsvDataSource.AGENCY.equals(siteAgency)) {
+        	return R.drawable.usgs;
+        } else if(AHPSXmlDataSource.AGENCY.equals(siteAgency)) {
+        	return R.drawable.ahps;
+        } else if(CODWRDataSource.AGENCY.equals(siteAgency)) {
+        	return R.drawable.codwr;
+        }
+		return null;
 	}
 }
