@@ -442,7 +442,7 @@ public class ViewChart extends Activity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.graph_menu, menu);
 		
-		if((zeroYMin == null && variable.getCommonVariable().isGraphAgainstZeroMinimum()) || zeroYMin) {
+		if((zeroYMin == null && variable.getCommonVariable().isGraphAgainstZeroMinimum()) || (zeroYMin != null && zeroYMin)) {
 			MenuItem fitYAxisItem = menu.findItem(R.id.mi_fit_y_axis);
 			fitYAxisItem.setVisible(true);
 		} else {
