@@ -5,7 +5,7 @@
     android:layout_height="fill_parent" >
     	<EditText
    			android:id="@+id/state_filter_field"
-   			android:hint="filter by name"
+   			android:hint="start typing to filter by name"
     		android:layout_width="fill_parent"
     		android:layout_height="wrap_content" 
    		 	android:inputType="textFilter"/>
