@@ -3,7 +3,9 @@ package com.riverflows;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -36,8 +38,10 @@ import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
+import com.riverflows.data.SiteId;
 import com.riverflows.data.Variable;
 import com.riverflows.db.FavoritesDaoImpl;
+import com.riverflows.db.SitesDaoImpl;
 import com.riverflows.view.HydroGraph;
 import com.riverflows.wsclient.DataParseException;
 import com.riverflows.wsclient.DataSourceController;
@@ -50,6 +54,8 @@ import com.riverflows.wsclient.DataSourceController;
 public class ViewChart extends Activity {
 	
 	private static final String TAG = ViewChart.class.getSimpleName();
+	
+	public static final String GAUGE_SCHEME = "gauge";
 	
 	public static final String KEY_SITE = "site";
 	public static final String KEY_VARIABLE = "variable";
@@ -94,17 +100,25 @@ public class ViewChart extends Activity {
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
-		
-		Bundle extras = getIntent().getExtras();
-
+    	
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
         setContentView(R.layout.view_chart);
         
         //LinearLayout layout = null;
         //((Windowlayout.getLayoutParams().
         
-        this.station = (Site)extras.get(KEY_SITE);
-        this.variable = (Variable)extras.get(KEY_VARIABLE);
+        if(getIntent().getData() == null) {
+			
+			Bundle extras = getIntent().getExtras();
+	        
+	        this.station = (Site)extras.get(KEY_SITE);
+	        this.variable = (Variable)extras.get(KEY_VARIABLE);
+        } else {
+        	SiteId siteId = new SiteId(getIntent().getData().getSchemeSpecificPart());
+        	List<SiteData> sites = SitesDaoImpl.getSites(getApplicationContext(), Collections.singletonList(siteId));
+        	this.station = sites.get(0).getSite();
+        	this.variable = DataSourceController.getVariable(this.station.getAgency(), getIntent().getData().getFragment());
+        }
         
         TextView titleText = (TextView)findViewById(R.id.title);
         titleText.setText(station.getName());
