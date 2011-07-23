@@ -27,7 +27,18 @@
       <activity android:name="DataSrcInfo"
                 android:launchMode="singleTask"/>
                   
-    	<activity android:name="ViewChart"/>
+    	<activity android:name="ViewChart">
+    		<intent-filter>
+	    		<action android:name="android.intent.action.VIEW"/>
+	    		<category android:name="android.intent.category.DEFAULT"/>
+	    		<data android:scheme="gauge"/>
+    		</intent-filter>
+    		<!-- <intent-filter>
+	    		<action android:name="android.intent.action.VIEW"/>
+	    		<category android:name="android.intent.category.ALTERNATIVE"/>
+	    		<data android:scheme="http" android:host="waterservices.usgs.gov" />
+    		</intent-filter> -->
+    	</activity>
     	
 	    <activity android:name="Favorites"
 	              android:launchMode="singleTask"/>
