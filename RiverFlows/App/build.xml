@@ -1,0 +1,55 @@
+<project name="RiverFlows" basedir="." default="jarclean">
+	<description>Build jar library for components that need to reference the RiverFlows Android app.</description>
+
+	<tstamp>
+		<format property="lib_date" pattern="yyyy/MM/dd HH:mm:ss z"/>
+	</tstamp>
+	
+	<!-- Give user a chance to override without editing this file
+       (and without typing -D each time it compiles it) -->
+	<property file="build.properties"/>
+	
+	<property name="builddir" value="${basedir}/classes"/>
+	<property name="distdir" value="${basedir}/dist"/>
+	<property name="riverflowsjar" value="${distdir}/riverflows.jar"/>
+	
+	<path id="compile.classpath">
+		<filelist>
+			<file name="/opt/android-sdk-mac_x86/platforms/android-3/android.jar"/>
+		</filelist>
+		<fileset dir="${basedir}/lib" />
+		<fileset dir="../RiverFlows-Datasources/dist/"/>
+	</path>
+
+	<target name="compile" description="Compile RiverFlows" depends="">
+		<ant antfile="../RiverFlows-Datasources/build.xml" target="jar" dir="../RiverFlows-Datasources/"/>
+		<ant antfile="../RiverFlows-Datasources/build.xml" target="installjar" dir="../RiverFlows-Datasources/"/>
+		
+		<mkdir dir="${builddir}" />
+		<javac destdir="${builddir}" srcdir="${basedir}/src/:${basedir}/gen/"
+        classpathref="compile.classpath" encoding="UTF-8" debug="yes" source="1.6"/>
+	</target>
+	
+	<target name="jar" description="build riverflows.jar" depends="compile">
+		<mkdir dir="${distdir}" />
+
+		<jar basedir="${builddir}" jarfile="${riverflowsjar}" index="true"/>
+	</target>
+	
+	<target name="installjar" description="install riverflows.jar in specified location" if="install_location">
+		<copy file="${riverflowsjar}" todir="${install_location}"/>
+	</target>
+	
+	<target name="jarclean" depends="jar,clean">
+	</target>
+	
+	<target name="clean" description="remove class files">
+		<delete dir="${builddir}"/>
+	</target>
+	
+	<target name="distclean" description="remove class files, jar file" depends="clean">
+		<delete dir="${distdir}"/>
+	</target>
+	
+</project>
+
