@@ -12,6 +12,19 @@ public class SiteId implements Serializable {
 	
 	private final String key;
 	
+	public SiteId(String key) {
+		int slashLoc = key.indexOf('/');
+		
+		try {
+			this.agency = key.substring(0, slashLoc);
+			this.id = key.substring(slashLoc + 1);
+		} catch(IndexOutOfBoundsException ioobe) {
+			throw new IllegalArgumentException("invalid site ID: " + key);
+		}
+		
+		this.key = key;
+	}
+	
 	public SiteId(String agency, String id) {
 		this.agency = agency;
 		this.id = id;
