@@ -1,4 +1,4 @@
-<project name="RiverFlows-Datasources" basedir="." default="jarclean">
+<project name="RiverFlows-Datasources" default="jarclean">
 	<description>Build jar library for accessing all the various web services that the RiverFlows Android app uses.</description>
 
 	<tstamp>
