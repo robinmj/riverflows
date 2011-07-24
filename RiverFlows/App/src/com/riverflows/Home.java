@@ -14,6 +14,7 @@ import com.riverflows.db.CachingHttpClientWrapper;
 import com.riverflows.db.DatasetsDaoImpl;
 import com.riverflows.db.DbMaintenance;
 import com.riverflows.db.FavoritesDaoImpl;
+import com.riverflows.db.RiverGaugesDb;
 import com.riverflows.wsclient.AHPSXmlDataSource;
 import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.DataSourceController;
@@ -71,6 +72,8 @@ public class Home extends TabActivity {
 		super.onDestroy();
 	    
 	    DatasetsDaoImpl.deleteExpiredDatasets(getApplicationContext(), getCacheDir());
+	    
+	    RiverGaugesDb.closeHelper();
 	}
 	
 	public static Integer getAgencyIconResId(String siteAgency) {

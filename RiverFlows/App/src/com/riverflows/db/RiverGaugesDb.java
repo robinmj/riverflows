@@ -9,15 +9,24 @@ import android.database.sqlite.SQLiteOpenHelper;
 import com.riverflows.wsclient.UsgsCsvDataSource;
 
 
-class RiverGaugesDb extends SQLiteOpenHelper {
+public class RiverGaugesDb extends SQLiteOpenHelper {
 	
 	public static final String DB_NAME = "RiverFlows";
 	public static final int DB_VERSION = 5;
 	
 	private Integer upgradedFromVersion = null;
+	
+	private static RiverGaugesDb helper;
 
-	public RiverGaugesDb(Context context) {
+	private RiverGaugesDb(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
+	}
+	
+	public static RiverGaugesDb getHelper(Context context) {
+		if(helper == null) {
+			helper = new RiverGaugesDb(context);
+		}
+		return helper;
 	}
 
 	@Override
@@ -110,5 +119,12 @@ class RiverGaugesDb extends SQLiteOpenHelper {
 	public Integer getUpgradedFromVersion() {
 		return upgradedFromVersion;
 	}
-
+	
+	public static void closeHelper() {
+		if(helper == null) {
+			return;
+		}
+		helper.close();
+		helper = null;
+	}
 }

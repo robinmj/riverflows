@@ -36,11 +36,11 @@ public class DatasetsDaoImpl {
 		+ URL + " TEXT );";
     
     public static int saveDataset(Context ctx, String url, String cacheFileName) {
-		RiverGaugesDb helper = new RiverGaugesDb(ctx);
-		SQLiteDatabase db = helper.getWritableDatabase();
+		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
 		
-		try {
-	    	
+		synchronized(RiverGaugesDb.class) {
+			SQLiteDatabase db = helper.getWritableDatabase();
+			
 			ContentValues datasetRow = new ContentValues(3);
 			datasetRow.put(FILE, cacheFileName);
 			datasetRow.put(TIMESTAMP, new Date().getTime());
@@ -48,21 +48,18 @@ public class DatasetsDaoImpl {
 			
 	    	//save dataset row
 			return (int)db.insert(NAME, null, datasetRow);
-		} catch(Throwable t) {
-			throw new RuntimeException(t);
-		} finally {
-			db.close();
 		}
     }
     
     public static void deleteExpiredDatasets(Context ctx, File dataDir) {
-		RiverGaugesDb helper = new RiverGaugesDb(ctx);
-		SQLiteDatabase db = helper.getWritableDatabase();
+		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
 		
-		//2 days
-		Date expirationDate = new Date(System.currentTimeMillis() - (2 * 24 * 60 * 60 * 1000));
-		
-		try {
+		synchronized(RiverGaugesDb.class) {
+			SQLiteDatabase db = helper.getWritableDatabase();
+			
+			//2 days
+			Date expirationDate = new Date(System.currentTimeMillis() - (2 * 24 * 60 * 60 * 1000));
+			
 			db.beginTransaction();
 			
 			try {
@@ -91,45 +88,35 @@ public class DatasetsDaoImpl {
 			} finally {
 				db.endTransaction();
 			}
-		} catch(Throwable t) {
-			throw new RuntimeException(t);
-		} finally {
-			db.close();
 		}
     }
     
     public static CachedDataset getDataset(Context ctx, String url) {
-		RiverGaugesDb helper = new RiverGaugesDb(ctx);
+		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
 		SQLiteDatabase db = helper.getReadableDatabase();
     	
-		try {
-	    	//get dataset row
-			Cursor c = db.rawQuery("SELECT "
-					+ NAME + "." + URL + ", "
-					+ FILE + ", "
-					+ TIMESTAMP + " FROM " + NAME + " WHERE "
-					+ URL + " = ? ORDER BY " + TIMESTAMP + " DESC",
-					new String[]{"" + url});
-			
-			if(c.getCount() > 0) {
-				if(c.getCount() > 1) {
-					Log.e(TAG,"more than one cached dataset for " + url);
-				}
-				
-				c.moveToFirst();
-				
-				String fileName = c.getString(1);
-				
-				long timestamp = c.getLong(2);
-				c.close();
-				return new CachedDataset(url, fileName, new Date(timestamp));
+    	//get dataset row
+		Cursor c = db.rawQuery("SELECT "
+				+ NAME + "." + URL + ", "
+				+ FILE + ", "
+				+ TIMESTAMP + " FROM " + NAME + " WHERE "
+				+ URL + " = ? ORDER BY " + TIMESTAMP + " DESC",
+				new String[]{"" + url});
+		
+		if(c.getCount() > 0) {
+			if(c.getCount() > 1) {
+				Log.e(TAG,"more than one cached dataset for " + url);
 			}
+			
+			c.moveToFirst();
+			
+			String fileName = c.getString(1);
+			
+			long timestamp = c.getLong(2);
 			c.close();
-		} catch(Throwable t) {
-			throw new RuntimeException(t);
-		} finally {
-			db.close();
+			return new CachedDataset(url, fileName, new Date(timestamp));
 		}
+		c.close();
     	return null;
     }
     
@@ -141,32 +128,20 @@ public class DatasetsDaoImpl {
      * @return
      */
     public static CachedDataset deleteDatasets(Context ctx, String url) {
-		RiverGaugesDb helper = new RiverGaugesDb(ctx);
+		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
 		SQLiteDatabase db = helper.getReadableDatabase();
     	
-		try {
-			db.delete(NAME, URL + " = ?", new String[]{"" + url});
-		} catch(Throwable t) {
-			throw new RuntimeException(t);
-		} finally {
-			db.close();
-		}
+		db.delete(NAME, URL + " = ?", new String[]{"" + url});
     	return null;
     }
     
     public static void updateDatasetTimestamp(Context ctx, String url, String fileName) {
-		RiverGaugesDb helper = new RiverGaugesDb(ctx);
+		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
 		SQLiteDatabase db = helper.getReadableDatabase();
 		
 		ContentValues datasetRow = new ContentValues(1);
 		datasetRow.put(TIMESTAMP, new Date().getTime());
 		
-		try {
-			db.update(NAME, datasetRow, URL + " = ? AND " + FILE + " = ?", new String[]{ url, fileName });
-		} catch (Throwable t) {
-			throw new RuntimeException(t);
-		} finally {
-			db.close();
-		}
+		db.update(NAME, datasetRow, URL + " = ? AND " + FILE + " = ?", new String[]{ url, fileName });
     }
 }

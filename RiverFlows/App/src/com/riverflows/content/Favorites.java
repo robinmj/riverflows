@@ -23,6 +23,7 @@ import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.Variable;
 import com.riverflows.db.FavoritesDaoImpl;
+import com.riverflows.db.RiverGaugesDb;
 import com.riverflows.wsclient.DataSourceController;
 
 public class Favorites extends ContentProvider {
@@ -186,4 +187,8 @@ public class Favorites extends ContentProvider {
 		return -1;
 	}
 
+	@Override
+	protected void finalize() throws Throwable {
+		RiverGaugesDb.closeHelper();
+	}
 }

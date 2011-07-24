@@ -1,7 +1,6 @@
 package com.riverflows.db;
 
 import android.content.Context;
-import android.database.sqlite.SQLiteDatabase;
 
 public class DbMaintenance {
 	
@@ -10,9 +9,10 @@ public class DbMaintenance {
 	 * @return the version that the database was upgraded from, or null if no upgrade took place
 	 */
 	public static Integer upgradeIfNecessary(Context ctx) {
-		RiverGaugesDb helper = new RiverGaugesDb(ctx);
-		SQLiteDatabase db = helper.getWritableDatabase();
-		db.close();
+		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
+		synchronized(RiverGaugesDb.class) {
+			helper.getWritableDatabase();
+		}
 		
 		return helper.getUpgradedFromVersion();
 	}

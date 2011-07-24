@@ -114,68 +114,64 @@ public class SitesDaoImpl {
      */
 	public static List<SiteData> getSitesInState(Context ctx, USState state, Date staleDate) {
 		
-		RiverGaugesDb helper = new RiverGaugesDb(ctx);
+		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
 		SQLiteDatabase db = helper.getReadableDatabase();
 		
 		List<SiteData> result = null;
 		
-		try {
-			Cursor c = db.query(NAME, new String[] { ID, SITE_ID, SITE_NAME, AGENCY, TIME_FOUND, LAST_READING, LAST_READING_TIME, LAST_READING_VAR, SUPPORTED_VARS },
-					STATE + " = ?", new String[] {state.getAbbrev()}, null, null, SITE_NAME + " COLLATE NOCASE");
-			
-			result = new ArrayList<SiteData>(c.getCount());
-			
-			if(c.getCount() == 0) {
+		Cursor c = db.query(NAME, new String[] { ID, SITE_ID, SITE_NAME, AGENCY, TIME_FOUND, LAST_READING, LAST_READING_TIME, LAST_READING_VAR, SUPPORTED_VARS },
+				STATE + " = ?", new String[] {state.getAbbrev()}, null, null, SITE_NAME + " COLLATE NOCASE");
+		
+		result = new ArrayList<SiteData>(c.getCount());
+		
+		if(c.getCount() == 0) {
+			c.close();
+			db.close();
+			return result;
+		}
+		c.moveToFirst();
+		
+		do {
+			//if there's a stale record in the set, return null
+			if(staleDate != null && c.getLong(4) <= staleDate.getTime()) {
 				c.close();
 				db.close();
-				return result;
+				return null;
 			}
-			c.moveToFirst();
 			
-			do {
-				//if there's a stale record in the set, return null
-				if(staleDate != null && c.getLong(4) <= staleDate.getTime()) {
-					c.close();
-					db.close();
-					return null;
+			Site site = new Site();
+			SiteId siteId = new SiteId(c.getString(3), c.getString(1), c.getInt(0));
+			site.setSiteId(siteId);
+			
+			site.setName(c.getString(2));
+			
+			site.setSupportedVariables(DataSourceController.getVariablesFromString(c.getString(3), c.getString(8)));
+			
+			if(site.getSupportedVariables().length == 0) {
+				if(Log.isLoggable(TAG, Log.INFO)) {
+					Log.i(TAG, site.getSiteId() + " has no variables that are supported by this version of RiverFlows.  Ignoring...");
 				}
+				continue;
+			}
+			
+			SiteData data = new SiteData();
+			data.setSite(site);
+			
+			if(!c.isNull(5)) {
+				Series s = new Series();
+				s.setVariable(DataSourceController.getVariable(site.getAgency(), c.getString(7)));
+				Reading lastReading = new Reading();
+				lastReading.setDate(new Date(c.getLong(6)));
+				lastReading.setValue(c.getDouble(5));
+				s.setReadings(Collections.singletonList(lastReading));
 				
-				Site site = new Site();
-				SiteId siteId = new SiteId(c.getString(3), c.getString(1), c.getInt(0));
-				site.setSiteId(siteId);
-				
-				site.setName(c.getString(2));
-				
-				site.setSupportedVariables(DataSourceController.getVariablesFromString(c.getString(3), c.getString(8)));
-				
-				if(site.getSupportedVariables().length == 0) {
-					if(Log.isLoggable(TAG, Log.INFO)) {
-						Log.i(TAG, site.getSiteId() + " has no variables that are supported by this version of RiverFlows.  Ignoring...");
-					}
-					continue;
-				}
-				
-				SiteData data = new SiteData();
-				data.setSite(site);
-				
-				if(!c.isNull(5)) {
-					Series s = new Series();
-					s.setVariable(DataSourceController.getVariable(site.getAgency(), c.getString(7)));
-					Reading lastReading = new Reading();
-					lastReading.setDate(new Date(c.getLong(6)));
-					lastReading.setValue(c.getDouble(5));
-					s.setReadings(Collections.singletonList(lastReading));
-					
-					data.getDatasets().put(s.getVariable().getCommonVariable(), s);
-				}
-				
-				result.add(data);
-			} while(c.moveToNext());
+				data.getDatasets().put(s.getVariable().getCommonVariable(), s);
+			}
+			
+			result.add(data);
+		} while(c.moveToNext());
 
-			c.close();
-		} finally {	
-			db.close();
-		}
+		c.close();
 		
 		return result;
 	}
@@ -204,105 +200,97 @@ public class SitesDaoImpl {
 			return new ArrayList<SiteData>();
 		}
 		
-		RiverGaugesDb helper = new RiverGaugesDb(ctx);
+		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
 		SQLiteDatabase db = helper.getReadableDatabase();
 		
 		List<SiteData> result = null;
 		
-		try {
-			StringBuilder inClause = new StringBuilder("(");
-			String[] inClauseParams = new String[siteIds.size()];
-			
-			for(int a = 0; a < siteIds.size(); a++) {
-				inClause.append("?,");
-				inClauseParams[a] = siteIds.get(a).toString();
-			}
-			//chop off trailing comma
-			inClause.setLength(inClause.length() - 1);
-			inClause.append(")");
-			
-			
-			Cursor c = db.query(NAME, new String[] { ID, SITE_ID, SITE_NAME, AGENCY, TIME_FOUND, LAST_READING, LAST_READING_TIME, LAST_READING_VAR, SUPPORTED_VARS },
-					"(" + AGENCY + " || '/' || " + SITE_ID + ") in " + inClause, inClauseParams, null, null, SITE_NAME);
-			
-			result = new ArrayList<SiteData>(c.getCount());
-			
-			if(c.getCount() == 0) {
-				c.close();
-				db.close();
-				return result;
-			}
-			c.moveToFirst();
-			
-			do {
-				
-				Site site = new Site();
-				site.setSiteId(new SiteId(c.getString(3), c.getString(1), c.getInt(0)));
-				site.setName(c.getString(2));
-				
-				String supportedVarsStr = c.getString(8);
-				
-				site.setSupportedVariables(DataSourceController.getVariablesFromString(site.getAgency(), supportedVarsStr));
-				
-				if(site.getSupportedVariables().length == 0) {
-					if(Log.isLoggable(TAG, Log.INFO)) {
-						Log.i(TAG, site.getSiteId() + " has no variables that are supported by this version of RiverFlows.  Ignoring...");
-					}
-					continue;
-				}
-				
-				SiteData data = new SiteData();
-				data.setSite(site);
-				
-				if(!c.isNull(5)) {
-					Series s = new Series();
-					s.setVariable(DataSourceController.getVariable(site.getAgency(), c.getString(7)));
-					Reading lastReading = new Reading();
-					lastReading.setDate(new Date(c.getLong(6)));
-					lastReading.setValue(c.getDouble(5));
-					s.setReadings(Collections.singletonList(lastReading));
-					
-					data.getDatasets().put(s.getVariable().getCommonVariable(), s);
-				}
-				
-				result.add(data);
-			} while(c.moveToNext());
-			c.close();
-		} finally {
-			db.close();
+		StringBuilder inClause = new StringBuilder("(");
+		String[] inClauseParams = new String[siteIds.size()];
+		
+		for(int a = 0; a < siteIds.size(); a++) {
+			inClause.append("?,");
+			inClauseParams[a] = siteIds.get(a).toString();
 		}
+		//chop off trailing comma
+		inClause.setLength(inClause.length() - 1);
+		inClause.append(")");
+		
+		
+		Cursor c = db.query(NAME, new String[] { ID, SITE_ID, SITE_NAME, AGENCY, TIME_FOUND, LAST_READING, LAST_READING_TIME, LAST_READING_VAR, SUPPORTED_VARS },
+				"(" + AGENCY + " || '/' || " + SITE_ID + ") in " + inClause, inClauseParams, null, null, SITE_NAME);
+		
+		result = new ArrayList<SiteData>(c.getCount());
+		
+		if(c.getCount() == 0) {
+			c.close();
+			db.close();
+			return result;
+		}
+		c.moveToFirst();
+		
+		do {
+			
+			Site site = new Site();
+			site.setSiteId(new SiteId(c.getString(3), c.getString(1), c.getInt(0)));
+			site.setName(c.getString(2));
+			
+			String supportedVarsStr = c.getString(8);
+			
+			site.setSupportedVariables(DataSourceController.getVariablesFromString(site.getAgency(), supportedVarsStr));
+			
+			if(site.getSupportedVariables().length == 0) {
+				if(Log.isLoggable(TAG, Log.INFO)) {
+					Log.i(TAG, site.getSiteId() + " has no variables that are supported by this version of RiverFlows.  Ignoring...");
+				}
+				continue;
+			}
+			
+			SiteData data = new SiteData();
+			data.setSite(site);
+			
+			if(!c.isNull(5)) {
+				Series s = new Series();
+				s.setVariable(DataSourceController.getVariable(site.getAgency(), c.getString(7)));
+				Reading lastReading = new Reading();
+				lastReading.setDate(new Date(c.getLong(6)));
+				lastReading.setValue(c.getDouble(5));
+				s.setReadings(Collections.singletonList(lastReading));
+				
+				data.getDatasets().put(s.getVariable().getCommonVariable(), s);
+			}
+			
+			result.add(data);
+		} while(c.moveToNext());
+		c.close();
 		
 		return result;
 	}
 	
 	public static void saveSites(Context ctx, USState state, List<SiteData> sites) {
 
-		RiverGaugesDb helper = new RiverGaugesDb(ctx);
-		SQLiteDatabase db = helper.getWritableDatabase();
-		
-		try {
+		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
+		synchronized(RiverGaugesDb.class) {
+			SQLiteDatabase db = helper.getWritableDatabase();
+			
 			//first, delete all sites for this state, if there are any
 			db.delete(SitesDaoImpl.NAME, SitesDaoImpl.STATE + " = ?", 
 					new String[]{ state.getAbbrev() });
 			
 			hSaveSites(db, sites);
-		} finally {
-			db.close();
 		}
 	}
 	
 	public static void saveSites(Context ctx, List<SiteData> sites) {
 
-		RiverGaugesDb helper = new RiverGaugesDb(ctx);
-		SQLiteDatabase db = helper.getWritableDatabase();
-		
-		try {
+		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
+		synchronized(RiverGaugesDb.class) {
+			SQLiteDatabase db = helper.getWritableDatabase();
+			
 			//first, delete all sites, if there are any
 			db.delete(SitesDaoImpl.NAME, "1", new String[]{ });
 			
 			hSaveSites(db, sites);
-		} finally {
-			db.close();
 		}
 	}
 	
