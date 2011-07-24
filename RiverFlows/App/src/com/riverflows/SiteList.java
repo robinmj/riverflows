@@ -253,7 +253,13 @@ public abstract class SiteList extends ListActivity {
 
 			registerForContextMenu(getListView());
 		}
-		removeDialog(DIALOG_ID_LOADING);
+		try {
+			removeDialog(DIALOG_ID_LOADING);
+		} catch(IllegalArgumentException iae) {
+			if(Log.isLoggable(TAG, Log.INFO)) {
+				Log.i(TAG, "can't remove dialog; activity no longer active");
+			}
+		}
 		if(gauges == null || errorMsg != null) {
 			try {
 				showDialog(DIALOG_ID_LOADING_ERROR);
@@ -308,12 +314,32 @@ public abstract class SiteList extends ListActivity {
 			}
 			if(values.length == 2 && values[0] == STATUS_UPGRADING_FAVORITES) {
 				if(values[1] == 0) {
-					this.activity.removeDialog(DIALOG_ID_LOADING);
-					this.activity.showDialog(DIALOG_ID_UPGRADE_FAVORITES);
+					try {
+						this.activity.removeDialog(DIALOG_ID_LOADING);
+						this.activity.showDialog(DIALOG_ID_UPGRADE_FAVORITES);
+					} catch(BadTokenException bte) {
+						if(Log.isLoggable(TAG, Log.INFO)) {
+							Log.i(TAG, "can't display dialog; activity no longer active");
+						}
+					} catch(IllegalArgumentException iae) {
+						if(Log.isLoggable(TAG, Log.INFO)) {
+							Log.i(TAG, "can't remove dialog; activity no longer active");
+						}
+					}
 				}
 				if(values[1] == 100) {
-					this.activity.removeDialog(DIALOG_ID_UPGRADE_FAVORITES);
-					this.activity.showDialog(DIALOG_ID_LOADING);
+					try {
+						this.activity.removeDialog(DIALOG_ID_UPGRADE_FAVORITES);
+						this.activity.showDialog(DIALOG_ID_LOADING);
+					} catch(BadTokenException bte) {
+						if(Log.isLoggable(TAG, Log.INFO)) {
+							Log.i(TAG, "can't display dialog; activity no longer active");
+						}
+					} catch(IllegalArgumentException iae) {
+						if(Log.isLoggable(TAG, Log.INFO)) {
+							Log.i(TAG, "can't remove dialog; activity no longer active");
+						}
+					}
 				}
 			}
 		}
@@ -336,9 +362,19 @@ public abstract class SiteList extends ListActivity {
 		@Override
 		protected void onPostExecute(String errorMsg) {
 			super.onPostExecute(errorMsg);
-			removeDialog(DIALOG_ID_MASTER_LOADING);
-			if(errorMsg != null) {
-				showDialog(DIALOG_ID_MASTER_LOADING_ERROR);
+			try {
+				removeDialog(DIALOG_ID_MASTER_LOADING);
+				if(errorMsg != null) {
+					showDialog(DIALOG_ID_MASTER_LOADING_ERROR);
+				}
+			} catch(BadTokenException bte) {
+				if(Log.isLoggable(TAG, Log.INFO)) {
+					Log.i(TAG, "can't display dialog; activity no longer active");
+				}
+			} catch(IllegalArgumentException iae) {
+				if(Log.isLoggable(TAG, Log.INFO)) {
+					Log.i(TAG, "can't remove dialog; activity no longer active");
+				}
 			}
 		}
 	}

@@ -228,7 +228,13 @@ public class Favorites extends ListActivity {
 		if(this.loadTask.gauges != null) {
 			setListAdapter(new SiteAdapter(getApplicationContext(), this.loadTask.gauges));
 		}
-		removeDialog(DIALOG_ID_LOADING);
+		try {
+			removeDialog(DIALOG_ID_LOADING);
+		} catch(IllegalArgumentException iae) {
+			if(Log.isLoggable(TAG, Log.INFO)) {
+				Log.i(TAG, "can't remove dialog; activity no longer active");
+			}
+		}
 		if(this.loadTask.gauges == null || this.loadTask.errorMsg != null) {
 			try {
 				showDialog(DIALOG_ID_LOADING_ERROR);
@@ -467,12 +473,32 @@ public class Favorites extends ListActivity {
 			}
 			if(values.length == 2 && values[0] == STATUS_UPGRADING_FAVORITES) {
 				if(values[1] == 0) {
-					removeDialog(DIALOG_ID_LOADING);
-					showDialog(DIALOG_ID_UPGRADE_FAVORITES);
+					try {
+						removeDialog(DIALOG_ID_LOADING);
+						showDialog(DIALOG_ID_UPGRADE_FAVORITES);
+					} catch(BadTokenException bte) {
+						if(Log.isLoggable(TAG, Log.INFO)) {
+							Log.i(TAG, "can't display dialog; activity no longer active");
+						}
+					} catch(IllegalArgumentException iae) {
+						if(Log.isLoggable(TAG, Log.INFO)) {
+							Log.i(TAG, "can't remove dialog; activity no longer active");
+						}
+					}
 				}
 				if(values[1] == 100) {
-					removeDialog(DIALOG_ID_UPGRADE_FAVORITES);
-					showDialog(DIALOG_ID_LOADING);
+					try {
+						removeDialog(DIALOG_ID_UPGRADE_FAVORITES);
+						showDialog(DIALOG_ID_LOADING);
+					} catch(BadTokenException bte) {
+						if(Log.isLoggable(TAG, Log.INFO)) {
+							Log.i(TAG, "can't display dialog; activity no longer active");
+						}
+					} catch(IllegalArgumentException iae) {
+						if(Log.isLoggable(TAG, Log.INFO)) {
+							Log.i(TAG, "can't remove dialog; activity no longer active");
+						}
+					}
 				}
 			}
 		}
