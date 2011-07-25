@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/favorites"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+	android:background="@drawable/bg_3x3_frame"
+	android:paddingTop="1dp">
+	<TextView android:text="RiverFlows"
+		android:layout_gravity="center_horizontal"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+		android:textSize="18sp"
+		android:textAppearance="@android:style/TextAppearance.WindowTitle"
+		android:textStyle="bold"/>
+	<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		android:id="@+id/favorite_0"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content">
+		<ImageView android:id="@+id/agency_icon_0"
+	      android:layout_width="wrap_content"
+	      android:layout_height="fill_parent"
+	      android:layout_alignParentLeft="true"
+	      android:paddingLeft="6dp"
+	      android:paddingTop="2dp"
+	      android:visibility="gone"/>
+		<TextView android:id="@+id/subtext_0"
+		  android:layout_width="wrap_content"
+		  android:layout_height="fill_parent"
+		  android:layout_alignParentRight="true"
+	      android:paddingLeft="10dp"
+	      android:paddingTop="14dp"
+	      android:paddingRight="10dp"
+	      android:paddingBottom="6dp"
+		  android:textSize="16sp" >
+		</TextView>
+		<TextView android:id="@+id/favorite_name_0"
+		  android:layout_width="wrap_content"
+		  android:layout_height="fill_parent"
+		  android:layout_toLeftOf="@id/subtext_0"
+	      android:layout_alignParentLeft="true"
+		  android:paddingLeft="10dp"
+	      android:paddingTop="14dp"
+	      android:paddingRight="10dp"
+	      android:paddingBottom="6dp"
+		  android:textSize="16sp" >
+		</TextView>
+	</RelativeLayout>
+</LinearLayout>

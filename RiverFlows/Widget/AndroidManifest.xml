@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.riverflows.widget"
+      android:versionCode="1"
+      android:versionName="1.0">
+    <uses-sdk android:minSdkVersion="3" />
+
+    <application android:icon="@drawable/icon" android:label="RiverFlows Widget">
+		<receiver android:name="Provider" android:label="RiverFlows Widget">
+		    <intent-filter>
+		        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
+		    </intent-filter>
+		    <meta-data android:name="android.appwidget.provider"
+		               android:resource="@xml/appwidget_provider" />
+		</receiver>
+    
+	    <!-- <activity android:name=".ConfigActivity">
+		    <intent-filter>
+		        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
+		    </intent-filter>
+		</activity>-->
+    
+    </application>
+</manifest>
