@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="36"
+   height="42"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="widget_frame.svg"
+   inkscape:export-filename="/Users/robin/bg_3x3_frame.9.png"
+   inkscape:export-xdpi="101.47743"
+   inkscape:export-ydpi="101.47743">
+  <defs
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective10" />
+    <filter
+       id="filter3859"
+       inkscape:label="Drop shadow"
+       width="1.5"
+       height="1.5"
+       x="-.25"
+       y="-.25">
+      <feGaussianBlur
+         id="feGaussianBlur3861"
+         in="SourceAlpha"
+         stdDeviation="2.500000"
+         result="blur" />
+      <feColorMatrix
+         id="feColorMatrix3863"
+         result="bluralpha"
+         type="matrix"
+         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.750000 0 " />
+      <feOffset
+         id="feOffset3865"
+         in="bluralpha"
+         dx="0.000000"
+         dy="0.000000"
+         result="offsetBlur" />
+      <feMerge
+         id="feMerge3867">
+        <feMergeNode
+           id="feMergeNode3869"
+           in="offsetBlur" />
+        <feMergeNode
+           id="feMergeNode3871"
+           in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <filter
+       id="filter3873"
+       inkscape:label="Drop shadow"
+       width="1.5"
+       height="1.5"
+       x="-.25"
+       y="-.25">
+      <feGaussianBlur
+         id="feGaussianBlur3875"
+         in="SourceAlpha"
+         stdDeviation="2.500000"
+         result="blur" />
+      <feColorMatrix
+         id="feColorMatrix3877"
+         result="bluralpha"
+         type="matrix"
+         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.750000 0 " />
+      <feOffset
+         id="feOffset3879"
+         in="bluralpha"
+         dx="0.000000"
+         dy="0.000000"
+         result="offsetBlur" />
+      <feMerge
+         id="feMerge3881">
+        <feMergeNode
+           id="feMergeNode3883"
+           in="offsetBlur" />
+        <feMergeNode
+           id="feMergeNode3885"
+           in="SourceGraphic" />
+      </feMerge>
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="14.96"
+     inkscape:cx="15.417159"
+     inkscape:cy="16.920647"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1044"
+     inkscape:window-height="825"
+     inkscape:window-x="169"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0">
+    <sodipodi:guide
+       orientation="0,1"
+       position="15.452151,30.992098"
+       id="guide2816" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="7.9894644,20.544337"
+       id="guide2818" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="17.471466,10.974539"
+       id="guide2820" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="28.007024,20.71993"
+       id="guide2822" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="13.703209,34.893048"
+       id="guide3606" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="22.259358,18.649733"
+       id="guide3608" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="-4.7459893,16.71123"
+       id="guide3610" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-1010.3622)">
+    <rect
+       style="fill:#000000;fill-opacity:0.78431373999999998;fill-rule:evenodd;stroke:none;stroke-width:0.10000000000000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.16071430000000000;stroke-dasharray:none;filter:url(#filter3859)"
+       id="rect2845"
+       width="20"
+       height="20.017559"
+       x="7.9894643"
+       y="11.007902"
+       ry="7"
+       rx="7"
+       transform="translate(0,1010.3622)" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.50000000000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0;stroke-dasharray:none;filter:url(#filter3873)"
+       id="rect3619"
+       width="8"
+       height="8"
+       x="14.004"
+       y="1027.6964" />
+    <rect
+       y="1031.5724"
+       x="13.930107"
+       height="3.8977842"
+       width="8.1477852"
+       id="rect3604"
+       style="fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#808080;stroke-width:0.35221571;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+  </g>
+</svg>
