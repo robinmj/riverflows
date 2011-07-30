@@ -30,4 +30,16 @@
 		<nature>com.android.ide.eclipse.adt.AndroidNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
+	<linkedResources>
+		<link>
+			<name>RiverFlows-Datasources_src</name>
+			<type>2</type>
+			<locationURI>_android_RiverFlows_Datasources_8e0ce35a/src</locationURI>
+		</link>
+		<link>
+			<name>RiverFlows_src</name>
+			<type>2</type>
+			<locationURI>_android_RiverFlows_96cd7e79/src</locationURI>
+		</link>
+	</linkedResources>
 </projectDescription>
