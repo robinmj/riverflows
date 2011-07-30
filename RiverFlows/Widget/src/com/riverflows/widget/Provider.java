@@ -48,9 +48,10 @@ public class Provider extends AppWidgetProvider {
             // to the button
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.main);
             
-            int favoriteCount = 1;
+            int favoriteCount = 5;
             
             for(int a = 0; a < favoriteCount && a < favorites.size(); a++) {
+            	Log.d(TAG, "drawing favorite " + favorites.get(a).getSite().getName());
 
                 Intent intent = new Intent(Intent.ACTION_VIEW,Uri.fromParts(ViewChart.GAUGE_SCHEME,
                 		favorites.get(a).getSite().getSiteId().toString(),
@@ -136,6 +137,14 @@ public class Provider extends AppWidgetProvider {
 		switch(index) {
 		case 0:
 			return R.id.favorite_0;
+		case 1:
+			return R.id.favorite_1;
+		case 2:
+			return R.id.favorite_2;
+		case 3:
+			return R.id.favorite_3;
+		case 4:
+			return R.id.favorite_4;
 		}
 		throw new IllegalArgumentException();
 	}
@@ -144,6 +153,14 @@ public class Provider extends AppWidgetProvider {
 		switch(index) {
 		case 0:
 			return R.id.favorite_name_0;
+		case 1:
+			return R.id.favorite_name_1;
+		case 2:
+			return R.id.favorite_name_2;
+		case 3:
+			return R.id.favorite_name_3;
+		case 4:
+			return R.id.favorite_name_4;
 		}
 		throw new IllegalArgumentException();
 	}
@@ -152,6 +169,14 @@ public class Provider extends AppWidgetProvider {
 		switch(index) {
 		case 0:
 			return R.id.subtext_0;
+		case 1:
+			return R.id.subtext_1;
+		case 2:
+			return R.id.subtext_2;
+		case 3:
+			return R.id.subtext_3;
+		case 4:
+			return R.id.subtext_4;
 		}
 		throw new IllegalArgumentException();
 	}
@@ -160,6 +185,14 @@ public class Provider extends AppWidgetProvider {
 		switch(index) {
 		case 0:
 			return R.id.agency_icon_0;
+		case 1:
+			return R.id.agency_icon_1;
+		case 2:
+			return R.id.agency_icon_2;
+		case 3:
+			return R.id.agency_icon_3;
+		case 4:
+			return R.id.agency_icon_4;
 		}
 		throw new IllegalArgumentException();
 	}
