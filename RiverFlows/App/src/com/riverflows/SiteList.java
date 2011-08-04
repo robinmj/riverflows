@@ -74,8 +74,11 @@ public abstract class SiteList extends ListActivity {
 
         @Override
         public void afterTextChanged(Editable s) {
+        	if(getListAdapter() == null) {
+        		return;
+        	}
+        	
             ((SiteAdapter)getListAdapter()).getFilter().filter(s.toString());
-
         }
     };
 	
