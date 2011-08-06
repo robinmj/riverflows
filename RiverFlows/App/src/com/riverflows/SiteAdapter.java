@@ -29,6 +29,9 @@ public class SiteAdapter extends BaseAdapter implements Filterable {
 	public static final String TAG = SiteAdapter.class.getSimpleName();
 	
     private LayoutInflater inflater;
+    
+    private Object arrayLock = new Object();
+    
     private List<SiteData> stations;
     private List<SiteData> displayedStations;
 
@@ -241,5 +244,40 @@ public class SiteAdapter extends BaseAdapter implements Filterable {
         TextView text;
         TextView subtext;
         ImageView agencyIcon;
+    }
+
+
+    /**
+     * Inserts the specified object at the specified index in the array.
+     *
+     * @param object The object to insert into the array.
+     * @param index The index at which the object must be inserted.
+     */
+    public void insert(SiteData object, int index) {
+        if (stations != null) {
+            synchronized (arrayLock) {
+            	stations.add(index, object);
+                notifyDataSetChanged();
+            }
+        } else {
+            displayedStations.add(index, object);
+            notifyDataSetChanged();
+        }
+    }
+
+    /**
+     * Removes the specified object from the array.
+     *
+     * @param object The object to remove.
+     */
+    public void remove(SiteData object) {
+        if (stations != null) {
+            synchronized (arrayLock) {
+                stations.remove(object);
+            }
+        } else {
+        	displayedStations.remove(object);
+        }
+        notifyDataSetChanged();
     }
 }

@@ -1,8 +1,11 @@
 package com.riverflows.data;
 
 public class Favorite {
+	private Integer id;
 	private Site site;
 	private String variableId;
+	private String name;
+	private int order = 0;
 	
 	public Favorite(Site site, String variableId) {
 		super();
@@ -24,5 +27,29 @@ public class Favorite {
 
 	public void setVariable(String variableId) {
 		this.variableId = variableId;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getOrder() {
+		return order;
+	}
+
+	public void setOrder(int order) {
+		this.order = order;
+	}
+
+	public Integer getId() {
+		return id;
+	}
+
+	public void setId(Integer id) {
+		this.id = id;
 	}
 }

@@ -143,15 +143,16 @@ public class Favorites extends ListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
-	    case R.id.mi_home:
-	    	startActivityIfNeeded(new Intent(this, Home.class), -1);
-	    	return true;
 	    case R.id.mi_about:
 			Intent i = new Intent(this, About.class);
 			startActivity(i);
 	        return true;
 	    case R.id.mi_reload:
 	    	loadSites(true);
+	    	return true;
+	    case R.id.mi_reorder:
+	    	Intent i_reorder = new Intent(this, ReorderFavorites.class);
+	    	startActivity(i_reorder);
 	    	return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
@@ -246,6 +247,9 @@ public class Favorites extends ListActivity {
 		} else if(this.loadTask.gauges.size() == 0) {
 			getListView().getEmptyView().setVisibility(View.VISIBLE);
 		}
+
+		//needed for Android 3.0+
+		//invalidateOptionsMenu();
 	}
 
 	/** parameter for LoadSitesTask */
@@ -512,14 +516,22 @@ public class Favorites extends ListActivity {
 		return this.loadTask.loadTime;
 	}
 	
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		if(loadTask != null && loadTask.gauges != null && loadTask.gauges.size() > 0) {
+			MenuItem reorderFavorites = menu.findItem(R.id.mi_reorder);
+			reorderFavorites.setVisible(true);
+		}
+		
+		return super.onPrepareOptionsMenu(menu);
+	}
+	
 	public boolean onCreateOptionsMenu(Menu menu) {
 	    super.onCreateOptionsMenu(menu);
 	    
 	    MenuInflater inflater = getMenuInflater();
-	    inflater.inflate(R.menu.standard_menu, menu);
+	    inflater.inflate(R.menu.favorites_menu, menu);
 	    
-	    //disable home menu item, which is not needed here
-	    menu.findItem(R.id.mi_home).setVisible(false);
 	    return true;
 	}
 }

@@ -12,7 +12,7 @@ import com.riverflows.wsclient.UsgsCsvDataSource;
 public class RiverGaugesDb extends SQLiteOpenHelper {
 	
 	public static final String DB_NAME = "RiverFlows";
-	public static final int DB_VERSION = 5;
+	public static final int DB_VERSION = 6;
 	
 	private Integer upgradedFromVersion = null;
 	
@@ -113,6 +113,9 @@ public class RiverGaugesDb extends SQLiteOpenHelper {
 			db.execSQL("DROP TABLE IF EXISTS " + DatasetsDaoImpl.NAME + ";");
 			db.execSQL(DatasetsDaoImpl.CREATE_SQL);
 			db.execSQL("DROP TABLE IF EXISTS readings;");
+		}
+		if(fromVersion < 6) {
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.ORDER + " INTEGER;");
 		}
 	}
 

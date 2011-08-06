@@ -42,6 +42,9 @@
     	
 	    <activity android:name="Favorites"
 	              android:launchMode="singleTask"/>
+	    
+	    <activity android:name="ReorderFavorites"
+	    		android:launchMode="singleTask"/>
 		
 		<provider android:name=".content.Favorites"
 		android:authorities="com.riverflows.content.favorites">

@@ -7,4 +7,5 @@
     <string name="favorite_instructions_subheader">You have not yet selected any favorite gauges.</string>
     <string name="favorite_instructions">To select a favorite gauge, browse by state, touch-hold the site you are interested in, and select &quot;Add To Favorites&quot; from the context menu.</string>
     <string name="favorite_instructions_2">Alternatively, a gauge can be flagged as a favorite by touching the star in the upper right-hand corner of the graph screen.</string>
+    <string name="reorder_favorites_instructions">drag and drop favorites using the</string>
 </resources>

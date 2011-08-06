@@ -73,6 +73,12 @@ public class FavoritesDaoImpl {
      */
     static final String CREATED_DATE = "created";
 
+    /**
+     * The sort order
+     * <P>Type: INTEGER (0 comes first)</P>
+     */
+    static final String ORDER = "`order`";
+
 	
     static final String CREATE_SQL = "CREATE TABLE " + NAME
 		+ " ( " + ID + " INTEGER PRIMARY KEY,"
@@ -83,7 +89,8 @@ public class FavoritesDaoImpl {
 		+ CREATED_DATE + " INTEGER,"
 		+ LAST_VIEWED + " INTEGER,"
 		+ LATITUDE + " REAL,"
-		+ LONGITUDE + " REAL );";
+		+ LONGITUDE + " REAL,"
+		+ ORDER + " INTEGER );";
     
 
 	public static List<Favorite> getFavorites(Context ctx) {
@@ -91,11 +98,11 @@ public class FavoritesDaoImpl {
 		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
 		SQLiteDatabase db = helper.getReadableDatabase();
 	
-		String sql = "SELECT " + NAME + "." + TextUtils.join("," + NAME + ".", new String[]{SITE_ID, AGENCY,  VARIABLE}) + ","
+		String sql = "SELECT " + NAME + "." + TextUtils.join("," + NAME + ".", new String[]{ID, SITE_ID, AGENCY,  VARIABLE, ORDER, SITE_NAME }) + ","
 		 + SitesDaoImpl.NAME + "."
-		 + TextUtils.join(", " + SitesDaoImpl.NAME + ".", new String[]{ SitesDaoImpl.ID, SitesDaoImpl.SITE_NAME, SitesDaoImpl.SUPPORTED_VARS, SitesDaoImpl.STATE })
+		 + TextUtils.join(", " + SitesDaoImpl.NAME + ".", new String[]{ SitesDaoImpl.ID, SitesDaoImpl.SUPPORTED_VARS, SitesDaoImpl.STATE })
 		 + " FROM " + NAME + " JOIN " + SitesDaoImpl.NAME
-		 + " ON (" + NAME + "." + SITE_ID + " = " + SitesDaoImpl.NAME + "." + SitesDaoImpl.SITE_ID + ")";
+		 + " ON (" + NAME + "." + SITE_ID + " = " + SitesDaoImpl.NAME + "." + SitesDaoImpl.SITE_ID + ") ORDER BY " + ORDER;
 		
 		Cursor c = db.rawQuery(sql, null);
 		
@@ -110,16 +117,18 @@ public class FavoritesDaoImpl {
 		
 		do {
 			Site newStation = new Site();
-			newStation.setSiteId(new SiteId(c.getString(1), c.getString(0), c.getInt(3)));
-			if(Log.isLoggable(TAG, Log.VERBOSE)) Log.v(TAG, "favorite: " + c.getString(0));
-			newStation.setSupportedVariables(DataSourceController.getVariablesFromString(c.getString(1), c.getString(5)));
+			newStation.setSiteId(new SiteId(c.getString(2), c.getString(1), c.getInt(6)));
+			if(Log.isLoggable(TAG, Log.VERBOSE)) Log.v(TAG, "favorite: " + c.getString(1));
+			newStation.setSupportedVariables(DataSourceController.getVariablesFromString(c.getString(2), c.getString(7)));
 			
-			String variableId = c.getString(2);
+			String variableId = c.getString(3);
 
-			newStation.setName(c.getString(4));
-			newStation.setState(USState.valueOf(c.getString(6)));
+			newStation.setName(c.getString(5));
+			newStation.setState(USState.valueOf(c.getString(8)));
 			
 			Favorite newFavorite = new Favorite(newStation, variableId);
+			newFavorite.setId(c.getInt(0));
+			newFavorite.setOrder(c.getInt(4));
 			result.add(newFavorite);
 		} while(c.moveToNext());
 		
@@ -201,12 +210,38 @@ public class FavoritesDaoImpl {
 		favoriteValues.put(LATITUDE, favoriteSite.getLatitude());
 		favoriteValues.put(LONGITUDE, favoriteSite.getLongitude());
 		favoriteValues.put(VARIABLE, favorite.getVariable());
+		favoriteValues.put(ORDER, favorite.getVariable());
 
 		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
 		synchronized(RiverGaugesDb.class) {
 			SQLiteDatabase db = helper.getWritableDatabase();
 			
 			db.insert(FavoritesDaoImpl.NAME,null, favoriteValues);
+		}
+	}
+	
+	public static void updateFavorite(Context ctx, Favorite favorite) {
+		if(favorite.getId() == null) {
+			throw new NullPointerException();
+		}
+		
+		Site favoriteSite = favorite.getSite();
+		
+		ContentValues favoriteValues = new ContentValues(1);
+		favoriteValues.put(SITE_ID, favoriteSite.getId());
+		favoriteValues.put(SITE_NAME,favoriteSite.getName());
+		favoriteValues.put(AGENCY,favoriteSite.getAgency());
+		favoriteValues.put(LAST_VIEWED, System.currentTimeMillis());
+		favoriteValues.put(LATITUDE, favoriteSite.getLatitude());
+		favoriteValues.put(LONGITUDE, favoriteSite.getLongitude());
+		favoriteValues.put(VARIABLE, favorite.getVariable());
+		favoriteValues.put(ORDER, favorite.getOrder());
+
+		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
+		synchronized(RiverGaugesDb.class) {
+			SQLiteDatabase db = helper.getWritableDatabase();
+			
+			db.update(FavoritesDaoImpl.NAME, favoriteValues,ID + " = ?", new String[]{ favorite.getId().toString() });
 		}
 	}
 	
