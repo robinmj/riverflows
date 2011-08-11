@@ -155,7 +155,7 @@ public class ReorderFavorites extends ListActivity {
 		protected List<Favorite> doInBackground(Integer... params) {
 			running = true;
 			try {
-				return FavoritesDaoImpl.getFavorites(getApplicationContext());
+				return FavoritesDaoImpl.getFavorites(getApplicationContext(), null, null);
 			} catch(Exception e) {
 				setLoadErrorMsg(e.getMessage());
 				Log.e(getClass().getName(), "",e);
@@ -224,7 +224,11 @@ public class ReorderFavorites extends ListActivity {
 	        // Bind the data efficiently with the holder.
 	        
 	        holder.favorite = getItem(position);
-	        holder.text.setText(holder.favorite.getSite().getName());
+	        if(holder.favorite.getName() == null) {
+	        	holder.text.setText(holder.favorite.getSite().getName());
+	        } else {
+	        	holder.text.setText(holder.favorite.getName());
+	        }
 	        
 	        /*
 	        String siteAgency = holder.favorite.getSite().getAgency();

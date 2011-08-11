@@ -78,7 +78,12 @@ public class Favorites extends ContentProvider {
 	public Cursor query(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
 		if(uri.equals(CONTENT_URI)) {
-			List<Favorite> favorites = FavoritesDaoImpl.getFavorites(getContext());
+			List<Favorite> favorites = FavoritesDaoImpl.getFavorites(getContext(), null, null);
+			
+			//this assumes the widget only wants 5 favorites- shorten the list so we don't
+			// waste bandwidth getting site data for favorites that won't be displayed
+			// Sometime down the line, perhaps a lazy-loading Cursor can be returned instead?
+			favorites = favorites.subList(0, 4);
 			
 			//migrate any favorites without a variable set
 			//checkForOldFavorites(favorites);

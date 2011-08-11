@@ -21,11 +21,14 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.WindowManager.BadTokenException;
+import android.widget.AdapterView;
 import android.widget.ListView;
 
 import com.riverflows.data.Favorite;
@@ -44,6 +47,10 @@ import com.riverflows.wsclient.UsgsCsvDataSource;
 public class Favorites extends ListActivity {
 	
 	private static final String TAG = Favorites.class.getSimpleName();
+	
+	public static final String FAVORITES_PATH = "/favorites/";
+	
+	public static final int REQUEST_EDIT_FAVORITE = 1;
 	
 	public static final int DIALOG_ID_LOADING = 1;
 	public static final int DIALOG_ID_LOADING_ERROR = 2;
@@ -228,6 +235,7 @@ public class Favorites extends ListActivity {
 	public void displayFavorites() {
 		if(this.loadTask.gauges != null) {
 			setListAdapter(new SiteAdapter(getApplicationContext(), this.loadTask.gauges));
+			registerForContextMenu(getListView());
 		}
 		try {
 			removeDialog(DIALOG_ID_LOADING);
@@ -261,6 +269,7 @@ public class Favorites extends ListActivity {
 
 		public final Date loadTime = new Date();
 		public List<SiteData> gauges = null;
+		public List<Favorite> favorites = null;
 		
 		public boolean running = false;
 		
@@ -274,7 +283,7 @@ public class Favorites extends ListActivity {
 		protected List<SiteData> doInBackground(Integer... params) {
 			running = true;
 			try {
-				List<Favorite> favorites = FavoritesDaoImpl.getFavorites(getApplicationContext());
+				this.favorites = FavoritesDaoImpl.getFavorites(getApplicationContext(), null, null);
 				
 				if(favorites.size() == 0) {
 					return Collections.emptyList();
@@ -336,6 +345,11 @@ public class Favorites extends ListActivity {
 					
 					expandedDatasets.add(current);
 					continue;
+				}
+
+				//use custom name if one is defined
+				if(favorite.getName() != null) {
+					current.getSite().setName(favorite.getName());
 				}
 				
 				if(current.getDatasets().size() <= 1) {
@@ -534,4 +548,127 @@ public class Favorites extends ListActivity {
 	    
 	    return true;
 	}
+	
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		super.onCreateContextMenu(menu, v, menuInfo);
+		
+		SiteAdapter adapter = (SiteAdapter)((ListView)v).getAdapter();
+		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
+
+		SiteData siteData = adapter.getItem(info.position);
+		
+		if(siteData == null) {
+			return;
+		}
+		
+		Series data = DataSourceController.getPreferredSeries(siteData);
+		if(data == null) {
+			return;
+		}
+		Variable variable = data.getVariable();
+		
+		MenuItem edit = menu.add("Edit");
+		
+		edit.setOnMenuItemClickListener(new EditFavoriteListener(siteData.getSite(), variable));
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		switch(requestCode) {
+		case REQUEST_EDIT_FAVORITE:
+			if(resultCode == RESULT_OK) {
+				//update the view, if necessary
+				
+	        	if(loadTask == null || loadTask.favorites == null) {
+	        		//favorites haven't even loaded yet- return
+	        		return;
+	        	}
+	        	
+	        	if(data == null) {
+	        		//nothing was changed
+	        		return;
+	        	}
+	        	
+	        	String intentPath = data.getData().getSchemeSpecificPart();
+	        	
+        		int favoriteId = -1;
+	        	
+	        	try {
+	        		favoriteId = Integer.parseInt(intentPath.substring(FAVORITES_PATH.length(), intentPath.length()));
+	        	} catch(Exception e) {
+	        		Log.e(TAG, "could not find favorite ID", e);
+    				loadSites(false);
+	        		return;
+	        	}
+	        	
+	        	try {
+		        	for(Favorite oldFavorite: loadTask.favorites) {
+		        		if(oldFavorite.getId() == favoriteId) {
+		        			Favorite newFavorite = FavoritesDaoImpl.getFavorite(this, favoriteId);
+		        			
+		        			if(!oldFavorite.getVariable().equals(newFavorite.getVariable())) {
+		        				//variable has been changed- we need to reload
+		        				// TODO for certain datasources, this shouldn't be necessary because data for all variables
+		        				//  is retrieved along with the variable associated with the favorite.  However it will be
+		        				//  difficult to make use of that extra data until this activity uses Favorite rather than SiteData
+		        				//  objects as the core of its model.
+		        				loadSites(false);
+		        				return;
+		        			}
+		        			
+		        			String newName = newFavorite.getName();
+		        			
+		        			for(SiteData favoriteData: loadTask.gauges) {
+		        				if(favoriteData.getSite().getSiteId().equals(newFavorite.getSite().getSiteId())) {
+		        					Variable var = DataSourceController.getVariable(newFavorite.getSite().getAgency(), newFavorite.getVariable());
+		        					
+		        					if(favoriteData.getDatasets().get(var.getCommonVariable()) != null) {
+		        						if(newName == null) {
+		        							//revert to original name of the site
+		        							newName = newFavorite.getSite().getName();
+		        						}
+		        						favoriteData.getSite().setName(newName);
+		        						((SiteAdapter)getListAdapter()).notifyDataSetChanged();
+		    		        			
+		    		        			oldFavorite.setName(newName);
+		    		        			return;
+		        					}
+		        				}
+		        			}
+		        		}
+		        	}
+	        	} catch(Exception e) {
+	        		Log.e(TAG, "error updating favorite", e);
+    				loadSites(false);
+	        		return;
+	        	}
+			}
+		}
+	}
+	
+	private class EditFavoriteListener implements MenuItem.OnMenuItemClickListener {
+		
+		private Site site;
+		private Variable variable;
+		
+		public EditFavoriteListener(Site site, Variable variable) {
+			super();
+			this.site = site;
+			this.variable = variable;
+		}
+
+		@Override
+		public boolean onMenuItemClick(MenuItem item) {
+			
+			Intent i = new Intent(Favorites.this, EditFavorite.class);
+
+	        i.putExtra(EditFavorite.KEY_SITE_ID, site.getSiteId());
+	        i.putExtra(EditFavorite.KEY_VARIABLE_ID, variable.getId());
+	        startActivityForResult(i, REQUEST_EDIT_FAVORITE);
+			return true;
+		}
+	};
 }

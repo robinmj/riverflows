@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:orientation="vertical">
+    <LinearLayout
+     xmlns:android="http://schemas.android.com/apk/res/android"
+     android:layout_width="fill_parent"
+     android:layout_height="wrap_content"
+     android:orientation="vertical"
+     android:layout_weight="1"
+     android:layout_margin="10dp">
+        <LinearLayout
+          android:orientation="horizontal"
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:id="@+id/linearLayout1">
+            <TextView
+             android:layout_width="wrap_content"
+             android:layout_height="wrap_content"
+             android:text="Name"
+             android:textAppearance="?android:attr/textAppearanceMedium"
+             />
+            <EditText
+             android:layout_weight="1"
+             android:layout_width="fill_parent"
+             android:layout_height="wrap_content"
+             android:id="@+id/favoriteName"
+             />
+        </LinearLayout>
+        <TextView
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:text="Measurement"
+          android:textAppearance="?android:attr/textAppearanceMedium"
+          />
+        <RadioGroup
+          android:layout_width="fill_parent"
+          android:layout_height="wrap_content"
+          android:id="@+id/variables"
+          android:layout_marginTop="5dp">
+        </RadioGroup>
+    </LinearLayout>
+    <LinearLayout
+     android:orientation="horizontal"
+     android:layout_width="fill_parent"
+     android:layout_height="wrap_content"
+     android:id="@+id/linearLayout2">
+        <Button android:text="Save" android:id="@+id/saveButton" android:layout_height="fill_parent" android:layout_width="wrap_content" android:layout_weight="1"></Button>
+        <Button android:text="Cancel" android:layout_height="wrap_content" android:id="@+id/cancelButton" android:layout_width="wrap_content" android:layout_weight="1"></Button>
+    </LinearLayout>
+</LinearLayout>
