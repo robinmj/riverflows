@@ -100,7 +100,7 @@ public class FavoritesDaoImpl {
 	
 		String sql = "SELECT " + NAME + "." + TextUtils.join("," + NAME + ".", new String[]{ID, SITE_ID, AGENCY,  VARIABLE, ORDER, SITE_NAME }) + ","
 		 + SitesDaoImpl.NAME + "."
-		 + TextUtils.join(", " + SitesDaoImpl.NAME + ".", new String[]{ SitesDaoImpl.ID, SitesDaoImpl.SUPPORTED_VARS, SitesDaoImpl.STATE })
+		 + TextUtils.join(", " + SitesDaoImpl.NAME + ".", new String[]{ SitesDaoImpl.ID, SitesDaoImpl.SUPPORTED_VARS, SitesDaoImpl.STATE, SitesDaoImpl.SITE_NAME })
 		 + " FROM " + NAME + " JOIN " + SitesDaoImpl.NAME
 		 + " ON (" + NAME + "." + SITE_ID + " = " + SitesDaoImpl.NAME + "." + SitesDaoImpl.SITE_ID + ")";
 		
@@ -148,10 +148,12 @@ public class FavoritesDaoImpl {
 			
 			String favoriteVarId = c.getString(3);
 
-			newStation.setName(c.getString(5));
+			newStation.setName(c.getString(9));
 			newStation.setState(USState.valueOf(c.getString(8)));
 			
 			Favorite newFavorite = new Favorite(newStation, favoriteVarId);
+
+			newFavorite.setName(c.getString(5));
 			newFavorite.setId(c.getInt(0));
 			newFavorite.setOrder(c.getInt(4));
 			result.add(newFavorite);
@@ -168,7 +170,7 @@ public class FavoritesDaoImpl {
 	
 		String sql = "SELECT " + NAME + "." + TextUtils.join("," + NAME + ".", new String[]{ID, SITE_ID, AGENCY,  VARIABLE, ORDER, SITE_NAME }) + ","
 		 + SitesDaoImpl.NAME + "."
-		 + TextUtils.join(", " + SitesDaoImpl.NAME + ".", new String[]{ SitesDaoImpl.ID, SitesDaoImpl.SUPPORTED_VARS, SitesDaoImpl.STATE })
+		 + TextUtils.join(", " + SitesDaoImpl.NAME + ".", new String[]{ SitesDaoImpl.ID, SitesDaoImpl.SUPPORTED_VARS, SitesDaoImpl.STATE, SitesDaoImpl.SITE_NAME })
 		 + " FROM " + NAME + " JOIN " + SitesDaoImpl.NAME
 		 + " ON (" + NAME + "." + SITE_ID + " = " + SitesDaoImpl.NAME + "." + SitesDaoImpl.SITE_ID + ") WHERE " + NAME + "." + ID + " = ?";
 		
@@ -188,10 +190,11 @@ public class FavoritesDaoImpl {
 		
 		String favoriteVarId = c.getString(3);
 
-		newStation.setName(c.getString(5));
+		newStation.setName(c.getString(9));
 		newStation.setState(USState.valueOf(c.getString(8)));
 		
 		Favorite favorite = new Favorite(newStation, favoriteVarId);
+		favorite.setName(c.getString(5));
 		favorite.setId(c.getInt(0));
 		favorite.setOrder(c.getInt(4));
 		
