@@ -9,10 +9,11 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.riverflows.Home;
 import com.riverflows.data.CachedDataset;
 
 public class DatasetsDaoImpl {
-	private static final String TAG = DatasetsDaoImpl.class.getSimpleName();
+	private static final String TAG = Home.TAG;
 	
 	static final String NAME = "datasets";
 	

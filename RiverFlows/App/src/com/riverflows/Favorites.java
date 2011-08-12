@@ -46,7 +46,7 @@ import com.riverflows.wsclient.UsgsCsvDataSource;
 
 public class Favorites extends ListActivity {
 	
-	private static final String TAG = Favorites.class.getSimpleName();
+	private static final String TAG = Home.TAG;
 	
 	public static final String FAVORITES_PATH = "/favorites/";
 	

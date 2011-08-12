@@ -45,7 +45,7 @@ import com.riverflows.wsclient.DataSourceController;
 
 public abstract class SiteList extends ListActivity {
 	
-	private static final String TAG = SiteList.class.getSimpleName();
+	private static final String TAG = Home.TAG;
 	
 	public static final String PK_MASTER_SITE_LIST_LAST_LOAD_TIME = "masterSiteListLastLoadTime";
 	

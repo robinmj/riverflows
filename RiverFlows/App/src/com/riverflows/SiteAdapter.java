@@ -26,7 +26,7 @@ import com.riverflows.wsclient.Utils;
 
 public class SiteAdapter extends BaseAdapter implements Filterable {
 	
-	public static final String TAG = SiteAdapter.class.getSimpleName();
+	public static final String TAG = Home.TAG;
 	
     private LayoutInflater inflater;
     

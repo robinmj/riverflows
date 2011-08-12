@@ -22,6 +22,8 @@ import com.riverflows.wsclient.UsgsCsvDataSource;
 
 public class Home extends TabActivity {
 	
+	public static final String TAG = "RiverFlows";
+	
 	/**
 	 * 20 minutes
 	 */

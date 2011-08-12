@@ -16,6 +16,7 @@ import android.database.MatrixCursor;
 import android.net.Uri;
 import android.util.Log;
 
+import com.riverflows.Home;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
@@ -28,7 +29,7 @@ import com.riverflows.wsclient.DataSourceController;
 
 public class Favorites extends ContentProvider {
 	
-	public static final String TAG = "FavoritesContentProvider";
+	public static final String TAG = Home.TAG;
 	
 	public static final String COLUMN_ID = "id";
 	public static final String COLUMN_AGENCY = "agency";

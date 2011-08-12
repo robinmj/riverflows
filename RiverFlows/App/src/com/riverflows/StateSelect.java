@@ -21,7 +21,7 @@ import com.riverflows.data.USState;
 
 public class StateSelect extends ListActivity {
 	
-	public static final String TAG = "StateSelect";
+	public static final String TAG = Home.TAG;
 	
 	private TextWatcher filterFieldWatcher = new TextWatcher() {
         @Override

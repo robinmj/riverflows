@@ -17,13 +17,14 @@ import android.graphics.Paint.Align;
 import android.util.Log;
 import android.view.View;
 
+import com.riverflows.Home;
 import com.riverflows.data.Forecast;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 
 public class HydroGraph extends View {
 	
-	private static final String TAG = HydroGraph.class.getSimpleName();
+	private static final String TAG = Home.TAG;
 
 	private double pixelsPerYUnit;
 	private double xPixelsPerMs;

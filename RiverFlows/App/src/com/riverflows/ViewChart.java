@@ -53,7 +53,7 @@ import com.riverflows.wsclient.DataSourceController;
  */
 public class ViewChart extends Activity {
 	
-	private static final String TAG = ViewChart.class.getSimpleName();
+	private static final String TAG = Home.TAG;
 	
 	public static final String GAUGE_SCHEME = "gauge";
 	

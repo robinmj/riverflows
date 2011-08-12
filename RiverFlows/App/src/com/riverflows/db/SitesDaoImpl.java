@@ -12,6 +12,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
+import com.riverflows.Home;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
@@ -28,7 +29,7 @@ import com.riverflows.wsclient.DataSourceController;
  */
 public class SitesDaoImpl {
 	
-	private static final String TAG = SitesDaoImpl.class.getSimpleName();
+	private static final String TAG = Home.TAG;
 	
 	static final String NAME = "sites";
 	

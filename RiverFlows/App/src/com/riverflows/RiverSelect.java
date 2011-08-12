@@ -21,7 +21,7 @@ import com.riverflows.wsclient.DataSourceController;
 
 public class RiverSelect extends SiteList {
 	
-	private static final String TAG = RiverSelect.class.getSimpleName();
+	private static final String TAG = Home.TAG;
 	
 	public static final String KEY_STATE = "state";
 

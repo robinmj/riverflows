@@ -19,11 +19,12 @@ import org.apache.http.message.BasicStatusLine;
 import android.content.Context;
 import android.util.Log;
 
+import com.riverflows.Home;
 import com.riverflows.data.CachedDataset;
 import com.riverflows.wsclient.HttpClientWrapper;
 
 public class CachingHttpClientWrapper implements HttpClientWrapper {
-	private static final String TAG = CachingHttpClientWrapper.class.getSimpleName();
+	private static final String TAG = Home.TAG;
 	
 	private static final Random filenameGenerator = new Random(System.currentTimeMillis());
 	

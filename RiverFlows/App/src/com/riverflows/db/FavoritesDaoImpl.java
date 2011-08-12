@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.riverflows.Home;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteId;
@@ -25,7 +26,7 @@ import com.riverflows.wsclient.DataSourceController;
  */
 public class FavoritesDaoImpl {
 	
-	private static final String TAG = FavoritesDaoImpl.class.getSimpleName();
+	private static final String TAG = Home.TAG;
 	
 	static final String NAME = "favorites";
 	
