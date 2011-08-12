@@ -51,6 +51,7 @@ public class Favorites extends ListActivity {
 	public static final String FAVORITES_PATH = "/favorites/";
 	
 	public static final int REQUEST_EDIT_FAVORITE = 1;
+	public static final int REQUEST_REORDER_FAVORITES = 2;
 	
 	public static final int DIALOG_ID_LOADING = 1;
 	public static final int DIALOG_ID_LOADING_ERROR = 2;
@@ -92,8 +93,8 @@ public class Favorites extends ListActivity {
 	}
 	
 	@Override
-	protected void onStart() {
-		super.onStart();
+	protected void onResume() {
+		super.onResume();
 		
 		//discard the cached list items after 2 hours
 		if((System.currentTimeMillis() - this.loadTask.loadTime.getTime()) > (2 * 60 * 60 * 1000)) {
@@ -159,7 +160,7 @@ public class Favorites extends ListActivity {
 	    	return true;
 	    case R.id.mi_reorder:
 	    	Intent i_reorder = new Intent(this, ReorderFavorites.class);
-	    	startActivity(i_reorder);
+	    	startActivityForResult(i_reorder, REQUEST_REORDER_FAVORITES);
 	    	return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
@@ -569,19 +570,22 @@ public class Favorites extends ListActivity {
 		}
 		Variable variable = data.getVariable();
 		
-		MenuItem edit = menu.add("Edit");
+		MenuItem view = menu.add("View");
+		view.setOnMenuItemClickListener(new ViewFavoriteListener(siteData.getSite(), variable));
 		
+		MenuItem edit = menu.add("Edit");
 		edit.setOnMenuItemClickListener(new EditFavoriteListener(siteData.getSite(), variable));
 	}
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
+		
+		//update the view, if necessary
+		
 		switch(requestCode) {
 		case REQUEST_EDIT_FAVORITE:
 			if(resultCode == RESULT_OK) {
-				//update the view, if necessary
-				
 	        	if(loadTask == null || loadTask.favorites == null) {
 	        		//favorites haven't even loaded yet- return
 	        		return;
@@ -643,11 +647,65 @@ public class Favorites extends ListActivity {
 	        	} catch(Exception e) {
 	        		Log.e(TAG, "error updating favorite", e);
     				loadSites(false);
+	        	}
+			}
+    		return;
+		case REQUEST_REORDER_FAVORITES:
+			if(resultCode == RESULT_OK) {
+				
+				if(loadTask == null || loadTask.gauges == null) {
+	        		//favorites haven't even loaded yet- return
 	        		return;
 	        	}
+				
+				List<Favorite> newFavorites = FavoritesDaoImpl.getFavorites(this, null, null);
+				
+				List<SiteData> newSiteData = new ArrayList<SiteData>(newFavorites.size());
+				
+				//reorder loadTask.gauges based on the new favorites order
+				for(Favorite newFav: newFavorites) {
+					for(SiteData siteData: loadTask.gauges) {
+						if(siteData.getSite().getSiteId().equals(newFav.getSite().getSiteId())) {
+        					Variable var = DataSourceController.getVariable(newFav.getSite().getAgency(), newFav.getVariable());
+        					
+        					if(siteData.getDatasets().get(var.getCommonVariable()) != null) {
+        						newSiteData.add(siteData);
+        						//we can get away with this without a ConcurrentModificationException
+        						// because it is immediately followed by a break statement
+        						loadTask.gauges.remove(siteData);
+        						break;
+        					}
+        				}
+					}
+				}
+				
+				loadTask.favorites = newFavorites;
+				loadTask.gauges.addAll(newSiteData);
+				((SiteAdapter)getListAdapter()).notifyDataSetChanged();
 			}
 		}
 	}
+	
+	private class ViewFavoriteListener implements MenuItem.OnMenuItemClickListener {
+		
+		private Site site;
+		private Variable variable;
+		
+		public ViewFavoriteListener(Site site, Variable variable) {
+			super();
+			this.site = site;
+			this.variable = variable;
+		}
+
+		@Override
+		public boolean onMenuItemClick(MenuItem item) {
+			Intent i = new Intent(Favorites.this, ViewChart.class);
+	        i.putExtra(ViewChart.KEY_SITE, site);
+	        i.putExtra(ViewChart.KEY_VARIABLE, variable);
+	        startActivity(i);
+			return true;
+		}
+	};
 	
 	private class EditFavoriteListener implements MenuItem.OnMenuItemClickListener {
 		

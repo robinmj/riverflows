@@ -43,8 +43,7 @@
 	    <activity android:name="Favorites"
 	              android:launchMode="singleTask"/>
 	    
-	    <activity android:name="ReorderFavorites"
-	    		android:launchMode="singleTask"/>
+	    <activity android:name="ReorderFavorites"/>
 	    		
 	    <activity android:name="EditFavorite"/>
 		
