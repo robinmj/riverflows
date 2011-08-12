@@ -34,8 +34,6 @@ public class ReorderFavorites extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
-		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		
 		setContentView(R.layout.reorder_favorites);
 
@@ -51,6 +49,9 @@ public class ReorderFavorites extends ListActivity {
 		Button saveButton = (Button)findViewById(R.id.save_button);
 		
 		saveButton.setOnClickListener(saveListener);
+		
+		Button cancelButton = (Button)findViewById(R.id.cancel_button);
+		cancelButton.setOnClickListener(cancelListener);
 		
 		this.loadTask = getLastNonConfigurationInstance();
 		
@@ -275,8 +276,16 @@ public class ReorderFavorites extends ListActivity {
 					FavoritesDaoImpl.updateFavorite(getApplicationContext(), favorite);
 				}
 			}
-
-	    	startActivityIfNeeded(new Intent(ReorderFavorites.this, Home.class), -1);
+			
+			setResult(RESULT_OK);
+			finish();
+		}
+	};
+	
+	private OnClickListener cancelListener = new OnClickListener() {
+		public void onClick(View v) {
+			setResult(RESULT_CANCELED);
+			finish();
 		}
 	};
 }

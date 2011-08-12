@@ -20,10 +20,21 @@
 	      android:layout_width="wrap_content"
 	      android:layout_height="wrap_content"/>
 	</LinearLayout>
-   	<Button
-   		android:id="@+id/save_button"
-   		android:layout_width="wrap_content"
-  		 	android:layout_height="wrap_content"
-   		android:text="Save Changes"
-   		android:hint="click to save this order"/>
+	<LinearLayout
+     android:orientation="horizontal"
+     android:layout_width="fill_parent"
+     android:layout_height="wrap_content">
+	   	<Button
+	   		android:id="@+id/save_button"
+	   		android:layout_width="fill_parent"
+	  		android:layout_height="fill_parent"
+	   		android:text="Save"
+	   		android:hint="save this order" android:layout_weight="1"/>
+	   	<Button
+	   		android:id="@+id/cancel_button"
+	   		android:layout_width="fill_parent"
+	  		android:layout_height="fill_parent"
+	   		android:text="Cancel"
+	   		android:hint="discard changes and go back" android:layout_weight="1"/>
+   	</LinearLayout>
 </LinearLayout>
