@@ -12,7 +12,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -38,8 +37,6 @@ public class ReorderFavorites extends ListActivity {
 		setContentView(R.layout.reorder_favorites);
 
 		TouchListView lv = (TouchListView)getListView();
-		
-		lv.setTextFilterEnabled(true);
 		
 		lv.setDropListener(onDrop);
 		
@@ -206,7 +203,7 @@ public class ReorderFavorites extends ListActivity {
 	        // to reinflate it. We only inflate a new View when the convertView supplied
 	        // by ListView is null.
 	        if (convertView == null) {
-	            convertView = getLayoutInflater().inflate(R.layout.reorder_favorites_item, null);
+	            convertView = getLayoutInflater().inflate(R.layout.reorder_favorites_item, parent, false);
 
 	            // Creates a ViewHolder and store references to the two children views
 	            // we want to bind data to.
