@@ -313,7 +313,9 @@ public class Favorites extends ListActivity {
 			}
 			return null;
 		}
-		
+
+		//TODO need a datatype that contains both the Favorite and SiteData so this is no longer necessary
+		// this code is cut-n-pasted from the Favorites activity to the Favorites content provider
 		private List<SiteData> expandDatasets(List<Favorite> favorites, Map<SiteId,SiteData> siteDataMap) {
 			ArrayList<SiteData> expandedDatasets = new ArrayList<SiteData>(favorites.size());
 			

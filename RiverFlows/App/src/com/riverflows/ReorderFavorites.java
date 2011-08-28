@@ -184,7 +184,7 @@ public class ReorderFavorites extends ListActivity {
     	Favorite favorite;
         TextView text;
         TextView subtext;
-        ImageView agencyIcon;
+        //ImageView agencyIcon;
     }
 	
 	private class FavoriteAdapter extends ArrayAdapter<Favorite> {

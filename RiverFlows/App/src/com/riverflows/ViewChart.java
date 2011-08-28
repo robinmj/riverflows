@@ -225,7 +225,7 @@ public class ViewChart extends Activity {
     		this.variable = displayedSeries.getVariable();
     	}
 
-        Reading mostRecentReading = DataSourceController.getLastObservation(displayedSeries);
+        Reading mostRecentReading = displayedSeries.getLastObservation();
         
         Date mostRecentReadingTime = mostRecentReading.getDate();
         

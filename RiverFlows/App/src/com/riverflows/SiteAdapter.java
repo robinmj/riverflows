@@ -162,7 +162,7 @@ public class SiteAdapter extends BaseAdapter implements Filterable {
 		}
 		
 		try {
-			Reading lastReading = DataSourceController.getLastObservation(s);
+			Reading lastReading = s.getLastObservation();
 			
 			if(lastReading == null) {
 				Log.i(TAG, "null reading");

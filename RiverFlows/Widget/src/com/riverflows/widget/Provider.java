@@ -1,5 +1,6 @@
 package com.riverflows.widget;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -17,43 +18,63 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
 
-import com.riverflows.Home;
-import com.riverflows.ViewChart;
-import com.riverflows.content.Favorites;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.Variable;
+import com.riverflows.wsclient.AHPSXmlDataSource;
+import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.DataSourceController;
+import com.riverflows.wsclient.UsgsCsvDataSource;
 import com.riverflows.wsclient.Utils;
 
 public class Provider extends AppWidgetProvider {
 	
 	public static final String TAG = "RiverFlows-Widget";
 	
+	public static final String ACTION_RELOAD = "RELOAD";
+	
+	public static Provider widget = null;
+	public static AppWidgetManager awm;
+	public static int ids[];
+
+	private static final SimpleDateFormat lastReadingDateFmt = new SimpleDateFormat("h:mm aa");
+	
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) {
+		Provider.widget = this;
+		Provider.awm = appWidgetManager;
+		Provider.ids = appWidgetIds;
+		
         final int N = appWidgetIds.length;
+        
+        List<SiteData> favorites = getFavorites(context);
+        
+        if(favorites == null) {
+        	Log.i(TAG,"Favorites content provider failed to return data");
+        	return;
+        }
 
         // Perform this loop procedure for each App Widget that belongs to this provider
         for (int i=0; i<N; i++) {
             int appWidgetId = appWidgetIds[i];
-            
-            List<SiteData> favorites = getFavorites(context);
 
             // Get the layout for the App Widget and attach an on-click listener
             // to the button
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.main);
             
             int favoriteCount = 5;
+
+            views.setViewVisibility(R.id.spinner, View.GONE);
             
             for(int a = 0; a < favoriteCount && a < favorites.size(); a++) {
             	Log.d(TAG, "drawing favorite " + favorites.get(a).getSite().getName());
 
-                Intent intent = new Intent(Intent.ACTION_VIEW,Uri.fromParts(ViewChart.GAUGE_SCHEME,
+            	//com.riverflows.ViewChart.GAUGE_SCHEME
+                Intent intent = new Intent(Intent.ACTION_VIEW,Uri.fromParts("gauge",
                 		favorites.get(a).getSite().getSiteId().toString(),
                 		favorites.get(a).getDatasets().values().iterator().next().getVariable().getId()));
                 //intent.putExtra(ViewChart.KEY_SITE, favorites.get(a).getSite());
@@ -61,31 +82,63 @@ public class Provider extends AppWidgetProvider {
                 PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
                 
                 views.setOnClickPendingIntent(getFavoriteViewId(a), pendingIntent);
-            	
-            	views.setTextViewText(getTextViewId(a), favorites.get(a).getSite().getName());
 
-            	views.setTextViewText(getSubtextViewId(a), getLastReadingText(favorites.get(a)));
+	        	views.setTextViewText(getTextViewId(a), favorites.get(a).getSite().getName());
+
+	            //display the last reading for this site, if present
+	            Series flowSeries = DataSourceController.getPreferredSeries(favorites.get(a));
+	        	Reading lastReading = getLastReading(flowSeries);
+	        	
+	        	Log.d(TAG, "last reading time: " + (lastReading == null ? "null" : lastReading.getDate()));
+
+	        	//only show the reading if it is less than 6 hours old
+        		if(lastReading != null && (lastReading.getDate().getTime() + (6 * 60 * 60 * 1000)) > System.currentTimeMillis()) {
+		
+		        	views.setTextViewText(getSubtextViewId(a), getLastReadingText(lastReading, flowSeries.getVariable().getUnit()));
+		        	
+		        	views.setTextViewText(getTimestampViewId(a), getLastReadingTimestamp(lastReading));
+        		}
             	
                 String siteAgency = favorites.get(a).getSite().getAgency();
-                Integer agencyIconResId = Home.getAgencyIconResId(siteAgency);
+                Integer agencyIconResId = getAgencyIconResId(siteAgency);
                 if(agencyIconResId != null) {
                 	views.setImageViewResource(getAgencyIconViewId(a), agencyIconResId);
                 } else {
                 	Log.e(TAG, "no icon for agency: " + siteAgency);
                 	views.setViewVisibility(getAgencyIconViewId(a), View.GONE);
                 }
+
+                views.setViewVisibility(getFavoriteViewId(a), View.VISIBLE);
             }
+            
+            Intent reloadIntent = new Intent(ACTION_RELOAD,null,context,getClass());
+            
+            PendingIntent reloadPendingIntent = PendingIntent.getActivity(context, 0, reloadIntent, 0);
+            
+            views.setOnClickPendingIntent(R.id.reload_button, reloadPendingIntent);
+            views.setViewVisibility(R.id.reload_button, View.VISIBLE);
 
             // Tell the AppWidgetManager to perform an update on the current app widget
             appWidgetManager.updateAppWidget(appWidgetId, views);
         }
 	}
 	
-	private String getLastReadingText(SiteData data) {
-
-        //display the last reading for this site, if present
-        Series flowSeries = DataSourceController.getPreferredSeries(data);
-    	Reading lastReading = getLastReadingValue(flowSeries);
+	@Override
+	public void onReceive(Context context, Intent intent) {
+		super.onReceive(context, intent);
+		
+		if(intent.getAction() == null || !intent.getAction().equals(ACTION_RELOAD)) {
+			return;
+		}
+		
+		if(widget == null) {
+			return;
+		}
+		
+		widget.onUpdate(context, Provider.awm, Provider.ids);
+	}
+	
+	private String getLastReadingText(Reading lastReading, String unit) {
     	
         if(lastReading == null) {
         	return "";
@@ -104,10 +157,16 @@ public class Provider extends AppWidgetProvider {
 		
 		String readingStr = Utils.abbreviateNumber(lastReading.getValue(), sigfigs);
 		
-		return readingStr + " " + flowSeries.getVariable().getUnit();
+		return readingStr + " " + unit;
 	}
 	
-	private Reading getLastReadingValue(Series s) {
+	private String getLastReadingTimestamp(Reading r) {
+		
+		return lastReadingDateFmt.format(r.getDate());
+		
+	}
+	
+	private Reading getLastReading(Series s) {
 		if(s == null)
 			return null;
 		
@@ -117,7 +176,7 @@ public class Provider extends AppWidgetProvider {
 		}
 		
 		try {
-			Reading lastReading = DataSourceController.getLastObservation(s);
+			Reading lastReading = s.getLastObservation();
 			
 			if(lastReading == null) {
 				Log.i(TAG, "null reading");
@@ -181,6 +240,22 @@ public class Provider extends AppWidgetProvider {
 		throw new IllegalArgumentException();
 	}
 	
+	private int getTimestampViewId(int index) {
+		switch(index) {
+		case 0:
+			return R.id.timestamp_0;
+		case 1:
+			return R.id.timestamp_1;
+		case 2:
+			return R.id.timestamp_2;
+		case 3:
+			return R.id.timestamp_3;
+		case 4:
+			return R.id.timestamp_4;
+		}
+		throw new IllegalArgumentException();
+	}
+	
 	private int getAgencyIconViewId(int index) {
 		switch(index) {
 		case 0:
@@ -196,12 +271,27 @@ public class Provider extends AppWidgetProvider {
 		}
 		throw new IllegalArgumentException();
 	}
+
+	public static Integer getAgencyIconResId(String siteAgency) {
+		if(UsgsCsvDataSource.AGENCY.equals(siteAgency)) {
+        	return R.drawable.usgs;
+        } else if(AHPSXmlDataSource.AGENCY.equals(siteAgency)) {
+        	return R.drawable.ahps;
+        } else if(CODWRDataSource.AGENCY.equals(siteAgency)) {
+        	return R.drawable.codwr;
+        }
+		return null;
+	}
 	
 	private List<SiteData> getFavorites(Context context) {
 
         ContentResolver cr = context.getContentResolver();
+        //com.riverflows.content.Favorites.CONTENT_URI
+        Cursor favoritesC = cr.query(Uri.parse("content://com.riverflows.content.favorites"), null, null, null, null);
         
-        Cursor favoritesC = cr.query(Favorites.CONTENT_URI, null, null, null, null);
+        if(favoritesC == null) {
+        	return null;
+        }
 		
         List<SiteData> favorites = new ArrayList<SiteData>();
         

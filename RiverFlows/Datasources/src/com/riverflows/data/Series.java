@@ -30,4 +30,24 @@ public class Series {
 	public void setSourceUrl(String sourceUrl) {
 		this.sourceUrl = sourceUrl;
 	}
+
+    /**
+     * @param s cannot be null
+     * @return the last non-forecasted reading in a series, or null if the series has no
+     *  non-forecasted readings
+     */
+	public Reading getLastObservation() {
+
+        int readingIndex = readings.size() - 1;
+        Reading mostRecentReading = null;
+        
+        do {
+        	if(readingIndex < 0) {
+        		break;
+        	}
+        	mostRecentReading = readings.get(readingIndex--);
+        } while(mostRecentReading instanceof Forecast);
+        
+        return mostRecentReading;
+	}
 }

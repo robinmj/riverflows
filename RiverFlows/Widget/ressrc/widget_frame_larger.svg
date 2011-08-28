@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="120"
+   height="52"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.47 r22583"
+   sodipodi:docname="widget_frame_larger.svg"
+   inkscape:export-filename="/Users/robin/bg_3x3_frame.9.png"
+   inkscape:export-xdpi="101.47743"
+   inkscape:export-ydpi="101.47743">
+  <defs
+     id="defs4">
+    <inkscape:perspective
+       sodipodi:type="inkscape:persp3d"
+       inkscape:vp_x="0 : 526.18109 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_z="744.09448 : 526.18109 : 1"
+       inkscape:persp3d-origin="372.04724 : 350.78739 : 1"
+       id="perspective10" />
+    <filter
+       id="filter3859"
+       inkscape:label="Drop shadow"
+       width="1.5"
+       height="1.5"
+       x="-0.25"
+       y="-0.25"
+       color-interpolation-filters="sRGB">
+      <feGaussianBlur
+         id="feGaussianBlur3861"
+         in="SourceAlpha"
+         stdDeviation="2.5"
+         result="blur" />
+      <feColorMatrix
+         id="feColorMatrix3863"
+         result="bluralpha"
+         type="matrix"
+         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.750000 0 " />
+      <feOffset
+         id="feOffset3865"
+         in="bluralpha"
+         dx="0.000000"
+         dy="0.000000"
+         result="offsetBlur" />
+      <feMerge
+         id="feMerge3867">
+        <feMergeNode
+           id="feMergeNode3869"
+           in="offsetBlur" />
+        <feMergeNode
+           id="feMergeNode3871"
+           in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <filter
+       id="filter3873"
+       inkscape:label="Drop shadow"
+       width="1.5"
+       height="1.5"
+       x="-0.25"
+       y="-0.25"
+       color-interpolation-filters="sRGB">
+      <feGaussianBlur
+         id="feGaussianBlur3875"
+         in="SourceAlpha"
+         stdDeviation="2.500000"
+         result="blur" />
+      <feColorMatrix
+         id="feColorMatrix3877"
+         result="bluralpha"
+         type="matrix"
+         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.750000 0 " />
+      <feOffset
+         id="feOffset3879"
+         in="bluralpha"
+         dx="0.000000"
+         dy="0.000000"
+         result="offsetBlur" />
+      <feMerge
+         id="feMerge3881">
+        <feMergeNode
+           id="feMergeNode3883"
+           in="offsetBlur" />
+        <feMergeNode
+           id="feMergeNode3885"
+           in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <inkscape:perspective
+       id="perspective2846"
+       inkscape:persp3d-origin="0.5 : 0.33333333 : 1"
+       inkscape:vp_z="1 : 0.5 : 1"
+       inkscape:vp_y="0 : 1000 : 0"
+       inkscape:vp_x="0 : 0.5 : 1"
+       sodipodi:type="inkscape:persp3d" />
+    <filter
+       id="filter3859-7"
+       inkscape:label="Drop shadow"
+       width="1.5"
+       height="1.5"
+       x="-0.25"
+       y="-0.25"
+       color-interpolation-filters="sRGB">
+      <feGaussianBlur
+         id="feGaussianBlur3861-9"
+         in="SourceAlpha"
+         stdDeviation="2.5"
+         result="blur" />
+      <feColorMatrix
+         id="feColorMatrix3863-3"
+         result="bluralpha"
+         type="matrix"
+         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 0.750000 0 " />
+      <feOffset
+         id="feOffset3865-8"
+         in="bluralpha"
+         dx="0.000000"
+         dy="0.000000"
+         result="offsetBlur" />
+      <feMerge
+         id="feMerge3867-0">
+        <feMergeNode
+           id="feMergeNode3869-2"
+           in="offsetBlur" />
+        <feMergeNode
+           id="feMergeNode3871-4"
+           in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter3710">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="0.35996547"
+         id="feGaussianBlur3712" />
+    </filter>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="8.0147534"
+     inkscape:cx="60.110917"
+     inkscape:cy="37.067521"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     showguides="true"
+     inkscape:guide-bbox="true"
+     inkscape:window-width="1063"
+     inkscape:window-height="847"
+     inkscape:window-x="112"
+     inkscape:window-y="11"
+     inkscape:window-maximized="0">
+    <sodipodi:guide
+       orientation="0,1"
+       position="19.876576,41.002226"
+       id="guide2816" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="7.9894644,20.544337"
+       id="guide2818" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="17.471466,10.974539"
+       id="guide2820" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="112.04337,41.002226"
+       id="guide2822" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="13.703209,34.893048"
+       id="guide3606" />
+    <sodipodi:guide
+       orientation="1,0"
+       position="106.30396,41.002226"
+       id="guide3608" />
+    <sodipodi:guide
+       orientation="0,1"
+       position="-4.7459893,16.71123"
+       id="guide3610" />
+  </sodipodi:namedview>
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:groupmode="layer"
+     id="layer2"
+     inkscape:label="Shadow"
+     style="display:inline">
+    <rect
+       style="fill:#000000;fill-opacity:0.63921569000000000;fill-rule:evenodd;stroke:none;filter:url(#filter3710)"
+       id="rect2845-8"
+       width="20"
+       height="20.017559"
+       x="7.9894643"
+       y="11.007902"
+       ry="4.6664567"
+       rx="1.3454565"
+       transform="matrix(5.2026954,0,0,1.5000675,-33.577285,-5.514825)" />
+  </g>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-1000.3622)"
+     style="display:inline">
+    <rect
+       style="fill:#000000;fill-opacity:0.63921569;fill-rule:evenodd;stroke:none"
+       id="rect2845"
+       width="20"
+       height="20.017559"
+       x="7.9894643"
+       y="11.007902"
+       ry="4.6664567"
+       rx="1.3454565"
+       transform="matrix(5.2026954,0,0,1.5000675,-33.577285,994.84738)" />
+    <rect
+       style="fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0;stroke-dasharray:none;filter:url(#filter3873)"
+       id="rect3619"
+       width="8"
+       height="8"
+       x="14.004"
+       y="1027.6964" />
+    <text
+       xml:space="preserve"
+       style="font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#cccccc;fill-opacity:1;stroke:none;font-family:Arial Rounded MT Bold;-inkscape-font-specification:'Arial Rounded MT Bold,'"
+       x="13.703209"
+       y="1028.5077"
+       id="text2836"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan2838"
+         x="13.703209"
+         y="1028.5077">RiverFlows</tspan></text>
+  </g>
+</svg>
