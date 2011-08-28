@@ -84,7 +84,7 @@ public class Favorites extends ContentProvider {
 			//this assumes the widget only wants 5 favorites- shorten the list so we don't
 			// waste bandwidth getting site data for favorites that won't be displayed
 			// Sometime down the line, perhaps a lazy-loading Cursor can be returned instead?
-			favorites = favorites.subList(0, 4);
+			favorites = favorites.subList(0, 5);
 			
 			//migrate any favorites without a variable set
 			//checkForOldFavorites(favorites);
@@ -121,9 +121,9 @@ public class Favorites extends ContentProvider {
 						
 						row.add(series.getVariable().getId());
 						
-						Reading lastReading = DataSourceController.getLastObservation(series);
+						Reading lastReading = series.getLastObservation();
 						if(lastReading != null) {
-							row.add(lastReading.getDate());
+							row.add(lastReading.getDate().getTime());
 							row.add(lastReading.getValue());
 							row.add(lastReading.getQualifiers());
 						}
@@ -138,6 +138,8 @@ public class Favorites extends ContentProvider {
 		return null;
 	}
 	
+	//TODO need a datatype that contains both the Favorite and SiteData so this is no longer necessary
+	// this code is cut-n-pasted from the Favorites activity to the Favorites content provider
 	private List<SiteData> expandDatasets(List<Favorite> favorites, Map<SiteId,SiteData> siteDataMap) {
 		ArrayList<SiteData> expandedDatasets = new ArrayList<SiteData>(favorites.size());
 		
@@ -170,6 +172,11 @@ public class Favorites extends ContentProvider {
 				
 				expandedDatasets.add(current);
 				continue;
+			}
+
+			//use custom name if one is defined
+			if(favorite.getName() != null) {
+				current.getSite().setName(favorite.getName());
 			}
 			
 			if(current.getDatasets().size() <= 1) {
