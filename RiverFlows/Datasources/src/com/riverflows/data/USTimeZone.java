@@ -23,11 +23,14 @@ public enum USTimeZone {
 	
 	private String offsetString;
 	
+	private TimeZone timezone;
+	
 	private USTimeZone(String offsetString) {
 		this.offsetString = offsetString;
+		this.timezone = TimeZone.getTimeZone(this.offsetString);
 	}
 	
 	public TimeZone getTimeZone() {
-		return TimeZone.getTimeZone(this.offsetString);
+		return timezone;
 	}
 }
