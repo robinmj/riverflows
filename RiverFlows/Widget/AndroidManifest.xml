@@ -19,6 +19,10 @@
 		        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
 		    </intent-filter>
 		</activity>-->
-    
+    	<service android:name=".Provider$UpdateService">
+    		<intent-filter >
+    			<category android:name="android.intent.category.DEFAULT"/>
+    		</intent-filter>
+    	</service>
     </application>
 </manifest>

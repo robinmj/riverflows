@@ -7,13 +7,16 @@ import java.util.Date;
 import java.util.List;
 
 import android.app.PendingIntent;
+import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -33,40 +36,44 @@ import com.riverflows.wsclient.Utils;
 public class Provider extends AppWidgetProvider {
 	
 	public static final String TAG = "RiverFlows-Widget";
-	
-	public static final String ACTION_RELOAD = "RELOAD";
-	
-	public static Provider widget = null;
-	public static AppWidgetManager awm;
-	public static int ids[];
 
 	private static final SimpleDateFormat lastReadingDateFmt = new SimpleDateFormat("h:mm aa");
 	
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) {
-		Provider.widget = this;
-		Provider.awm = appWidgetManager;
-		Provider.ids = appWidgetIds;
+		context.startService(new Intent(context, UpdateService.class));
+	}
+	
+	public static class UpdateService extends Service {
+		@Override
+		public IBinder onBind(Intent intent) {
+			return null;
+		}
 		
-        final int N = appWidgetIds.length;
-        
-        List<SiteData> favorites = getFavorites(context);
-        
-        if(favorites == null) {
-        	Log.i(TAG,"Favorites content provider failed to return data");
-        	return;
-        }
+		@Override
+		public void onStart(Intent intent, int startId) {
+			RemoteViews views = buildRemoteViews(this);
+			
+            ComponentName thisWidget = new ComponentName(this, Provider.class);
+            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
+            appWidgetManager.updateAppWidget(thisWidget, views);
+		}
+		
+		public RemoteViews buildRemoteViews(Context context) {
 
-        // Perform this loop procedure for each App Widget that belongs to this provider
-        for (int i=0; i<N; i++) {
-            int appWidgetId = appWidgetIds[i];
-
-            // Get the layout for the App Widget and attach an on-click listener
-            // to the button
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.main);
+
+            views.setViewVisibility(R.id.spinner, View.VISIBLE);
+            views.setViewVisibility(R.id.reload_button, View.GONE);
             
             int favoriteCount = 5;
+            
+            for(int a = 0; a < favoriteCount; a++) {
+                views.setViewVisibility(getFavoriteViewId(a), View.GONE);
+            }
+	        
+	        List<SiteData> favorites = getFavorites(context);
 
             views.setViewVisibility(R.id.spinner, View.GONE);
             
@@ -111,236 +118,220 @@ public class Provider extends AppWidgetProvider {
                 views.setViewVisibility(getFavoriteViewId(a), View.VISIBLE);
             }
             
-            Intent reloadIntent = new Intent(ACTION_RELOAD,null,context,getClass());
+            Intent reloadIntent = new Intent(context,UpdateService.class);
             
             PendingIntent reloadPendingIntent = PendingIntent.getActivity(context, 0, reloadIntent, 0);
             
             views.setOnClickPendingIntent(R.id.reload_button, reloadPendingIntent);
             views.setViewVisibility(R.id.reload_button, View.VISIBLE);
-
-            // Tell the AppWidgetManager to perform an update on the current app widget
-            appWidgetManager.updateAppWidget(appWidgetId, views);
-        }
-	}
-	
-	@Override
-	public void onReceive(Context context, Intent intent) {
-		super.onReceive(context, intent);
-		
-		if(intent.getAction() == null || !intent.getAction().equals(ACTION_RELOAD)) {
-			return;
+            
+            return views;
 		}
 		
-		if(widget == null) {
-			return;
-		}
-		
-		widget.onUpdate(context, Provider.awm, Provider.ids);
-	}
-	
-	private String getLastReadingText(Reading lastReading, String unit) {
-    	
-        if(lastReading == null) {
-        	return "";
-        }
-        
-    	if(lastReading.getValue() == null) {
-    		if(lastReading.getQualifiers() == null) {
-    			return "unknown";
-    		}
-    		
-    		return lastReading.getQualifiers();
-    	}
-        	
-    	//use this many significant figures for decimal values
-		int sigfigs = 4;
-		
-		String readingStr = Utils.abbreviateNumber(lastReading.getValue(), sigfigs);
-		
-		return readingStr + " " + unit;
-	}
-	
-	private String getLastReadingTimestamp(Reading r) {
-		
-		return lastReadingDateFmt.format(r.getDate());
-		
-	}
-	
-	private Reading getLastReading(Series s) {
-		if(s == null)
-			return null;
-		
-		if(s.getReadings() == null) {
-			Log.e(TAG, "null readings");
-			return null;
-		}
-		
-		try {
-			Reading lastReading = s.getLastObservation();
+		private String getLastReadingText(Reading lastReading, String unit) {
+	    	
+	        if(lastReading == null) {
+	        	return "";
+	        }
+	        
+	    	if(lastReading.getValue() == null) {
+	    		if(lastReading.getQualifiers() == null) {
+	    			return "unknown";
+	    		}
+	    		
+	    		return lastReading.getQualifiers();
+	    	}
+	        	
+	    	//use this many significant figures for decimal values
+			int sigfigs = 4;
 			
-			if(lastReading == null) {
-				Log.i(TAG, "null reading");
+			String readingStr = Utils.abbreviateNumber(lastReading.getValue(), sigfigs);
+			
+			return readingStr + " " + unit;
+		}
+		
+		private String getLastReadingTimestamp(Reading r) {
+			
+			return lastReadingDateFmt.format(r.getDate());
+			
+		}
+		
+		private Reading getLastReading(Series s) {
+			if(s == null)
+				return null;
+			
+			if(s.getReadings() == null) {
+				Log.e(TAG, "null readings");
 				return null;
 			}
 			
-			return lastReading;
+			try {
+				Reading lastReading = s.getLastObservation();
+				
+				if(lastReading == null) {
+					Log.i(TAG, "null reading");
+					return null;
+				}
+				
+				return lastReading;
+				
+			} catch(IndexOutOfBoundsException ioobe) {
+				//there will be an empty readings list if the site has no recent reading
+				return null;
+			}
 			
-		} catch(IndexOutOfBoundsException ioobe) {
-			//there will be an empty readings list if the site has no recent reading
+		}
+		
+		private int getFavoriteViewId(int index) {
+			switch(index) {
+			case 0:
+				return R.id.favorite_0;
+			case 1:
+				return R.id.favorite_1;
+			case 2:
+				return R.id.favorite_2;
+			case 3:
+				return R.id.favorite_3;
+			case 4:
+				return R.id.favorite_4;
+			}
+			throw new IllegalArgumentException();
+		}
+		
+		private int getTextViewId(int index) {
+			switch(index) {
+			case 0:
+				return R.id.favorite_name_0;
+			case 1:
+				return R.id.favorite_name_1;
+			case 2:
+				return R.id.favorite_name_2;
+			case 3:
+				return R.id.favorite_name_3;
+			case 4:
+				return R.id.favorite_name_4;
+			}
+			throw new IllegalArgumentException();
+		}
+		
+		private int getSubtextViewId(int index) {
+			switch(index) {
+			case 0:
+				return R.id.subtext_0;
+			case 1:
+				return R.id.subtext_1;
+			case 2:
+				return R.id.subtext_2;
+			case 3:
+				return R.id.subtext_3;
+			case 4:
+				return R.id.subtext_4;
+			}
+			throw new IllegalArgumentException();
+		}
+		
+		private int getTimestampViewId(int index) {
+			switch(index) {
+			case 0:
+				return R.id.timestamp_0;
+			case 1:
+				return R.id.timestamp_1;
+			case 2:
+				return R.id.timestamp_2;
+			case 3:
+				return R.id.timestamp_3;
+			case 4:
+				return R.id.timestamp_4;
+			}
+			throw new IllegalArgumentException();
+		}
+		
+		private int getAgencyIconViewId(int index) {
+			switch(index) {
+			case 0:
+				return R.id.agency_icon_0;
+			case 1:
+				return R.id.agency_icon_1;
+			case 2:
+				return R.id.agency_icon_2;
+			case 3:
+				return R.id.agency_icon_3;
+			case 4:
+				return R.id.agency_icon_4;
+			}
+			throw new IllegalArgumentException();
+		}
+
+		public static Integer getAgencyIconResId(String siteAgency) {
+			if(UsgsCsvDataSource.AGENCY.equals(siteAgency)) {
+	        	return R.drawable.usgs;
+	        } else if(AHPSXmlDataSource.AGENCY.equals(siteAgency)) {
+	        	return R.drawable.ahps;
+	        } else if(CODWRDataSource.AGENCY.equals(siteAgency)) {
+	        	return R.drawable.codwr;
+	        }
 			return null;
 		}
 		
-	}
-	
-	private int getFavoriteViewId(int index) {
-		switch(index) {
-		case 0:
-			return R.id.favorite_0;
-		case 1:
-			return R.id.favorite_1;
-		case 2:
-			return R.id.favorite_2;
-		case 3:
-			return R.id.favorite_3;
-		case 4:
-			return R.id.favorite_4;
-		}
-		throw new IllegalArgumentException();
-	}
-	
-	private int getTextViewId(int index) {
-		switch(index) {
-		case 0:
-			return R.id.favorite_name_0;
-		case 1:
-			return R.id.favorite_name_1;
-		case 2:
-			return R.id.favorite_name_2;
-		case 3:
-			return R.id.favorite_name_3;
-		case 4:
-			return R.id.favorite_name_4;
-		}
-		throw new IllegalArgumentException();
-	}
-	
-	private int getSubtextViewId(int index) {
-		switch(index) {
-		case 0:
-			return R.id.subtext_0;
-		case 1:
-			return R.id.subtext_1;
-		case 2:
-			return R.id.subtext_2;
-		case 3:
-			return R.id.subtext_3;
-		case 4:
-			return R.id.subtext_4;
-		}
-		throw new IllegalArgumentException();
-	}
-	
-	private int getTimestampViewId(int index) {
-		switch(index) {
-		case 0:
-			return R.id.timestamp_0;
-		case 1:
-			return R.id.timestamp_1;
-		case 2:
-			return R.id.timestamp_2;
-		case 3:
-			return R.id.timestamp_3;
-		case 4:
-			return R.id.timestamp_4;
-		}
-		throw new IllegalArgumentException();
-	}
-	
-	private int getAgencyIconViewId(int index) {
-		switch(index) {
-		case 0:
-			return R.id.agency_icon_0;
-		case 1:
-			return R.id.agency_icon_1;
-		case 2:
-			return R.id.agency_icon_2;
-		case 3:
-			return R.id.agency_icon_3;
-		case 4:
-			return R.id.agency_icon_4;
-		}
-		throw new IllegalArgumentException();
-	}
+		private List<SiteData> getFavorites(Context context) {
 
-	public static Integer getAgencyIconResId(String siteAgency) {
-		if(UsgsCsvDataSource.AGENCY.equals(siteAgency)) {
-        	return R.drawable.usgs;
-        } else if(AHPSXmlDataSource.AGENCY.equals(siteAgency)) {
-        	return R.drawable.ahps;
-        } else if(CODWRDataSource.AGENCY.equals(siteAgency)) {
-        	return R.drawable.codwr;
-        }
-		return null;
-	}
-	
-	private List<SiteData> getFavorites(Context context) {
-
-        ContentResolver cr = context.getContentResolver();
-        //com.riverflows.content.Favorites.CONTENT_URI
-        Cursor favoritesC = cr.query(Uri.parse("content://com.riverflows.content.favorites"), null, null, null, null);
-        
-        if(favoritesC == null) {
-        	return null;
-        }
-		
-        List<SiteData> favorites = new ArrayList<SiteData>();
-        
-        if(favoritesC.getCount() == 0) {
-        	favoritesC.close();
-        	return favorites;
-		}
-        
-        if(!favoritesC.moveToFirst()) {
-        	return favorites;
-        }
-        
-		do {
-			SiteData favoriteData = new SiteData();
+	        ContentResolver cr = context.getContentResolver();
+	        //com.riverflows.content.Favorites.CONTENT_URI
+	        Cursor favoritesC = cr.query(Uri.parse("content://com.riverflows.content.favorites"), null, null, null, null);
+	        
+	        if(favoritesC == null) {
+	        	return null;
+	        }
 			
-			Site favoriteSite = new Site();
-			
-			SiteId siteId = new SiteId(favoritesC.getString(1), favoritesC.getString(0));
-			
-			favoriteSite.setSiteId(siteId);
-			favoriteSite.setName(favoritesC.getString(2));
-			//favoriteSite.setLatitude(favoritesC.getDouble(3));
-			//favoriteSite.setLongitude(favoritesC.getDouble(4));
-			favoriteData.setSite(favoriteSite);
-			//favoriteData.setDataInfo(dataInfo);
-			
-			String variableId = favoritesC.getString(3);
-			
-			Reading lastReading = new Reading();
-			lastReading.setDate(new Date(favoritesC.getLong(4)));
-			lastReading.setValue(favoritesC.getDouble(5));
-			lastReading.setQualifiers(favoritesC.getString(6));
-			
-			Variable var = DataSourceController.getVariable(siteId.getAgency(), variableId);
-			
-			Series s = new Series();
-			
-			s.setVariable(var);
-			s.setReadings(Collections.singletonList(lastReading));
-			
-			if(var != null) {
-				favoriteData.getDatasets().put(var.getCommonVariable(), s);
-			} else {
-				Log.e(TAG, "could not find variable: " + siteId.getAgency() + " " + variableId);
-				continue;
+	        List<SiteData> favorites = new ArrayList<SiteData>();
+	        
+	        if(favoritesC.getCount() == 0) {
+	        	favoritesC.close();
+	        	return favorites;
 			}
-			favorites.add(favoriteData);
-		} while(favoritesC.moveToNext());
-		
-		return favorites;
+	        
+	        if(!favoritesC.moveToFirst()) {
+	        	return favorites;
+	        }
+	        
+			do {
+				SiteData favoriteData = new SiteData();
+				
+				Site favoriteSite = new Site();
+				
+				SiteId siteId = new SiteId(favoritesC.getString(1), favoritesC.getString(0));
+				
+				favoriteSite.setSiteId(siteId);
+				favoriteSite.setName(favoritesC.getString(2));
+				//favoriteSite.setLatitude(favoritesC.getDouble(3));
+				//favoriteSite.setLongitude(favoritesC.getDouble(4));
+				favoriteData.setSite(favoriteSite);
+				//favoriteData.setDataInfo(dataInfo);
+				
+				String variableId = favoritesC.getString(3);
+				
+				Reading lastReading = new Reading();
+				lastReading.setDate(new Date(favoritesC.getLong(4)));
+				lastReading.setValue(favoritesC.getDouble(5));
+				lastReading.setQualifiers(favoritesC.getString(6));
+				
+				Variable var = DataSourceController.getVariable(siteId.getAgency(), variableId);
+				
+				Series s = new Series();
+				
+				s.setVariable(var);
+				s.setReadings(Collections.singletonList(lastReading));
+				
+				if(var != null) {
+					favoriteData.getDatasets().put(var.getCommonVariable(), s);
+				} else {
+					Log.e(TAG, "could not find variable: " + siteId.getAgency() + " " + variableId);
+					continue;
+				}
+				favorites.add(favoriteData);
+			} while(favoritesC.moveToNext());
+			
+			return favorites;
+		}
 	}
 }
