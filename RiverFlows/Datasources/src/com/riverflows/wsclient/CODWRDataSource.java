@@ -174,10 +174,10 @@ public class CODWRDataSource implements RESTDataSource {
 			sourceUrl += "&END=" + rangeDateFormat.format(endDate);
 		}
 		
-		return getSiteData(site, variableTypes, sourceUrl, hardRefresh);
+		return getSiteData(site, variableTypes, sourceUrl, interval, hardRefresh);
 	}
 	
-	private SiteData getSiteData(Site site, Variable[] variables, String urlStr, boolean hardRefresh) throws ClientProtocolException, IOException {
+	private SiteData getSiteData(Site site, Variable[] variables, String urlStr, int interval, boolean hardRefresh) throws ClientProtocolException, IOException {
 		
 		if(LOG.isInfoEnabled()) LOG.info("site data URL: " + urlStr);
 		
@@ -202,7 +202,7 @@ public class CODWRDataSource implements RESTDataSource {
 				bufferedStream = new CachingBufferedInputStream(contentInputStream, 8192, cacheFile);
 			}
 			
-			data = parse(site, variables, bufferedStream, urlStr);
+			data = parse(site, variables, bufferedStream, urlStr, interval);
 			
 			if(LOG.isInfoEnabled()) LOG.info("loaded site data in " + (System.currentTimeMillis() - startTime) + "ms");
 			
@@ -233,7 +233,7 @@ public class CODWRDataSource implements RESTDataSource {
 	 * @return
 	 * @throws IOException
 	 */
-	private SiteData parse(Site site, Variable[] variables, InputStream s, String sourceUrl) throws IOException {
+	private SiteData parse(Site site, Variable[] variables, InputStream s, String sourceUrl, int interval) throws IOException {
 		
 		DataInputStream ds = new DataInputStream(s);
 		
@@ -337,7 +337,12 @@ public class CODWRDataSource implements RESTDataSource {
 					newReading.setValue(null);
 					newReading.setQualifiers(values[a]);
 				}
-				newReading.setDate(currentDate);
+				if(interval == 3 && currentDate.getTime() > (System.currentTimeMillis() - 24 * 60 * 60 * 1000)) {
+					//for some reason, the recent reading interval always has a 12:00 am time
+					newReading.setDate(new Date());
+				} else {
+					newReading.setDate(currentDate);
+				}
 				
 				currentSeries.getReadings().add(newReading);
 			}
