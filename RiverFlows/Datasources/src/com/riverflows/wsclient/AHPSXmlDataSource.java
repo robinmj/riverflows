@@ -122,6 +122,8 @@ public class AHPSXmlDataSource implements RESTDataSource {
 						datasets.remove();
 					}
 				}
+			} catch(DataParseException dpe) {
+				LOG.warn("could not parse data for site " + dpe.getSiteId(), dpe);
 			} catch(IOException ioe) {
 				this.ioe = ioe;
 			}
@@ -225,9 +227,9 @@ public class AHPSXmlDataSource implements RESTDataSource {
 			reader.parse(new InputSource(bufferedStream));
 			if(LOG.isInfoEnabled()) LOG.info("loaded site data in " + (System.currentTimeMillis() - startTime) + "ms");
 		} catch(ParserConfigurationException pce) {
-			throw new RuntimeException(urlStr, pce);
+			throw new DataParseException(site.getSiteId(), urlStr, pce);
 		} catch(SAXException se) {
-			throw new RuntimeException(urlStr, se);
+			throw new DataParseException(site.getSiteId(), urlStr, se);
 		} finally {
 			try {
 				contentInputStream.close();
