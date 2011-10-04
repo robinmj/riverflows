@@ -1,0 +1,32 @@
+body {
+    background: rgb(5,5,5);
+    color: rgb(163,163,163);
+}
+
+a {
+    color: rgb(163,163,163);
+	font-weight: bold;
+	text-decoration: none;
+}
+
+a:hover {
+	text-decoration: underline;
+}
+
+h1 {
+	font-size: large;
+	font-style: bold;
+}
+
+h2 {
+	font-size: large;
+}
+
+h3 {
+	font-size: medium;
+	font-style: bold;
+}
+
+h4 {
+	font-size: medium;
+}

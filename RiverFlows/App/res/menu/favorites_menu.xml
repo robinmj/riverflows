@@ -11,4 +11,7 @@
 		android:title="Change Order"
 		android:icon="@drawable/ic_reorder"
 		android:visible="false"/>
+	<item android:id="@+id/mi_help"
+    	android:title="Help"
+    	android:icon="@drawable/ic_menu_help"/>
 </menu>

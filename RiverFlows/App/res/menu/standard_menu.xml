@@ -14,4 +14,8 @@
     android:title="Other Measurements"
     android:icon="@drawable/ic_menu_measurements"
     android:visible="false"/>
+	<item android:id="@+id/mi_help"
+    android:title="Help"
+    android:icon="@drawable/ic_menu_help"
+    android:visible="false"/>
 </menu>

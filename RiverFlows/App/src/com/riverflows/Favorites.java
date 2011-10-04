@@ -18,8 +18,13 @@ import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.SpannableString;
+import android.text.Spanned;
+import android.text.method.LinkMovementMethod;
+import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -30,6 +35,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.WindowManager.BadTokenException;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Reading;
@@ -69,7 +75,16 @@ public class Favorites extends ListActivity {
 
 		ListView lv = getListView();
 		
-		lv.getEmptyView().setVisibility(View.INVISIBLE);
+		hideInstructions();
+
+		TextView favoriteSubtext = (TextView)findViewById(R.id.favorite_instructions_subheader);
+		
+		SpannableString subtext = new SpannableString("If you select your favorite gauge sites, they will appear here.");
+		
+		subtext.setSpan(new URLSpan("riverflows://help/favorites.html"), 7, 39, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+		
+		favoriteSubtext.setText(subtext);
+		favoriteSubtext.setMovementMethod(LinkMovementMethod.getInstance());
 		
 		lv.setTextFilterEnabled(true);
 		this.loadTask = getLastNonConfigurationInstance();
@@ -161,6 +176,10 @@ public class Favorites extends ListActivity {
 	    case R.id.mi_reorder:
 	    	Intent i_reorder = new Intent(this, ReorderFavorites.class);
 	    	startActivityForResult(i_reorder, REQUEST_REORDER_FAVORITES);
+	    	return true;
+	    case R.id.mi_help:
+	    	Intent i_help = new Intent(Intent.ACTION_VIEW, Uri.parse(Help.BASE_URI + "favorites.html"));
+	    	startActivity(i_help);
 	    	return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
@@ -254,11 +273,25 @@ public class Favorites extends ListActivity {
 				}
 			}
 		} else if(this.loadTask.gauges.size() == 0) {
-			getListView().getEmptyView().setVisibility(View.VISIBLE);
+			showInstructions();
 		}
 
 		//needed for Android 3.0+
 		//invalidateOptionsMenu();
+	}
+	
+	private void showInstructions() {
+		getListView().getEmptyView().setVisibility(View.VISIBLE);
+		
+		/*
+		WebView instructions = (WebView)findViewById(R.id.favorite_instructions);
+        instructions.setClickable(false);
+		instructions.loadUrl("file:///android_asset/" + Help.DATA_PATH_PREFIX + "/favorites.html");
+		*/
+	}
+
+	private void hideInstructions() {
+		getListView().getEmptyView().setVisibility(View.INVISIBLE);
 	}
 
 	/** parameter for LoadSitesTask */
