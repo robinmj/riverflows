@@ -39,6 +39,11 @@ public class Favorites extends ContentProvider {
 	public static final String COLUMN_LAST_READING_VALUE = "lastReadingValue";
 	public static final String COLUMN_LAST_READING_QUALIFIERS = "lastReadingQualifiers";
 	
+	/**
+	 * Last result that should be returned.
+	 */
+	public static final String URI_PARAM_ULIMIT = "uLimit";
+	
 	public static final String[] ALL_COLUMNS = new String[]{
 		COLUMN_ID,
 		COLUMN_AGENCY,
@@ -78,13 +83,33 @@ public class Favorites extends ContentProvider {
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
-		if(uri.equals(CONTENT_URI)) {
-			List<Favorite> favorites = FavoritesDaoImpl.getFavorites(getContext(), null, null);
+		if(uri.getAuthority().equals(CONTENT_URI.getAuthority())) {
 			
-			//this assumes the widget only wants 5 favorites- shorten the list so we don't
-			// waste bandwidth getting site data for favorites that won't be displayed
+			SiteId siteId = null;
+			String variable = null;
+			Integer uLimit = null;
+			
+			List<String> pathSegments = uri.getPathSegments();
+			if(pathSegments.size() > 0) {
+				if(pathSegments.size() != 3) {
+					Log.e(TAG, "incomplete uri: " + CONTENT_URI);
+					return null;
+				}
+				siteId = new SiteId(pathSegments.get(0), pathSegments.get(1));
+				variable = pathSegments.get(2);
+			} else {
+				String uLimitStr = uri.getQueryParameter(URI_PARAM_ULIMIT);
+				if(uLimitStr != null) {
+					uLimit = new Integer(uLimitStr);
+				}
+			}
+			
 			// Sometime down the line, perhaps a lazy-loading Cursor can be returned instead?
-			favorites = favorites.subList(0, 5);
+			List<Favorite> favorites = FavoritesDaoImpl.getFavorites(getContext(), siteId, variable);
+			
+			if(uLimit != null) {
+				favorites = favorites.subList(0, (favorites.size() < uLimit ? favorites.size() : uLimit));
+			}
 			
 			//migrate any favorites without a variable set
 			//checkForOldFavorites(favorites);
