@@ -1,6 +1,7 @@
 package com.riverflows.content;
 
 import java.io.IOException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -111,9 +112,6 @@ public class Favorites extends ContentProvider {
 				favorites = favorites.subList(0, (favorites.size() < uLimit ? favorites.size() : uLimit));
 			}
 			
-			//migrate any favorites without a variable set
-			//checkForOldFavorites(favorites);
-			
 			Map<SiteId,SiteData> allSiteDataMap = new HashMap<SiteId,SiteData>();
 			
 			try {
@@ -121,6 +119,21 @@ public class Favorites extends ContentProvider {
 				
 				for(SiteData currentData: siteDataMap.values()) {
 					allSiteDataMap.put(currentData.getSite().getSiteId(), currentData);
+				}
+			} catch(UnknownHostException uhe) {
+				for(Favorite favorite: favorites) {
+					SiteData currentData = new SiteData();
+					currentData.setSite(favorite.getSite());
+					
+					Variable v = DataSourceController.getVariable(favorite.getSite().getAgency(), favorite.getVariable());
+					Series placeholderData = new Series();
+					Reading r = new Reading();
+					r.setDate(new Date());
+					r.setQualifiers("Network Error");
+					r.setValue(null);
+					placeholderData.setReadings(Collections.singletonList(r));
+					currentData.getDatasets().put(v.getCommonVariable(), new Series());
+					allSiteDataMap.put(favorite.getSite().getSiteId(), currentData);
 				}
 			} catch(IOException ioe) {
 				Log.e(TAG, "", ioe);
