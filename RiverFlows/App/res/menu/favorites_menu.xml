@@ -9,7 +9,7 @@
 		android:icon="@drawable/ic_menu_info_details" />
 	<item android:id="@+id/mi_reorder"
 		android:title="Change Order"
-		android:icon="@drawable/ic_reorder"
+		android:icon="@drawable/ic_menu_manage"
 		android:visible="false"/>
 	<item android:id="@+id/mi_help"
     	android:title="Help"
