@@ -5,7 +5,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
 	android:background="@drawable/bg_3x3_frame"
-	android:paddingTop="35px"
+	android:paddingTop="35dp"
 	android:isScrollContainer="true">
 	<FrameLayout
     	android:id="@+id/spinner"
