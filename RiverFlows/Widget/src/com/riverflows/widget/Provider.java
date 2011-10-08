@@ -63,9 +63,9 @@ public class Provider extends AppWidgetProvider {
 		public RemoteViews buildRemoteViews(Context context) {
 
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.main);
-
             views.setViewVisibility(R.id.spinner, View.VISIBLE);
-            views.setViewVisibility(R.id.reload_button, View.GONE);
+        	views.setViewVisibility(R.id.empty_message_area, View.GONE);
+            //views.setViewVisibility(R.id.reload_button, View.GONE);
             
             int favoriteCount = 5;
             
@@ -76,6 +76,41 @@ public class Provider extends AppWidgetProvider {
 	        List<SiteData> favorites = getFavorites(context);
 
             views.setViewVisibility(R.id.spinner, View.GONE);
+	        
+	        if(favorites == null) {
+	        	Log.w(TAG,"RiverFlows not installed");
+	        	views.setTextViewText(R.id.empty_message, "The RiverFlows app must be installed in order to use this widget");
+	        	views.setCharSequence(R.id.empty_message_button, "setText","Install RiverFlows");
+	        	Intent appDetailsIntent = new Intent(Intent.ACTION_VIEW, 
+	        			Uri.parse("market://details?id=com.riverflows"));
+	        	/*Intent appDetailsIntent = new Intent(Intent.ACTION_VIEW, 
+	        			Uri.parse("https://market.android.com/details?id=com.riverflows"));*/
+	        	PendingIntent appDetailsPendingIntent = PendingIntent.getActivity(context, 0, appDetailsIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+	        	views.setOnClickPendingIntent(R.id.empty_message_button, appDetailsPendingIntent);
+	        	views.setViewVisibility(R.id.empty_message_area, View.VISIBLE);
+	        	return views;
+	        }
+	        
+	        if(favorites.size() == 0) {
+	        	Log.w(TAG,"no favorites defined");
+	        	
+//Would prefer to do it this way, but the link doesn't work for some reason
+//	    		SpannableString instructions = new SpannableString("If you select your favorite gauge sites, they will appear here.");
+//	    		instructions.setSpan(new URLSpan("riverflows://help/favorites.html"), 7, 39, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+//	        	views.setViewVisibility(R.id.empty_message_button, View.GONE);
+//	        	views.setTextViewText(R.id.empty_message, instructions);
+	        	
+	        	views.setTextViewText(R.id.empty_message, "Your first 5 favorite sites from the RiverFlows app will appear here.");
+	        	views.setCharSequence(R.id.empty_message_button, "setText", "Instructions For Selecting Favorites");
+	        	
+	        	Intent favoritesHelpIntent = new Intent(Intent.ACTION_VIEW,
+	        			Uri.parse("riverflows://help/favorites.html"));
+	        	PendingIntent favoritesHelpPendingIntent = PendingIntent.getActivity(context, 0, favoritesHelpIntent, 0);
+	        	views.setOnClickPendingIntent(R.id.empty_message_button, favoritesHelpPendingIntent);
+	        	views.setViewVisibility(R.id.empty_message_area, View.VISIBLE);
+	        	return views;
+	        }
             
             for(int a = 0; a < favoriteCount && a < favorites.size(); a++) {
             	Log.d(TAG, "drawing favorite " + favorites.get(a).getSite().getName());
@@ -99,7 +134,8 @@ public class Provider extends AppWidgetProvider {
 	        	Log.d(TAG, "last reading time: " + (lastReading == null ? "null" : lastReading.getDate()));
 
 	        	//only show the reading if it is less than 6 hours old
-        		if(lastReading != null && (lastReading.getDate().getTime() + (6 * 60 * 60 * 1000)) > System.currentTimeMillis()) {
+        		if(lastReading != null && lastReading.getValue() != null &&
+        				(lastReading.getDate().getTime() + (6 * 60 * 60 * 1000)) > System.currentTimeMillis()) {
 		
 		        	views.setTextViewText(getSubtextViewId(a), getLastReadingText(lastReading, flowSeries.getVariable().getUnit()));
 		        	
@@ -118,12 +154,14 @@ public class Provider extends AppWidgetProvider {
                 views.setViewVisibility(getFavoriteViewId(a), View.VISIBLE);
             }
             
+            /*
             Intent reloadIntent = new Intent(context,UpdateService.class);
             
             PendingIntent reloadPendingIntent = PendingIntent.getActivity(context, 0, reloadIntent, 0);
             
             views.setOnClickPendingIntent(R.id.reload_button, reloadPendingIntent);
             views.setViewVisibility(R.id.reload_button, View.VISIBLE);
+            */
             
             return views;
 		}
@@ -276,8 +314,11 @@ public class Provider extends AppWidgetProvider {
 		private List<SiteData> getFavorites(Context context) {
 
 	        ContentResolver cr = context.getContentResolver();
+	        
+	        Log.v(TAG,"testing for content provider");
+	        
 	        //com.riverflows.content.Favorites.CONTENT_URI
-	        Cursor favoritesC = cr.query(Uri.parse("content://com.riverflows.content.favorites"), null, null, null, null);
+	        Cursor favoritesC = cr.query(Uri.parse("content://com.riverflows.content.favorites?uLimit=5"), null, null, null, null);
 	        
 	        if(favoritesC == null) {
 	        	return null;
@@ -291,6 +332,7 @@ public class Provider extends AppWidgetProvider {
 			}
 	        
 	        if(!favoritesC.moveToFirst()) {
+	        	favoritesC.close();
 	        	return favorites;
 	        }
 	        
@@ -330,6 +372,8 @@ public class Provider extends AppWidgetProvider {
 				}
 				favorites.add(favoriteData);
 			} while(favoritesC.moveToNext());
+
+        	favoritesC.close();
 			
 			return favorites;
 		}
