@@ -45,6 +45,22 @@ public class Provider extends AppWidgetProvider {
 		context.startService(new Intent(context, UpdateService.class));
 	}
 	
+	@SuppressWarnings("serial")
+	private static class LoadFailedException extends Exception {
+		
+		private int errorCode;
+
+		public LoadFailedException(int errorCode) {
+			super();
+			this.errorCode = errorCode;
+		}
+		
+		public int getErrorCode() {
+			return this.errorCode;
+		}
+		
+	}
+	
 	public static class UpdateService extends Service {
 		@Override
 		public IBinder onBind(Intent intent) {
@@ -54,6 +70,10 @@ public class Provider extends AppWidgetProvider {
 		@Override
 		public void onStart(Intent intent, int startId) {
 			RemoteViews views = buildRemoteViews(this);
+			
+			if(views == null) {
+				return;
+			}
 			
             ComponentName thisWidget = new ComponentName(this, Provider.class);
             AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
@@ -73,7 +93,20 @@ public class Provider extends AppWidgetProvider {
                 views.setViewVisibility(getFavoriteViewId(a), View.GONE);
             }
 	        
-	        List<SiteData> favorites = getFavorites(context);
+	        List<SiteData> favorites = null;
+	        try {
+	        	favorites = getFavorites(context);
+	        } catch(LoadFailedException lfe) {
+	        	switch(lfe.getErrorCode()) {
+	        	case -2:
+	        		return showUnsupportedProtocolError(context, views);
+	        	}
+	        	Log.w(TAG,"load failed. errorCode: " + lfe.getErrorCode());
+	        	return null;
+	        } catch(Exception e) {
+	        	Log.e(TAG, "load failed", e);
+	        	return null;
+	        }
 
             views.setViewVisibility(R.id.spinner, View.GONE);
 	        
@@ -164,6 +197,21 @@ public class Provider extends AppWidgetProvider {
             */
             
             return views;
+		}
+		
+		private RemoteViews showUnsupportedProtocolError(Context context, RemoteViews views) {
+			views.setViewVisibility(R.id.spinner, View.GONE);
+	        
+        	Log.w(TAG,"riverFlows out of date");
+        	views.setTextViewText(R.id.empty_message, "The RiverFlows app is out-of-date for this version of the widget.");
+        	views.setCharSequence(R.id.empty_message_button, "setText","Update RiverFlows");
+        	Intent appDetailsIntent = new Intent(Intent.ACTION_VIEW, 
+        			Uri.parse("market://details?id=com.riverflows"));
+        	PendingIntent appDetailsPendingIntent = PendingIntent.getActivity(context, 0, appDetailsIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+        	views.setOnClickPendingIntent(R.id.empty_message_button, appDetailsPendingIntent);
+        	views.setViewVisibility(R.id.empty_message_area, View.VISIBLE);
+        	
+        	return views;
 		}
 		
 		private String getLastReadingText(Reading lastReading, String unit) {
@@ -311,17 +359,31 @@ public class Provider extends AppWidgetProvider {
 			return null;
 		}
 		
-		private List<SiteData> getFavorites(Context context) {
+		/**
+		 * @param context
+		 * @return null if the Favorites ContentProvider cannot be found
+		 * @throws LoadFailedException if the favorites could not be loaded for some other reason
+		 */
+		private List<SiteData> getFavorites(Context context) throws LoadFailedException {
 
 	        ContentResolver cr = context.getContentResolver();
 	        
 	        Log.v(TAG,"testing for content provider");
 	        
 	        //com.riverflows.content.Favorites.CONTENT_URI
-	        Cursor favoritesC = cr.query(Uri.parse("content://com.riverflows.content.favorites?uLimit=5"), null, null, null, null);
+	        Cursor favoritesC = cr.query(Uri.parse("content://com.riverflows.content.favorites?uLimit=5&version=1"), null, null, null, null);
 	        
+//Test single-result favorites service
+//	        Cursor favoritesC = cr.query(Uri.parse("content://com.riverflows.content.favorites/USGS/09119000/00060?version=1"), null, null, null, null);
+
 	        if(favoritesC == null) {
 	        	return null;
+	        }
+	        
+	        int errorCode = favoritesC.getExtras().getInt("errorCode");
+	        
+	        if(errorCode < 0) {
+	        	throw new LoadFailedException(errorCode);
 	        }
 			
 	        List<SiteData> favorites = new ArrayList<SiteData>();
