@@ -1,0 +1,35 @@
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent">
+	<LinearLayout
+	              android:id="@+id/layout_root"
+	              android:orientation="vertical"
+	              android:layout_width="fill_parent"
+	              android:layout_height="fill_parent"
+	              android:padding="5dp">
+	    <TextView android:layout_width="wrap_content"
+	              android:layout_height="wrap_content"
+	              android:layout_gravity="center_horizontal"
+	              android:text="New! RiverFlows Widget"
+	              android:textSize="18sp"
+	              android:textStyle="bold"/>
+	    <ImageView android:id="@+id/screenshot"
+	    		  android:src="@drawable/widget"
+	              android:layout_width="fill_parent"
+	              android:layout_height="565dp"/>
+	    <TextView android:id="@+id/pitch"
+	              android:layout_width="fill_parent"
+	              android:layout_height="wrap_content"
+	              android:textSize="18sp"
+	    		android:layout_gravity="center_horizontal"
+	              android:text="Make your first 5 favorite gauge sites visible from your phone's desktop!  Now for sale on the Android Market."
+	              />
+	    <Button android:id="@+id/close_link"
+	              android:layout_width="wrap_content"
+	              android:layout_height="wrap_content"
+	              android:layout_gravity="center_horizontal"
+	              android:layout_margin="10dp"
+	              android:text="Close"
+	              />
+	</LinearLayout>
+</ScrollView>

@@ -33,6 +33,10 @@
 	    		<data android:scheme="riverflows" android:pathPrefix="help/"/>
     		</intent-filter>
     	</activity>
+    	
+    	<activity android:name="WidgetAd"
+                android:launchMode="singleTask">
+        </activity>
                 
       <activity android:name="DataSrcInfo"
                 android:launchMode="singleTask"/>
