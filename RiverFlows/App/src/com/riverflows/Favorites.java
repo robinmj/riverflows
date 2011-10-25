@@ -114,8 +114,33 @@ public class Favorites extends ListActivity {
 		//discard the cached list items after 2 hours
 		if((System.currentTimeMillis() - this.loadTask.loadTime.getTime()) > (2 * 60 * 60 * 1000)) {
 			loadSites(true);
-		} else if(FavoritesDaoImpl.hasNewFavorites(getApplicationContext(), getLastLoadTime())) {
+			return;
+		}
+		
+		//make sure list of favorites hasn't been modified
+//		LoadSitesTask currentLoadTask = this.loadTask;
+//		if(currentLoadTask.running) {
+			//not much we can do here- modifying the task's results will just cause thread contention problems
+//			return;
+//		}
+		
+		List<Favorite> currentFavs = FavoritesDaoImpl.getFavorites(this, null, null);
+		
+		if(this.loadTask.favorites == null || (currentFavs.size() != this.loadTask.favorites.size())) {
+			//a favorite has been removed- reload the list
+			// TODO it would be snappier if we just deleted item(s) from the currently displayed list
 			loadSites(false);
+			return;
+		}
+		
+		//there's still a possibility that the favorites list is the same length because
+		// a favorite was added while another was deleted
+		for(Favorite currentFav: currentFavs) {
+			if(currentFav.getCreationDate().after(getLastLoadTime())) {
+				//a favorite has been added- reload the list
+				loadSites(false);
+				return;
+			}
 		}
 	}
 	

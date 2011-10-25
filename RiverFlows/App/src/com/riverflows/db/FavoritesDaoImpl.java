@@ -99,7 +99,7 @@ public class FavoritesDaoImpl {
 		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
 		SQLiteDatabase db = helper.getReadableDatabase();
 	
-		String sql = "SELECT " + NAME + "." + TextUtils.join("," + NAME + ".", new String[]{ID, SITE_ID, AGENCY,  VARIABLE, ORDER, SITE_NAME }) + ","
+		String sql = "SELECT " + NAME + "." + TextUtils.join("," + NAME + ".", new String[]{ID, SITE_ID, AGENCY,  VARIABLE, ORDER, SITE_NAME, CREATED_DATE }) + ","
 		 + SitesDaoImpl.NAME + "."
 		 + TextUtils.join(", " + SitesDaoImpl.NAME + ".", new String[]{ SitesDaoImpl.ID, SitesDaoImpl.SUPPORTED_VARS, SitesDaoImpl.STATE, SitesDaoImpl.SITE_NAME })
 		 + " FROM " + NAME + " JOIN " + SitesDaoImpl.NAME
@@ -143,18 +143,19 @@ public class FavoritesDaoImpl {
 		
 		do {
 			Site newStation = new Site();
-			newStation.setSiteId(new SiteId(c.getString(2), c.getString(1), c.getInt(6)));
+			newStation.setSiteId(new SiteId(c.getString(2), c.getString(1), c.getInt(7)));
 			if(Log.isLoggable(TAG, Log.VERBOSE)) Log.v(TAG, "favorite: " + c.getString(1));
-			newStation.setSupportedVariables(DataSourceController.getVariablesFromString(c.getString(2), c.getString(7)));
+			newStation.setSupportedVariables(DataSourceController.getVariablesFromString(c.getString(2), c.getString(8)));
 			
 			String favoriteVarId = c.getString(3);
 
-			newStation.setName(c.getString(9));
-			newStation.setState(USState.valueOf(c.getString(8)));
+			newStation.setName(c.getString(10));
+			newStation.setState(USState.valueOf(c.getString(9)));
 			
 			Favorite newFavorite = new Favorite(newStation, favoriteVarId);
 
 			newFavorite.setName(c.getString(5));
+			newFavorite.setCreationDate(new Date(c.getLong(6)));
 			newFavorite.setId(c.getInt(0));
 			newFavorite.setOrder(c.getInt(4));
 			result.add(newFavorite);
@@ -169,7 +170,7 @@ public class FavoritesDaoImpl {
 		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
 		SQLiteDatabase db = helper.getReadableDatabase();
 	
-		String sql = "SELECT " + NAME + "." + TextUtils.join("," + NAME + ".", new String[]{ID, SITE_ID, AGENCY,  VARIABLE, ORDER, SITE_NAME }) + ","
+		String sql = "SELECT " + NAME + "." + TextUtils.join("," + NAME + ".", new String[]{ID, SITE_ID, AGENCY,  VARIABLE, ORDER, SITE_NAME, CREATED_DATE }) + ","
 		 + SitesDaoImpl.NAME + "."
 		 + TextUtils.join(", " + SitesDaoImpl.NAME + ".", new String[]{ SitesDaoImpl.ID, SitesDaoImpl.SUPPORTED_VARS, SitesDaoImpl.STATE, SitesDaoImpl.SITE_NAME })
 		 + " FROM " + NAME + " JOIN " + SitesDaoImpl.NAME
@@ -185,17 +186,18 @@ public class FavoritesDaoImpl {
 		c.moveToFirst();
 		
 		Site newStation = new Site();
-		newStation.setSiteId(new SiteId(c.getString(2), c.getString(1), c.getInt(6)));
+		newStation.setSiteId(new SiteId(c.getString(2), c.getString(1), c.getInt(7)));
 		if(Log.isLoggable(TAG, Log.VERBOSE)) Log.v(TAG, "favorite: " + c.getString(1));
-		newStation.setSupportedVariables(DataSourceController.getVariablesFromString(c.getString(2), c.getString(7)));
+		newStation.setSupportedVariables(DataSourceController.getVariablesFromString(c.getString(2), c.getString(8)));
 		
 		String favoriteVarId = c.getString(3);
 
-		newStation.setName(c.getString(9));
-		newStation.setState(USState.valueOf(c.getString(8)));
+		newStation.setName(c.getString(10));
+		newStation.setState(USState.valueOf(c.getString(9)));
 		
 		Favorite favorite = new Favorite(newStation, favoriteVarId);
 		favorite.setName(c.getString(5));
+		favorite.setCreationDate(new Date(c.getLong(6)));
 		favorite.setId(c.getInt(0));
 		favorite.setOrder(c.getInt(4));
 		

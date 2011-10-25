@@ -1,11 +1,14 @@
 package com.riverflows.data;
 
+import java.util.Date;
+
 public class Favorite {
 	private Integer id;
 	private Site site;
 	private String variableId;
 	private String name;
 	private int order = 0;
+	private Date creationDate;
 	
 	public Favorite(Site site, String variableId) {
 		super();
@@ -51,5 +54,13 @@ public class Favorite {
 
 	public void setId(Integer id) {
 		this.id = id;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
 	}
 }
