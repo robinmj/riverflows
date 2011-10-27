@@ -126,7 +126,8 @@ public class Favorites extends ListActivity {
 		
 		List<Favorite> currentFavs = FavoritesDaoImpl.getFavorites(this, null, null);
 		
-		if(this.loadTask.favorites == null || (currentFavs.size() != this.loadTask.favorites.size())) {
+		if(!this.loadTask.running &&
+				(this.loadTask.favorites == null || (currentFavs.size() != this.loadTask.favorites.size()))) {
 			//a favorite has been removed- reload the list
 			// TODO it would be snappier if we just deleted item(s) from the currently displayed list
 			loadSites(false);
@@ -261,6 +262,7 @@ public class Favorites extends ListActivity {
 		
 		if(this.loadTask != null) {
 			currentGauges = this.loadTask.gauges;
+			this.loadTask.cancel(true);
 		}
 		
 		getListView().getEmptyView().setVisibility(View.INVISIBLE);
