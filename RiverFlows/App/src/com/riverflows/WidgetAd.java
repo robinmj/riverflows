@@ -18,10 +18,10 @@ public class WidgetAd extends Activity  implements OnClickListener {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 		setContentView(R.layout.widget_ad);
 		
-		TextView pitch = (TextView)findViewById(R.id.pitch);
+		TextView pitch = (TextView)findViewById(R.id.market_link);
 		
-		SpannableString ss = new SpannableString("Make your first 5 favorite gauge sites visible from your phone's desktop!  Now for sale on the Android Market.");
-		ss.setSpan(new URLSpan("market://details?id=com.riverflows"), 75, 109, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+		SpannableString ss = new SpannableString("Now for sale at the Android Market");
+		ss.setSpan(new URLSpan("market://details?id=com.riverflows.widget"), 0, 34, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 		
 		pitch.setText(ss);
 		pitch.setMovementMethod(LinkMovementMethod.getInstance());

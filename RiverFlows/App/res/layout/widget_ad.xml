@@ -21,15 +21,21 @@
 	              android:layout_width="fill_parent"
 	              android:layout_height="wrap_content"
 	              android:textSize="18sp"
-	    		android:layout_gravity="center_horizontal"
-	              android:text="Make your first 5 favorite gauge sites visible from your phone's desktop!  Now for sale on the Android Market."
+	              android:gravity="center_horizontal"
+	              android:text="Monitor your first 5 favorite gauge sites right from your phone's desktop!"
 	              />
+	    <TextView android:id="@+id/market_link"
+	    		  android:layout_width="wrap_content"
+	    		  android:layout_height="wrap_content"
+	    		  android:textSize="20sp"
+	        	  android:gravity="center_horizontal"
+	    		  android:text="Now For Sale at the Android Market"/>
 	    <Button android:id="@+id/close_link"
 	              android:layout_width="wrap_content"
 	              android:layout_height="wrap_content"
 	              android:layout_gravity="center_horizontal"
 	              android:layout_margin="10dp"
-	              android:text="Close"
+	              android:text="No Thanks"
 	              />
 	</LinearLayout>
 </ScrollView>
