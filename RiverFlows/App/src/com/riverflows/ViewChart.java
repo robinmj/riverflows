@@ -24,6 +24,7 @@ import android.view.SubMenu;
 import android.view.View;
 import android.view.Window;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.CheckBox;
@@ -479,19 +480,40 @@ public class ViewChart extends Activity {
 				continue;
 			}
 			if(TextUtils.isEmpty(otherVariables[a].getCommonVariable().getUnit())) {
-				otherVariablesMenu.add(1,getOtherVarMenuItemId(a),a + 1,otherVariables[a].getName());
+				otherVariablesMenu.add(otherVariables[a].getName())
+					.setOnMenuItemClickListener(new OtherVariableClickListener(otherVariables[a]));
 			} else {
-				otherVariablesMenu.add(1,getOtherVarMenuItemId(a),a + 1,otherVariables[a].getName() + ", " + otherVariables[a].getCommonVariable().getUnit());
+				otherVariablesMenu.add(otherVariables[a].getName() + ", " + otherVariables[a].getCommonVariable().getUnit())
+					.setOnMenuItemClickListener(new OtherVariableClickListener(otherVariables[a]));
 			}
 		}
 	}
 	
-	private int getOtherVarMenuItemId(int index) {
-		return (R.id.mi_fit_y_axis | R.id.mi_zero_y_minimum) + index;
-	}
-	
-	private int getOtherVarIndex(int menuItemId) {
-		return menuItemId - (R.id.mi_fit_y_axis | R.id.mi_zero_y_minimum);
+	private class OtherVariableClickListener implements OnMenuItemClickListener {
+		private final Variable var;
+		
+		public OtherVariableClickListener(Variable var) {
+			this.var = var;
+		}
+		
+		@Override
+		public boolean onMenuItemClick(MenuItem item) {
+			
+			try {
+				ViewChart.this.variable = var;
+			} catch(ArrayIndexOutOfBoundsException aioobe) {
+				Log.w(TAG,"no variable at index " + item.getItemId());
+				return false;
+			}
+			
+			if(ViewChart.this.data.getDatasets().get(ViewChart.this.variable.getCommonVariable()) == null) {
+				reloadData();
+			} else {
+				clearData();
+				displayData();
+			}
+			return true;
+		}
 	}
 	
 	@Override
@@ -508,22 +530,6 @@ public class ViewChart extends Activity {
 			clearData();
 			displayData();
 			return true;
-		}
-		
-		Variable[] otherVariables = this.station.getSupportedVariables();
-		
-		try {
-			this.variable = otherVariables[getOtherVarIndex(item.getItemId())];
-		} catch(ArrayIndexOutOfBoundsException aioobe) {
-			Log.w(TAG,"no variable at index " + item.getItemId());
-			return false;
-		}
-		
-		if(this.data.getDatasets().get(this.variable.getCommonVariable()) == null) {
-			reloadData();
-		} else {
-			clearData();
-			displayData();
 		}
         
         return true;
