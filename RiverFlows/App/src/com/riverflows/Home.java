@@ -5,6 +5,8 @@ import java.util.logging.Logger;
 
 import android.app.TabActivity;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
 import android.os.Bundle;
 import android.view.Window;
@@ -31,6 +33,15 @@ public class Home extends TabActivity {
 	
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
+	    
+	    SharedPreferences settings = getPreferences(0);
+        boolean widgetAdShown = settings.getBoolean("widgetAdShown", false);
+        if(!widgetAdShown) {
+        	startActivity(new Intent(this,WidgetAd.class));
+        	Editor prefsEditor = settings.edit();
+        	prefsEditor.putBoolean("widgetAdShown", true);
+        	prefsEditor.commit();
+        }
 	    
 		DataSourceController.setHttpClientWrapper(new CachingHttpClientWrapper(
 				getApplicationContext(), getCacheDir(), CACHE_TTL, "text/plain"));
