@@ -408,6 +408,14 @@ public class ViewChart extends Activity {
 		
         return true;
     }
+    
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+    	SubMenu otherVarsMenu = menu.findItem(R.id.mi_other_variables).getSubMenu();
+    	otherVarsMenu.clear();
+        populateOtherVariablesSubmenu(otherVarsMenu);
+    	return super.onPrepareOptionsMenu(menu);
+    }
 	
 	private class ErrorMsgDialog extends AlertDialog {
 		public ErrorMsgDialog(Context context, String msg) {
@@ -442,7 +450,6 @@ public class ViewChart extends Activity {
 	    	return true;
 	    case R.id.mi_other_variables:
 	    	if(chartView != null) {
-	    		openContextMenu(chartView);
 		    	return true;
 	    	}
 	    	return false;
@@ -471,7 +478,10 @@ public class ViewChart extends Activity {
         
         MenuItem otherVarsMenuItem = menu.findItem(R.id.sm_other_variables);
         otherVarsMenuItem.setVisible(true);
-        SubMenu otherVariablesMenu = otherVarsMenuItem.getSubMenu();
+        populateOtherVariablesSubmenu(otherVarsMenuItem.getSubMenu());
+	}
+	
+	private void populateOtherVariablesSubmenu(SubMenu otherVariablesMenu) {
         otherVariablesMenu.setHeaderTitle(R.string.variable_context_menu_title);
 		
 		Variable[] otherVariables = ViewChart.this.station.getSupportedVariables();
