@@ -97,6 +97,7 @@ public class FavoritesDaoImpl {
 	public static List<Favorite> getFavorites(Context ctx, SiteId siteId, String variableId) {
 		
 		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
+		synchronized(RiverGaugesDb.class) {
 		SQLiteDatabase db = helper.getReadableDatabase();
 	
 		String sql = "SELECT " + NAME + "." + TextUtils.join("," + NAME + ".", new String[]{ID, SITE_ID, AGENCY,  VARIABLE, ORDER, SITE_NAME, CREATED_DATE }) + ","
@@ -163,6 +164,7 @@ public class FavoritesDaoImpl {
 		
 		c.close();
 		return result;
+		}
 	}
 	
 	public static Favorite getFavorite(Context ctx, int primaryKey) {
