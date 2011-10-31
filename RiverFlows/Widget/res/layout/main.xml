@@ -21,7 +21,7 @@
     	android:id="@+id/empty_message_area"
 	    android:layout_width="wrap_content"
 	    android:layout_height="wrap_content"
-	    android:layout_margin="30dp"
+	    android:layout_margin="20dp"
 	    android:layout_gravity="center"
 		android:layout_centerVertical="true"
 		android:layout_centerHorizontal="true">
@@ -31,7 +31,8 @@
 	    	android:id="@+id/empty_message"
 			android:textSize="15sp"
 			android:layout_alignParentTop="true"
-			android:layout_centerHorizontal="true"/>
+			android:layout_centerHorizontal="true"
+			android:layout_margin="5dp"/>
 	    <Button 
 	    	android:layout_width="wrap_content"
 	    	android:layout_height="wrap_content"
@@ -39,6 +40,16 @@
 			android:textSize="15sp"
 			android:layout_centerHorizontal="true"
 	    	android:layout_below="@id/empty_message"/>
+	    <TextView 
+	    	android:layout_width="fill_parent"
+	    	android:layout_height="wrap_content"
+	    	android:id="@+id/reload_instructions"
+			android:textSize="12sp"
+			android:text="If you have already selected favorites but are still getting this message, you can force this widget to reload by removing it from your desktop and adding it again"
+			android:layout_alignParentBottom="true"
+			android:layout_centerHorizontal="true"
+			android:layout_below="@id/empty_message_button"
+			android:layout_margin="5dp"/>
     </RelativeLayout>
 	<RelativeLayout
 		android:id="@+id/favorite_0"

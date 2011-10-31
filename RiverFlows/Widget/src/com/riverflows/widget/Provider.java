@@ -85,6 +85,7 @@ public class Provider extends AppWidgetProvider {
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.main);
             views.setViewVisibility(R.id.spinner, View.VISIBLE);
         	views.setViewVisibility(R.id.empty_message_area, View.GONE);
+        	views.setViewVisibility(R.id.reload_instructions, View.GONE);
             //views.setViewVisibility(R.id.reload_button, View.GONE);
             
             int favoriteCount = 5;
@@ -142,6 +143,7 @@ public class Provider extends AppWidgetProvider {
 	        	PendingIntent favoritesHelpPendingIntent = PendingIntent.getActivity(context, 0, favoritesHelpIntent, 0);
 	        	views.setOnClickPendingIntent(R.id.empty_message_button, favoritesHelpPendingIntent);
 	        	views.setViewVisibility(R.id.empty_message_area, View.VISIBLE);
+	        	views.setViewVisibility(R.id.reload_instructions, View.VISIBLE);
 	        	return views;
 	        }
             
