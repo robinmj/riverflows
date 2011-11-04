@@ -47,15 +47,34 @@ public class Provider extends AppWidgetProvider {
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) {
         Log.d(Provider.TAG,"onUpdate");
+        updateRemoteViews(context, appWidgetManager, false);
+	}
+	
+	private void updateRemoteViews(Context context, AppWidgetManager appWidgetManager, boolean forcedReload) {
+        ComponentName thisWidget = new ComponentName(context, Provider.class);
 
         RemoteViews views = buildRemoteViews(context);
         
-        if(views == null){
-            Log.d(Provider.TAG,"onUpdate cancelled");
+        if(forcedReload) {
+        	//display spinner while the favorites are loading
+            appWidgetManager.updateAppWidget(thisWidget, views);
+        }
+        
+        try {
+        	if(checkLicenseStatus(context, views)) {
+        		//license check failed- error message is ready to be displayed
+    	        appWidgetManager.updateAppWidget(thisWidget, views);
+    			return;
+        	}
+        	
+    		if(updateFavoriteViews(context, views) == null) {
+    			throw new UpdateAbortedException();
+    		}
+        } catch(UpdateAbortedException lae) {
+            Log.d(Provider.TAG,"update aborted");
         	return;
         }
 		
-        ComponentName thisWidget = new ComponentName(context, Provider.class);
         appWidgetManager.updateAppWidget(thisWidget, views);
 	}
 	
@@ -75,45 +94,59 @@ public class Provider extends AppWidgetProvider {
 		
 	}
 	
-	public RemoteViews buildRemoteViews(Context context) {
+	@SuppressWarnings("serial")
+	private static class UpdateAbortedException extends Exception {
+		public UpdateAbortedException() {}
+	}
+	
+	private RemoteViews buildRemoteViews(Context context) {
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.main);
         
         views.setViewVisibility(R.id.spinner, View.VISIBLE);
-    	views.setViewVisibility(R.id.empty_message_area, View.GONE);
     	views.setViewVisibility(R.id.reload_button, View.GONE);
 		views.setViewVisibility(R.id.empty_message_area, View.GONE);
         
         for(int a = 0; a < favoriteCount; a++) {
             views.setViewVisibility(getFavoriteViewId(a), View.GONE);
         }
+        return views;
+	}
+	
+	/**
+	 * @param context
+	 * @param views
+	 * @return true if the RemoteViews are ready to be displayed, false if more processing must occur
+	 * @throws UpdateAbortedException
+	 */
+	private boolean checkLicenseStatus(Context context, RemoteViews views) throws UpdateAbortedException {
 		
 		Status licenseStatus = LicenseCheckService.getStatus();
 		Log.d(TAG,"license status: " + licenseStatus);
         
 		if(licenseStatus == null) {
 			context.startService(new Intent(context,LicenseCheckService.class));
-			views.setTextViewText(R.id.empty_message, "Checking License...");
-			views.setViewVisibility(R.id.empty_message_area, View.VISIBLE);
-			views.setViewVisibility(R.id.empty_message_button, View.GONE);
-			return views;
+			return true;
 		} else {
 			switch(licenseStatus) {
 			case CHECKING:
-				return null;
+				throw new UpdateAbortedException();
 			case PASSED:
 				views.setViewVisibility(R.id.empty_message_area, View.GONE);
 				break;
 			case FAILED:
 				showLicenseErrorMessage(context,views,"License check failed.  Please make sure you have internet access.  ErrorCode: " + LicenseCheckService.getErrorCode());
-				return views;
+				return true;
 			case ERROR:
 		        //there's a faint possibility that licenseErrorCode will be incorrect here if it was modified by another thread
 				showLicenseErrorMessage(context,views, "License check failed due to error: " + LicenseCheckService.getErrorCode());
-				return views;
+				return true;
 			}
 		}
-        
+		return false;
+	}
+    
+	private RemoteViews updateFavoriteViews(Context context, RemoteViews views) {
         List<SiteData> favorites = null;
         try {
         	favorites = getFavorites(context);
@@ -472,7 +505,7 @@ public class Provider extends AppWidgetProvider {
 			
 			Log.d(TAG,"received update intent");
 	        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-			onUpdate(context, appWidgetManager, new int[]{});
+			updateRemoteViews(context, appWidgetManager, true);
 			return;
 		}
 
