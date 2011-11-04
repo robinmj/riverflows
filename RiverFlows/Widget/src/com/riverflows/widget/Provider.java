@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.List;
 
 import android.app.PendingIntent;
-import android.app.Service;
 import android.appwidget.AppWidgetManager;
 import android.appwidget.AppWidgetProvider;
 import android.content.ComponentName;
@@ -16,7 +15,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
-import android.os.IBinder;
 import android.util.Log;
 import android.view.View;
 import android.widget.RemoteViews;
@@ -36,13 +34,27 @@ import com.riverflows.wsclient.Utils;
 public class Provider extends AppWidgetProvider {
 	
 	public static final String TAG = "RiverFlows-Widget";
-
+	
+	public static final String ACTION_UPDATE_WIDGET = "com.riverflows.widget.UPDATE";
+	
 	private static final SimpleDateFormat lastReadingDateFmt = new SimpleDateFormat("h:mm aa");
+	
+	private static int favoriteCount = 5;
 	
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) {
-		context.startService(new Intent(context, UpdateService.class));
+        Log.d(Provider.TAG,"onUpdate");
+
+        RemoteViews views = buildRemoteViews(context);
+        
+        if(views == null){
+            Log.d(Provider.TAG,"onUpdate cancelled");
+        	return;
+        }
+		
+        ComponentName thisWidget = new ComponentName(context, Provider.class);
+        appWidgetManager.updateAppWidget(thisWidget, views);
 	}
 	
 	@SuppressWarnings("serial")
@@ -60,35 +72,13 @@ public class Provider extends AppWidgetProvider {
 		}
 		
 	}
-	
-	public static class UpdateService extends Service {
-		@Override
-		public IBinder onBind(Intent intent) {
-			return null;
-		}
-		
-		@Override
-		public void onStart(Intent intent, int startId) {
-			RemoteViews views = buildRemoteViews(this);
-			
-			if(views == null) {
-				return;
-			}
-			
-            ComponentName thisWidget = new ComponentName(this, Provider.class);
-            AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(this);
-            appWidgetManager.updateAppWidget(thisWidget, views);
-		}
 		
 		public RemoteViews buildRemoteViews(Context context) {
 
             RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.main);
             views.setViewVisibility(R.id.spinner, View.VISIBLE);
         	views.setViewVisibility(R.id.empty_message_area, View.GONE);
-        	views.setViewVisibility(R.id.reload_instructions, View.GONE);
-            //views.setViewVisibility(R.id.reload_button, View.GONE);
-            
-            int favoriteCount = 5;
+        	views.setViewVisibility(R.id.reload_button, View.GONE);
             
             for(int a = 0; a < favoriteCount; a++) {
                 views.setViewVisibility(getFavoriteViewId(a), View.GONE);
@@ -125,6 +115,11 @@ public class Provider extends AppWidgetProvider {
 	        	return views;
 	        }
 	        
+	        PendingIntent reloadPendingIntent = PendingIntent.getBroadcast(context, 0, getUpdateIntent(context), 0);
+	        
+	        views.setOnClickPendingIntent(R.id.reload_button, reloadPendingIntent);
+	        views.setViewVisibility(R.id.reload_button, View.VISIBLE);
+	        
 	        if(favorites.size() == 0) {
 	        	Log.w(TAG,"no favorites defined");
 	        	
@@ -143,11 +138,10 @@ public class Provider extends AppWidgetProvider {
 	        	PendingIntent favoritesHelpPendingIntent = PendingIntent.getActivity(context, 0, favoritesHelpIntent, 0);
 	        	views.setOnClickPendingIntent(R.id.empty_message_button, favoritesHelpPendingIntent);
 	        	views.setViewVisibility(R.id.empty_message_area, View.VISIBLE);
-	        	views.setViewVisibility(R.id.reload_instructions, View.VISIBLE);
 	        	return views;
 	        }
             
-            for(int a = 0; a < favoriteCount && a < favorites.size(); a++) {
+            for(int a = 0; a < Provider.favoriteCount && a < favorites.size(); a++) {
             	Log.d(TAG, "drawing favorite " + favorites.get(a).getSite().getName());
 
             	//com.riverflows.ViewChart.GAUGE_SCHEME
@@ -188,15 +182,6 @@ public class Provider extends AppWidgetProvider {
 
                 views.setViewVisibility(getFavoriteViewId(a), View.VISIBLE);
             }
-            
-            /*
-            Intent reloadIntent = new Intent(context,UpdateService.class);
-            
-            PendingIntent reloadPendingIntent = PendingIntent.getActivity(context, 0, reloadIntent, 0);
-            
-            views.setOnClickPendingIntent(R.id.reload_button, reloadPendingIntent);
-            views.setViewVisibility(R.id.reload_button, View.VISIBLE);
-            */
             
             return views;
 		}
@@ -440,6 +425,24 @@ public class Provider extends AppWidgetProvider {
         	favoritesC.close();
 			
 			return favorites;
+		}
+	
+		
+	static Intent getUpdateIntent(Context ctx) {
+		Intent updateIntent = new Intent(ctx,Provider.class);
+		updateIntent.setAction(ACTION_UPDATE_WIDGET);
+		return updateIntent;
+	}
+		
+	@Override
+	public void onReceive(Context context, Intent intent) {
+		super.onReceive(context, intent);
+		
+		if(ACTION_UPDATE_WIDGET.equals(intent.getAction())) {
+			
+			Log.d(TAG,"received update intent");
+	        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+			onUpdate(context, appWidgetManager, new int[]{});
 		}
 	}
 }

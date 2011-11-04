@@ -40,16 +40,6 @@
 			android:textSize="15sp"
 			android:layout_centerHorizontal="true"
 	    	android:layout_below="@id/empty_message"/>
-	    <TextView 
-	    	android:layout_width="fill_parent"
-	    	android:layout_height="wrap_content"
-	    	android:id="@+id/reload_instructions"
-			android:textSize="12sp"
-			android:text="If you have already selected favorites but are still getting this message, you can force this widget to reload by removing it from your desktop and adding it again"
-			android:layout_alignParentBottom="true"
-			android:layout_centerHorizontal="true"
-			android:layout_below="@id/empty_message_button"
-			android:layout_margin="5dp"/>
     </RelativeLayout>
 	<RelativeLayout
 		android:id="@+id/favorite_0"
@@ -286,11 +276,11 @@
 		  android:singleLine="true">
 		</TextView>
 	</RelativeLayout>
-	<!-- <Button
+	<Button
 	 android:id="@+id/reload_button"
 	 android:layout_width="wrap_content"
 	 android:layout_height="wrap_content"
 	 android:layout_gravity="center"
 	 android:text="reload"
-	 android:visibility="gone"/> -->
+	 android:visibility="gone"/>
 </LinearLayout>

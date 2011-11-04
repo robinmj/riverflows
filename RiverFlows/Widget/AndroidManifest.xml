@@ -5,7 +5,10 @@
       android:versionName="1.0">
     <uses-sdk android:minSdkVersion="3" />
 
-    <application android:icon="@drawable/icon" android:label="RiverFlows Widget">
+    <application android:icon="@drawable/icon"
+      android:label="RiverFlows Widget"
+      android:debuggable="true">
+      
 		<receiver android:name="Provider" android:label="RiverFlows Widget">
 		    <intent-filter>
 		        <action android:name="android.appwidget.action.APPWIDGET_UPDATE" />
@@ -19,10 +22,5 @@
 		        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
 		    </intent-filter>
 		</activity>-->
-    	<service android:name=".Provider$UpdateService">
-    		<intent-filter >
-    			<category android:name="android.intent.category.DEFAULT"/>
-    		</intent-filter>
-    	</service>
     </application>
 </manifest>
