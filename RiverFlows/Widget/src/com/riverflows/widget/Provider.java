@@ -25,6 +25,7 @@ import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.Variable;
+import com.riverflows.widget.LicenseCheckService.Status;
 import com.riverflows.wsclient.AHPSXmlDataSource;
 import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.DataSourceController;
@@ -36,6 +37,7 @@ public class Provider extends AppWidgetProvider {
 	public static final String TAG = "RiverFlows-Widget";
 	
 	public static final String ACTION_UPDATE_WIDGET = "com.riverflows.widget.UPDATE";
+	public static final String ACTION_RETRY_LICENSE_CHECK = "com.riverflows.widget.RETRY_LICENSE_CHECK";
 	
 	private static final SimpleDateFormat lastReadingDateFmt = new SimpleDateFormat("h:mm aa");
 	
@@ -76,13 +78,41 @@ public class Provider extends AppWidgetProvider {
 	public RemoteViews buildRemoteViews(Context context) {
 
         RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.main);
+        
         views.setViewVisibility(R.id.spinner, View.VISIBLE);
     	views.setViewVisibility(R.id.empty_message_area, View.GONE);
     	views.setViewVisibility(R.id.reload_button, View.GONE);
+		views.setViewVisibility(R.id.empty_message_area, View.GONE);
         
         for(int a = 0; a < favoriteCount; a++) {
             views.setViewVisibility(getFavoriteViewId(a), View.GONE);
         }
+		
+		Status licenseStatus = LicenseCheckService.getStatus();
+		Log.d(TAG,"license status: " + licenseStatus);
+        
+		if(licenseStatus == null) {
+			context.startService(new Intent(context,LicenseCheckService.class));
+			views.setTextViewText(R.id.empty_message, "Checking License...");
+			views.setViewVisibility(R.id.empty_message_area, View.VISIBLE);
+			views.setViewVisibility(R.id.empty_message_button, View.GONE);
+			return views;
+		} else {
+			switch(licenseStatus) {
+			case CHECKING:
+				return null;
+			case PASSED:
+				views.setViewVisibility(R.id.empty_message_area, View.GONE);
+				break;
+			case FAILED:
+				showLicenseErrorMessage(context,views,"License check failed.  Please make sure you have internet access.  ErrorCode: " + LicenseCheckService.getErrorCode());
+				return views;
+			case ERROR:
+		        //there's a faint possibility that licenseErrorCode will be incorrect here if it was modified by another thread
+				showLicenseErrorMessage(context,views, "License check failed due to error: " + LicenseCheckService.getErrorCode());
+				return views;
+			}
+		}
         
         List<SiteData> favorites = null;
         try {
@@ -443,6 +473,27 @@ public class Provider extends AppWidgetProvider {
 			Log.d(TAG,"received update intent");
 	        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 			onUpdate(context, appWidgetManager, new int[]{});
+			return;
 		}
+
+		if(ACTION_RETRY_LICENSE_CHECK.equals(intent.getAction())) {
+			
+			Log.d(TAG,"received license retry intent");
+			LicenseCheckService.reset();
+	        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
+			onUpdate(context, appWidgetManager, new int[]{});
+		}
+	}
+	
+	private void showLicenseErrorMessage(Context context, RemoteViews views, String message) {
+        views.setViewVisibility(R.id.spinner, View.GONE);
+		views.setTextViewText(R.id.empty_message, message);
+    	views.setCharSequence(R.id.empty_message_button, "setText","Retry");
+    	Intent retryLicenseIntent = new Intent(context, Provider.class);
+    	retryLicenseIntent.setAction(ACTION_RETRY_LICENSE_CHECK);
+    	PendingIntent retryLicensePendingIntent = PendingIntent.getBroadcast(context, 0, retryLicenseIntent, 0);
+    	views.setOnClickPendingIntent(R.id.empty_message_button, retryLicensePendingIntent);
+    	views.setViewVisibility(R.id.empty_message_button, View.VISIBLE);
+    	views.setViewVisibility(R.id.empty_message_area, View.VISIBLE);
 	}
 }

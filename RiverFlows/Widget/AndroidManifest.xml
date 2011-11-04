@@ -4,6 +4,8 @@
       android:versionCode="1"
       android:versionName="1.0">
     <uses-sdk android:minSdkVersion="3" />
+    <uses-permission android:name="com.android.vending.CHECK_LICENSE" />
+	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 
     <application android:icon="@drawable/icon"
       android:label="RiverFlows Widget"
@@ -22,5 +24,6 @@
 		        <action android:name="android.appwidget.action.APPWIDGET_CONFIGURE"/>
 		    </intent-filter>
 		</activity>-->
+		<service android:name=".LicenseCheckService"/>
     </application>
 </manifest>
