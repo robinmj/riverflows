@@ -7,16 +7,6 @@
 	android:background="@drawable/bg_3x3_frame"
 	android:paddingTop="35dp"
 	android:isScrollContainer="true">
-	<FrameLayout
-    	android:id="@+id/spinner"
-    	android:layout_width="fill_parent"
-    	android:layout_height="fill_parent">
-    	<ProgressBar
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-    		android:indeterminate="true"
-	    	android:layout_gravity="center"/>
-	</FrameLayout>
     <RelativeLayout
     	android:id="@+id/empty_message_area"
 	    android:layout_width="wrap_content"
@@ -26,7 +16,7 @@
 		android:layout_centerVertical="true"
 		android:layout_centerHorizontal="true">
 	    <TextView 
-	    	android:layout_width="fill_parent"
+	    	android:layout_width="wrap_content"
 	    	android:layout_height="wrap_content"
 	    	android:id="@+id/empty_message"
 			android:textSize="15sp"
@@ -41,6 +31,16 @@
 			android:layout_centerHorizontal="true"
 	    	android:layout_below="@id/empty_message"/>
     </RelativeLayout>
+	<FrameLayout
+    	android:id="@+id/spinner"
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content">
+    	<ProgressBar
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+    		android:indeterminate="true"
+	    	android:layout_gravity="center"/>
+	</FrameLayout>
 	<RelativeLayout
 		android:id="@+id/favorite_0"
 	    android:layout_width="fill_parent"
