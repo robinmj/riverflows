@@ -72,7 +72,9 @@ public class Provider extends AppWidgetProvider {
     		}
         } catch(UpdateAbortedException lae) {
             Log.d(Provider.TAG,"update aborted");
-        	return;
+            //show the reload button again
+            views.setViewVisibility(R.id.spinner, View.GONE);
+            views.setViewVisibility(R.id.reload_button, View.VISIBLE);
         }
 		
         appWidgetManager.updateAppWidget(thisWidget, views);
@@ -106,10 +108,6 @@ public class Provider extends AppWidgetProvider {
         views.setViewVisibility(R.id.spinner, View.VISIBLE);
     	views.setViewVisibility(R.id.reload_button, View.GONE);
 		views.setViewVisibility(R.id.empty_message_area, View.GONE);
-        
-        for(int a = 0; a < favoriteCount; a++) {
-            views.setViewVisibility(getFavoriteViewId(a), View.GONE);
-        }
         return views;
 	}
 	
@@ -135,7 +133,7 @@ public class Provider extends AppWidgetProvider {
 				views.setViewVisibility(R.id.empty_message_area, View.GONE);
 				break;
 			case FAILED:
-				showLicenseErrorMessage(context,views,"License check failed.  Please make sure you have internet access.  ErrorCode: " + LicenseCheckService.getErrorCode());
+				showLicenseErrorMessage(context,views,"License check failed.  Please make sure you have internet access.");
 				return true;
 			case ERROR:
 		        //there's a faint possibility that licenseErrorCode will be incorrect here if it was modified by another thread
