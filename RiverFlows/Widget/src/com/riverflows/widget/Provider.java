@@ -74,7 +74,7 @@ public class Provider extends AppWidgetProvider {
             Log.d(Provider.TAG,"update aborted");
             //show the reload button again
             views.setViewVisibility(R.id.spinner, View.GONE);
-            views.setViewVisibility(R.id.reload_button, View.VISIBLE);
+            showReloadButton(context, views);
         }
 		
         appWidgetManager.updateAppWidget(thisWidget, views);
@@ -164,22 +164,20 @@ public class Provider extends AppWidgetProvider {
         
         if(favorites == null) {
         	Log.w(TAG,"RiverFlows not installed");
-        	views.setTextViewText(R.id.empty_message, "The RiverFlows app must be installed in order to use this widget");
-        	views.setCharSequence(R.id.empty_message_button, "setText","Install RiverFlows");
         	Intent appDetailsIntent = new Intent(Intent.ACTION_VIEW, 
         			Uri.parse("market://details?id=com.riverflows"));
         	/*Intent appDetailsIntent = new Intent(Intent.ACTION_VIEW, 
         			Uri.parse("https://market.android.com/details?id=com.riverflows"));*/
         	PendingIntent appDetailsPendingIntent = PendingIntent.getActivity(context, 0, appDetailsIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
-        	views.setOnClickPendingIntent(R.id.empty_message_button, appDetailsPendingIntent);
-        	views.setViewVisibility(R.id.empty_message_area, View.VISIBLE);
+        	
+        	showErrorMessage(context, views,
+        			"The RiverFlows app must be installed in order to use this widget",
+        			"Install RiverFlows",
+        			appDetailsPendingIntent);
         	return views;
         }
         
-        PendingIntent reloadPendingIntent = PendingIntent.getBroadcast(context, 0, getUpdateIntent(context), 0);
-        
-        views.setOnClickPendingIntent(R.id.reload_button, reloadPendingIntent);
-        views.setViewVisibility(R.id.reload_button, View.VISIBLE);
+        showReloadButton(context, views);
         
         if(favorites.size() == 0) {
         	Log.w(TAG,"no favorites defined");
@@ -191,14 +189,15 @@ public class Provider extends AppWidgetProvider {
 //	        	views.setViewVisibility(R.id.empty_message_button, View.GONE);
 //	        	views.setTextViewText(R.id.empty_message, instructions);
         	
-        	views.setTextViewText(R.id.empty_message, "Your first 5 favorite sites from the RiverFlows app will appear here.");
-        	views.setCharSequence(R.id.empty_message_button, "setText", "Instructions For Selecting Favorites");
-        	
         	Intent favoritesHelpIntent = new Intent(Intent.ACTION_VIEW,
         			Uri.parse("riverflows://help/favorites.html"));
         	PendingIntent favoritesHelpPendingIntent = PendingIntent.getActivity(context, 0, favoritesHelpIntent, 0);
-        	views.setOnClickPendingIntent(R.id.empty_message_button, favoritesHelpPendingIntent);
-        	views.setViewVisibility(R.id.empty_message_area, View.VISIBLE);
+        	
+        	showErrorMessage(context, views,
+        			"Your first 5 favorite sites from the RiverFlows app will appear here.",
+        			"Instructions For Selecting Favorites",
+        			favoritesHelpPendingIntent);
+        	
         	return views;
         }
         
@@ -248,16 +247,15 @@ public class Provider extends AppWidgetProvider {
 	}
 	
 	private RemoteViews showUnsupportedProtocolError(Context context, RemoteViews views) {
-		views.setViewVisibility(R.id.spinner, View.GONE);
-        
     	Log.w(TAG,"riverFlows out of date");
-    	views.setTextViewText(R.id.empty_message, "The RiverFlows app is out-of-date for this version of the widget.");
-    	views.setCharSequence(R.id.empty_message_button, "setText","Update RiverFlows");
     	Intent appDetailsIntent = new Intent(Intent.ACTION_VIEW, 
     			Uri.parse("market://details?id=com.riverflows"));
     	PendingIntent appDetailsPendingIntent = PendingIntent.getActivity(context, 0, appDetailsIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
-    	views.setOnClickPendingIntent(R.id.empty_message_button, appDetailsPendingIntent);
-    	views.setViewVisibility(R.id.empty_message_area, View.VISIBLE);
+    	
+    	showErrorMessage(context, views,
+    			"The RiverFlows app is out-of-date for this version of the widget.",
+    			"Update RiverFlows",
+    			appDetailsPendingIntent);
     	
     	return views;
 	}
@@ -517,14 +515,31 @@ public class Provider extends AppWidgetProvider {
 	}
 	
 	private void showLicenseErrorMessage(Context context, RemoteViews views, String message) {
-        views.setViewVisibility(R.id.spinner, View.GONE);
-		views.setTextViewText(R.id.empty_message, message);
-    	views.setCharSequence(R.id.empty_message_button, "setText","Retry");
+
     	Intent retryLicenseIntent = new Intent(context, Provider.class);
     	retryLicenseIntent.setAction(ACTION_RETRY_LICENSE_CHECK);
     	PendingIntent retryLicensePendingIntent = PendingIntent.getBroadcast(context, 0, retryLicenseIntent, 0);
-    	views.setOnClickPendingIntent(R.id.empty_message_button, retryLicensePendingIntent);
+    	
+    	showErrorMessage(context, views, message, "Retry", retryLicensePendingIntent);
+	}
+	
+	private void showErrorMessage(Context context, RemoteViews views, String message, String buttonText, PendingIntent buttonIntent) {
+        for(int a = 0; a < favoriteCount; a++) {
+            views.setViewVisibility(getFavoriteViewId(a), View.GONE);
+        }
+        
+        views.setViewVisibility(R.id.spinner, View.GONE);
+		views.setTextViewText(R.id.empty_message, message);
+    	views.setCharSequence(R.id.empty_message_button, "setText",buttonText);
+    	views.setOnClickPendingIntent(R.id.empty_message_button, buttonIntent);
     	views.setViewVisibility(R.id.empty_message_button, View.VISIBLE);
     	views.setViewVisibility(R.id.empty_message_area, View.VISIBLE);
+	}
+	
+	private void showReloadButton(Context context, RemoteViews views) {
+        PendingIntent reloadPendingIntent = PendingIntent.getBroadcast(context, 0, getUpdateIntent(context), 0);
+        
+        views.setOnClickPendingIntent(R.id.reload_button, reloadPendingIntent);
+        views.setViewVisibility(R.id.reload_button, View.VISIBLE);
 	}
 }
