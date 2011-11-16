@@ -9,15 +9,15 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="120"
-   height="52"
+   width="91"
+   height="17"
    id="svg2"
    version="1.1"
    inkscape:version="0.47 r22583"
-   sodipodi:docname="widget_frame_larger.svg"
-   inkscape:export-filename="/Users/robin/bg_3x3_frame.9.png"
-   inkscape:export-xdpi="101.47743"
-   inkscape:export-ydpi="101.47743">
+   sodipodi:docname="frame_title.svg"
+   inkscape:export-filename="/Users/robin/eclipseworkspace/RiverFlows-Widget/res/drawable-hdpi/title.png"
+   inkscape:export-xdpi="190.58824"
+   inkscape:export-ydpi="190.58824">
   <defs
      id="defs4">
     <inkscape:perspective
@@ -136,14 +136,6 @@
            in="SourceGraphic" />
       </feMerge>
     </filter>
-    <filter
-       inkscape:collect="always"
-       id="filter3710">
-      <feGaussianBlur
-         inkscape:collect="always"
-         stdDeviation="0.35996547"
-         id="feGaussianBlur3712" />
-    </filter>
   </defs>
   <sodipodi:namedview
      id="base"
@@ -152,47 +144,27 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="8.0147534"
-     inkscape:cx="60.110917"
-     inkscape:cy="37.067521"
+     inkscape:zoom="13.032765"
+     inkscape:cx="45.5"
+     inkscape:cy="5.8497498"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
      showguides="true"
      inkscape:guide-bbox="true"
-     inkscape:window-width="1063"
-     inkscape:window-height="847"
-     inkscape:window-x="112"
-     inkscape:window-y="11"
+     inkscape:window-width="1277"
+     inkscape:window-height="860"
+     inkscape:window-x="109"
+     inkscape:window-y="0"
      inkscape:window-maximized="0">
-    <sodipodi:guide
-       orientation="0,1"
-       position="19.876576,41.002226"
-       id="guide2816" />
-    <sodipodi:guide
-       orientation="1,0"
-       position="7.9894644,20.544337"
-       id="guide2818" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="17.471466,10.974539"
-       id="guide2820" />
     <sodipodi:guide
        orientation="1,0"
        position="112.04337,41.002226"
        id="guide2822" />
     <sodipodi:guide
        orientation="1,0"
-       position="13.703209,34.893048"
-       id="guide3606" />
-    <sodipodi:guide
-       orientation="1,0"
        position="106.30396,41.002226"
        id="guide3608" />
-    <sodipodi:guide
-       orientation="0,1"
-       position="-4.7459893,16.71123"
-       id="guide3610" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -202,7 +174,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title />
+        <dc:title></dc:title>
       </cc:Work>
     </rdf:RDF>
   </metadata>
@@ -210,34 +182,14 @@
      inkscape:groupmode="layer"
      id="layer2"
      inkscape:label="Shadow"
-     style="display:inline">
-    <rect
-       style="fill:#000000;fill-opacity:0.63921569000000000;fill-rule:evenodd;stroke:none;filter:url(#filter3710)"
-       id="rect2845-8"
-       width="20"
-       height="20.017559"
-       x="7.9894643"
-       y="11.007902"
-       ry="4.6664567"
-       rx="1.3454565"
-       transform="matrix(5.2026954,0,0,1.5000675,-33.577285,-5.514825)" />
-  </g>
+     style="display:inline"
+     transform="translate(0,-35)" />
   <g
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-1000.3622)"
+     transform="translate(0,-1035.3622)"
      style="display:inline">
-    <rect
-       style="fill:#000000;fill-opacity:0.63921569;fill-rule:evenodd;stroke:none"
-       id="rect2845"
-       width="20"
-       height="20.017559"
-       x="7.9894643"
-       y="11.007902"
-       ry="4.6664567"
-       rx="1.3454565"
-       transform="matrix(5.2026954,0,0,1.5000675,-33.577285,994.84738)" />
     <rect
        style="fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.5;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0;stroke-dasharray:none;filter:url(#filter3873)"
        id="rect3619"
@@ -248,13 +200,13 @@
     <text
        xml:space="preserve"
        style="font-size:16px;font-style:normal;font-variant:normal;font-weight:normal;font-stretch:normal;text-align:start;line-height:125%;writing-mode:lr-tb;text-anchor:start;fill:#cccccc;fill-opacity:1;stroke:none;font-family:Arial Rounded MT Bold;-inkscape-font-specification:'Arial Rounded MT Bold,'"
-       x="13.703209"
-       y="1028.5077"
+       x="1.5263238"
+       y="1049.9381"
        id="text2836"
        sodipodi:linespacing="125%"><tspan
          sodipodi:role="line"
          id="tspan2838"
-         x="13.703209"
-         y="1028.5077">RiverFlows</tspan></text>
+         x="1.5263238"
+         y="1049.9381">RiverFlows</tspan></text>
   </g>
 </svg>

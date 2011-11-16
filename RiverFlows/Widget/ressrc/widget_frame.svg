@@ -7,6 +7,7 @@
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    xmlns:svg="http://www.w3.org/2000/svg"
    xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="36"
@@ -16,10 +17,21 @@
    inkscape:version="0.47 r22583"
    sodipodi:docname="widget_frame.svg"
    inkscape:export-filename="/Users/robin/bg_3x3_frame.9.png"
-   inkscape:export-xdpi="101.47743"
-   inkscape:export-ydpi="101.47743">
+   inkscape:export-xdpi="155"
+   inkscape:export-ydpi="155">
   <defs
      id="defs4">
+    <linearGradient
+       id="linearGradient4900">
+      <stop
+         style="stop-color:#dcdcdc;stop-opacity:0.25490198;"
+         offset="0"
+         id="stop4902" />
+      <stop
+         style="stop-color:#6e6e6e;stop-opacity:0.25600001;"
+         offset="1"
+         id="stop4904" />
+    </linearGradient>
     <inkscape:perspective
        sodipodi:type="inkscape:persp3d"
        inkscape:vp_x="0 : 526.18109 : 1"
@@ -93,6 +105,60 @@
            in="SourceGraphic" />
       </feMerge>
     </filter>
+    <filter
+       id="filter4878"
+       inkscape:label="Drop shadow"
+       width="1.5"
+       height="1.5"
+       x="-.25"
+       y="-.25">
+      <feGaussianBlur
+         id="feGaussianBlur4880"
+         in="SourceAlpha"
+         stdDeviation="2.500000"
+         result="blur" />
+      <feColorMatrix
+         id="feColorMatrix4882"
+         result="bluralpha"
+         type="matrix"
+         values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 1.000000 0 " />
+      <feOffset
+         id="feOffset4884"
+         in="bluralpha"
+         dx="0.000000"
+         dy="1.000000"
+         result="offsetBlur" />
+      <feMerge
+         id="feMerge4886">
+        <feMergeNode
+           id="feMergeNode4888"
+           in="offsetBlur" />
+        <feMergeNode
+           id="feMergeNode4890"
+           in="SourceGraphic" />
+      </feMerge>
+    </filter>
+    <filter
+       inkscape:collect="always"
+       id="filter4896"
+       x="-0.3966958"
+       width="1.7933916"
+       y="-0.39634783"
+       height="1.7926957">
+      <feGaussianBlur
+         inkscape:collect="always"
+         stdDeviation="3.3057984"
+         id="feGaussianBlur4898" />
+    </filter>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient4900"
+       id="linearGradient4906"
+       x1="18.149893"
+       y1="11.007902"
+       x2="18.163261"
+       y2="25.288771"
+       gradientUnits="userSpaceOnUse" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -101,9 +167,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="14.96"
-     inkscape:cx="15.417159"
-     inkscape:cy="16.920647"
+     inkscape:zoom="10.580594"
+     inkscape:cx="17.089705"
+     inkscape:cy="21.820066"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -111,7 +177,7 @@
      inkscape:guide-bbox="true"
      inkscape:window-width="1044"
      inkscape:window-height="825"
-     inkscape:window-x="169"
+     inkscape:window-x="87"
      inkscape:window-y="0"
      inkscape:window-maximized="0">
     <sodipodi:guide
@@ -156,33 +222,35 @@
     </rdf:RDF>
   </metadata>
   <g
-     inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     id="layer1"
-     transform="translate(0,-1010.3622)">
+     id="layer2"
+     inkscape:label="shadow"
+     style="display:inline">
     <rect
-       style="fill:#000000;fill-opacity:0.78431373999999998;fill-rule:evenodd;stroke:none;stroke-width:0.10000000000000001;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.16071430000000000;stroke-dasharray:none;filter:url(#filter3859)"
+       style="fill:#000000;fill-opacity:0.78431373;fill-rule:evenodd;stroke:none;filter:url(#filter4896)"
        id="rect2845"
        width="20"
        height="20.017559"
        x="7.9894643"
-       y="11.007902"
+       y="13.007902"
        ry="7"
+       rx="7" />
+  </g>
+  <g
+     inkscape:label="Layer 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-1010.3622)"
+     style="display:inline">
+    <rect
+       transform="translate(0,1010.3622)"
        rx="7"
-       transform="translate(0,1010.3622)" />
-    <rect
-       style="fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.50000000000000000;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0;stroke-dasharray:none;filter:url(#filter3873)"
-       id="rect3619"
-       width="8"
-       height="8"
-       x="14.004"
-       y="1027.6964" />
-    <rect
-       y="1031.5724"
-       x="13.930107"
-       height="3.8977842"
-       width="8.1477852"
-       id="rect3604"
-       style="fill:#ffffff;fill-opacity:0;fill-rule:evenodd;stroke:#808080;stroke-width:0.35221571;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none" />
+       ry="7"
+       y="11.007902"
+       x="7.9894643"
+       height="20.017559"
+       width="20"
+       id="rect4892"
+       style="fill:#000000;fill-opacity:0.627451;fill-rule:evenodd;stroke:url(#linearGradient4906);stroke-width:1;stroke-miterlimit:4;stroke-dasharray:none" />
   </g>
 </svg>
