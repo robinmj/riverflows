@@ -61,11 +61,11 @@ public class Provider extends AppWidgetProvider {
         }
         
         try {
-        	if(checkLicenseStatus(context, views)) {
+        	/*if(checkLicenseStatus(context, views)) {
         		//license check failed- error message is ready to be displayed
     	        appWidgetManager.updateAppWidget(thisWidget, views);
     			return;
-        	}
+        	}*/
         	
     		if(updateFavoriteViews(context, views) == null) {
     			throw new UpdateAbortedException();
