@@ -2,7 +2,8 @@
 <resources>
     <style name="Favorite" parent="@android:style/TextAppearance.Medium">
         <item name="android:layout_width">fill_parent</item>
-        <item name="android:layout_height">44dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">0.2</item>
         <item name="android:layout_margin">1dp</item>
         <item name="android:background">#66666655</item>
 	    <item name="android:visibility">gone</item>
@@ -31,7 +32,6 @@
 		<item name="android:layout_height">wrap_content</item>
 		<item name="android:layout_alignParentRight">true</item>
 	    <item name="android:layout_alignParentBottom">true</item>
-	    <item name="android:paddingBottom">3dp</item>
 	    <item name="android:paddingRight">10dp</item>
 		<item name="android:textSize">13sp</item>
 		<item name="android:singleLine">true</item>
@@ -42,7 +42,6 @@
 	    <item name="android:layout_alignParentBottom">true</item>
 	    <item name="android:layout_alignParentLeft">true</item>
 		<item name="android:paddingLeft">10dp</item>
-	    <item name="android:paddingBottom">2dp</item>
 		<item name="android:textSize">19sp</item>
 		<item name="android:singleLine">true</item>
 	</style>

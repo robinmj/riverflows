@@ -201,7 +201,12 @@ public class Provider extends AppWidgetProvider {
         	return views;
         }
         
-        for(int a = 0; a < Provider.favoriteCount && a < favorites.size(); a++) {
+        for(int a = 0; a < Provider.favoriteCount; a++) {
+        	if(a >= favorites.size()) {
+        		views.setViewVisibility(getFavoriteViewId(a), View.INVISIBLE);
+        		continue;
+        	}
+        	
         	Log.d(TAG, "drawing favorite " + favorites.get(a).getSite().getName());
 
         	//com.riverflows.ViewChart.GAUGE_SCHEME

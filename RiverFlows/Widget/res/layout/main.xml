@@ -5,16 +5,18 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
 	android:background="@drawable/bg_3x3_frame"
+	android:layout_margin="0dp"
 	android:paddingTop="13dp"
-	android:isScrollContainer="true">
+	android:paddingRight="13dp"
+	android:paddingLeft="13dp"
+	android:paddingBottom="17dp">
 	<RelativeLayout
       android:layout_width="fill_parent"
-      android:layout_height="36dp">
+      android:layout_height="20dp">
         <ImageView
 		 android:layout_width="wrap_content"
 		 android:layout_height="wrap_content"
 		 android:layout_alignParentLeft="true"
-		 android:layout_marginTop="2dp"
          android:src="@drawable/title"/>
         <Button
 		 android:id="@+id/reload_button"
@@ -25,9 +27,10 @@
 		 android:visibility="gone"/>
 		<FrameLayout 
     		android:id="@+id/spinner"
-			    android:layout_width="36dp"
-			    android:layout_height="36dp"
-			 	android:layout_alignParentRight="true">
+			    android:layout_width="20dp"
+			    android:layout_height="20dp"
+			 	android:layout_alignParentRight="true"
+			 	android:layout_marginRight="4dp">
 	    	<ProgressBar
 			    android:layout_width="fill_parent"
 			    android:layout_height="fill_parent"
