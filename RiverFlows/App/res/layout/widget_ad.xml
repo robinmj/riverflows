@@ -25,7 +25,7 @@
 	              android:text="Monitor your first 5 favorite gauge sites right from your phone's desktop!"
 	              />
 	    <TextView android:id="@+id/market_link"
-	    		  android:layout_width="wrap_content"
+	    		  android:layout_width="fill_parent"
 	    		  android:layout_height="wrap_content"
 	    		  android:textSize="20sp"
 	        	  android:gravity="center_horizontal"
