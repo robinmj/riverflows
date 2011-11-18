@@ -281,7 +281,7 @@ public class FavoritesDaoImpl {
 		favoriteValues.put(LATITUDE, favoriteSite.getLatitude());
 		favoriteValues.put(LONGITUDE, favoriteSite.getLongitude());
 		favoriteValues.put(VARIABLE, favorite.getVariable());
-		favoriteValues.put(ORDER, favorite.getVariable());
+		favoriteValues.put(ORDER, Integer.MAX_VALUE);
 
 		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
 		synchronized(RiverGaugesDb.class) {
