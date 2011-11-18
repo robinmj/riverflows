@@ -99,4 +99,11 @@ public class Home extends TabActivity {
         }
 		return null;
 	}
+	
+	public static Intent getWidgetUpdateIntent() {
+		//refers to com.riverflows.widget.Provider.ACTION_UPDATE_WIDGET
+		Intent i = new Intent("com.riverflows.widget.UPDATE");
+		i.setClassName("com.riverflows.widget", "com.riverflows.widget.Provider");
+		return i;
+	}
 }

@@ -648,6 +648,8 @@ public class Favorites extends ListActivity {
 		switch(requestCode) {
 		case REQUEST_EDIT_FAVORITE:
 			if(resultCode == RESULT_OK) {
+				sendBroadcast(Home.getWidgetUpdateIntent());
+				
 	        	if(loadTask == null || loadTask.favorites == null) {
 	        		//favorites haven't even loaded yet- return
 	        		return;
@@ -714,6 +716,7 @@ public class Favorites extends ListActivity {
     		return;
 		case REQUEST_REORDER_FAVORITES:
 			if(resultCode == RESULT_OK) {
+				sendBroadcast(Home.getWidgetUpdateIntent());
 				
 				if(loadTask == null || loadTask.gauges == null) {
 	        		//favorites haven't even loaded yet- return

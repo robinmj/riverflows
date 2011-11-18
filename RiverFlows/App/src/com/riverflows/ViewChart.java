@@ -27,6 +27,7 @@ import android.view.ContextMenu.ContextMenuInfo;
 import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager.BadTokenException;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
@@ -85,6 +86,7 @@ public class ViewChart extends Activity {
     		} else {
     			FavoritesDaoImpl.deleteFavorite(getApplicationContext(), ViewChart.this.station.getSiteId(), ViewChart.this.variable);
     		}
+			sendBroadcast(Home.getWidgetUpdateIntent());
     	}
     }
     
@@ -175,8 +177,14 @@ public class ViewChart extends Activity {
 			if(errorMsg == null) {
 				errorMsg = "Error: No Data";
 			}
-			//TODO address BadTokenException thrown here
-			showDialog(DIALOG_ID_LOADING_ERROR);
+			try {
+				showDialog(DIALOG_ID_LOADING_ERROR);
+			} catch(BadTokenException bte) {
+				if(Log.isLoggable(TAG, Log.INFO)) {
+					Log.i(TAG, "can't display dialog; activity no longer active");
+				}
+				return;
+			}
             progressBar.setVisibility(View.GONE);
             initContingencyFavoriteBtn(favoriteBtn);
             return;

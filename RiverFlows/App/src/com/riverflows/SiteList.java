@@ -435,6 +435,7 @@ public abstract class SiteList extends ListActivity {
 				FavoritesDaoImpl.createFavorite(getApplicationContext(), new Favorite(selectedStation, selectedVariable.getId()));
 				item.setChecked(true);
 			}
+			sendBroadcast(Home.getWidgetUpdateIntent());
 
 			String confirmation =  MessageFormat.format(getString(R.string.add_favorite_confirmation), selectedVariable.getName(), selectedStation.getName());
 			
