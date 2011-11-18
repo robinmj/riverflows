@@ -61,237 +61,82 @@
     </RelativeLayout>
 	<RelativeLayout
 		android:id="@+id/favorite_0"
-	    android:layout_width="fill_parent"
-	    android:layout_height="44dp"
-	    android:layout_margin="1dp"
-	    android:background="#66666655"
-	    android:visibility="gone">
+		style="@style/Favorite">
 		<ImageView android:id="@+id/agency_icon_0"
-	      android:layout_width="wrap_content"
-	      android:layout_height="wrap_content"
-	      android:layout_alignParentLeft="true"
-	      android:layout_alignParentTop="true"
-	      android:paddingTop="4dp"
-	      android:paddingLeft="6dp"/>
+		  style="@style/AgencyIcon"/>
 		<TextView android:id="@+id/subtext_0"
-		  android:layout_width="wrap_content"
-		  android:layout_height="wrap_content"
-		  android:layout_alignParentTop="true"
-		  android:layout_alignParentRight="true"
-	      android:paddingTop="2dp"
-	      android:paddingRight="10dp"
-		  android:textSize="17sp"
-		  android:textStyle="bold"
-		  android:singleLine="true">
+		  style="@style/LastReading">
 		</TextView>
 		<TextView android:id="@+id/timestamp_0"
-		  android:layout_width="wrap_content"
-		  android:layout_height="wrap_content"
-		  android:layout_alignParentRight="true"
-	      android:layout_alignParentBottom="true"
-	      android:paddingBottom="3dp"
-	      android:paddingRight="10dp"
-		  android:textSize="13sp"
-		  android:singleLine="true">
+		  style="@style/Timestamp">
 		</TextView>
 		<TextView android:id="@+id/favorite_name_0"
-		  android:layout_width="wrap_content"
-		  android:layout_height="wrap_content"
-		  android:layout_toLeftOf="@id/subtext_0"
-	      android:layout_alignParentBottom="true"
-	      android:layout_alignParentLeft="true"
-		  android:paddingLeft="10dp"
-	      android:paddingBottom="2dp"
-		  android:textSize="19sp"
-		  android:singleLine="true">
+		  style="@style/FavoriteName"
+		  android:layout_toLeftOf="@id/subtext_0">
 		</TextView>
 	</RelativeLayout>
 	<RelativeLayout
 		android:id="@+id/favorite_1"
-	    android:layout_width="fill_parent"
-	    android:layout_height="44dp"
-	    android:layout_margin="1dp"
-	    android:background="#66666655"
-	    android:visibility="gone">
+		style="@style/Favorite">
 		<ImageView android:id="@+id/agency_icon_1"
-	      android:layout_width="wrap_content"
-	      android:layout_height="wrap_content"
-	      android:layout_alignParentLeft="true"
-	      android:layout_alignParentTop="true"
-	      android:paddingTop="4dp"
-	      android:paddingLeft="6dp"/>
+		  style="@style/AgencyIcon"/>
 		<TextView android:id="@+id/subtext_1"
-		  android:layout_width="wrap_content"
-		  android:layout_height="wrap_content"
-		  android:layout_alignParentTop="true"
-		  android:layout_alignParentRight="true"
-	      android:paddingTop="2dp"
-	      android:paddingRight="10dp"
-		  android:textSize="17sp"
-		  android:textStyle="bold"
-		  android:singleLine="true">
+		  style="@style/LastReading">
 		</TextView>
 		<TextView android:id="@+id/timestamp_1"
-		  android:layout_width="wrap_content"
-		  android:layout_height="wrap_content"
-		  android:layout_alignParentRight="true"
-	      android:layout_alignParentBottom="true"
-	      android:paddingBottom="3dp"
-	      android:paddingRight="10dp"
-		  android:textSize="13sp"
-		  android:singleLine="true">
+		  style="@style/Timestamp">
 		</TextView>
 		<TextView android:id="@+id/favorite_name_1"
-		  android:layout_width="wrap_content"
-		  android:layout_height="wrap_content"
-		  android:layout_toLeftOf="@id/subtext_1"
-	      android:layout_alignParentBottom="true"
-	      android:layout_alignParentLeft="true"
-		  android:paddingLeft="10dp"
-	      android:paddingBottom="2dp"
-		  android:textSize="19sp"
-		  android:singleLine="true">
+		  style="@style/FavoriteName"
+		  android:layout_toLeftOf="@id/subtext_1">
 		</TextView>
 	</RelativeLayout>
 	<RelativeLayout
 		android:id="@+id/favorite_2"
-	    android:layout_width="fill_parent"
-	    android:layout_height="44dp"
-	    android:layout_margin="1dp"
-	    android:background="#66666655"
-	    android:visibility="gone">
+		style="@style/Favorite">
 		<ImageView android:id="@+id/agency_icon_2"
-	      android:layout_width="wrap_content"
-	      android:layout_height="wrap_content"
-	      android:layout_alignParentLeft="true"
-	      android:layout_alignParentTop="true"
-	      android:paddingTop="4dp"
-	      android:paddingLeft="6dp"/>
+		  style="@style/AgencyIcon"/>
 		<TextView android:id="@+id/subtext_2"
-		  android:layout_width="wrap_content"
-		  android:layout_height="wrap_content"
-		  android:layout_alignParentTop="true"
-		  android:layout_alignParentRight="true"
-	      android:paddingTop="2dp"
-	      android:paddingRight="10dp"
-		  android:textSize="17sp"
-		  android:textStyle="bold"
-		  android:singleLine="true">
+		  style="@style/LastReading">
 		</TextView>
 		<TextView android:id="@+id/timestamp_2"
-		  android:layout_width="wrap_content"
-		  android:layout_height="wrap_content"
-		  android:layout_alignParentRight="true"
-	      android:layout_alignParentBottom="true"
-	      android:paddingBottom="3dp"
-	      android:paddingRight="10dp"
-		  android:textSize="13sp"
-		  android:singleLine="true">
+		  style="@style/Timestamp">
 		</TextView>
 		<TextView android:id="@+id/favorite_name_2"
-		  android:layout_width="wrap_content"
-		  android:layout_height="wrap_content"
-		  android:layout_toLeftOf="@id/subtext_2"
-	      android:layout_alignParentBottom="true"
-	      android:layout_alignParentLeft="true"
-		  android:paddingLeft="10dp"
-	      android:paddingBottom="2dp"
-		  android:textSize="19sp"
-		  android:singleLine="true">
+		  style="@style/FavoriteName"
+		  android:layout_toLeftOf="@id/subtext_2">
 		</TextView>
 	</RelativeLayout>
 	<RelativeLayout
 		android:id="@+id/favorite_3"
-	    android:layout_width="fill_parent"
-	    android:layout_height="44dp"
-	    android:layout_margin="1dp"
-	    android:background="#66666655"
-	    android:visibility="gone">
+		style="@style/Favorite">
 		<ImageView android:id="@+id/agency_icon_3"
-	      android:layout_width="wrap_content"
-	      android:layout_height="wrap_content"
-	      android:layout_alignParentLeft="true"
-	      android:layout_alignParentTop="true"
-	      android:paddingTop="4dp"
-	      android:paddingLeft="6dp"/>
+		  style="@style/AgencyIcon"/>
 		<TextView android:id="@+id/subtext_3"
-		  android:layout_width="wrap_content"
-		  android:layout_height="wrap_content"
-		  android:layout_alignParentTop="true"
-		  android:layout_alignParentRight="true"
-	      android:paddingTop="2dp"
-	      android:paddingRight="10dp"
-		  android:textSize="17sp"
-		  android:textStyle="bold"
-		  android:singleLine="true">
+		  style="@style/LastReading">
 		</TextView>
 		<TextView android:id="@+id/timestamp_3"
-		  android:layout_width="wrap_content"
-		  android:layout_height="wrap_content"
-		  android:layout_alignParentRight="true"
-	      android:layout_alignParentBottom="true"
-	      android:paddingBottom="3dp"
-	      android:paddingRight="10dp"
-		  android:textSize="13sp"
-		  android:singleLine="true">
+		  style="@style/Timestamp">
 		</TextView>
 		<TextView android:id="@+id/favorite_name_3"
-		  android:layout_width="wrap_content"
-		  android:layout_height="wrap_content"
-		  android:layout_toLeftOf="@id/subtext_3"
-	      android:layout_alignParentBottom="true"
-	      android:layout_alignParentLeft="true"
-		  android:paddingLeft="10dp"
-	      android:paddingBottom="2dp"
-		  android:textSize="19sp"
-		  android:singleLine="true">
+		  style="@style/FavoriteName"
+		  android:layout_toLeftOf="@id/subtext_3">
 		</TextView>
 	</RelativeLayout>
 	<RelativeLayout
 		android:id="@+id/favorite_4"
-	    android:layout_width="fill_parent"
-	    android:layout_height="44dp"
-	    android:layout_margin="1dp"
-	    android:background="#66666655"
-	    android:visibility="gone">
+		style="@style/Favorite">
 		<ImageView android:id="@+id/agency_icon_4"
-	      android:layout_width="wrap_content"
-	      android:layout_height="wrap_content"
-	      android:layout_alignParentLeft="true"
-	      android:layout_alignParentTop="true"
-	      android:paddingTop="4dp"
-	      android:paddingLeft="6dp"/>
+		  style="@style/AgencyIcon"/>
 		<TextView android:id="@+id/subtext_4"
-		  android:layout_width="wrap_content"
-		  android:layout_height="wrap_content"
-		  android:layout_alignParentTop="true"
-		  android:layout_alignParentRight="true"
-	      android:paddingTop="2dp"
-	      android:paddingRight="10dp"
-		  android:textSize="17sp"
-		  android:textStyle="bold"
-		  android:singleLine="true">
+		  style="@style/LastReading">
 		</TextView>
 		<TextView android:id="@+id/timestamp_4"
-		  android:layout_width="wrap_content"
-		  android:layout_height="wrap_content"
-		  android:layout_alignParentRight="true"
-	      android:layout_alignParentBottom="true"
-	      android:paddingBottom="3dp"
-	      android:paddingRight="10dp"
-		  android:textSize="13sp"
-		  android:singleLine="true">
+		  style="@style/Timestamp">
 		</TextView>
 		<TextView android:id="@+id/favorite_name_4"
-		  android:layout_width="wrap_content"
-		  android:layout_height="wrap_content"
-		  android:layout_toLeftOf="@id/subtext_4"
-	      android:layout_alignParentBottom="true"
-	      android:layout_alignParentLeft="true"
-		  android:paddingLeft="10dp"
-	      android:paddingBottom="2dp"
-		  android:textSize="19sp"
-		  android:singleLine="true">
+		  style="@style/FavoriteName"
+		  android:layout_toLeftOf="@id/subtext_4">
 		</TextView>
 	</RelativeLayout>
 </LinearLayout>
