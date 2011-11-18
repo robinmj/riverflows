@@ -3,8 +3,6 @@ package com.riverflows.content;
 import java.io.IOException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -218,31 +216,14 @@ public class Favorites extends ContentProvider {
 		for(Favorite favorite: favorites) {
 			SiteData current = siteDataMap.get(favorite.getSite().getSiteId());
 			
+			if(current == null) {
+				continue;
+			}
+			
 			Variable favoriteVar = DataSourceController.getVariable(favorite.getSite().getAgency(), favorite.getVariable());
 			
 			if(favoriteVar == null) {
 				throw new NullPointerException("could not find variable: " + favorite.getSite().getAgency() + " " + favorite.getVariable());
-			}
-			
-			if(current == null) {
-				//failed to get data for this site- create a placeholder item
-				current = new SiteData();
-				current.setSite(favorite.getSite());
-				
-				Series nullSeries = new Series();
-				nullSeries.setVariable(favoriteVar);
-				
-				Reading placeHolderReading = new Reading();
-				placeHolderReading.setDate(new Date());
-				placeHolderReading.setQualifiers("Datasource Down");
-				
-				nullSeries.setReadings(Collections.singletonList(placeHolderReading));
-				nullSeries.setSourceUrl("");
-				
-				current.getDatasets().put(favoriteVar.getCommonVariable(), nullSeries);
-				
-				expandedDatasets.add(current);
-				continue;
 			}
 
 			//use custom name if one is defined
