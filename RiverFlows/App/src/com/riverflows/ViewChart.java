@@ -223,7 +223,14 @@ public class ViewChart extends Activity {
 			if(errorMsg == null) {
 				errorMsg = "Error: No Data";
 			}
-			showDialog(DIALOG_ID_LOADING_ERROR);
+			try {
+				showDialog(DIALOG_ID_LOADING_ERROR);
+			} catch(BadTokenException bte) {
+				if(Log.isLoggable(TAG, Log.INFO)) {
+					Log.i(TAG, "can't display dialog; activity no longer active");
+				}
+				return;
+			}
             progressBar.setVisibility(View.GONE);
             favoriteBtn.setVisibility(View.VISIBLE);
             initContingencyFavoriteBtn(favoriteBtn);
