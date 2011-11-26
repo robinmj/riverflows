@@ -8,6 +8,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Window;
 import android.widget.TabHost;
@@ -84,9 +85,15 @@ public class Home extends TabActivity {
 	protected void onDestroy() {
 		super.onDestroy();
 	    
-	    DatasetsDaoImpl.deleteExpiredDatasets(getApplicationContext(), getCacheDir());
-	    
-	    RiverGaugesDb.closeHelper();
+		//do in background to avoid hanging the main thread if deleteExpiredDatasets() takes some time.
+		new Thread() {
+			@Override
+			public void run() {
+			    DatasetsDaoImpl.deleteExpiredDatasets(getApplicationContext(), getCacheDir());
+			    
+			    RiverGaugesDb.closeHelper();
+			}
+		}.start();
 	}
 	
 	public static Integer getAgencyIconResId(String siteAgency) {
