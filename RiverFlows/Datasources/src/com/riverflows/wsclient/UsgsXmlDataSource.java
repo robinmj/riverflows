@@ -218,15 +218,15 @@ public class UsgsXmlDataSource implements ContentHandler {
 	private static String EN_SOURCE_INFO = "sourceInfo";
 	private static String EN_SITE_NAME = "siteName";
 	private static String EN_SITE_CODE = "siteCode";
-	private static String EN_NOTE = "note";
-	private static String AN_NOTE_TITLE = "title";
+	private static String EN_SITE_PROPERTY = "siteProperty";
+	private static String AN_SITE_PROPERTY_NAME = "name";
 	private static String NOTE_TITLE_STATE_CODE = "stateCd";
 	private static String EN_SITE_LOCATION = "geogLocation";
 	private static String EN_SITE_LATITUDE = "latitude";
 	private static String EN_SITE_LONGITUDE = "longitude";
 	private static String EN_VARIABLE = "variable";
 	private static String EN_VARIABLE_NAME = "variableName";
-	private static String EN_VARIABLE_TYPE = "valueType";
+	private static String EN_VARIABLE_CODE = "variableCode";
 	private static String EN_VARIABLE_MAGIC_NULL_VALUE = "noDataValue";
 	private static String EN_VALUES = "values";
 	private static String EN_VALUE = "value";
@@ -238,13 +238,13 @@ public class UsgsXmlDataSource implements ContentHandler {
 		elementNames.add(EN_SOURCE_INFO);
 		elementNames.add(EN_SITE_NAME);
 		elementNames.add(EN_SITE_CODE);
-		elementNames.add(EN_NOTE);
+		elementNames.add(EN_SITE_PROPERTY);
 		elementNames.add(EN_SITE_LOCATION);
 		elementNames.add(EN_SITE_LATITUDE);
 		elementNames.add(EN_SITE_LONGITUDE);
 		elementNames.add(EN_VARIABLE);
 		elementNames.add(EN_VARIABLE_NAME);
-		elementNames.add(EN_VARIABLE_TYPE);
+		elementNames.add(EN_VARIABLE_CODE);
 		elementNames.add(EN_VARIABLE_MAGIC_NULL_VALUE);
 		elementNames.add(EN_VALUES);
 		elementNames.add(EN_VALUE);
@@ -329,8 +329,8 @@ public class UsgsXmlDataSource implements ContentHandler {
 			currentTimeSeries = new Series();
 			return;
 		}
-		if(localName.equals(EN_NOTE)) {
-			currentNote = atts.getValue(AN_NOTE_TITLE);
+		if(localName.equals(EN_SITE_PROPERTY)) {
+			currentNote = atts.getValue(AN_SITE_PROPERTY_NAME);
 		} else {
 			currentNote = null;
 		}
@@ -426,7 +426,7 @@ public class UsgsXmlDataSource implements ContentHandler {
 			}
 			return;
 		}
-		if(curElement.equals(EN_NOTE)) {
+		if(curElement.equals(EN_SITE_PROPERTY)) {
 			if(NOTE_TITLE_STATE_CODE.equals(currentNote)) {
 				try {
 					USState state = STATES_SORTED_BY_CODE[Integer.parseInt(curStr)];
@@ -439,7 +439,7 @@ public class UsgsXmlDataSource implements ContentHandler {
 			}
 			return;
 		}
-		if(curElement.equals(EN_VARIABLE_TYPE)) {
+		if(curElement.equals(EN_VARIABLE_CODE)) {
 			try {
 				if(currentTimeSeries == null) {
 					return;
@@ -468,7 +468,7 @@ public class UsgsXmlDataSource implements ContentHandler {
 					currentSiteData.getSite().setSupportedVariables(newSupportedVars);
 				}
 			} catch(NullPointerException npe) {
-				LOG.error(EN_VARIABLE_TYPE + " in unexpected location");
+				LOG.error(EN_VARIABLE_CODE + " in unexpected location");
 			}
 			return;
 		}
