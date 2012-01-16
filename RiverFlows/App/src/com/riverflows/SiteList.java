@@ -305,9 +305,9 @@ public abstract class SiteList extends ListActivity {
 		@Override
 		protected void onPostExecute(List<SiteData> result) {
 			this.activity.gauges = result;
+			this.activity.errorMsg = this.errorMsg;
 			this.activity.displaySites();
 			this.activity.loadTask = null;
-			this.activity.errorMsg = this.errorMsg;
 		}
 		
 		@Override
