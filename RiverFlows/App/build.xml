@@ -26,7 +26,7 @@
 		<ant antfile="../RiverFlows-Datasources/build.xml" target="installjar" dir="../RiverFlows-Datasources/"/>
 		
 		<mkdir dir="${builddir}" />
-		<javac destdir="${builddir}" srcdir="${basedir}/src/:${basedir}/gen/"
+		<javac destdir="${builddir}" srcdir="${basedir}/src/"
         classpathref="compile.classpath" encoding="UTF-8" debug="yes" source="1.6"/>
 	</target>
 	
