@@ -69,9 +69,23 @@ public class UsgsXmlDataSourceTest extends TestCase {
 		SiteData silverton = data.get("09359020");
 		Series ht = silverton.getDatasets().get(CommonVariable.GAUGE_HEIGHT_FT);
 		Reading recent = ht.getReadings().get(0);
+		//qualifiers are not currently supported by UsgsXmlDataSource
+		//assertEquals("P Ice", recent.getQualifiers());
+		//assertEquals(null, recent.getValue());
+		//assertEquals("2011-02-13T06:00:00.000-0700", valueDateFormat.format(recent.getDate()));
+
+		state = USState.WY;
+		url = XML_FILE_PATH + state.getAbbrev() + ".xml";
+		
+		data = UsgsXmlDataSource.getSiteData(url,false);
+		
+		SiteData yellowstone = data.get("06186500");
+		Series cfs = yellowstone.getDatasets().get(CommonVariable.STREAMFLOW_CFS);
+		recent = cfs.getReadings().get(0);
+		//qualifiers are not currently supported by UsgsXmlDataSource
 		//assertEquals("P Ice", recent.getQualifiers());
 		assertEquals(null, recent.getValue());
-		assertEquals("2011-02-13T06:00:00.000-0700", valueDateFormat.format(recent.getDate()));
+		assertEquals("2011-12-26T19:30:00.000-0700", valueDateFormat.format(recent.getDate()));
 		
 	}
 }
