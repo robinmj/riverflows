@@ -51,7 +51,7 @@ public class DataSourceController {
 	//public static final String RIVERFLOWS_WS_BASEURL = "https://www.riverflowsapp.com/";
 	public static final String RIVERFLOWS_WS_BASEURL = "https://ws.riverflowsapp.com/";
 	//public static final String RIVERFLOWS_WS_BASEURL = "http://riverflows-ws.elasticbeanstalk.com/";
-	//public static final String RIVERFLOWS_WS_BASEURL = "http://10.0.2.2:3000/";
+	//public static final String RIVERFLOWS_WS_BASEURL = "http://192.168.103.13:3000/";
 	public static final float RIVERFLOWS_WS_API_VERSION = 0.1f;
 	public static final String SITES_WS_PATH = "sites/";
 	

@@ -34,11 +34,12 @@ public class Variable implements Serializable {
 		WIND_SPEED_M_S("Wind Speed", "m/s"),
 		WIND_DIRECTION_DEGREES("Wind Direction", "°"),//degrees clockwise from N
 		WIND_GUST_SPEED_MPH("Wind Gust Speed", "mph"),//Wind gust speed, air, mph 
+		WIND_GUST_DIRECTION_DEGREES("Wind Gust Direction", "°"),//WIND, DIRECTION OF PEAK GUST, deg
 		PRECIPITATION_TOTAL_IN("Precipitation, total","in"),
 		SPECIFIC_CONDUCTANCE_MICROSIEMEN_AT_25C("Specific Conductance","µS/cm at 25°C", false),
 		DISSOLVED_O2_MG_L("Dissolved Oxygen","mg/L", false),//Dissolved oxygen, water, unfiltered, mg/L
 		DISSOLVED_O2_PCT("Dissolved Oxygen","%", false),//Dissolved oxygen, water, unfiltered, %saturation
-		WATER_PH("pH",""),//pH, water, unfiltered, field, standard units
+		WATER_PH("pH",""),//pH, water, unfiltered, field, standard units //WATER, PH VALUE, ph
 		TURBIDITY_FNU("Turbidity","FNU"),//, water, unfiltered, monochrome near infra-red LED light, 780-900 nm, detection angle 90 +/-2.5 degrees
 		RELATIVE_HUMIDITY_PCT("Relative Humidity", "%", false),
 		ATM_PRESSURE_MM_HG("Barometric Pressure", "mm Hg", false),
@@ -48,7 +49,20 @@ public class Variable implements Serializable {
 		ACOUSTIC_DOPPLER_VELOCITY_METER_SIGNAL_NOISE_RATIO("Acoustic Doppler Velocity Meter signal to noise ratio","", false),
 		SAMPLE_ELEVATION_FT("Elevation of Sample","ft"),
 		SAMPLE_COUNT("Count of samples collected by autosampler",""),//Count of samples collected by autosampler, number
-		NUMBER_OF_SAMPLING_POINTS("Number of sampling points","");
+		NUMBER_OF_SAMPLING_POINTS("Number of sampling points",""),
+		FUEL_MOISTURE_WOOD_PCT("Fuel moisture, wood","%", false), //FUEL MOISTURE, WOOD, %
+		SOLAR_RADIATION_W_SQ_M("Solar Radiation", "w/m^2", false), //SOLAR RADIATION, w/m^2
+		ATM_PRESSURE_IN("Atmospheric Pressure", "in", false), //ATMOSPHERIC PRESSURE, inches
+		CREEK_BED_ELEV_FT("Creek Bed Elevation", "ft", false), //CREEK BED ELEV FROM MEAN SEA L, feet
+		SNOW_DEPTH_IN("Snow Depth", "in"), //SNOW DEPTH, inches, 
+		SNOW_WATER_CONTENT_IN("Snow Water Content", "in"), //SNOW, WATER CONTENT, inches, 
+		PRECIP_RAINTIP_IN("Precipitation, Tipping Bucket", "in"), //PRECIPITATION, TIPPING BUCKET, inches,
+		ELECTRICAL_CONDUCTIVITY_MS_CM("Electrical Conductivity", "mS/cm", false), //ELECTRICAL CONDUCTIVTY MILLI S, ms/cm
+		RES_OUTFLOW_CFS("Reservoir Outflow","cfs", false), //RESERVOIR OUTFLOW, cfs
+		RES_INFLOW_CFS("Reservoir Inflow","cfs", false), //RESERVOIR INFLOW, cfs
+		RIVER_STAGE_ELEV_FT("River Stage above NAVD88", "ft", false), //RIVER STAGE NAVD88, feet
+		CONTROL_REGULATING_DISCHARGE("Discharge, Control Regulating", "cfs", false),  //DISCHARGE,CONTROL REGULATING, cfs
+		BOTTOM_ELECTRICAL_CONDUCTIVITY_MICROS_CM("Electrical Conductivity on Bottom","µS/cm", false); //ELECTRICAL COND BOTTOM MICRO S, us/cm
 		
 		private final String name;
 		private final String unit;
