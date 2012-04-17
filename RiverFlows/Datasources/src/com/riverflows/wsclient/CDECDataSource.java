@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
@@ -157,15 +159,36 @@ public class CDECDataSource implements RESTDataSource {
 	}
 	
 	@Override
-	public Map<SiteId, SiteData> getSiteData(List<Favorite> sites,
+	public Map<SiteId, SiteData> getSiteData(List<Favorite> favorites,
 			boolean hardRefresh) throws ClientProtocolException, IOException {
-		return null;
+		//TODO if this is slow, we may have to fork each request off into its own thread, like AHPSXmlDataSource
+		Map<SiteId,SiteData> result = new HashMap<SiteId,SiteData>();
+		Variable[] variables = new Variable[1];
+		for(Favorite favorite: favorites) {
+			variables[0] = getVariable(favorite.getVariable());
+			if(variables[0] == null) {
+				LOG.error("unknown variable: " + favorite.getVariable());
+				continue;
+			}
+			
+			SiteData newdata = getSiteData(favorite.getSite(), true, hardRefresh);
+			
+			SiteData existingData = result.get(favorite.getSite().getSiteId());
+			
+			if(existingData != null) {
+				Map<CommonVariable, Series> newDataSets = newdata.getDatasets();
+				existingData.getDatasets().putAll(newDataSets);
+			} else {
+				result.put(favorite.getSite().getSiteId(), newdata);
+			}
+		}
+		return result;
 	}
 	
 	@Override
 	public SiteData getSiteData(Site site, Variable[] variableTypes,
 			boolean hardRefresh) throws ClientProtocolException, IOException {
-		return getSiteData(site, true, hardRefresh);
+		return getSiteData(site, false, hardRefresh);
 	}
 	
 	@Override
@@ -192,24 +215,24 @@ public class CDECDataSource implements RESTDataSource {
 	private static SimpleDateFormat startDateFormat = new SimpleDateFormat("MM/dd/yyyy+HH:mm");
 	
 	private SiteData getSiteData(Site site, boolean singleReading, boolean hardRefresh) throws ClientProtocolException, IOException {
-		GregorianCalendar startDate = new GregorianCalendar();
-		startDate.setTime(new Date());
+		GregorianCalendar endDate = new GregorianCalendar();
+		endDate.setTime(new Date());
+		
+		//round up to the nearest hour to keep the cache from expiring too much
+		endDate.set(Calendar.MINUTE, 0);
+		endDate.add(Calendar.HOUR, 1);
 		
 		String timespan = null;
 		if(singleReading) {
-			//set the start time to 30 minutes ago
-			startDate.add(Calendar.MINUTE, -30);
-			timespan = "30minutes";
+			timespan = "12hours";
 		} else {
-			//set the start date to one week ago
-			startDate.set(Calendar.WEEK_OF_YEAR, startDate.get(Calendar.WEEK_OF_YEAR) - 1);
 			timespan = "7days";
 		}
 		
-		startDate.setTimeZone(cdecTimeZone);
+		endDate.setTimeZone(cdecTimeZone);
 		
 		String urlStr = SITE_DATA_URL + "?s=" + site.getSiteId().getId();
-		urlStr += "&d=" + startDateFormat.format(startDate.getTime());
+		urlStr += "&d=" + startDateFormat.format(endDate.getTime());
 		urlStr += "&span=" + timespan;
 		urlStr += "&download=y";
 		
@@ -284,6 +307,7 @@ public class CDECDataSource implements RESTDataSource {
 		int lineNum = -1;
 
 		SiteData data = new SiteData();
+		data.setSite(site);
 		
 		StringBuilder dataInfo = new StringBuilder("<h2>" + site.getName() + " (" + site.getId() + ")</h2>");
 		
@@ -366,12 +390,29 @@ public class CDECDataSource implements RESTDataSource {
 					}
 				} catch(NullPointerException npe) {
 					LOG.error("missing value for col " + colIndex + " on line " + lineNum);
-					break;
+					continue;
 				}
 				
 				data.getDatasets().get(columns[colIndex]).getReadings().add(r);
 			}
+		}
+		
+		// CDEC sometimes likes to return "--" for the last reading in the series despite the gage being operational. Remove this reading.
+		Iterator<Series> datasetsI = data.getDatasets().values().iterator();
+		
+		while(datasetsI.hasNext()) {
+			List<Reading> readings = datasetsI.next().getReadings();
+			if(readings.isEmpty()) {
+				continue;
+			}
 			
+			String q = readings.get(readings.size() - 1).getQualifiers();
+			if(q == null) {
+				continue;
+			}
+			if(q.equals("--")) {
+				readings.remove(readings.size() - 1);
+			}
 		}
 		
 		return data;
