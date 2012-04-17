@@ -9,12 +9,12 @@
    xmlns="http://www.w3.org/2000/svg"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="48px"
-   height="48px"
+   width="48"
+   height="64"
    id="svg2866"
    version="1.1"
    inkscape:version="0.47 r22583"
-   sodipodi:docname="usgs.svg">
+   sodipodi:docname="agency_icons.svg">
   <defs
      id="defs2868">
     <inkscape:perspective
@@ -39,9 +39,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="13.064919"
-     inkscape:cx="15.829575"
-     inkscape:cy="28.046231"
+     inkscape:zoom="7.4922549"
+     inkscape:cx="15.833548"
+     inkscape:cy="25.10654"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:grid-bbox="true"
@@ -66,75 +66,80 @@
   <g
      id="layer1"
      inkscape:label="Layer 1"
-     inkscape:groupmode="layer">
+     inkscape:groupmode="layer"
+     transform="translate(0,16)">
     <rect
        style="fill:#008000;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.09414797;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.1607143;stroke-dasharray:none"
        id="rect2918"
        width="30.0902"
        height="11.602685"
-       x="1.898085"
-       y="2.0210652"
+       x="2.0315561"
+       y="-12.527292"
        ry="1.873"
        inkscape:export-filename="/Users/robin/eclipseworkspace/RiverFlows/res/drawable-hdpi/usgs.png"
        inkscape:export-xdpi="161.15714"
-       inkscape:export-ydpi="161.15714" />
+       inkscape:export-ydpi="161.15714"
+       rx="1.873" />
     <rect
        style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.09391238;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.1607143;stroke-dasharray:none"
        id="rect2916"
        width="27.274513"
        height="8.725543"
-       x="3.295711"
-       y="3.441957"
+       x="3.4291823"
+       y="-11.1064"
        ry="1.0095669"
        inkscape:export-filename="/Users/robin/eclipseworkspace/RiverFlows/res/drawable-hdpi/usgs.png"
        inkscape:export-xdpi="161.15714"
-       inkscape:export-ydpi="161.15714" />
+       inkscape:export-ydpi="161.15714"
+       rx="1.0095669" />
     <text
        xml:space="preserve"
        style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#008000;fill-opacity:1;stroke:none;font-family:GrHelveticaBold;-inkscape-font-specification:GrHelveticaBold Bold"
-       x="3.2901103"
-       y="11.445"
+       x="3.4235816"
+       y="-3.1033573"
        id="text2876"
        inkscape:export-filename="/Users/robin/eclipseworkspace/RiverFlows/res/drawable-hdpi/usgs.png"
        inkscape:export-xdpi="161.15714"
        inkscape:export-ydpi="161.15714"><tspan
          sodipodi:role="line"
          id="tspan2878"
-         x="3.2901103"
-         y="11.445">USGS</tspan></text>
+         x="3.4235816"
+         y="-3.1033573">USGS</tspan></text>
     <rect
        inkscape:export-ydpi="161.15714"
        inkscape:export-xdpi="161.15714"
        inkscape:export-filename="/Users/robin/eclipseworkspace/RiverFlows/res/drawable-hdpi/ahps.png"
        ry="1.873"
-       y="16.028042"
-       x="1.898085"
+       y="1.4796847"
+       x="2.0315561"
        height="11.602684"
        width="30.363001"
        id="rect2990"
-       style="fill:#00ffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.09414797;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.1607143;stroke-dasharray:none" />
+       style="fill:#00ffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.09414797;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.1607143;stroke-dasharray:none"
+       rx="1.873" />
     <rect
        inkscape:export-ydpi="161.15714"
        inkscape:export-xdpi="161.15714"
        inkscape:export-filename="/Users/robin/eclipseworkspace/RiverFlows/res/drawable-hdpi/ahps.png"
        ry="1.0007497"
-       y="17.425619"
-       x="3.2955062"
+       y="2.8772621"
+       x="3.4289775"
        height="8.7258778"
        width="27.524"
        id="rect2992"
-       style="fill:#000080;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.09350208;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.1607143;stroke-dasharray:none" />
+       style="fill:#000080;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.09350208;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.1607143;stroke-dasharray:none"
+       rx="1.0007497" />
     <text
        inkscape:export-ydpi="161.15714"
        inkscape:export-xdpi="161.15714"
        inkscape:export-filename="/Users/robin/eclipseworkspace/RiverFlows/res/drawable-hdpi/ahps.png"
        id="text2994"
-       y="25.352316"
-       x="3.77"
+       y="10.803959"
+       x="3.9034712"
        style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#ffffff;fill-opacity:1;stroke:none;font-family:GrHelveticaBold;-inkscape-font-specification:GrHelveticaBold Bold"
        xml:space="preserve"><tspan
-         y="25.352316"
-         x="3.77"
+         y="10.803959"
+         x="3.9034712"
          sodipodi:role="line"
          id="tspan3000">AHPS</tspan></text>
     <rect
@@ -142,8 +147,8 @@
        id="rect3004"
        width="43.509003"
        height="11.604656"
-       x="1.8985"
-       y="30.316843"
+       x="2.0319712"
+       y="15.768486"
        ry="1.7618405"
        inkscape:export-filename="/Users/robin/eclipseworkspace/RiverFlows/res/drawable-hdpi/codwr.png"
        inkscape:export-xdpi="161.13004"
@@ -154,24 +159,62 @@
        id="rect3006"
        width="40.746918"
        height="8.7273388"
-       x="3.2955"
-       y="31.714161"
+       x="3.4289713"
+       y="17.165804"
        ry="0.98366046"
        inkscape:export-filename="/Users/robin/eclipseworkspace/RiverFlows/res/drawable-hdpi/codwr.png"
        inkscape:export-xdpi="161.13004"
-       inkscape:export-ydpi="161.13004" />
+       inkscape:export-ydpi="161.13004"
+       rx="0.98366046" />
     <text
        xml:space="preserve"
        style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#00b2c8;fill-opacity:1;stroke:none;font-family:GrHelveticaBold;-inkscape-font-specification:GrHelveticaBold Bold"
-       x="3.4100001"
-       y="39.589001"
+       x="3.5434713"
+       y="25.040644"
        id="text3008"
        inkscape:export-filename="/Users/robin/eclipseworkspace/RiverFlows/res/drawable-hdpi/codwr.png"
        inkscape:export-xdpi="161.13004"
        inkscape:export-ydpi="161.13004"><tspan
          id="tspan3010"
          sodipodi:role="line"
-         x="3.4100001"
-         y="39.589001">CO DWR</tspan></text>
+         x="3.5434713"
+         y="25.040644">CO DWR</tspan></text>
+    <rect
+       style="fill:#ff0000;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.09562155;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.1607143;stroke-dasharray:none"
+       id="rect2855"
+       width="31.324877"
+       height="11.601214"
+       x="2.109324"
+       y="30.142927"
+       ry="1.873"
+       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows/res/drawable/cdec.png"
+       inkscape:export-xdpi="107.45156"
+       inkscape:export-ydpi="107.45156"
+       rx="1.873" />
+    <rect
+       style="fill:#fac300;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.09517172;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.1607143;stroke-dasharray:none"
+       id="rect2857"
+       width="28.521189"
+       height="8.7242146"
+       x="3.5069239"
+       y="31.540602"
+       ry="1.0007497"
+       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows/res/drawable/cdec.png"
+       inkscape:export-xdpi="107.45156"
+       inkscape:export-ydpi="107.45156"
+       rx="1.0007497" />
+    <text
+       xml:space="preserve"
+       style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#000000;fill-opacity:1;stroke:none;font-family:GrHelveticaBold;-inkscape-font-specification:GrHelveticaBold Bold"
+       x="3.8804712"
+       y="39.466465"
+       id="text2859"
+       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows/res/drawable/cdec.png"
+       inkscape:export-xdpi="107.45156"
+       inkscape:export-ydpi="107.45156"><tspan
+         id="tspan2861"
+         sodipodi:role="line"
+         x="3.8804712"
+         y="39.466465">CDEC</tspan></text>
   </g>
 </svg>

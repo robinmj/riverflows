@@ -19,6 +19,7 @@ import com.riverflows.db.DbMaintenance;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.db.RiverGaugesDb;
 import com.riverflows.wsclient.AHPSXmlDataSource;
+import com.riverflows.wsclient.CDECDataSource;
 import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.UsgsCsvDataSource;
@@ -103,6 +104,8 @@ public class Home extends TabActivity {
         	return R.drawable.ahps;
         } else if(CODWRDataSource.AGENCY.equals(siteAgency)) {
         	return R.drawable.codwr;
+        } else if(CDECDataSource.AGENCY.equals(siteAgency)) {
+        	return R.drawable.cdec;
         }
 		return null;
 	}

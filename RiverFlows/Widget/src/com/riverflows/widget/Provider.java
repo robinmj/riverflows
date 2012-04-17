@@ -27,6 +27,7 @@ import com.riverflows.data.SiteId;
 import com.riverflows.data.Variable;
 import com.riverflows.widget.LicenseCheckService.Status;
 import com.riverflows.wsclient.AHPSXmlDataSource;
+import com.riverflows.wsclient.CDECDataSource;
 import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.UsgsCsvDataSource;
@@ -406,6 +407,8 @@ public class Provider extends AppWidgetProvider {
         	return R.drawable.ahps;
         } else if(CODWRDataSource.AGENCY.equals(siteAgency)) {
         	return R.drawable.codwr;
+        } else if(CDECDataSource.AGENCY.equals(siteAgency)) {
+        	return R.drawable.cdec;
         }
 		return null;
 	}

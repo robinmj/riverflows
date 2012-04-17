@@ -104,6 +104,9 @@ public class DataSourceController {
 		AHPSXmlDataSource ahpsDataSource = new AHPSXmlDataSource();
 		dataSources.put(ahpsDataSource.getAgency(), ahpsDataSource);
 		
+		CDECDataSource cdecDataSource = new CDECDataSource();
+		dataSources.put(cdecDataSource.getAgency(), cdecDataSource);
+		
 		RECENT_READING_TIME_FMT.setTimeZone(TimeZone.getTimeZone("GMT-00:00"));
 	}
 	
