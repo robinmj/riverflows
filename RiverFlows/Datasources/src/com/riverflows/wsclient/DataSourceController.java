@@ -385,6 +385,8 @@ public class DataSourceController {
 	
 	/**
 	 * Out of a multi-series dataset, get the best series for previewing purposes.
+	 * TODO ideally, the preferred series should be defined on the server side and
+	 *  take into account the popularity of a variable among the user's facet(s)
 	 * @param data
 	 * @return
 	 */
