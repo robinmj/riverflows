@@ -258,7 +258,11 @@ public class ReorderFavorites extends ListActivity {
 				Favorite item=adapter.getItem(from);
 				
 				adapter.remove(item);
-				adapter.insert(item, to);
+				if(to < adapter.getCount()) {
+					adapter.insert(item, to);
+				} else {
+					adapter.add(item);
+				}
 		}
 	};
 	
