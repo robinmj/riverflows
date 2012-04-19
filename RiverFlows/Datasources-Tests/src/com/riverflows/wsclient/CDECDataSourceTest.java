@@ -1,7 +1,7 @@
 package com.riverflows.wsclient;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 
 import junit.framework.TestCase;
 
@@ -31,33 +31,18 @@ public class CDECDataSourceTest extends TestCase {
 		
 		Reading lastObs = streamflow.getLastObservation();
 		
-		GregorianCalendar lastObsDate = new GregorianCalendar(USTimeZone.PDT.getTimeZone());
-		lastObsDate.set(Calendar.YEAR, 2012);
-		lastObsDate.set(Calendar.MONTH, Calendar.APRIL);
-		lastObsDate.set(Calendar.DAY_OF_MONTH, 14);
-		lastObsDate.set(Calendar.HOUR_OF_DAY, 18);
-		lastObsDate.set(Calendar.MINUTE, 0);
-		lastObsDate.set(Calendar.SECOND, 0);
-		lastObsDate.set(Calendar.MILLISECOND, 0);
+		DateFormat pdtFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG);
+		pdtFormat.setTimeZone(USTimeZone.PDT.getTimeZone());
 		
-		System.out.println("last streamflow obs date: " + lastObs.getDate());
-		assertEquals(lastObsDate.getTime().getTime(), lastObs.getDate().getTime());
-		assertEquals(2506.0d, lastObs.getValue());
+		assertEquals("4/17/12 12:00:00 PM GMT-07:00", pdtFormat.format(lastObs.getDate()));
+		assertEquals(2551.0d, lastObs.getValue());
 		
-		assertEquals(169, streamflow.getReadings().size());
+		assertEquals(167, streamflow.getReadings().size());
 		
 		Series gauge_height = data.getDatasets().get(CommonVariable.GAUGE_HEIGHT_FT);
 		
 		Reading firstObs = gauge_height.getReadings().get(0);
-		assertEquals(1.18d, firstObs.getValue());
-		
-		GregorianCalendar firstObsDate = new GregorianCalendar(USTimeZone.PDT.getTimeZone());
-		firstObsDate.set(Calendar.YEAR, 2012);
-		firstObsDate.set(Calendar.MONTH, Calendar.APRIL);
-		firstObsDate.set(Calendar.DAY_OF_MONTH, 7);
-		firstObsDate.set(Calendar.HOUR_OF_DAY, 18);
-		firstObsDate.set(Calendar.MINUTE, 0);
-		firstObsDate.set(Calendar.SECOND, 0);
-		firstObsDate.set(Calendar.MILLISECOND, 0);
+		assertEquals("4/10/12 2:00:00 PM GMT-07:00", pdtFormat.format(firstObs.getDate()));
+		assertEquals(4.14d, firstObs.getValue());
 	}
 }
