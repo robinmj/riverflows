@@ -208,11 +208,15 @@ public class CDECDataSource implements RESTDataSource {
 
 
 	/**
-	 * Always assume times are in Colorado time
+	 * Always assume times are in California time
 	 */
-	private static TimeZone cdecTimeZone = TimeZone.getTimeZone("America/Sacramento");
+	private static TimeZone cdecTimeZone = TimeZone.getTimeZone("America/Los_Angeles");
 	
 	private static SimpleDateFormat startDateFormat = new SimpleDateFormat("MM/dd/yyyy+HH:mm");
+	
+	static {		
+		startDateFormat.setTimeZone(cdecTimeZone);
+	}
 	
 	private SiteData getSiteData(Site site, boolean singleReading, boolean hardRefresh) throws ClientProtocolException, IOException {
 		GregorianCalendar endDate = new GregorianCalendar();
@@ -228,8 +232,6 @@ public class CDECDataSource implements RESTDataSource {
 		} else {
 			timespan = "7days";
 		}
-		
-		endDate.setTimeZone(cdecTimeZone);
 		
 		String urlStr = SITE_DATA_URL + "?s=" + site.getSiteId().getId();
 		urlStr += "&d=" + startDateFormat.format(endDate.getTime());
