@@ -8,7 +8,7 @@
    			android:hint="start typing to filter by name"
     		android:layout_width="fill_parent"
     		android:layout_height="wrap_content" 
-   		 	android:inputType="textFilter"/>
+   		 	android:inputType="textVisiblePassword"/>
         <ListView
         	android:id="@android:id/list"
     		android:layout_width="fill_parent"
