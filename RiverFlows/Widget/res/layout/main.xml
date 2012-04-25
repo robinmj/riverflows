@@ -12,7 +12,7 @@
 	android:paddingBottom="17dp">
 	<RelativeLayout
       android:layout_width="fill_parent"
-      android:layout_height="20dp">
+      android:layout_height="24dp">
         <ImageView
 		 android:layout_width="wrap_content"
 		 android:layout_height="wrap_content"
@@ -20,21 +20,22 @@
          android:src="@drawable/title"/>
         <Button
 		 android:id="@+id/reload_button"
-		 android:layout_width="wrap_content"
+		 android:layout_width="48dp"
 		 android:layout_height="fill_parent"
 		 android:layout_alignParentRight="true"
 		 android:background="@drawable/ic_btn_refresh"
 		 android:visibility="gone"/>
 		<FrameLayout 
     		android:id="@+id/spinner"
-			    android:layout_width="20dp"
-			    android:layout_height="20dp"
-			 	android:layout_alignParentRight="true"
-			 	android:layout_marginRight="4dp">
-	    	<ProgressBar
-			    android:layout_width="fill_parent"
+			    android:layout_width="24dp"
 			    android:layout_height="fill_parent"
-	    		android:indeterminate="true"/>
+			 	android:layout_alignParentRight="true"
+			 	android:layout_marginRight="12dp">
+	    	<ProgressBar
+			    android:layout_width="wrap_content"
+			    android:layout_height="fill_parent"
+	    		android:indeterminate="true"
+	    		android:layout_gravity="fill"/>
 		 </FrameLayout>
 	</RelativeLayout>
     <RelativeLayout
