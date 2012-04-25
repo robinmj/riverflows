@@ -52,7 +52,7 @@ public class Provider extends AppWidgetProvider {
 	}
 	
 	private void updateRemoteViews(Context context, AppWidgetManager appWidgetManager, boolean forcedReload) {
-        ComponentName thisWidget = new ComponentName(context, Provider.class);
+        ComponentName thisWidget = new ComponentName(context, getClass());
 
         RemoteViews views = buildRemoteViews(context);
         
