@@ -343,7 +343,13 @@ public class DataSourceController {
 	}
 	
 	public static Variable getVariable(String agency, String varId) {
-		return dataSources.get(agency).getVariable(varId);
+		RESTDataSource ds = dataSources.get(agency);
+		if(ds == null) {
+			LOG.warn("unknown agency: " + agency);
+			return null;
+		}
+		
+		return ds.getVariable(varId);
 	}
 	
 	public static final RESTDataSource getDataSource(String agency) {

@@ -46,7 +46,7 @@ public class Series {
         		break;
         	}
         	mostRecentReading = readings.get(readingIndex--);
-        } while(mostRecentReading instanceof Forecast);
+        } while(mostRecentReading.getValue() == null || mostRecentReading instanceof Forecast);
         
         return mostRecentReading;
 	}
