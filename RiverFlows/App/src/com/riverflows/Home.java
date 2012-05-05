@@ -3,12 +3,14 @@ package com.riverflows;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.TabActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
-import android.os.AsyncTask;
+import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.view.Window;
 import android.widget.TabHost;
@@ -73,7 +75,12 @@ public class Home extends TabActivity {
 	                  .setContent(intent);
 	    tabHost.addTab(spec);
 
-	    DbMaintenance.upgradeIfNecessary(getApplicationContext());
+	    try {
+	    	DbMaintenance.upgradeIfNecessary(getApplicationContext());
+		} catch(SQLiteException sqle) {
+			showDialog(DIALOG_ID_MIGRATION_ERROR);
+			return;
+		}
 	    
 	    if(FavoritesDaoImpl.hasFavorites(getCurrentActivity())) {
 	    	tabHost.setCurrentTab(1);
@@ -115,5 +122,18 @@ public class Home extends TabActivity {
 		Intent i = new Intent("com.riverflows.widget.UPDATE");
 		i.setClassName("com.riverflows.widget", "com.riverflows.widget.Provider");
 		return i;
+	}
+	
+	public static final int DIALOG_ID_MIGRATION_ERROR = 1;
+	
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		switch(id) {
+		case DIALOG_ID_MIGRATION_ERROR:
+			AlertDialog alert = new AlertDialog.Builder(this).create();
+			alert.setMessage("Sorry- There an error occurred while updating your favorites database. You will have to uninstall and reinstall RiverFlows to fix this.");
+			return alert;
+		}
+		return null;
 	}
 }
