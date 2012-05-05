@@ -498,20 +498,30 @@ public class ViewChart extends Activity {
 	
 	private void populateOtherVariablesSubmenu(SubMenu otherVariablesMenu) {
         otherVariablesMenu.setHeaderTitle(R.string.variable_context_menu_title);
-		
+        
 		Variable[] otherVariables = ViewChart.this.station.getSupportedVariables();
-		for(int a = 0; a < otherVariables.length; a++) {
-			if(variable.equals(otherVariables[a])) {
-				continue;
+		
+        try {
+			for(int a = 0; a < otherVariables.length; a++) {
+				if(otherVariables[a] == null) {
+					throw new NullPointerException("otherVariables[" + a + "]");
+				}
+				
+				if(variable.equals(otherVariables[a])) {
+					continue;
+				}
+				if(TextUtils.isEmpty(otherVariables[a].getCommonVariable().getUnit())) {
+					otherVariablesMenu.add(otherVariables[a].getName())
+						.setOnMenuItemClickListener(new OtherVariableClickListener(otherVariables[a]));
+				} else {
+					otherVariablesMenu.add(otherVariables[a].getName() + ", " + otherVariables[a].getCommonVariable().getUnit())
+						.setOnMenuItemClickListener(new OtherVariableClickListener(otherVariables[a]));
+				}
 			}
-			if(TextUtils.isEmpty(otherVariables[a].getCommonVariable().getUnit())) {
-				otherVariablesMenu.add(otherVariables[a].getName())
-					.setOnMenuItemClickListener(new OtherVariableClickListener(otherVariables[a]));
-			} else {
-				otherVariablesMenu.add(otherVariables[a].getName() + ", " + otherVariables[a].getCommonVariable().getUnit())
-					.setOnMenuItemClickListener(new OtherVariableClickListener(otherVariables[a]));
-			}
-		}
+        } catch(NullPointerException npe) {
+        	//TODO remove this once we find the source of the NPE
+        	throw new RuntimeException("station: " + ViewChart.this.station.getSiteId() + " vars: " + otherVariables,npe);
+        }
 	}
 	
 	private class OtherVariableClickListener implements OnMenuItemClickListener {
@@ -531,7 +541,7 @@ public class ViewChart extends Activity {
 				return false;
 			}
 			
-			if(ViewChart.this.data.getDatasets().get(ViewChart.this.variable.getCommonVariable()) == null) {
+			if(ViewChart.this.data == null || ViewChart.this.data.getDatasets().get(ViewChart.this.variable.getCommonVariable()) == null) {
 				reloadData();
 			} else {
 				clearData();
