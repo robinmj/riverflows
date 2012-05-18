@@ -30,7 +30,8 @@ public class DataSrcInfo extends Activity {
         WebSettings webSettings = webview.getSettings();
         webSettings.setJavaScriptEnabled(true);
         
-		webview.loadData(info, "text/html", "UTF-8");
+        //use loadDataWithBaseURL as workaround for http://code.google.com/p/android/issues/detail?id=1733
+		webview.loadDataWithBaseURL(null, info, "text/html", "utf-8", null);
 	}
     
     public boolean onCreateOptionsMenu(Menu menu) {
