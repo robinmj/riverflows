@@ -19,6 +19,7 @@ import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.Header;
@@ -311,7 +312,7 @@ public class CDECDataSource implements RESTDataSource {
 		SiteData data = new SiteData();
 		data.setSite(site);
 		
-		StringBuilder dataInfo = new StringBuilder("<h2>" + site.getName() + " (" + site.getId() + ")</h2>");
+		StringBuilder dataInfo = new StringBuilder("<h2>" + StringEscapeUtils.escapeHtml(site.getName()) + " (<a href=\"http://cdec.water.ca.gov/cgi-progs/staMeta?station_id=" + site.getId() + "\">" + site.getId() + "</a>)</h2><div>");
 		
 		//find the table header
 		 while(true) {
@@ -464,11 +465,12 @@ public class CDECDataSource implements RESTDataSource {
 			
 			StringBuilder dataInfo = new StringBuilder(data.getDataInfo());
 			
-			dataInfo.append("<a href=\"" + s.getSourceUrl() + "\">" + var.getName());
+			dataInfo.append("<a href=\"" + s.getSourceUrl() + "\">");
+			dataInfo.append(StringEscapeUtils.escapeHtml(var.getName()));
 			if(!var.getUnit().equals("")) {
-				dataInfo.append("," + var.getUnit());
+				dataInfo.append("," + StringEscapeUtils.escapeHtml(var.getUnit()));
 			}
-			dataInfo.append("</a><br/>");
+			dataInfo.append("</a><br/><br/>");
 			
 			data.setDataInfo(dataInfo.toString());
 			
@@ -476,6 +478,8 @@ public class CDECDataSource implements RESTDataSource {
 			
 			result.add(var.getCommonVariable());
 		}
+		
+		data.setDataInfo(data.getDataInfo() + "</div>");
 		
 		Matcher l2Matcher = headerLine2Pat.matcher(line2);
 		
