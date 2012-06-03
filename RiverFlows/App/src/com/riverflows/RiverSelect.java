@@ -116,7 +116,11 @@ public class RiverSelect extends SiteList {
 						Log.e(TAG, "failed to cache sites for state: " + state, e);
 					}
 				}
-		        
+				
+				if(sites == null) {
+					setLoadErrorMsg("Failed to load sites for unknown reason");
+				}
+				
 		        return sites;
 			}
 		};

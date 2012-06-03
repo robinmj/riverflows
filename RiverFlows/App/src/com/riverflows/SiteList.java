@@ -263,7 +263,7 @@ public abstract class SiteList extends ListActivity {
 				Log.i(TAG, "can't remove dialog; activity no longer active");
 			}
 		}
-		if(gauges == null || errorMsg != null) {
+		if(errorMsg != null) {
 			try {
 				showDialog(DIALOG_ID_LOADING_ERROR);
 			} catch(BadTokenException bte) {
