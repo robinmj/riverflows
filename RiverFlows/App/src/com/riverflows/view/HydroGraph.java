@@ -10,10 +10,10 @@ import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
+import android.graphics.Paint.Align;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.Typeface;
-import android.graphics.Paint.Align;
 import android.util.Log;
 import android.view.View;
 
@@ -40,10 +40,13 @@ public class HydroGraph extends View {
 	private boolean hasLegend = false;
 	
 	//space between left side of canvas and y-axis
-	private static final int yAxisOffset = 40;
+	private int yAxisOffset;
 	
 	//space between x-axis and bottom of the canvas
-	private static final int xAxisOffset = 30;
+	private int xAxisOffset;
+	
+	//label text size, in pixels
+	private float labelTextSize;
 	
 	//space between top of canvas and graph area
 	private static final int topPadding = 10;
@@ -158,6 +161,13 @@ public class HydroGraph extends View {
 
 	public HydroGraph(Context c) {
 		super(c);
+		float scaledDensity = c.getResources().getDisplayMetrics().scaledDensity;
+		labelTextSize = scaledDensity * 10f;
+		//2 pixels padding before Y axis label, 2 pixels padding after, 4-character
+		// Y tick label will be a little under thrice the size of the label text, leave space for the tick marks
+		yAxisOffset = (int)(2f + labelTextSize + 2f + (2.7f * labelTextSize) + tickSize);
+		//yAxisOffset = (int)(scaledDensity * 30f) + 10;
+		xAxisOffset = (int)(scaledDensity * 22f) + 8;
 	}
 	
 	@Override
@@ -196,10 +206,11 @@ public class HydroGraph extends View {
 		labelPaint.setColor(Color.BLACK);
 		labelPaint.setTextAlign(Align.CENTER);
 		labelPaint.setTypeface(Typeface.DEFAULT_BOLD);
+		labelPaint.setTextSize(labelTextSize);
 		
 		Path yAxisLabelGuide = new Path();
-		yAxisLabelGuide.moveTo(12.0f, getHeight());
-		yAxisLabelGuide.lineTo(12.0f, 0.0f);
+		yAxisLabelGuide.moveTo(labelTextSize + 2, getHeight());
+		yAxisLabelGuide.lineTo(labelTextSize + 2, 0.0f);
 		
 		String label = this.series.getVariable().getName() + ", " + this.series.getVariable().getUnit();
 		
@@ -376,6 +387,7 @@ public class HydroGraph extends View {
 		Paint labelPaint = new Paint(Paint.ANTI_ALIAS_FLAG + Paint.SUBPIXEL_TEXT_FLAG);
 		labelPaint.setColor(Color.BLACK);
 		labelPaint.setTextAlign(Align.CENTER);
+		labelPaint.setTextSize(labelTextSize);
 
         GregorianCalendar labelCalc = new GregorianCalendar();
         labelCalc.setTime(new Date(xMin));
@@ -411,9 +423,9 @@ public class HydroGraph extends View {
 			//label the range between this tick and the previous one
 	        if(xPixelsPerMs >= LABEL_DAY_OF_WEEK_EVERY_OTHER_DAY_THRESHOLD
 	        		|| labelCalc.get(Calendar.DAY_OF_YEAR) % 2 == 0) {
-	        	canvas.drawText(labelDayOfWeek, (xCoord + prevXCoord) / 2.0f, zeroYCoord + 14, labelPaint);
+	        	canvas.drawText(labelDayOfWeek, (xCoord + prevXCoord) / 2.0f, zeroYCoord + tickSize + 1 + labelTextSize, labelPaint);
 	        }
-			canvas.drawText(labelDayOfMonth, (xCoord + prevXCoord) / 2.0f, zeroYCoord + 25, labelPaint);
+			canvas.drawText(labelDayOfMonth, (xCoord + prevXCoord) / 2.0f, zeroYCoord + tickSize + 1 + labelTextSize + 1 + labelTextSize, labelPaint);
 
 			//draw the guideline
 			canvas.drawLine(xCoord, zeroYCoord - 1, xCoord, topPadding, guideLinePaint);
@@ -428,6 +440,7 @@ public class HydroGraph extends View {
 		Paint labelPaint = new Paint(Paint.ANTI_ALIAS_FLAG + Paint.SUBPIXEL_TEXT_FLAG);
 		labelPaint.setColor(Color.BLACK);
 		labelPaint.setTextAlign(Align.RIGHT);
+		labelPaint.setTextSize(labelTextSize);
 		
 		double labelValueIncr = (this.yMax - this.yMin) / (double)(labelCount - 1);
 		
