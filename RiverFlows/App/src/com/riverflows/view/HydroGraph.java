@@ -329,6 +329,11 @@ public class HydroGraph extends View {
 			Log.d(TAG, "maxValue=" + maxValue);
 	    }
 	    
+	    //don't allow a zero minimum if there are negative values
+	    if(minValue < 0.0) {
+	    	this.zeroMinimum = false;
+	    }
+	    
 	    double[] limits = new double[2];
 
 		//rule of thumb for keeping the graph from being too close to the top of the grid
