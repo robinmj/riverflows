@@ -130,19 +130,25 @@ public class DatasetsDaoImpl {
      */
     public static CachedDataset deleteDatasets(Context ctx, String url) {
 		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
-		SQLiteDatabase db = helper.getReadableDatabase();
+		
+		synchronized(RiverGaugesDb.class) {
+			SQLiteDatabase db = helper.getWritableDatabase();
     	
-		db.delete(NAME, URL + " = ?", new String[]{"" + url});
+			db.delete(NAME, URL + " = ?", new String[]{"" + url});
+		}
     	return null;
     }
     
     public static void updateDatasetTimestamp(Context ctx, String url, String fileName) {
 		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
-		SQLiteDatabase db = helper.getReadableDatabase();
-		
-		ContentValues datasetRow = new ContentValues(1);
-		datasetRow.put(TIMESTAMP, new Date().getTime());
-		
-		db.update(NAME, datasetRow, URL + " = ? AND " + FILE + " = ?", new String[]{ url, fileName });
+
+		synchronized(RiverGaugesDb.class) {
+			SQLiteDatabase db = helper.getWritableDatabase();
+			
+			ContentValues datasetRow = new ContentValues(1);
+			datasetRow.put(TIMESTAMP, new Date().getTime());
+			
+			db.update(NAME, datasetRow, URL + " = ? AND " + FILE + " = ?", new String[]{ url, fileName });
+		}
     }
 }
