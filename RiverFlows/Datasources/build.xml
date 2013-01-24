@@ -1,0 +1,48 @@
+<project name="RiverFlows-Datasources" default="jarclean">
+	<description>Build jar library for accessing all the various web services that the RiverFlows Android app uses.</description>
+
+	<tstamp>
+		<format property="lib_date" pattern="yyyy/MM/dd HH:mm:ss z"/>
+	</tstamp>
+	
+	<!-- Give user a chance to override without editing this file
+       (and without typing -D each time it compiles it) -->
+	<property file="build.properties"/>
+	
+	<property name="builddir" value="${basedir}/classes"/>
+	<property name="distdir" value="${basedir}/dist"/>
+	<property name="wsclientjar" value="${distdir}/riverflows-wsclients.jar"/>
+	
+	<path id="compile.classpath">
+		<fileset dir="${basedir}/lib" />
+	</path>
+
+	<target name="compile" description="Compile RiverFlows-Datasources" depends="">
+		<mkdir dir="${builddir}" />
+		<javac destdir="${builddir}" srcdir="${basedir}/src/"
+        classpathref="compile.classpath" encoding="UTF-8" debug="yes" source="1.6"/>
+	</target>
+	
+	<target name="jar" description="build riverflows-wsclients.jar" depends="compile">
+		<mkdir dir="${distdir}" />
+
+		<jar basedir="${builddir}" jarfile="${wsclientjar}" index="true"/>
+	</target>
+	
+	<target name="installjar" description="install riverflows-wsclients.jar in specified location" if="install_location">
+		<copy file="${wsclientjar}" todir="${install_location}"/>
+	</target>
+	
+	<target name="jarclean" depends="jar,clean">
+	</target>
+	
+	<target name="clean" description="remove class files">
+		<delete dir="${builddir}"/>
+	</target>
+	
+	<target name="distclean" description="remove class files, jar file" depends="clean">
+		<delete dir="${distdir}"/>
+	</target>
+	
+</project>
+
