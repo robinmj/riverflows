@@ -1,6 +1,8 @@
 package com.riverflows.data;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Maps to WaterML variable element
@@ -88,6 +90,59 @@ public class Variable implements Serializable {
 			this.name = name;
 			this.unit = unit;
 			this.graphAgainstZeroMinimum = graphAgainstZeroMinimum;
+		}
+		
+		public static CommonVariable getByNameAndUnit(String name, String unit) {
+			CommonVariable[] all = values();
+			
+			for(CommonVariable current:all) {
+				if(!current.name.equals(name)) {
+					continue;
+				}
+				
+				if(!current.unit.equals(unit)) {
+					continue;
+				}
+				
+				return current;
+			}
+			
+			return null;
+		}
+
+		
+		public static Map<CommonVariable,CommonVariable> temperatureConversionMap(String preferredTempUnit) {
+			
+			Map<CommonVariable,CommonVariable> conversionMap = new HashMap<CommonVariable,CommonVariable>();
+			
+			if(preferredTempUnit == null) {
+				return conversionMap;
+			}
+			
+			String otherUnit = null;
+			if(preferredTempUnit.equals("°C")) {
+				otherUnit = "°F";
+			} else {
+				otherUnit = "°C";
+			}			
+			
+			
+			CommonVariable[] all = values();
+			
+			for(CommonVariable fromVar:all) {
+				
+				if(!fromVar.unit.equals(otherUnit)) {
+					continue;
+				}
+		    	
+		    	CommonVariable toVar = CommonVariable.getByNameAndUnit(fromVar.name, preferredTempUnit);
+		    	
+		    	if(toVar != null) {
+		    		conversionMap.put(fromVar, toVar);
+		    	}
+			}
+			
+			return conversionMap;
 		}
 	}
 	
