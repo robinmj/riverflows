@@ -25,6 +25,7 @@ import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.Variable;
+import com.riverflows.data.Variable.CommonVariable;
 import com.riverflows.widget.LicenseCheckService.Status;
 import com.riverflows.wsclient.AHPSXmlDataSource;
 import com.riverflows.wsclient.CDECDataSource;
@@ -473,6 +474,13 @@ public class Provider extends AppWidgetProvider {
 			lastReading.setValue(favoritesC.getDouble(5));
 			lastReading.setQualifiers(favoritesC.getString(6));
 			
+			String unit = null;
+			
+			if(favoritesC.getColumnCount() > 7) {
+				unit = favoritesC.getString(7);
+				//Log.v(TAG, "unit=" + unit);
+			}
+			
 			Variable var = DataSourceController.getVariable(siteId.getAgency(), variableId);
 			
 			Series s = new Series();
@@ -481,7 +489,23 @@ public class Provider extends AppWidgetProvider {
 			s.setReadings(Collections.singletonList(lastReading));
 			
 			if(var != null) {
-				favoriteData.getDatasets().put(var.getCommonVariable(), s);
+				
+				CommonVariable convertedVar = null;
+				
+				if(unit != null) {
+					convertedVar = CommonVariable.getByNameAndUnit(var.getCommonVariable().getName(), unit);
+					//Log.v(TAG, "convertedVar unit=" + convertedVar.getUnit());
+				}
+				
+				if(convertedVar != null) {
+					Variable newVar = new Variable(convertedVar, var.getId(), var.getMagicNullValue());
+					
+					s.setVariable(newVar);
+					
+					favoriteData.getDatasets().put(convertedVar, s);
+				} else {
+					favoriteData.getDatasets().put(var.getCommonVariable(), s);
+				}
 			} else {
 				Log.e(TAG, "could not find variable: " + siteId.getAgency() + " " + variableId);
 				continue;
