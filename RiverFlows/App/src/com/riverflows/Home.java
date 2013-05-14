@@ -30,6 +30,9 @@ public class Home extends TabActivity {
 	
 	public static final String TAG = "RiverFlows";
 	
+	public static final String PREFS_FILE = "com.riverflows.prefs";
+	public static final String PREF_TEMP_UNIT = "tempUnit";
+	
 	/**
 	 * 20 minutes
 	 */

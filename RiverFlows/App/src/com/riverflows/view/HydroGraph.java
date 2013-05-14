@@ -14,6 +14,7 @@ import android.graphics.Paint.Align;
 import android.graphics.Path;
 import android.graphics.Rect;
 import android.graphics.Typeface;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
 
@@ -21,6 +22,7 @@ import com.riverflows.Home;
 import com.riverflows.data.Forecast;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
+import com.riverflows.data.Variable;
 
 public class HydroGraph extends View {
 	
@@ -36,6 +38,8 @@ public class HydroGraph extends View {
 	private double yMin;
 	
 	private boolean zeroMinimum = false;
+	
+	private String convertToUnit = null;
 	
 	private boolean hasLegend = false;
 	
@@ -212,7 +216,17 @@ public class HydroGraph extends View {
 		yAxisLabelGuide.moveTo(labelTextSize + 2, getHeight());
 		yAxisLabelGuide.lineTo(labelTextSize + 2, 0.0f);
 		
-		String label = this.series.getVariable().getName() + ", " + this.series.getVariable().getUnit();
+		Variable var = this.series.getVariable();
+		
+		String label = var.getName();
+		
+		if(convertToUnit != null) {
+			label = label + ", " + convertToUnit;
+		} else if(!TextUtils.isEmpty(var.getUnit())) {
+			if(var.getUnit().trim().length() > 0) {
+				label = label +  ", " + var.getUnit();
+			}
+		}
 		
 		canvas.drawTextOnPath(label, yAxisLabelGuide, 0.0f, 0.0f, labelPaint);
 		

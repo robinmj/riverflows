@@ -5,28 +5,32 @@ import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.SubMenu;
 import android.view.View;
-import android.view.Window;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
 import android.view.WindowManager.BadTokenException;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
@@ -35,18 +39,22 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.riverflows.data.CelsiusFahrenheitConverter;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
+import com.riverflows.data.ValueConverter;
 import com.riverflows.data.Variable;
+import com.riverflows.data.Variable.CommonVariable;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.db.SitesDaoImpl;
 import com.riverflows.view.HydroGraph;
 import com.riverflows.wsclient.DataParseException;
 import com.riverflows.wsclient.DataSourceController;
+import com.riverflows.wsclient.Utils;
 
 /**
  * Experimenting with using AChartEngine for displaying the hydrograph
@@ -70,6 +78,7 @@ public class ViewChart extends Activity {
 	private LinearLayout chartLayout;
 	private HydroGraph chartView;
 	private GenerateDataSetTask runningTask = null;
+	private Map<CommonVariable, CommonVariable> conversionMap = new HashMap<CommonVariable, CommonVariable>();;
 	SiteData data;
 	String errorMsg;
 
@@ -130,6 +139,13 @@ public class ViewChart extends Activity {
         favoriteBtn.setVisibility(View.GONE);
         
         chartLayout = (LinearLayout) findViewById(R.id.chart);
+
+		
+		SharedPreferences settings = getSharedPreferences(Home.PREFS_FILE, MODE_PRIVATE);
+    	String tempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
+    	
+    	//Log.d(Home.TAG, "saved unit: " + tempUnit);
+    	conversionMap = CommonVariable.temperatureConversionMap(tempUnit);
 
         //see onRetainNonConfigurationInstance()
     	final Object data = getLastNonConfigurationInstance();
@@ -217,6 +233,7 @@ public class ViewChart extends Activity {
 		}
     	if(displayedSeries == null) {
     		displayedSeries = DataSourceController.getPreferredSeries(this.data);
+    		Log.d(Home.TAG, "No series found for " + this.variable);
     	}
     	
     	if(displayedSeries == null || displayedSeries.getReadings().size() == 0) {
@@ -239,7 +256,10 @@ public class ViewChart extends Activity {
     	
     	if(this.variable == null) {
     		this.variable = displayedSeries.getVariable();
+    		Log.d(Home.TAG, "displayed series unit " + this.variable.getUnit());
     	}
+    	
+    	ValueConverter.convertIfNecessary(ViewChart.this.conversionMap, displayedSeries);
 
         Reading mostRecentReading = displayedSeries.getLastObservation();
         
@@ -249,11 +269,9 @@ public class ViewChart extends Activity {
         String unit = null;
         
         if(mostRecentReading.getValue() != null) {
-        	mostRecentReadingStr = mostRecentReading.getValue() + "";
+        	
 	        //get rid of unnecessary digits
-	        if(mostRecentReadingStr.endsWith(".0")) {
-	        	mostRecentReadingStr = mostRecentReadingStr.substring(0, mostRecentReadingStr.length() - 2);
-	        }
+            mostRecentReadingStr = Utils.abbreviateNumber(mostRecentReading.getValue(), 3);
 	        
 	        unit = displayedSeries.getVariable().getUnit();
 	        if(unit == null) {
@@ -396,6 +414,7 @@ public class ViewChart extends Activity {
 		protected void onPostExecute(SiteData result) {
 			this.activity.errorMsg = errorMsg;
 			this.activity.data = result;
+			
 			this.activity.displayData();
 			
 			this.activity.runningTask = null;
@@ -420,6 +439,13 @@ public class ViewChart extends Activity {
         MenuItem otherVarsItem = menu.findItem(R.id.mi_other_variables);
         otherVarsItem.setVisible(true);
 		otherVarsItem.setEnabled(ViewChart.this.station.getSupportedVariables().length > 1);
+        
+        MenuItem unitsItem = menu.findItem(R.id.mi_change_units);
+        unitsItem.setVisible(true);
+        
+        if(conversionMap.containsKey(this.variable.getCommonVariable())) {
+        	unitsItem.setEnabled(true);
+        }
 		
         return true;
     }
@@ -429,6 +455,11 @@ public class ViewChart extends Activity {
     	SubMenu otherVarsMenu = menu.findItem(R.id.mi_other_variables).getSubMenu();
     	otherVarsMenu.clear();
         populateOtherVariablesSubmenu(otherVarsMenu);
+        
+        SubMenu unitsMenu = menu.findItem(R.id.mi_change_units).getSubMenu();
+        unitsMenu.clear();
+        populateUnitsSubmenu(unitsMenu);
+        
     	return super.onPrepareOptionsMenu(menu);
     }
 	
@@ -464,6 +495,7 @@ public class ViewChart extends Activity {
 	    	reloadData();
 	    	return true;
 	    case R.id.mi_other_variables:
+	    case R.id.mi_change_units:
 	    	if(chartView != null) {
 		    	return true;
 	    	}
@@ -487,13 +519,19 @@ public class ViewChart extends Activity {
 			zeroYMinItem.setVisible(true);
 		}
 		
-        if(ViewChart.this.station.getSupportedVariables().length <= 1) {
-        	return;
+        if(ViewChart.this.station.getSupportedVariables().length > 1) {
+            MenuItem otherVarsMenuItem = menu.findItem(R.id.sm_other_variables);
+            otherVarsMenuItem.setVisible(true);
+            populateOtherVariablesSubmenu(otherVarsMenuItem.getSubMenu());
         }
         
-        MenuItem otherVarsMenuItem = menu.findItem(R.id.sm_other_variables);
-        otherVarsMenuItem.setVisible(true);
-        populateOtherVariablesSubmenu(otherVarsMenuItem.getSubMenu());
+        String[] toUnit = new CelsiusFahrenheitConverter().convertsTo(variable.getUnit());
+        
+        if(toUnit.length > 0) {
+	        MenuItem unitsMenuItem = menu.findItem(R.id.sm_change_units);
+	        unitsMenuItem.setVisible(true);
+	        populateUnitsSubmenu(unitsMenuItem.getSubMenu());
+        }
 	}
 	
 	private void populateOtherVariablesSubmenu(SubMenu otherVariablesMenu) {
@@ -524,6 +562,23 @@ public class ViewChart extends Activity {
         }
 	}
 	
+	private void populateUnitsSubmenu(SubMenu unitsMenu) {
+        unitsMenu.setHeaderTitle("Units");
+        
+        CommonVariable displayedVariable = conversionMap.get(variable.getCommonVariable());
+        
+        if(displayedVariable == null) {
+        	displayedVariable = variable.getCommonVariable();
+        }
+        
+        String[] toUnit = new CelsiusFahrenheitConverter().convertsTo(displayedVariable.getUnit());
+		
+		for(int a = 0; a < toUnit.length; a++) {
+			unitsMenu.add(toUnit[a])
+					.setOnMenuItemClickListener(new UnitClickListener(toUnit[a]));
+		}
+	}
+	
 	private class OtherVariableClickListener implements OnMenuItemClickListener {
 		private final Variable var;
 		
@@ -542,6 +597,49 @@ public class ViewChart extends Activity {
 			}
 			
 			if(ViewChart.this.data == null || ViewChart.this.data.getDatasets().get(ViewChart.this.variable.getCommonVariable()) == null) {
+				reloadData();
+			} else {
+				clearData();
+				displayData();
+			}
+			return true;
+		}
+	}
+	
+	private class UnitClickListener implements OnMenuItemClickListener {
+		private final String unit;
+		
+		public UnitClickListener(String unit) {
+			this.unit = unit;
+		}
+		
+		@Override
+		public boolean onMenuItemClick(MenuItem item) {
+			
+			Variable fromVar = ViewChart.this.variable;
+			
+			if(fromVar == null) {
+				return false;
+			}
+			
+			CommonVariable displayedVariable = conversionMap.get(fromVar.getCommonVariable());
+			
+			if(displayedVariable == null) {
+				displayedVariable = fromVar.getCommonVariable();
+			}
+			
+			if(unit.equals(displayedVariable.getUnit())) {
+				return false;
+			}
+			
+			SharedPreferences settings = getSharedPreferences(Home.PREFS_FILE, MODE_PRIVATE);
+        	Editor prefsEditor = settings.edit();
+        	prefsEditor.putString(Home.PREF_TEMP_UNIT, unit);
+        	prefsEditor.commit();
+        	
+			conversionMap = CommonVariable.temperatureConversionMap(unit);
+			
+			if(ViewChart.this.data == null || ViewChart.this.data.getDatasets().get(fromVar.getCommonVariable()) == null) {
 				reloadData();
 			} else {
 				clearData();

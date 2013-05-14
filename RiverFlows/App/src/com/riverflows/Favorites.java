@@ -18,6 +18,7 @@ import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -27,11 +28,11 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.WindowManager.BadTokenException;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -44,7 +45,9 @@ import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
+import com.riverflows.data.ValueConverter;
 import com.riverflows.data.Variable;
+import com.riverflows.data.Variable.CommonVariable;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.db.SitesDaoImpl;
 import com.riverflows.wsclient.DataSourceController;
@@ -66,6 +69,8 @@ public class Favorites extends ListActivity {
 	public static final int DIALOG_ID_UPGRADE_FAVORITES = 5;
 	
 	LoadSitesTask loadTask = null;
+	
+	private String tempUnit = null;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +90,9 @@ public class Favorites extends ListActivity {
 		
 		favoriteSubtext.setText(subtext);
 		favoriteSubtext.setMovementMethod(LinkMovementMethod.getInstance());
+
+		SharedPreferences settings = getSharedPreferences(Home.PREFS_FILE, MODE_PRIVATE);
+    	tempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
 		
 		lv.setTextFilterEnabled(true);
 		this.loadTask = getLastNonConfigurationInstance();
@@ -143,6 +151,16 @@ public class Favorites extends ListActivity {
 				return;
 			}
 		}
+		
+		//temperature conversion has changed
+		SharedPreferences settings = getSharedPreferences(Home.PREFS_FILE, MODE_PRIVATE);
+    	String newTempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
+    	
+    	if(newTempUnit != tempUnit && (newTempUnit == null || !newTempUnit.equals(tempUnit))) {
+			tempUnit = newTempUnit;
+			loadSites(false);
+			return;
+    	}
 	}
 	
 	@Override
@@ -359,8 +377,17 @@ public class Favorites extends ListActivity {
 				Map<SiteId,SiteData> allSiteDataMap = new HashMap<SiteId,SiteData>();
 				
 				Map<SiteId,SiteData> siteDataMap = DataSourceController.getSiteData(favorites, hardRefresh);
+
+		    	Map<CommonVariable, CommonVariable> unitConversionMap = CommonVariable.temperatureConversionMap(tempUnit);
 				
 				for(SiteData currentData: siteDataMap.values()) {
+					
+					//convert °C to °F if that setting is enabled
+					Map<CommonVariable,Series> datasets = currentData.getDatasets();
+					for(Series dataset: datasets.values()) {
+						ValueConverter.convertIfNecessary(unitConversionMap, dataset);
+					}
+					
 					allSiteDataMap.put(currentData.getSite().getSiteId(), currentData);
 				}
 				

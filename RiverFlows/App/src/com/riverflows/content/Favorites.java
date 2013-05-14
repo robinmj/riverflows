@@ -10,6 +10,8 @@ import java.util.Map;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.MatrixCursor;
 import android.net.Uri;
@@ -22,7 +24,9 @@ import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
+import com.riverflows.data.ValueConverter;
 import com.riverflows.data.Variable;
+import com.riverflows.data.Variable.CommonVariable;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.db.RiverGaugesDb;
 import com.riverflows.wsclient.DataSourceController;
@@ -47,6 +51,7 @@ public class Favorites extends ContentProvider {
 	public static final String COLUMN_LAST_READING_DATE = "lastReadingDate";
 	public static final String COLUMN_LAST_READING_VALUE = "lastReadingValue";
 	public static final String COLUMN_LAST_READING_QUALIFIERS = "lastReadingQualifiers";
+	public static final String COLUMN_UNIT = "unit";
 
 	public static final String EXTRA_PRODUCT = "product";
 	/** This refers to the version of this ContentProvider, not RiverFlows */
@@ -75,11 +80,14 @@ public class Favorites extends ContentProvider {
 		COLUMN_VARIABLE_ID,
 		COLUMN_LAST_READING_DATE,
 		COLUMN_LAST_READING_VALUE,
-		COLUMN_LAST_READING_QUALIFIERS
+		COLUMN_LAST_READING_QUALIFIERS,
+		COLUMN_UNIT
 		};
 
 	public static final Uri CONTENT_URI = 
         Uri.parse("content://com.riverflows.content.favorites");
+	
+	private Map<CommonVariable, CommonVariable> unitConversionMap;
 
 	@Override
 	public int delete(Uri uri, String selection, String[] selectionArgs) {
@@ -101,6 +109,11 @@ public class Favorites extends ContentProvider {
 
 	@Override
 	public boolean onCreate() {
+		SharedPreferences settings = getContext().getSharedPreferences(Home.PREFS_FILE, Context.MODE_PRIVATE);
+    	String tempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
+    	
+    	unitConversionMap = CommonVariable.temperatureConversionMap(tempUnit);
+    	
 		return true;
 	}
 
@@ -159,6 +172,13 @@ public class Favorites extends ContentProvider {
 				Map<SiteId,SiteData> siteDataMap = DataSourceController.getSiteData(favorites, true);
 				
 				for(SiteData currentData: siteDataMap.values()) {
+					
+					//convert °C to °F if that setting is enabled
+					Map<CommonVariable,Series> datasets = currentData.getDatasets();
+					for(Series dataset: datasets.values()) {
+						ValueConverter.convertIfNecessary(unitConversionMap, dataset);
+					}
+					
 					allSiteDataMap.put(currentData.getSite().getSiteId(), currentData);
 				}
 			} catch(UnknownHostException uhe) {
@@ -192,6 +212,7 @@ public class Favorites extends ContentProvider {
 							row.add(lastReading.getDate().getTime());
 							row.add(lastReading.getValue());
 							row.add(lastReading.getQualifiers());
+							row.add(series.getVariable().getCommonVariable().getUnit());
 						}
 					}
 				} catch(NullPointerException npe) {

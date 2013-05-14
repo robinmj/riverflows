@@ -11,4 +11,9 @@
 	    android:visible="false">
 		<menu></menu>
 	</item>
+	<item android:id="@+id/sm_change_units"
+	    android:title="Change Units"
+	    android:visible="false">
+		<menu></menu>
+	</item>
 </menu>

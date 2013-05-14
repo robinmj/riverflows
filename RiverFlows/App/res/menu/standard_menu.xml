@@ -16,6 +16,11 @@
     android:visible="false">
 		<menu></menu>
 	</item>
+	<item android:id="@+id/mi_change_units"
+	    android:title="Change Units"
+	    android:visible="false">
+		<menu></menu>
+	</item>
 	<item android:id="@+id/mi_help"
     android:title="Help"
     android:icon="@drawable/ic_menu_help"
