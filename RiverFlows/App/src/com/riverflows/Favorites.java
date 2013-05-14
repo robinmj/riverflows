@@ -664,6 +664,9 @@ public class Favorites extends ListActivity {
 		
 		MenuItem edit = menu.add("Edit");
 		edit.setOnMenuItemClickListener(new EditFavoriteListener(siteData.getSite(), variable));
+		
+		MenuItem delete = menu.add("Delete");
+		delete.setOnMenuItemClickListener(new DeleteFavoriteListener(siteData.getSite(), variable));
 	}
 	
 	@Override
@@ -820,5 +823,69 @@ public class Favorites extends ListActivity {
 	        startActivityForResult(i, REQUEST_EDIT_FAVORITE);
 			return true;
 		}
-	};
+	}
+	
+	private class DeleteFavoriteListener implements MenuItem.OnMenuItemClickListener {
+		
+		private Site site;
+		private Variable variable;
+		
+		public DeleteFavoriteListener(Site site, Variable variable) {
+			super();
+			this.site = site;
+			this.variable = variable;
+		}
+
+		@Override
+		public boolean onMenuItemClick(MenuItem item) {
+			
+			FavoritesDaoImpl.deleteFavorite(Favorites.this, site.getSiteId(), variable);
+			
+			LoadSitesTask loadTask = Favorites.this.loadTask;
+			
+			if(loadTask == null) {
+				return true;
+			}
+			
+			if(loadTask.running) {
+				//cancel and reload
+				loadSites(false);
+				
+				return true;
+			}
+			
+			Iterator<Favorite> favoritesI = loadTask.favorites.iterator();
+			
+			while(favoritesI.hasNext()) {
+				Favorite fav = favoritesI.next();
+				if(!fav.getSite().getSiteId().equals(site.getSiteId())) {
+					continue;
+				}
+				
+				if(fav.getVariable().equals(variable.getId())) {
+					favoritesI.remove();
+					break;
+				}
+			}
+			
+			Iterator<SiteData> gaugesI = loadTask.gauges.iterator();
+			
+			while(gaugesI.hasNext()) {
+				SiteData gauge = gaugesI.next();
+				if(!gauge.getSite().getSiteId().equals(site.getSiteId())) {
+					continue;
+				}
+
+				if(gauge.getDatasets().containsKey(variable.getCommonVariable())) {
+					gaugesI.remove();
+					break;
+				}
+			}
+			
+			//there's still an unlikely possibility that Favorites.this.loadTask has been changed
+			displayFavorites();
+			
+			return true;
+		}
+	}
 }
