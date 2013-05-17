@@ -447,18 +447,31 @@ public class ViewChart extends Activity {
         	unitsItem.setEnabled(true);
         }
 		
+        MenuItem shareItem = menu.findItem(R.id.mi_share);
+        shareItem.setVisible(true);
+        shareItem.setEnabled(true);
+        
         return true;
     }
     
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-    	SubMenu otherVarsMenu = menu.findItem(R.id.mi_other_variables).getSubMenu();
+    	
+    	MenuItem otherVariablesItem = menu.findItem(R.id.mi_other_variables);
+    	
+    	SubMenu otherVarsMenu = otherVariablesItem.getSubMenu();
     	otherVarsMenu.clear();
-        populateOtherVariablesSubmenu(otherVarsMenu);
+        boolean hasOtherVariables = populateOtherVariablesSubmenu(otherVarsMenu);
+    	otherVariablesItem.setVisible(hasOtherVariables);
+    	otherVariablesItem.setEnabled(hasOtherVariables);
         
-        SubMenu unitsMenu = menu.findItem(R.id.mi_change_units).getSubMenu();
+    	MenuItem changeUnitsItem = menu.findItem(R.id.mi_change_units);
+    	
+        SubMenu unitsMenu = changeUnitsItem.getSubMenu();
         unitsMenu.clear();
-        populateUnitsSubmenu(unitsMenu);
+        boolean unitConversionsAvailable = populateUnitsSubmenu(unitsMenu);
+        changeUnitsItem.setVisible(unitConversionsAvailable);
+        changeUnitsItem.setEnabled(unitConversionsAvailable);
         
     	return super.onPrepareOptionsMenu(menu);
     }
@@ -487,6 +500,9 @@ public class ViewChart extends Activity {
 	    case R.id.mi_home:
 	    	startActivityIfNeeded(new Intent(this, Home.class), -1);
 	    	return true;
+	    case R.id.mi_share:
+	    	shareGraph();
+	    	return true;
 	    case R.id.mi_about:
 			Intent i = new Intent(this, About.class);
 			startActivity(i);
@@ -503,6 +519,10 @@ public class ViewChart extends Activity {
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
+	}
+	
+	public void shareGraph() {
+		DataSourceController.getDataSource(station.getAgency());
 	}
 	
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
@@ -534,10 +554,14 @@ public class ViewChart extends Activity {
         }
 	}
 	
-	private void populateOtherVariablesSubmenu(SubMenu otherVariablesMenu) {
+	private boolean populateOtherVariablesSubmenu(SubMenu otherVariablesMenu) {
         otherVariablesMenu.setHeaderTitle(R.string.variable_context_menu_title);
         
 		Variable[] otherVariables = ViewChart.this.station.getSupportedVariables();
+		
+		if(otherVariables.length <= 1) {
+			return false;
+		}
 		
         try {
 			for(int a = 0; a < otherVariables.length; a++) {
@@ -560,9 +584,10 @@ public class ViewChart extends Activity {
         	//TODO remove this once we find the source of the NPE
         	throw new RuntimeException("station: " + ViewChart.this.station.getSiteId() + " vars: " + otherVariables,npe);
         }
+        return true;
 	}
 	
-	private void populateUnitsSubmenu(SubMenu unitsMenu) {
+	private boolean populateUnitsSubmenu(SubMenu unitsMenu) {
         unitsMenu.setHeaderTitle("Units");
         
         CommonVariable displayedVariable = conversionMap.get(variable.getCommonVariable());
@@ -572,11 +597,16 @@ public class ViewChart extends Activity {
         }
         
         String[] toUnit = new CelsiusFahrenheitConverter().convertsTo(displayedVariable.getUnit());
+        
+        if(toUnit.length == 0) {
+        	return false;
+        }
 		
 		for(int a = 0; a < toUnit.length; a++) {
 			unitsMenu.add(toUnit[a])
 					.setOnMenuItemClickListener(new UnitClickListener(toUnit[a]));
 		}
+		return true;
 	}
 	
 	private class OtherVariableClickListener implements OnMenuItemClickListener {
