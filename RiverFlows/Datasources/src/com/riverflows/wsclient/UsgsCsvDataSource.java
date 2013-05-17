@@ -14,9 +14,9 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.Map.Entry;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -537,5 +537,15 @@ public class UsgsCsvDataSource implements RESTDataSource {
 	@Override
 	public void setHttpClientWrapper(HttpClientWrapper httpClientSource) {
 		this.httpClientWrapper = httpClientSource;
+	}
+	
+	@Override
+	public String getExternalGraphUrl(String siteId, String variableId) {
+		return "http://waterdata.usgs.gov/nwisweb/graph?agency_cd=USGS&site_no=" + siteId + "&parm_cd=" + variableId + "&period=7";
+	}
+	
+	@Override
+	public String getExternalSiteUrl(String siteId) {
+		return "http://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&site_no=" + siteId;
 	}
 }

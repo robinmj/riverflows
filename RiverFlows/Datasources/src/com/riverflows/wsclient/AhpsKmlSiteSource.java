@@ -183,7 +183,14 @@ public class AhpsKmlSiteSource {
 				return;
 			}
 			
-			peakForecastValue = new StringTokenizer(peakForecastValue.trim()).nextToken();
+			StringTokenizer tokenizer = new StringTokenizer(peakForecastValue.trim());
+			
+			if(!tokenizer.hasMoreTokens()) {
+				LOG.warn("unexpected peak forecast value: " + peakForecastValue);
+				return;
+			}
+			
+			peakForecastValue = tokenizer.nextToken();
 			if(peakForecastValue.equals("N/A")) {
 				return;
 			}

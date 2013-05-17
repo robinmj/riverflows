@@ -14,9 +14,9 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.Map.Entry;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
@@ -551,4 +551,13 @@ public class AHPSXmlDataSource implements RESTDataSource {
 		return info.toString();
 	}
 	
+	@Override
+	public String getExternalGraphUrl(String siteId, String variableId) {
+		return "http://water.weather.gov/resources/hydrographs/" + siteId.toLowerCase() + "_hg.png";
+	}
+	
+	@Override
+	public String getExternalSiteUrl(String siteId) {
+		return "http://water.weather.gov/ahps2/hydrograph.php?gage=" + siteId;
+	}
 }

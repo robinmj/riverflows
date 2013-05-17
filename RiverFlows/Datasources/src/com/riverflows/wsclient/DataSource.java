@@ -48,4 +48,8 @@ public interface DataSource {
 	 * @throws IOException
 	 */
 	public SiteData getSiteData(Site site, Variable[] variableTypes, boolean hardRefresh) throws ClientProtocolException, IOException;
+	
+	public String getExternalSiteUrl(String siteId);
+	
+	public String getExternalGraphUrl(String siteId, String variableId);
 }

@@ -14,7 +14,7 @@
 	<property name="wsclientjar" value="${distdir}/riverflows-wsclients.jar"/>
 	
 	<path id="compile.classpath">
-		<fileset dir="${basedir}/lib" />
+		<fileset dir="${basedir}/libs" />
 	</path>
 
 	<target name="compile" description="Compile RiverFlows-Datasources" depends="">

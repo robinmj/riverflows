@@ -398,4 +398,14 @@ public class CODWRDataSource implements RESTDataSource {
 	public void setHttpClientWrapper(HttpClientWrapper httpClientSource) {
 		this.httpClientWrapper = httpClientSource;
 	}
+	
+	@Override
+	public String getExternalGraphUrl(String siteId, String variableId) {
+		return "http://www.dwr.state.co.us/SurfaceWater/data/viewgraph.aspx?ID=" + siteId + "&MTYPE=" + variableId + "&SIZE=2";
+	}
+	
+	@Override
+	public String getExternalSiteUrl(String siteId) {
+		return "http://www.dwr.state.co.us/SurfaceWater/data/detail_graph.aspx?ID=" + siteId;
+	}
 }

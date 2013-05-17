@@ -26,7 +26,7 @@ abstract class KmlParser implements ContentHandler {
 		String description;
 		double latitude;
 		double longitude;
-		int altitude;
+		Integer altitude;
 	}
 	
 	
@@ -123,11 +123,17 @@ abstract class KmlParser implements ContentHandler {
 				try {
 					String longStr = tokens.nextToken().trim();
 					String latStr = tokens.nextToken().trim();
-					String altStr = tokens.nextToken().trim();
+					String altStr = null;
+					
+					if(tokens.hasMoreTokens()) {
+						altStr = tokens.nextToken().trim();
+					}
 					
 					currentPlacemark.longitude = Double.parseDouble(longStr);
 					currentPlacemark.latitude = Double.parseDouble(latStr);
-					currentPlacemark.altitude = Integer.parseInt(altStr);
+					if(altStr != null) {
+						currentPlacemark.altitude = Integer.parseInt(altStr);
+					}
 				} catch(NoSuchElementException nse) {
 					LOG.error("invalid coordinate string: " + curStr, nse);
 				} catch(NumberFormatException nfe) {

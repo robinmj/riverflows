@@ -1,6 +1,12 @@
 package com.riverflows.wsclient;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
+
+import org.apache.http.HttpResponse;
 
 public class Utils {
 	
@@ -75,5 +81,24 @@ public class Utils {
 		value = value / factor;
 		
 		return value + "";
+	}
+	
+	public static String responseString(HttpResponse response) throws IOException {
+		InputStream responseStream = response.getEntity().getContent();
+        
+        //Header[] lengthHeaders = response.getHeaders("content-length");
+        //Header[] lengthHeaders = response.getHeaders("character-encoding");
+		
+		return getString(responseStream);
+	}
+	
+	public static String getString(InputStream in) throws IOException {
+		StringBuilder sb = new StringBuilder();
+        BufferedReader r = new BufferedReader(new InputStreamReader(in), 4096);
+        for (String line = r.readLine(); line != null; line = r.readLine()) {
+                sb.append(line);
+        }
+        in.close();
+        return sb.toString();
 	}
 }

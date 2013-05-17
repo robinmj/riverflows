@@ -502,4 +502,14 @@ public class CDECDataSource implements RESTDataSource {
 		
 		return columns;
 	}
+	
+	@Override
+	public String getExternalGraphUrl(String siteId, String variableId) {
+		return null;
+	}
+	
+	@Override
+	public String getExternalSiteUrl(String siteId) {
+		return "http://cdec.water.ca.gov/cgi-progs/staMeta?station_id=" + siteId;
+	}
 }
