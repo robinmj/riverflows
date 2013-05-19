@@ -1,6 +1,9 @@
 package com.riverflows;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
@@ -16,8 +19,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.MediaStore.Images;
+import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -74,7 +83,9 @@ public class ViewChart extends Activity {
 	
 	private Site station;
 	private Boolean zeroYMin = null;
-	private Variable variable;
+	
+	/** this may remain null while the data is loading */
+	private Variable variable = null;
 	private LinearLayout chartLayout;
 	private HydroGraph chartView;
 	private GenerateDataSetTask runningTask = null;
@@ -501,7 +512,9 @@ public class ViewChart extends Activity {
 	    	startActivityIfNeeded(new Intent(this, Home.class), -1);
 	    	return true;
 	    case R.id.mi_share:
-	    	shareGraph();
+	        ProgressBar progressBar = (ProgressBar)findViewById(R.id.progressBar);
+	        progressBar.setVisibility(View.VISIBLE);
+	    	new FetchHydrographTask().execute();
 	    	return true;
 	    case R.id.mi_about:
 			Intent i = new Intent(this, About.class);
@@ -520,9 +533,93 @@ public class ViewChart extends Activity {
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
-	
-	public void shareGraph() {
-		DataSourceController.getDataSource(station.getAgency());
+
+	private class FetchHydrographTask extends AsyncTask<String, Integer, Bitmap> {
+
+		
+		private String graphUrl = null;
+		
+		public FetchHydrographTask() {
+			if(variable != null) {
+				graphUrl = DataSourceController.getDataSource(station.getAgency()).getExternalGraphUrl(station.getId(), variable.getId());
+				
+			}
+		}
+		
+	    @Override
+	    protected Bitmap doInBackground(String... arg0) {
+	    	if(graphUrl == null) {
+	    		return null;
+	    	}
+	    	
+	    	Bitmap b = null;
+	    	try {
+				 b = BitmapFactory.decodeStream((InputStream) new URL(graphUrl).getContent());
+			} catch (MalformedURLException e) {
+				Log.e(Home.TAG, graphUrl,e);
+			} catch (IOException e) {
+				Log.w(Home.TAG, graphUrl,e);
+			} 
+	        return b;
+	    }
+	    
+	    @Override
+	    protected void onPostExecute(Bitmap result) {
+	        ProgressBar progressBar = (ProgressBar)findViewById(R.id.progressBar);
+	        progressBar.setVisibility(View.GONE);
+			
+			Intent intent=new Intent(android.content.Intent.ACTION_SEND);
+			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+			
+			String varName = "";
+			
+			if(variable != null) {
+				varName = variable.getCommonVariable().getName() + " at ";
+			}
+			
+			intent.putExtra(Intent.EXTRA_SUBJECT, varName + station.getName());
+			
+			if(result != null) {
+				//share with embedded image
+		    	
+		    	String path = Images.Media.insertImage(getContentResolver(), result, "title", null);
+		    	Log.d(Home.TAG, "saved to " + path);
+		    	
+		    	if(path != null) {
+			    	
+			    	Uri graphUri = Uri.parse(path);
+					
+					intent.setType("image/png");
+					intent.putExtra(android.content.Intent.EXTRA_TEXT,
+					        "Shared using the RiverFlows mobile app");
+					intent.putExtra(android.content.Intent.EXTRA_STREAM, graphUri);
+					startActivity(Intent.createChooser(intent, "Share Hydrograph"));
+					return;
+		    	}
+		    	
+		    	/*
+		    	 * decided not to use this because it doesn't look very good in email and doesn't include RiverFlows branding
+		    	else {
+					intent.setType("text/plain");
+					intent.putExtra(android.content.Intent.EXTRA_TEXT,
+					        graphUrl);
+					startActivity(Intent.createChooser(intent, "Share Hydrograph"));
+					
+					return;
+				} */
+			}
+			
+			//send email with embedded link
+			String graphLink = DataSourceController.getDataSource(station.getAgency()).getExternalSiteUrl(station.getId());
+			graphLink = "<a href=\"" + graphLink + "\">" + station.getName() + "</a>";
+			
+			intent.setType("message/rfc822") ;
+			
+			Log.v(Home.TAG, "footer: " + getString(R.string.email_share_footer));
+			
+			intent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(graphLink + getString(R.string.email_share_footer)));
+			startActivity(Intent.createChooser(intent, "Email Link"));
+	    }
 	}
 	
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {

@@ -18,6 +18,7 @@
 	</item>
 	<item android:id="@+id/mi_change_units"
 	    android:title="Change Units"
+	    android:icon="@drawable/ic_menu_equalizer"
 	    android:visible="false">
 		<menu></menu>
 	</item>
@@ -25,4 +26,9 @@
     android:title="Help"
     android:icon="@drawable/ic_menu_help"
     android:visible="false"/>
+	<item android:id="@+id/mi_share"
+	    android:title="Share"
+	    android:icon="@drawable/ic_menu_email"
+	    android:visible="false"
+	    android:enabled="false"/>
 </menu>
