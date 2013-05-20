@@ -1,5 +1,7 @@
 package com.riverflows;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
@@ -19,13 +21,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.provider.MediaStore.Images;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -89,6 +89,7 @@ public class ViewChart extends Activity {
 	private LinearLayout chartLayout;
 	private HydroGraph chartView;
 	private GenerateDataSetTask runningTask = null;
+	private FetchHydrographTask runningShareTask = null;
 	private Map<CommonVariable, CommonVariable> conversionMap = new HashMap<CommonVariable, CommonVariable>();;
 	SiteData data;
 	String errorMsg;
@@ -173,6 +174,10 @@ public class ViewChart extends Activity {
     		clearData();
     		if(runningTask != null) {
     			this.runningTask.setActivity(this);
+    		}
+    		this.runningShareTask = (FetchHydrographTask)prevState[4];
+    		if(this.runningShareTask != null) {
+    			this.runningShareTask.setActivity(this);
     		}
     		//use stored data instead
     		if(this.data != null) {
@@ -340,7 +345,7 @@ public class ViewChart extends Activity {
     
     @Override
     public Object onRetainNonConfigurationInstance() {
-        return new Object[]{variable,data,runningTask,zeroYMin};
+        return new Object[]{variable,data,runningTask,zeroYMin,runningShareTask};
     }
 
     @Override
@@ -514,7 +519,7 @@ public class ViewChart extends Activity {
 	    case R.id.mi_share:
 	        ProgressBar progressBar = (ProgressBar)findViewById(R.id.progressBar);
 	        progressBar.setVisibility(View.VISIBLE);
-	    	new FetchHydrographTask().execute();
+	    	new FetchHydrographTask(this).execute();
 	    	return true;
 	    case R.id.mi_about:
 			Intent i = new Intent(this, About.class);
@@ -533,39 +538,72 @@ public class ViewChart extends Activity {
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
+	
+	private static final int REQUEST_SHARE = 61294;
 
-	private class FetchHydrographTask extends AsyncTask<String, Integer, Bitmap> {
-
+	private static class FetchHydrographTask extends AsyncTask<String, Integer, File> {
 		
 		private String graphUrl = null;
+		private File savedFile = null;
+		private ViewChart activity = null;
 		
-		public FetchHydrographTask() {
-			if(variable != null) {
-				graphUrl = DataSourceController.getDataSource(station.getAgency()).getExternalGraphUrl(station.getId(), variable.getId());
-				
+		public FetchHydrographTask(ViewChart activity) {
+			if(activity.variable != null) {
+				graphUrl = DataSourceController.getDataSource(activity.station.getAgency()).getExternalGraphUrl(activity.station.getId(), activity.variable.getId());
 			}
+			this.activity = activity;
+			activity.runningShareTask = this;
 		}
+    	
+    	public void setActivity(ViewChart activity) {
+    		this.activity = activity;
+    	}
 		
 	    @Override
-	    protected Bitmap doInBackground(String... arg0) {
+	    protected File doInBackground(String... arg0) {
 	    	if(graphUrl == null) {
 	    		return null;
 	    	}
 	    	
 	    	Bitmap b = null;
 	    	try {
-				 b = BitmapFactory.decodeStream((InputStream) new URL(graphUrl).getContent());
+				b = BitmapFactory.decodeStream((InputStream) new URL(graphUrl).getContent());
+				
+				String file_name = "share_hydrograph.png";
+				
+		        File png = new File(activity.getExternalCacheDir(), file_name);
+	            
+	            Log.i(Home.TAG, "saving to " + png);
+	            
+		        FileOutputStream out = null;
+		        try {
+		            out = new FileOutputStream(png);
+		            b.compress(Bitmap.CompressFormat.PNG, 100, out);
+		            
+		            out.flush();
+		        } catch (Exception e) {
+		            Log.e(Home.TAG,"", e);
+		            return null;
+		        } finally {
+		            try {
+		                if (out != null) out.close();
+		            }
+		            catch (IOException ignore) {}
+		        }
+				return png;
 			} catch (MalformedURLException e) {
 				Log.e(Home.TAG, graphUrl,e);
 			} catch (IOException e) {
 				Log.w(Home.TAG, graphUrl,e);
 			} 
-	        return b;
+	        return null;
 	    }
 	    
 	    @Override
-	    protected void onPostExecute(Bitmap result) {
-	        ProgressBar progressBar = (ProgressBar)findViewById(R.id.progressBar);
+	    protected void onPostExecute(File result) {
+	    	this.savedFile = result;
+	    	
+	        ProgressBar progressBar = (ProgressBar)activity.findViewById(R.id.progressBar);
 	        progressBar.setVisibility(View.GONE);
 			
 			Intent intent=new Intent(android.content.Intent.ACTION_SEND);
@@ -573,29 +611,24 @@ public class ViewChart extends Activity {
 			
 			String varName = "";
 			
-			if(variable != null) {
-				varName = variable.getCommonVariable().getName() + " at ";
+			if(activity.variable != null) {
+				varName = activity.variable.getCommonVariable().getName() + " at ";
 			}
 			
-			intent.putExtra(Intent.EXTRA_SUBJECT, varName + station.getName());
+			intent.putExtra(Intent.EXTRA_SUBJECT, varName + activity.station.getName());
 			
 			if(result != null) {
 				//share with embedded image
 		    	
-		    	String path = Images.Media.insertImage(getContentResolver(), result, "title", null);
-		    	Log.d(Home.TAG, "saved to " + path);
+		    	Uri graphUri = Uri.fromFile(result);
 		    	
-		    	if(path != null) {
-			    	
-			    	Uri graphUri = Uri.parse(path);
-					
-					intent.setType("image/png");
-					intent.putExtra(android.content.Intent.EXTRA_TEXT,
-					        "Shared using the RiverFlows mobile app");
-					intent.putExtra(android.content.Intent.EXTRA_STREAM, graphUri);
-					startActivity(Intent.createChooser(intent, "Share Hydrograph"));
-					return;
-		    	}
+		    	Log.i(Home.TAG, "file URI: " + graphUri);
+				
+				intent.setType("image/png");
+				intent.putExtra(android.content.Intent.EXTRA_TEXT,
+				        "Shared using the RiverFlows mobile app");
+				intent.putExtra(android.content.Intent.EXTRA_STREAM, graphUri);
+				activity.startActivityForResult(Intent.createChooser(intent, "Share Hydrograph"), REQUEST_SHARE);
 		    	
 		    	/*
 		    	 * decided not to use this because it doesn't look very good in email and doesn't include RiverFlows branding
@@ -607,19 +640,40 @@ public class ViewChart extends Activity {
 					
 					return;
 				} */
+			} else {
+			
+				//send email with embedded link
+				String graphLink = DataSourceController.getDataSource(activity.station.getAgency()).getExternalSiteUrl(activity.station.getId());
+				graphLink = "<a href=\"" + graphLink + "\">" + activity.station.getName() + "</a>";
+				
+				intent.setType("message/rfc822") ;
+				
+				Log.v(Home.TAG, "footer: " + activity.getString(R.string.email_share_footer));
+				
+				intent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(graphLink + activity.getString(R.string.email_share_footer)));
+				activity.startActivityForResult(Intent.createChooser(intent, "Email Link"), REQUEST_SHARE);
+			}
+	    }
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		
+		if(requestCode == REQUEST_SHARE) {
+			if(this.runningShareTask == null) {
+				return;
 			}
 			
-			//send email with embedded link
-			String graphLink = DataSourceController.getDataSource(station.getAgency()).getExternalSiteUrl(station.getId());
-			graphLink = "<a href=\"" + graphLink + "\">" + station.getName() + "</a>";
+			File savedFile = this.runningShareTask.savedFile;
+			this.runningShareTask = null;
+
+			Log.i(Home.TAG, "deleting file: " + savedFile);
 			
-			intent.setType("message/rfc822") ;
-			
-			Log.v(Home.TAG, "footer: " + getString(R.string.email_share_footer));
-			
-			intent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(graphLink + getString(R.string.email_share_footer)));
-			startActivity(Intent.createChooser(intent, "Email Link"));
-	    }
+			//remove hydrograph file that was saved during share
+			if(savedFile == null || !savedFile.delete()) {
+				Log.e(Home.TAG, "couldn't delete file: " + savedFile);
+			}
+		}
 	}
 	
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
