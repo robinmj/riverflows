@@ -26,6 +26,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Environment;
 import android.text.Html;
 import android.text.TextUtils;
 import android.util.Log;
@@ -570,8 +571,10 @@ public class ViewChart extends Activity {
 				b = BitmapFactory.decodeStream((InputStream) new URL(graphUrl).getContent());
 				
 				String file_name = "share_hydrograph.png";
-				
-		        File png = new File(activity.getExternalCacheDir(), file_name);
+
+		        //use this instead once minSdkVersion is set to 8 or above
+		        //File png = new File(activity.getExternalCacheDir(), file_name);
+		        File png = new File(new File(Environment.getExternalStorageDirectory(), "Pictures"), file_name);
 	            
 	            Log.i(Home.TAG, "saving to " + png);
 	            
