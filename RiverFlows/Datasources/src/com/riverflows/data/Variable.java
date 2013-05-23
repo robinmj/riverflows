@@ -28,7 +28,8 @@ public class Variable implements Serializable {
 		WATERTEMP_F("Water Temperature", "°F", false),
 		INTERGRAVEL_WATERTEMP_C("Intergravel Water Temperature", "°C", false),//Temperature, intragravel water, degrees Celsius 
 		RES_STORAGE_ACRE_FT("Reservoir Storage", "acre-ft", false),
-		RES_ELEVATION_FT("Reservoir Surface Elevation", "ft", false),//Elevation above NGVD 1929, ft
+		RES_ELEVATION_FT("Surface Elevation", "ft", false),//Elevation above NGVD 1929, ft
+		ROLLER_LEVEL_FT("Roller Level", "ft", false),
 		TIDE_ELEVATION_FT("Tide elevation above NAVD 1988","ft"),
 		AIRTEMP_F("Air Temperature", "°F", false),
 		AIRTEMP_C("Air Temperature", "°C", false),//Temperature, air, &#176;C
@@ -148,6 +149,8 @@ public class Variable implements Serializable {
 	
 	private CommonVariable commonVar;
 	
+	private String exactName;
+	
 	public Variable() {}
 	
 	public Variable(CommonVariable commonVar, String id, Double magicNullValue) {
@@ -155,6 +158,14 @@ public class Variable implements Serializable {
 		this.id = id;
 		this.commonVar = commonVar;
 		this.magicNullValue = magicNullValue;
+	}
+	
+	public Variable(CommonVariable commonVar, String id, Double magicNullValue, String exactName) {
+		super();
+		this.id = id;
+		this.commonVar = commonVar;
+		this.magicNullValue = magicNullValue;
+		this.exactName = exactName;
 	}
 	private String id;
 	public String getId() {
@@ -168,6 +179,10 @@ public class Variable implements Serializable {
 	}
 	private Double magicNullValue;
 	
+	/**
+	 * 
+	 * @return the name of the CommonVariable
+	 */
 	public String getName() {
 		return commonVar.getName();
 	}
@@ -203,5 +218,16 @@ public class Variable implements Serializable {
 	@Override
 	public String toString() {
 		return "" + id + " " + commonVar;
+	}
+
+	/**
+	 * @return the actual name of the variable used by the agency, rather than the common variable name
+	 */
+	public String getExactName() {
+		return exactName;
+	}
+
+	public void setExactName(String exactName) {
+		this.exactName = exactName;
 	}
 }
