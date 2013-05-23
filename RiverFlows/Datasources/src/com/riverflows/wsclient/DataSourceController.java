@@ -107,6 +107,9 @@ public class DataSourceController {
 		CDECDataSource cdecDataSource = new CDECDataSource();
 		dataSources.put(cdecDataSource.getAgency(), cdecDataSource);
 		
+		USACEDataSource usaceDataSource = new USACEDataSource();
+		dataSources.put(usaceDataSource.getAgency(), usaceDataSource);
+		
 		RECENT_READING_TIME_FMT.setTimeZone(TimeZone.getTimeZone("GMT-00:00"));
 	}
 	
