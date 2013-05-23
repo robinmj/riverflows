@@ -44,5 +44,10 @@ public class CDECDataSourceTest extends TestCase {
 		Reading firstObs = gauge_height.getReadings().get(0);
 		assertEquals("4/10/12 2:00:00 PM GMT-07:00", pdtFormat.format(firstObs.getDate()));
 		assertEquals(4.14d, firstObs.getValue());
+
+		Site ads = new Site(new SiteId("CDEC","ADS"), null, null, null);
+		data = ds.getSiteData(ads, new Variable[] { CDECDataSource.VTYPE_WIND_DR }, true);
+		
+		System.out.println("dataInfo:\n" + data.getDataInfo());
 	}
 }
