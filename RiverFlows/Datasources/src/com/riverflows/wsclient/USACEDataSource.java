@@ -77,10 +77,12 @@ public class USACEDataSource implements RESTDataSource {
 		POOL_LEVEL,
 		FLOW
 	};
+	
+	public static final String AGENCY = "USACE";
 
 	@Override
 	public String getAgency() {
-		return "USACE";
+		return AGENCY;
 	}
 
 	@Override
