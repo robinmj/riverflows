@@ -31,6 +31,7 @@ import com.riverflows.wsclient.AHPSXmlDataSource;
 import com.riverflows.wsclient.CDECDataSource;
 import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.DataSourceController;
+import com.riverflows.wsclient.USACEDataSource;
 import com.riverflows.wsclient.UsgsCsvDataSource;
 import com.riverflows.wsclient.Utils;
 
@@ -410,6 +411,8 @@ public class Provider extends AppWidgetProvider {
         	return R.drawable.codwr;
         } else if(CDECDataSource.AGENCY.equals(siteAgency)) {
         	return R.drawable.cdec;
+        } else if(USACEDataSource.AGENCY.equals(siteAgency)) {
+        	return R.drawable.usace;
         }
 		return null;
 	}
