@@ -463,6 +463,13 @@ public class Favorites extends ListActivity {
 				
 				//use the dataset for this favorite's variable
 				Series dataset = current.getDatasets().get(favoriteVar.getCommonVariable());
+				if(dataset == null) {
+					//if no dataset is found, create one so we know which variable is associated with the favorite
+					dataset = new Series();
+					dataset.setReadings(new ArrayList<Reading>(0));
+					dataset.setVariable(favoriteVar);
+				}
+				
 				SiteData expandedDataset = new SiteData();
 				expandedDataset.setSite(current.getSite());
 				expandedDataset.getDatasets().put(favoriteVar.getCommonVariable(), dataset);
