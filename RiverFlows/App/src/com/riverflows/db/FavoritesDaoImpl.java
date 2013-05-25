@@ -104,7 +104,8 @@ public class FavoritesDaoImpl {
 		 + SitesDaoImpl.NAME + "."
 		 + TextUtils.join(", " + SitesDaoImpl.NAME + ".", new String[]{ SitesDaoImpl.ID, SitesDaoImpl.SUPPORTED_VARS, SitesDaoImpl.STATE, SitesDaoImpl.SITE_NAME })
 		 + " FROM " + NAME + " JOIN " + SitesDaoImpl.NAME
-		 + " ON (" + NAME + "." + SITE_ID + " = " + SitesDaoImpl.NAME + "." + SitesDaoImpl.SITE_ID + ")";
+		 + " ON (" + NAME + "." + SITE_ID + " = " + SitesDaoImpl.NAME + "." + SitesDaoImpl.SITE_ID
+		  + " AND " + NAME + "." + AGENCY + " = " + SitesDaoImpl.NAME + "." + SitesDaoImpl.AGENCY + ")";
 		
 		String whereClause = "";
 		List<String> whereClauseParams = new ArrayList<String>(3);
