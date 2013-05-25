@@ -33,6 +33,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
@@ -358,6 +359,10 @@ public abstract class SiteList extends ListActivity {
 				return "no network access";
 			} catch(Exception e) {
 				Log.e(TAG, "",e);
+				
+				EasyTracker.getInstance().setContext(SiteList.this);
+				EasyTracker.getTracker().sendException(this.getClass().getName(), e, true);
+				
 				return e.getMessage();
 			}
 			return null;

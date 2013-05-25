@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.riverflows.Home;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Reading;
@@ -120,6 +121,11 @@ public class Favorites extends ContentProvider {
 	@Override
 	public Cursor query(Uri uri, String[] projection, String selection,
 			String[] selectionArgs, String sortOrder) {
+		if(System.currentTimeMillis() % 10l == 0) {
+			EasyTracker.getInstance().setContext(getContext());
+			EasyTracker.getTracker().sendEvent(getClass().getCanonicalName(), "query", "" + uri, null);
+		}
+		
 		if(!uri.getAuthority().equals(CONTENT_URI.getAuthority())) {
 			return null;
 		}

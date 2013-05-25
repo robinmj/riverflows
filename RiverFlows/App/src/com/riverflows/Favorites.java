@@ -38,6 +38,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
@@ -113,6 +114,18 @@ public class Favorites extends ListActivity {
 		}
 		
 		setTitle("Favorites");
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		EasyTracker.getInstance().activityStart(this);
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStop();
+		EasyTracker.getInstance().activityStop(this);
 	}
 	
 	@Override
@@ -397,6 +410,7 @@ public class Favorites extends ListActivity {
 			} catch(Exception e) {
 				setLoadErrorMsg(e.getMessage());
 				Log.e(getClass().getName(), "",e);
+				EasyTracker.getTracker().sendException("getFavorites", e, false);
 			}
 			return null;
 		}
@@ -500,6 +514,9 @@ public class Favorites extends ListActivity {
 								//don't know what else to do- just delete the favorite
 								FavoritesDaoImpl.deleteFavorite(getApplicationContext(), f.getSite().getSiteId(), null);
 								favoritesI.remove();
+								
+								EasyTracker.getTracker().sendException("checkForOldFavorites", ioe, true);
+								
 								continue;
 							}
 						}

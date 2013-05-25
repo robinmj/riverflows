@@ -49,6 +49,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.Tracker;
 import com.riverflows.data.CelsiusFahrenheitConverter;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Reading;
@@ -185,6 +187,33 @@ public class ViewChart extends Activity {
     			displayData();
     		}
     	}
+    }
+    
+    @Override
+    protected void onStart() {
+    	super.onStart();
+    	
+    	EasyTracker.getInstance().activityStart(this);
+
+    	Tracker tracker =  EasyTracker.getTracker();
+
+		tracker.setCustomDimension(1, "" + station.getState());
+    	tracker.setCustomDimension(2, station.getAgency());
+    	tracker.setCustomDimension(3, station.getId());
+    	if(variable == null) {
+    		tracker.setCustomDimension(4, null);
+    		tracker.setCustomDimension(5, null);
+    	} else {
+    		tracker.setCustomDimension(4, variable.getId());
+    		tracker.setCustomDimension(5, variable.getCommonVariable().name());
+    	}
+    }
+    
+    @Override
+    protected void onStop() {
+    	super.onStop();
+    	
+    	EasyTracker.getInstance().activityStop(this);
     }
     
     private void clearData() {
@@ -417,12 +446,18 @@ public class ViewChart extends Activity {
             } catch(IOException ioe) {
             	errorMsg = "Could not retrieve site data: an I/O error has occurred.";
             	Log.e(TAG, station.getId(), ioe);
+
+				EasyTracker.getTracker().sendException(getClass().getCanonicalName(), ioe, false);
             } catch(DataParseException dpe) {
             	errorMsg = "Could not process data from " + station + "; " + dpe.getMessage();
             	Log.e(TAG, station.toString(), dpe);
+
+				EasyTracker.getTracker().sendException(getClass().getCanonicalName(), dpe, false);
             } catch(Exception e) {
             	errorMsg = "Error loading data from " + station + "; " + e.getMessage();
             	Log.e(TAG, station.toString(), e);
+
+				EasyTracker.getTracker().sendException(getClass().getCanonicalName(), e, false);
             }
             return result;
     	}
@@ -549,6 +584,8 @@ public class ViewChart extends Activity {
 		private ViewChart activity = null;
 		
 		public FetchHydrographTask(ViewChart activity) {
+			EasyTracker.getTracker().sendSocial("ACTION_SEND", "start", activity.station.getAgency() + ":" + activity.station.getId());
+			
 			if(activity.variable != null) {
 				graphUrl = DataSourceController.getDataSource(activity.station.getAgency()).getExternalGraphUrl(activity.station.getId(), activity.variable.getId());
 			}
@@ -586,6 +623,9 @@ public class ViewChart extends Activity {
 		            out.flush();
 		        } catch (Exception e) {
 		            Log.e(Home.TAG,"", e);
+		            
+					EasyTracker.getTracker().sendException("saving " + graphUrl, e, false);
+					
 		            return null;
 		        } finally {
 		            try {
@@ -598,6 +638,8 @@ public class ViewChart extends Activity {
 				Log.e(Home.TAG, graphUrl,e);
 			} catch (IOException e) {
 				Log.w(Home.TAG, graphUrl,e);
+				
+				EasyTracker.getTracker().sendException("downloading " + graphUrl, e, false);
 			} 
 	        return null;
 	    }
@@ -632,6 +674,8 @@ public class ViewChart extends Activity {
 				        "Shared using the RiverFlows mobile app");
 				intent.putExtra(android.content.Intent.EXTRA_STREAM, graphUri);
 				activity.startActivityForResult(Intent.createChooser(intent, "Share Hydrograph"), REQUEST_SHARE);
+
+				EasyTracker.getTracker().sendSocial("ACTION_SEND", "image", activity.station.getAgency() + ":" + activity.station.getId());
 		    	
 		    	/*
 		    	 * decided not to use this because it doesn't look very good in email and doesn't include RiverFlows branding
@@ -655,6 +699,8 @@ public class ViewChart extends Activity {
 				
 				intent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(graphLink + activity.getString(R.string.email_share_footer)));
 				activity.startActivityForResult(Intent.createChooser(intent, "Email Link"), REQUEST_SHARE);
+
+				EasyTracker.getTracker().sendSocial("ACTION_SEND", "email", activity.station.getAgency() + ":" + activity.station.getId());
 			}
 	    }
 	}
@@ -663,6 +709,9 @@ public class ViewChart extends Activity {
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		
 		if(requestCode == REQUEST_SHARE) {
+
+			EasyTracker.getTracker().sendSocial("ACTION_SEND", "completed", station.getAgency() + ":" + station.getId());
+			
 			if(this.runningShareTask == null) {
 				return;
 			}

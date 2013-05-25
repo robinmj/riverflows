@@ -13,6 +13,7 @@ import org.apache.http.conn.HttpHostConnectException;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
@@ -41,6 +42,21 @@ public class RiverSelect extends SiteList {
 		}
 		
 		super.onCreate(savedInstanceState);
+	}
+	
+	@Override
+	protected void onStart() {
+		super.onStart();
+		
+		EasyTracker.getInstance().activityStart(this);
+		EasyTracker.getTracker().setCustomDimension(1, "" + state);
+	}
+	
+	@Override
+	protected void onStop() {
+		super.onStart();
+		
+		EasyTracker.getInstance().activityStop(this);
 	}
 	
 	@Override
@@ -99,6 +115,7 @@ public class RiverSelect extends SiteList {
 					} catch(HttpHostConnectException hhce) {
 						setLoadErrorMsg("could not reach RiverFlows server");
 						Log.e(TAG, "",hhce);
+						EasyTracker.getTracker().sendException(this.getClass().getName() + " loadSites " + hhce.getMessage(), hhce, false);
 						return null;
 					} catch(SocketException se) {
 						setLoadErrorMsg("could not connect to RiverFlows server");
@@ -107,6 +124,8 @@ public class RiverSelect extends SiteList {
 					} catch(Exception e) {
 						setLoadErrorMsg(e.getMessage());
 						Log.e(TAG, "",e);
+						
+						EasyTracker.getTracker().sendException(this.getClass().getName() + " loadSites", e, true);
 						return null;
 					}
 					
@@ -114,6 +133,8 @@ public class RiverSelect extends SiteList {
 						SitesDaoImpl.saveSites(getApplicationContext(), state, sites);
 					} catch(Exception e) {
 						Log.e(TAG, "failed to cache sites for state: " + state, e);
+						
+						EasyTracker.getTracker().sendException(this.getClass().getName() + " saveSites", e, true);
 					}
 				}
 				
