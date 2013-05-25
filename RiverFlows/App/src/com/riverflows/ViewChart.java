@@ -495,7 +495,7 @@ public class ViewChart extends Activity {
         MenuItem unitsItem = menu.findItem(R.id.mi_change_units);
         unitsItem.setVisible(true);
         
-        if(conversionMap.containsKey(this.variable.getCommonVariable())) {
+        if(this.variable != null && conversionMap.containsKey(this.variable.getCommonVariable())) {
         	unitsItem.setEnabled(true);
         }
 		
@@ -772,6 +772,7 @@ public class ViewChart extends Activity {
 					throw new NullPointerException("otherVariables[" + a + "]");
 				}
 				
+				//hide currently displayed variable
 				if(variable.equals(otherVariables[a])) {
 					continue;
 				}
