@@ -15,7 +15,7 @@ public abstract class ValueConverter {
 	
 	public abstract Double convert(String fromUnit, String toUnit, Double value) throws IllegalArgumentException;
 	
-	public static void convertIfNecessary(Map<CommonVariable, CommonVariable> conversionMap, Series s) {
+	public static boolean convertIfNecessary(Map<CommonVariable, CommonVariable> conversionMap, Series s) {
 		CelsiusFahrenheitConverter converter = new CelsiusFahrenheitConverter();
 		
 		Variable variable = s.getVariable();
@@ -23,7 +23,7 @@ public abstract class ValueConverter {
 		CommonVariable toVar = conversionMap.get(variable.getCommonVariable());
 		
 		if(toVar == null) {
-			return;
+			return false;
 		}
 		
 		for(Reading r:s.getReadings()) {
@@ -36,5 +36,7 @@ public abstract class ValueConverter {
 		}
 		
 		s.setVariable(new Variable(toVar, variable.getId(), variable.getMagicNullValue()));
+		
+		return true;
 	}
 }
