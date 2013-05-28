@@ -13,6 +13,7 @@ public class DefaultHttpClientWrapper implements HttpClientWrapper {
 	@Override
 	public HttpResponse doGet(HttpGet getCmd, boolean hardRefresh) throws ClientProtocolException, IOException {
 		HttpClient client = new DefaultHttpClient();
+		client.getParams().setParameter("http.socket.timeout", new Integer(5000));
 		HttpResponse response = client.execute(getCmd);
 		return response;
 	}
