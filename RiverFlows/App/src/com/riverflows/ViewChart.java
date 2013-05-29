@@ -305,7 +305,7 @@ public class ViewChart extends Activity {
     		Log.d(Home.TAG, "displayed series unit " + this.variable.getUnit());
     	}
     	
-    	ValueConverter.convertIfNecessary(ViewChart.this.conversionMap, displayedSeries);
+    	boolean converted = ValueConverter.convertIfNecessary(ViewChart.this.conversionMap, displayedSeries);
 
         Reading mostRecentReading = displayedSeries.getLastObservation();
         
@@ -315,9 +315,16 @@ public class ViewChart extends Activity {
         String unit = null;
         
         if(mostRecentReading.getValue() != null) {
-        	
+
 	        //get rid of unnecessary digits
-            mostRecentReadingStr = Utils.abbreviateNumber(mostRecentReading.getValue(), 3);
+        	if(converted) {
+	            mostRecentReadingStr = Utils.abbreviateNumber(mostRecentReading.getValue(), 3);
+        	} else {
+        		mostRecentReadingStr = "" + mostRecentReading.getValue();
+        		if(mostRecentReadingStr.endsWith(".0")) {
+    	        	mostRecentReadingStr = mostRecentReadingStr.substring(0, mostRecentReadingStr.length() - 2);
+    	        }
+        	}
 	        
 	        unit = displayedSeries.getVariable().getUnit();
 	        if(unit == null) {
