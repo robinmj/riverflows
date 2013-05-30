@@ -10,7 +10,7 @@
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
    width="48"
-   height="64"
+   height="80"
    id="svg2866"
    version="1.1"
    inkscape:version="0.47 r22583"
@@ -41,7 +41,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="7.4922549"
      inkscape:cx="15.833548"
-     inkscape:cy="25.10654"
+     inkscape:cy="41.12308"
      inkscape:current-layer="layer1"
      showgrid="true"
      inkscape:grid-bbox="true"
@@ -67,7 +67,19 @@
      id="layer1"
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
-     transform="translate(0,16)">
+     transform="translate(0,32)">
+    <rect
+       rx="1.8000413"
+       inkscape:export-ydpi="214.70787"
+       inkscape:export-xdpi="214.70787"
+       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows-release/res/drawable-xhdpi/usace.png"
+       ry="1.7618405"
+       y="-26.278543"
+       x="1.892488"
+       height="11.611881"
+       width="36.980938"
+       id="rect2847"
+       style="fill:#c83737;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.08590075;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.1607143;stroke-dasharray:none" />
     <rect
        style="fill:#008000;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.09414797;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.1607143;stroke-dasharray:none"
        id="rect2918"
@@ -76,9 +88,9 @@
        x="2.0315561"
        y="-12.527292"
        ry="1.873"
-       inkscape:export-filename="/Users/robin/eclipseworkspace/RiverFlows/res/drawable-hdpi/usgs.png"
-       inkscape:export-xdpi="161.15714"
-       inkscape:export-ydpi="161.15714"
+       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows-release/res/drawable-xhdpi/usgs.png"
+       inkscape:export-xdpi="214.87619"
+       inkscape:export-ydpi="214.87619"
        rx="1.873" />
     <rect
        style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.09391238;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.1607143;stroke-dasharray:none"
@@ -88,9 +100,9 @@
        x="3.4291823"
        y="-11.1064"
        ry="1.0095669"
-       inkscape:export-filename="/Users/robin/eclipseworkspace/RiverFlows/res/drawable-hdpi/usgs.png"
-       inkscape:export-xdpi="161.15714"
-       inkscape:export-ydpi="161.15714"
+       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows-release/res/drawable-xhdpi/usgs.png"
+       inkscape:export-xdpi="214.87619"
+       inkscape:export-ydpi="214.87619"
        rx="1.0095669" />
     <text
        xml:space="preserve"
@@ -98,9 +110,9 @@
        x="3.4235816"
        y="-3.1033573"
        id="text2876"
-       inkscape:export-filename="/Users/robin/eclipseworkspace/RiverFlows/res/drawable-hdpi/usgs.png"
-       inkscape:export-xdpi="161.15714"
-       inkscape:export-ydpi="161.15714"><tspan
+       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows-release/res/drawable-xhdpi/usgs.png"
+       inkscape:export-xdpi="214.87619"
+       inkscape:export-ydpi="214.87619"><tspan
          sodipodi:role="line"
          id="tspan2878"
          x="3.4235816"
@@ -108,7 +120,7 @@
     <rect
        inkscape:export-ydpi="161.15714"
        inkscape:export-xdpi="161.15714"
-       inkscape:export-filename="/Users/robin/eclipseworkspace/RiverFlows/res/drawable-hdpi/ahps.png"
+       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows-release/res/drawable-xhdpi/ahps.png"
        ry="1.873"
        y="1.4796847"
        x="2.0315561"
@@ -120,7 +132,7 @@
     <rect
        inkscape:export-ydpi="161.15714"
        inkscape:export-xdpi="161.15714"
-       inkscape:export-filename="/Users/robin/eclipseworkspace/RiverFlows/res/drawable-hdpi/ahps.png"
+       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows-release/res/drawable-xhdpi/ahps.png"
        ry="1.0007497"
        y="2.8772621"
        x="3.4289775"
@@ -132,7 +144,7 @@
     <text
        inkscape:export-ydpi="161.15714"
        inkscape:export-xdpi="161.15714"
-       inkscape:export-filename="/Users/robin/eclipseworkspace/RiverFlows/res/drawable-hdpi/ahps.png"
+       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows-release/res/drawable-xhdpi/ahps.png"
        id="text2994"
        y="10.803959"
        x="3.9034712"
@@ -150,9 +162,9 @@
        x="2.0319712"
        y="15.768486"
        ry="1.7618405"
-       inkscape:export-filename="/Users/robin/eclipseworkspace/RiverFlows/res/drawable-hdpi/codwr.png"
-       inkscape:export-xdpi="161.13004"
-       inkscape:export-ydpi="161.13004"
+       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows-release/res/drawable-xhdpi/codwr.png"
+       inkscape:export-xdpi="214.84006"
+       inkscape:export-ydpi="214.84006"
        rx="1.8000414" />
     <rect
        style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.09270121;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.1607143;stroke-dasharray:none"
@@ -162,9 +174,9 @@
        x="3.4289713"
        y="17.165804"
        ry="0.98366046"
-       inkscape:export-filename="/Users/robin/eclipseworkspace/RiverFlows/res/drawable-hdpi/codwr.png"
-       inkscape:export-xdpi="161.13004"
-       inkscape:export-ydpi="161.13004"
+       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows-release/res/drawable-xhdpi/codwr.png"
+       inkscape:export-xdpi="214.84006"
+       inkscape:export-ydpi="214.84006"
        rx="0.98366046" />
     <text
        xml:space="preserve"
@@ -172,9 +184,9 @@
        x="3.5434713"
        y="25.040644"
        id="text3008"
-       inkscape:export-filename="/Users/robin/eclipseworkspace/RiverFlows/res/drawable-hdpi/codwr.png"
-       inkscape:export-xdpi="161.13004"
-       inkscape:export-ydpi="161.13004"><tspan
+       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows-release/res/drawable-xhdpi/codwr.png"
+       inkscape:export-xdpi="214.84006"
+       inkscape:export-ydpi="214.84006"><tspan
          id="tspan3010"
          sodipodi:role="line"
          x="3.5434713"
@@ -187,9 +199,9 @@
        x="2.109324"
        y="30.142927"
        ry="1.873"
-       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows/res/drawable/cdec.png"
-       inkscape:export-xdpi="107.45156"
-       inkscape:export-ydpi="107.45156"
+       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows-release/res/drawable-xhdpi/cdec.png"
+       inkscape:export-xdpi="214.90312"
+       inkscape:export-ydpi="214.90312"
        rx="1.873" />
     <rect
        style="fill:#fac300;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.09517172;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.1607143;stroke-dasharray:none"
@@ -199,9 +211,9 @@
        x="3.5069239"
        y="31.540602"
        ry="1.0007497"
-       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows/res/drawable/cdec.png"
-       inkscape:export-xdpi="107.45156"
-       inkscape:export-ydpi="107.45156"
+       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows-release/res/drawable-xhdpi/cdec.png"
+       inkscape:export-xdpi="214.90312"
+       inkscape:export-ydpi="214.90312"
        rx="1.0007497" />
     <text
        xml:space="preserve"
@@ -209,12 +221,37 @@
        x="3.8804712"
        y="39.466465"
        id="text2859"
-       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows/res/drawable/cdec.png"
-       inkscape:export-xdpi="107.45156"
-       inkscape:export-ydpi="107.45156"><tspan
+       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows-release/res/drawable-xhdpi/cdec.png"
+       inkscape:export-xdpi="214.90312"
+       inkscape:export-ydpi="214.90312"><tspan
          id="tspan2861"
          sodipodi:role="line"
          x="3.8804712"
          y="39.466465">CDEC</tspan></text>
+    <rect
+       rx="0.98366052"
+       inkscape:export-ydpi="214.70787"
+       inkscape:export-xdpi="214.70787"
+       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows-release/res/drawable-xhdpi/usace.png"
+       ry="0.98366046"
+       y="-24.914358"
+       x="3.1557214"
+       height="8.7348576"
+       width="34.352917"
+       id="rect2849"
+       style="fill:#ffffff;fill-opacity:1;fill-rule:evenodd;stroke:#ffffff;stroke-width:0.08515435;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:0.1607143;stroke-dasharray:none" />
+    <text
+       inkscape:export-ydpi="214.70787"
+       inkscape:export-xdpi="214.70787"
+       inkscape:export-filename="/Users/robin/Subalpine/workspace/RiverFlows-release/res/drawable-xhdpi/usace.png"
+       id="text2843"
+       y="-16.903"
+       x="3.21"
+       style="font-size:10px;font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;fill:#c83737;fill-opacity:1;stroke:none;font-family:GrHelveticaBold;-inkscape-font-specification:GrHelveticaBold Bold"
+       xml:space="preserve"><tspan
+         y="-16.903"
+         x="3.21"
+         sodipodi:role="line"
+         id="tspan2845">USACE</tspan></text>
   </g>
 </svg>
