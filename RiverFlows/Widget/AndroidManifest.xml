@@ -1,13 +1,45 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.riverflows.widget"
-      android:versionCode="4"
-      android:versionName="1.3">
-    <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="4"/>
+      android:versionCode="5"
+      android:versionName="1.4">
+    <uses-sdk android:minSdkVersion="3" android:targetSdkVersion="10"/>
     <uses-permission android:name="com.android.vending.CHECK_LICENSE" />
 	<uses-permission android:name="android.permission.ACCESS_WIFI_STATE"/>
 	<uses-permission android:name="android.permission.READ_PHONE_STATE"/>
+	
+	<compatible-screens>
+    	<screen android:screenSize="large" android:screenDensity="480" />
+    	<screen android:screenSize="xlarge" android:screenDensity="480" />
 
+	    <screen android:screenSize="small" android:screenDensity="ldpi" /> 
+	    <screen android:screenSize="small" android:screenDensity="mdpi" /> 
+	    <screen android:screenSize="small" android:screenDensity="hdpi" /> 
+	    <screen android:screenSize="small" android:screenDensity="xhdpi"/>
+	
+	    <!--all normal size screens -->
+	    <screen android:screenSize="normal" android:screenDensity="ldpi" />
+	    <screen android:screenSize="normal" android:screenDensity="mdpi" />
+	    <screen android:screenSize="normal" android:screenDensity="hdpi" />
+	    <screen android:screenSize="normal" android:screenDensity="xhdpi" />
+	
+	    <!-- all large size screens -->
+	    <screen android:screenSize="large" android:screenDensity="ldpi" />
+	    <screen android:screenSize="large" android:screenDensity="mdpi" />
+	    <screen android:screenSize="large" android:screenDensity="hdpi" />
+	    <screen android:screenSize="large" android:screenDensity="xhdpi" />
+	
+	    <!-- all xlarge size screens -->
+	    <screen android:screenSize="xlarge" android:screenDensity="ldpi" />
+	    <screen android:screenSize="xlarge" android:screenDensity="mdpi" />
+	    <screen android:screenSize="xlarge" android:screenDensity="hdpi" />
+	    <screen android:screenSize="xlarge" android:screenDensity="xhdpi" />
+	
+	    <!-- Special case for Nexus 7 -->
+	    <screen android:screenSize="large" android:screenDensity="213" />
+	
+	</compatible-screens>
+	
     <application android:icon="@drawable/icon"
       android:label="RiverFlows Widget"
       android:debuggable="false">
