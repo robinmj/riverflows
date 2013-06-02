@@ -3,6 +3,7 @@ package com.riverflows;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.TabActivity;
@@ -12,6 +13,7 @@ import android.content.SharedPreferences.Editor;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Window;
 import android.widget.TabHost;
 
@@ -22,16 +24,18 @@ import com.riverflows.db.DbMaintenance;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.db.RiverGaugesDb;
 import com.riverflows.wsclient.AHPSXmlDataSource;
+import com.riverflows.wsclient.ApiCallTask;
 import com.riverflows.wsclient.CDECDataSource;
 import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.USACEDataSource;
 import com.riverflows.wsclient.UsgsCsvDataSource;
+import com.riverflows.wsclient.WsSessionManager.Session;
 
 public class Home extends TabActivity {
 	
 	public static final String TAG = "RiverFlows";
-	
+
 	public static final String PREFS_FILE = "com.riverflows.prefs";
 	public static final String PREF_TEMP_UNIT = "tempUnit";
 	
@@ -39,6 +43,8 @@ public class Home extends TabActivity {
 	 * 20 minutes
 	 */
 	public static final long CACHE_TTL = 20 * 60 * 1000;
+	
+	private InitSession initSession = new InitSession(this, REQUEST_CHOOSE_ACCOUNT, REQUEST_HANDLE_RECOVERABLE_AUTH_EXC, false, false);
 	
 	public void onCreate(Bundle savedInstanceState) {
 	    super.onCreate(savedInstanceState);
@@ -92,20 +98,58 @@ public class Home extends TabActivity {
 	    } else {
 	    	tabHost.setCurrentTab(0);
 	    }
+	    
+	    initSession.execute();
 	}
-	
+
 	@Override
 	protected void onStart() {
 		super.onStart();
-	    
+
 	    EasyTracker.getInstance().activityStart(this);
 	}
 	
+	private static final int REQUEST_CHOOSE_ACCOUNT = 281546;
+	static final int REQUEST_HANDLE_RECOVERABLE_AUTH_EXC = 95436;
+
+	private class InitSession extends ApiCallTask<String, Integer, String> {
+		
+		public InitSession(Activity activity, int requestCode, int recoveryRequestCode, boolean loginRequired, boolean secondTry) {
+			super(activity, requestCode, recoveryRequestCode, loginRequired, secondTry);
+		}
+		
+		public InitSession(InitSession oldTask) {
+			super(oldTask);
+		}
+
+		@Override
+		protected String doApiCall(Session session, String... params) {
+			Log.v(TAG, "successfully obtained authToken: " + session.authToken);
+			
+			return null;
+		}
+		
+		@Override
+		protected void onNoUIRequired(String result) {
+		}
+		
+		@Override
+		protected ApiCallTask<String, Integer, String> clone()
+				throws CloneNotSupportedException {
+			return new InitSession(this);
+		}
+	}
+
 	@Override
 	protected void onStop() {
 		super.onStop();
-	    
+
 	    EasyTracker.getInstance().activityStop(this);
+	}
+	
+	protected void onActivityResult(final int requestCode, final int resultCode,
+	         final Intent data) {
+	     initSession.authorizeCallback(requestCode, resultCode, data);
 	}
 	
 	@Override
