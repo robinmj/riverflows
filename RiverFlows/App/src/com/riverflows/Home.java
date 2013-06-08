@@ -98,8 +98,6 @@ public class Home extends TabActivity {
 	    } else {
 	    	tabHost.setCurrentTab(0);
 	    }
-	    
-	    initSession.execute();
 	}
 
 	@Override
@@ -109,7 +107,7 @@ public class Home extends TabActivity {
 	    EasyTracker.getInstance().activityStart(this);
 	}
 	
-	private static final int REQUEST_CHOOSE_ACCOUNT = 281546;
+	static final int REQUEST_CHOOSE_ACCOUNT = 281546;
 	static final int REQUEST_HANDLE_RECOVERABLE_AUTH_EXC = 95436;
 
 	private class InitSession extends ApiCallTask<String, Integer, String> {

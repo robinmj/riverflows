@@ -14,9 +14,7 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -26,7 +24,7 @@ import android.util.Log;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.riverflows.Home;
-import com.riverflows.wsclient.Utils;
+import com.riverflows.data.UserAccount;
 
 /**
  * Utility class for managing login credentials and sessions in the Mobile application
@@ -36,14 +34,16 @@ import com.riverflows.wsclient.Utils;
 public class WsSessionManager {
 	
 	//public static final String AUTH_APP_URL = "http://10.0.2.2:3000/application/check_mobile_login";
-	public static final String AUTH_APP_URL = "http://10.0.1.4:3000/application/check_mobile_login";
+	public static final String AUTH_APP_URL = "https://ws-staging.riverflowsapp.com/application/check_mobile_login";
 	
 	private static final String TAG = "WsSessionManager";
 	
 	public static final String PREFS_FILE_NAME = "main";
     public static final String PREF_REFRESH_TOKEN = "refresh_token";
     public static final String PREF_REFRESH_TOKEN_EXPIRES = "refresh_token_expires";
-	
+	public static final String PROMPTED_TO_SHARE_FAVORITES = "prompted_to_share_favorites";
+	public static final String CONVERTED_FAVORITES_TO_DESTINATIONS = "converted_favorites";
+
 	private static CopyOnWriteArraySet<SessionChangeListener> sessionListeners = new CopyOnWriteArraySet<WsSessionManager.SessionChangeListener>();
 	
 	private static volatile boolean promptedToLogin = false;
@@ -72,12 +72,14 @@ public class WsSessionManager {
 		public final long accessTokenExpires;
 //		public final String refreshToken;
 //		public final long refreshTokenExpires;
+		public final UserAccount userAccount;
 
-		public Session(String accountName, String accessToken, long accessTokenExpires) { //, String refreshToken, long refreshTokenExpires) {
+		public Session(String accountName, UserAccount account, String accessToken, long accessTokenExpires) { //, String refreshToken, long refreshTokenExpires) {
 			super();
 			this.accountName = accountName;
 			this.authToken = accessToken;
 			this.accessTokenExpires = accessTokenExpires;
+			this.userAccount = account;
 		}
 		
 		public boolean isExpired() {
@@ -108,62 +110,61 @@ public class WsSessionManager {
 		return (tmp == null) ? null : tmp.authToken;
 	}
 	
-	public static Session getWsAuthToken(String scheme, String username, String password) {
-		try {
-			Log.d(Home.TAG, "authenticating with Riverflows server...");
-			
-			HttpPost postCmd = new HttpPost(AUTH_APP_URL);
-	        HttpClient client = new DefaultHttpClient();
-	        
-	        List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-	        
-	        boolean anon = scheme.equals("anonymous");
-	        
-	        if(anon) {
+	public static Session getWsAuthToken(String scheme, String username, String password) throws Exception {
+		Log.d(Home.TAG, "authenticating with Riverflows server...");
 
-				byte[] s = new byte[]{106,76,109,-26,-72,-102,7,87,71,-78,57,94,45,52,28,38,-96,-35,-41,2,-30,-17,16,-93,-52,103,127,-91,-41,38,101,13,0,121,44,-78,115,111,79,-96,101,32,-100,-51,-14,63,-70,-113,121,-14,-99,-68,2,-37,74,-53,-66,84,-51,-101,-109,-15};
-				
-				String merged = m(s);
-				
-				java j = new java(merged);
-	        	
-	        	nameValuePairs.add(new BasicNameValuePair("username", "riverflowsuser@localhost.localdomain"));
-	        	nameValuePairs.add(new BasicNameValuePair("password", j.toString()));
-	        } else if(scheme.equals("google")) {
-	        	nameValuePairs.add(new BasicNameValuePair("google_oauth2_access_token", password));
-	        }
-	        postCmd.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-	        postCmd.addHeader("Accept", "application/json");
+		HttpPost postCmd = new HttpPost(AUTH_APP_URL);
+		HttpClient client = new DataSourceController.SSLHttpClient();
 
-	        HttpResponse httpResponse = client.execute(postCmd);
-	        
-	        Log.d(Home.TAG, AUTH_APP_URL + " response: " + httpResponse.getStatusLine().getStatusCode() + " " + httpResponse.getStatusLine().getReasonPhrase());
+		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 
-	        if(httpResponse.getStatusLine().getStatusCode() != 200) {
-	        	throw new UnexpectedResultException(httpResponse.getStatusLine().getReasonPhrase(), httpResponse.getStatusLine().getStatusCode());
-	        }
-	        
-	        JSONObject responseObj = new JSONObject(Utils.getString(httpResponse.getEntity().getContent()));
-	        JSONObject userObj = responseObj.getJSONObject("user");
-	        String authToken = userObj.getString("authentication_token");
-	        
-	        session = new Session(username, authToken, Long.MAX_VALUE);
-	        return session;
-		} catch(ClientProtocolException cpe) {
-            Log.e(Home.TAG, "", cpe);
-        } catch(IOException ioe) {
-            Log.e(Home.TAG, "", ioe);
-        } catch(Exception e) {
-            Log.e(Home.TAG, "", e);
-        }
-		return null;
+		boolean anon = scheme.equals("anonymous");
+
+		if(anon) {
+
+			byte[] s = new byte[]{106,76,109,-26,-72,-102,7,87,71,-78,57,94,45,52,28,38,-96,-35,-41,2,-30,-17,16,-93,-52,103,127,-91,-41,38,101,13,0,121,44,-78,115,111,79,-96,101,32,-100,-51,-14,63,-70,-113,121,-14,-99,-68,2,-37,74,-53,-66,84,-51,-101,-109,-15};
+
+			String merged = m(s);
+
+			java j = new java(merged);
+
+			nameValuePairs.add(new BasicNameValuePair("username", "riverflowsuser@localhost.localdomain"));
+			nameValuePairs.add(new BasicNameValuePair("password", j.toString()));
+		} else if(scheme.equals("google")) {
+			nameValuePairs.add(new BasicNameValuePair("google_oauth2_access_token", password));
+		}
+		postCmd.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+		postCmd.addHeader("Accept", "application/json");
+
+		HttpResponse httpResponse = client.execute(postCmd);
+
+		Log.d(Home.TAG, AUTH_APP_URL + " response: " + httpResponse.getStatusLine().getStatusCode() + " " + httpResponse.getStatusLine().getReasonPhrase());
+
+		if(httpResponse.getStatusLine().getStatusCode() != 200) {
+			throw new UnexpectedResultException(httpResponse.getStatusLine().getReasonPhrase(), httpResponse.getStatusLine().getStatusCode());
+		}
+
+		JSONObject responseObj = new JSONObject(Utils.getString(httpResponse.getEntity().getContent()));
+		JSONObject userObj = responseObj.getJSONObject("user");
+
+		Log.d(Home.TAG, "user: " + responseObj.getString("user"));
+
+		UserAccount userAccount = UserAccounts.parseUser(userObj);
+
+		String authToken = userObj.getString("authentication_token");
+
+		session = new Session(username, userAccount, authToken, Long.MAX_VALUE);
+		return session;
 	}
 	
 	public static void logOut(Context ctx) {
+		Session currentSession = session;
+		if(currentSession == null) {
+			return;
+		}
+
+		GoogleAuthUtil.invalidateToken(ctx.getApplicationContext(), currentSession.authToken);
 		WsSessionManager.session = null;
-		
-		//erase facebook credentials
-		//FacebookHelper.logOut(ctx);
 		
 		notifyAccountSessionChange(null, null);
 	}
@@ -207,7 +208,7 @@ public class WsSessionManager {
 		}
 	}
 	
-	public static Session loginWithGoogleOAuth2(Activity activity, String accountName, int recoveryRequestCode) {
+	public static Session loginWithGoogleOAuth2(Activity activity, String accountName) throws UserRecoverableAuthException {
 
    		String gToken = null;
    		
@@ -218,7 +219,7 @@ public class WsSessionManager {
 		try {
 	   		while(gToken == null && timeout > 0) {
 	        	try {
-	        		gToken = GoogleAuthUtil.getToken(activity, accountName, "oauth2:https://www.googleapis.com/auth/userinfo.email");
+	        		gToken = GoogleAuthUtil.getToken(activity.getApplicationContext(), accountName, "oauth2:https://www.googleapis.com/auth/userinfo.email");
 	        		Log.d(Home.TAG, "google auth2 token: " + gToken);
 	        	} catch(IOException e) {
 	        		exception = e;
@@ -242,7 +243,7 @@ public class WsSessionManager {
    		} catch(InterruptedException e) {
 			Log.i(Home.TAG, "terminated by interrupt", e);
 		} catch(UserRecoverableAuthException e) {
-			activity.startActivityForResult(e.getIntent(), recoveryRequestCode);
+			throw e;
 		} catch(Exception e) {
         	Log.e(Home.TAG, "could not get oauth2 token for account " + accountName, e);
         }
