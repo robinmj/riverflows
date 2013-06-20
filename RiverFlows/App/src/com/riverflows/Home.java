@@ -10,6 +10,7 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ApplicationInfo;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.view.Window;
 import android.widget.TabHost;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.riverflows.db.CachingHttpClientWrapper;
 import com.riverflows.db.DatasetsDaoImpl;
 import com.riverflows.db.DbMaintenance;
@@ -64,6 +66,10 @@ public class Home extends TabActivity {
 				getApplicationContext(), getCacheDir(), CACHE_TTL, "text/xml"));
 	    
 	    Logger.getLogger("").setLevel(Level.WARNING);
+
+		//disable Google Analytics when in debug mode
+		GoogleAnalytics myInstance = GoogleAnalytics.getInstance(this);
+		myInstance.setAppOptOut((getApplicationContext().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != ApplicationInfo.FLAG_DEBUGGABLE);
 	    
 	    requestWindowFeature(Window.FEATURE_NO_TITLE);
 	    setContentView(R.layout.main);
