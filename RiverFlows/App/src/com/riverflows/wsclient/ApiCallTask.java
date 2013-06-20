@@ -12,6 +12,8 @@ import com.riverflows.Home;
 import com.riverflows.wsclient.WsSessionManager.Session;
 import com.subalpine.DeferredExceptionAsyncTask;
 
+import java.io.IOException;
+
 public abstract class ApiCallTask<Params, Progress, Result> extends
 		DeferredExceptionAsyncTask<Params, Progress, Result> {
 	
@@ -90,7 +92,7 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 	 * @param params
 	 * @return
 	 */
-	protected abstract Result doApiCall(Session session, Params...params);
+	protected abstract Result doApiCall(Session session, Params...params) throws Exception;
 	
 	public boolean isSecondTry() {
 		return this.secondTry;
@@ -102,6 +104,11 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 				activity.startActivityForResult(((UserRecoverableAuthException)exception).getIntent(), recoveryRequestCode);
 				return;
 			}
+
+			if(exception instanceof IOException && exception.getMessage().equals("NetworkError")) {
+				onNetworkError();
+			}
+
 		}
 
 		if(sendToLoginScreen && !secondTry) {
@@ -156,6 +163,8 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 			throw new RuntimeException(cnse);
 		}
 	}
+
+	protected void onNetworkError() {}
 	
 	/**
 	 * Called if the user was logged in without the need for

@@ -66,12 +66,13 @@ public class Favorites extends ListActivity {
 	public static final int REQUEST_EDIT_FAVORITE = 1;
 	public static final int REQUEST_REORDER_FAVORITES = 2;
 	public static final int REQUEST_CREATE_ACCOUNT = 83247;
-	
+
 	public static final int DIALOG_ID_LOADING = 1;
 	public static final int DIALOG_ID_LOADING_ERROR = 2;
 	public static final int DIALOG_ID_MASTER_LOADING = 3;
 	public static final int DIALOG_ID_MASTER_LOADING_ERROR = 4;
 	public static final int DIALOG_ID_UPGRADE_FAVORITES = 5;
+	public static final int DIALOG_ID_SIGNING_IN = 6;
 	
 	LoadSitesTask loadTask = null;
 
@@ -283,6 +284,12 @@ public class Favorites extends ListActivity {
 			favoritesDialog.setIndeterminate(true);
 			favoritesDialog.setCancelable(true);
 	        return favoritesDialog;
+		case DIALOG_ID_SIGNING_IN:
+			ProgressDialog signingInDialog = new ProgressDialog(this);
+			signingInDialog.setMessage("Signing In...");
+			signingInDialog.setIndeterminate(true);
+			signingInDialog.setCancelable(true);
+			return signingInDialog;
 		}
 		return null;
 	}
@@ -944,10 +951,12 @@ public class Favorites extends ListActivity {
 	private class SignIn extends ApiCallTask<String, Integer, UserAccount> {
 		public SignIn(){
 			super(Favorites.this, Home.REQUEST_CHOOSE_ACCOUNT, Home.REQUEST_HANDLE_RECOVERABLE_AUTH_EXC, true, false);
+			showDialog(DIALOG_ID_SIGNING_IN);
 		}
 
 		public SignIn(SignIn oldTask) {
 			super(oldTask);
+			showDialog(DIALOG_ID_SIGNING_IN);
 		}
 
 		@Override
@@ -958,6 +967,8 @@ public class Favorites extends ListActivity {
 		@Override
 		protected void onNoUIRequired(UserAccount userAccount) {
 
+			removeDialog(DIALOG_ID_SIGNING_IN);
+
 			if(exception != null) {
 				Log.e(Home.TAG, "", exception);
 			}
@@ -966,10 +977,10 @@ public class Favorites extends ListActivity {
 				return;
 			}
 
-			if(userAccount.getNickname() == null) {
+			//if(userAccount.getNickname() == null) {
 				//set up this user's account
 				startActivityForResult(new Intent(Favorites.this, AccountSettings.class), REQUEST_CREATE_ACCOUNT);
-			}
+			//}
 		}
 
 		@Override

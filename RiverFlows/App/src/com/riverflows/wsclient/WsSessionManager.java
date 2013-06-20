@@ -15,12 +15,14 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;
 
+import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.riverflows.Home;
@@ -32,9 +34,11 @@ import com.riverflows.data.UserAccount;
  *
  */
 public class WsSessionManager {
-	
-	//public static final String AUTH_APP_URL = "http://10.0.2.2:3000/application/check_mobile_login";
-	public static final String AUTH_APP_URL = "https://ws-staging.riverflowsapp.com/application/check_mobile_login";
+
+	public static final String WS_BASE_URL = "https://ws-staging.riverflowsapp.com";
+	//public static final String WS_BASE_URL = "http://10.0.1.7:3000";
+
+	public static final String AUTH_APP_URL = WS_BASE_URL + "/application/check_mobile_login";
 	
 	private static final String TAG = "WsSessionManager";
 	
@@ -110,11 +114,12 @@ public class WsSessionManager {
 		return (tmp == null) ? null : tmp.authToken;
 	}
 	
-	public static Session getWsAuthToken(String scheme, String username, String password) throws Exception {
+	public static Session getWsAuthToken(String scheme, String username, String password) throws IOException, UnexpectedResultException, JSONException {
 		Log.d(Home.TAG, "authenticating with Riverflows server...");
 
 		HttpPost postCmd = new HttpPost(AUTH_APP_URL);
 		HttpClient client = new DataSourceController.SSLHttpClient();
+		postCmd.getParams().setParameter("http.socket.timeout", new Integer(10000));
 
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
 
@@ -208,46 +213,38 @@ public class WsSessionManager {
 		}
 	}
 	
-	public static Session loginWithGoogleOAuth2(Activity activity, String accountName) throws UserRecoverableAuthException {
+	public static Session loginWithGoogleOAuth2(Activity activity, String accountName) throws IOException, GoogleAuthException, InterruptedException, JSONException {
 
    		String gToken = null;
    		
-   		Exception exception = null;
+   		IOException exception = null;
 		
 		int timeout = 10000;
    		int waitUntilRetry = 200;
-		try {
-	   		while(gToken == null && timeout > 0) {
-	        	try {
-	        		gToken = GoogleAuthUtil.getToken(activity.getApplicationContext(), accountName, "oauth2:https://www.googleapis.com/auth/userinfo.email");
-	        		Log.d(Home.TAG, "google auth2 token: " + gToken);
-	        	} catch(IOException e) {
-	        		exception = e;
-		        	Log.e(Home.TAG, "could not get google oauth2 token for account " + accountName, e);
-	        		Thread.sleep(waitUntilRetry);
-	        		timeout -= waitUntilRetry;
-	        		waitUntilRetry *= 2;
-	        	}
-		    }
-	   		
-	   		if(gToken == null && exception != null) {
-	   			throw exception;
-	   		}
-		
-			if(gToken == null) {
-				//exception should already be set to an IOException
-				return null;
+
+		while(gToken == null && timeout > 0) {
+			try {
+				gToken = GoogleAuthUtil.getToken(activity.getApplicationContext(), accountName, "oauth2:https://www.googleapis.com/auth/userinfo.email");
+				Log.d(Home.TAG, "google auth2 token: " + gToken);
+			} catch(IOException e) {
+				exception = e;
+				Log.e(Home.TAG, "could not get google oauth2 token for account " + accountName, e);
+
+				Thread.sleep(waitUntilRetry);
+				timeout -= waitUntilRetry;
+				waitUntilRetry *= 2;
 			}
-			
-			return WsSessionManager.getWsAuthToken("google", accountName, gToken);
-   		} catch(InterruptedException e) {
-			Log.i(Home.TAG, "terminated by interrupt", e);
-		} catch(UserRecoverableAuthException e) {
-			throw e;
-		} catch(Exception e) {
-        	Log.e(Home.TAG, "could not get oauth2 token for account " + accountName, e);
-        }
-		
-		return null;
+		}
+
+		if(gToken == null && exception != null) {
+			throw exception;
+		}
+
+		if(gToken == null) {
+			//exception should already be set to an IOException
+			return null;
+		}
+
+		return WsSessionManager.getWsAuthToken("google", accountName, gToken);
 	}
 }
