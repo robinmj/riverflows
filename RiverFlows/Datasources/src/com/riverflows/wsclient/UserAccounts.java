@@ -28,4 +28,16 @@ public class UserAccounts {
 
 		return userAccount;
 	}
+
+	public static JSONObject userAsJson(UserAccount userAccount) throws JSONException {
+		JSONObject userObj = new JSONObject();
+
+		userObj.put("nickname", userAccount.getNickname());
+		userObj.put("email",userAccount.getEmail());
+		userObj.put("first_name",userAccount.getFirstName());
+		userObj.put("last_name",userAccount.getLastName());
+		userObj.put("facet_types",userAccount.getFacetTypes());
+
+		return userObj;
+	}
 }
