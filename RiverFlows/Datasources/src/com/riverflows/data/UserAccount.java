@@ -17,6 +17,20 @@ public class UserAccount {
 	private int  facetTypes;
 	private String email;
 
+	public UserAccount(){}
+	
+	public UserAccount(UserAccount source) {
+		this.createdAt = source.createdAt;
+		this.updatedAt = source.updatedAt;
+		this.nickname = source.nickname;
+		this.firstName = source.firstName;
+		this.lastName = source.lastName;
+		this.latitude = source.latitude;
+		this.longitude = source.longitude;
+		this.facetTypes = source.facetTypes;
+		this.email = source.email;
+	}
+
 	public Date getCreatedAt() {
 		return createdAt;
 	}
@@ -87,5 +101,10 @@ public class UserAccount {
 
 	public void setEmail(String email) {
 		this.email = email;
+	}
+
+	@Override
+	protected Object clone() throws CloneNotSupportedException {
+		return new UserAccount(this);
 	}
 }
