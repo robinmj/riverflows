@@ -14,6 +14,8 @@ import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.entity.StringEntity;
 import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -36,7 +38,7 @@ import com.riverflows.data.UserAccount;
 public class WsSessionManager {
 
 	public static final String WS_BASE_URL = "https://ws-staging.riverflowsapp.com";
-	//public static final String WS_BASE_URL = "http://10.0.1.7:3000";
+	//public static final String WS_BASE_URL = "http://192.168.103.3:3000";
 
 	public static final String AUTH_APP_URL = WS_BASE_URL + "/application/check_mobile_login";
 	
@@ -246,5 +248,33 @@ public class WsSessionManager {
 		}
 
 		return WsSessionManager.getWsAuthToken("google", accountName, gToken);
+	}
+
+	public static void updateUserAccount(UserAccount newUserAccount) throws Exception {
+
+		HttpPut putCmd = new HttpPut(WsSessionManager.WS_BASE_URL + "/account/update.json?auth_token=" + session.authToken);
+		HttpClient client = new DataSourceController.SSLHttpClient();
+
+		JSONObject entity = new JSONObject();
+
+		//entity.put("auth_token", session.authToken);
+		entity.put("account", UserAccounts.userAsJson(newUserAccount));
+
+		putCmd.setEntity(new StringEntity(entity.toString()));
+
+		putCmd.addHeader("Content-Type", "application/json");
+		putCmd.addHeader("Accept", "application/json");
+
+		HttpResponse httpResponse = client.execute(putCmd);
+
+		Log.d(Home.TAG, putCmd + " response: " + httpResponse.getStatusLine().getStatusCode() + " " + httpResponse.getStatusLine().getReasonPhrase());
+
+		if(httpResponse.getStatusLine().getStatusCode() != 200) {
+			throw new UnexpectedResultException(httpResponse.getStatusLine().getReasonPhrase(), httpResponse.getStatusLine().getStatusCode());
+		}
+
+		Session newSession = new Session(session.accountName, newUserAccount, session.authToken, session.accessTokenExpires);
+
+		notifyAccountSessionChange(newSession, null);
 	}
 }

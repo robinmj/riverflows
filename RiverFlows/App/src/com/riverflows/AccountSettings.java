@@ -11,6 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
@@ -22,16 +23,10 @@ import com.riverflows.wsclient.UserAccounts;
 import com.riverflows.wsclient.WsSessionManager;
 
 import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
 import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by robin on 6/4/13.
@@ -54,7 +49,7 @@ public class AccountSettings extends SherlockActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		currentUser = WsSessionManager.getSession().userAccount;
+		currentUser = new UserAccount(WsSessionManager.getSession().userAccount);
 
 		setContentView(R.layout.account_settings);
 
@@ -66,6 +61,15 @@ public class AccountSettings extends SherlockActivity {
 
 		TextView usernameField = (TextView)findViewById(R.id.username);
 		usernameField.setText(currentUser.getEmail());
+
+		if(savedInstanceState != null) {
+			int savedTypes = savedInstanceState.getInt("facet_types", -1);
+
+			//restore checkbox state
+			if(savedTypes != -1) {
+				currentUser.setFacetTypes(savedTypes);
+			}
+		}
 
 		int marginLeftPx = getPx(10);
 		int marginTopPx = getPx(2);
@@ -90,15 +94,19 @@ public class AccountSettings extends SherlockActivity {
 		mMode = startActionMode(new EditActionMode());
 	}
 
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+		//save checkbox state
+		outState.putInt("facet_types", updateUserAccount().getFacetTypes());
+	}
+
 	private int getPx(int dp) {
 		Resources r = getResources();
 		return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dp, r.getDisplayMetrics());
 	}
 
-	public void save() {
-		setSupportProgressBarIndeterminate(true);
-
-		UserAccount account = new UserAccount(WsSessionManager.getSession().userAccount);
+	private UserAccount updateUserAccount() {
 
 		int facetTypes = 0;
 		for(int a = 0; a < facetCheckBoxes.length; a++) {
@@ -108,10 +116,16 @@ public class AccountSettings extends SherlockActivity {
 			}
 		}
 
-		account.setFacetTypes(facetTypes);
+		currentUser.setFacetTypes(facetTypes);
+
+		return currentUser;
+	}
+
+	public void save() {
+		setSupportProgressBarIndeterminate(true);
 
 		saveTask = new SaveTask(false);
-		saveTask.execute(account);
+		saveTask.execute(updateUserAccount());
 
 	}
 
@@ -128,34 +142,7 @@ public class AccountSettings extends SherlockActivity {
 		@Override
 		protected String doApiCall(WsSessionManager.Session session, UserAccount... params) throws Exception {
 
-			HttpPut putCmd = new HttpPut(WsSessionManager.WS_BASE_URL + "/account/update.json?auth_token=" + session.authToken);
-			HttpClient client = new DataSourceController.SSLHttpClient();
-
-//			List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);
-//			String userString = UserAccounts.userAsJson(params[0]).toString();
-//
-//			nameValuePairs.add(new BasicNameValuePair("user", userString));
-//			nameValuePairs.add(new BasicNameValuePair("auth_token", session.authToken));
-//
-//			putCmd.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-
-			JSONObject entity = new JSONObject();
-
-			//entity.put("auth_token", session.authToken);
-			entity.put("account", UserAccounts.userAsJson(params[0]));
-
-			putCmd.setEntity(new StringEntity(entity.toString()));
-
-			putCmd.addHeader("Content-Type", "application/json");
-			putCmd.addHeader("Accept", "application/json");
-
-			HttpResponse httpResponse = client.execute(putCmd);
-
-			Log.d(Home.TAG, putCmd + " response: " + httpResponse.getStatusLine().getStatusCode() + " " + httpResponse.getStatusLine().getReasonPhrase());
-
-			if(httpResponse.getStatusLine().getStatusCode() != 200) {
-				throw new UnexpectedResultException(httpResponse.getStatusLine().getReasonPhrase(), httpResponse.getStatusLine().getStatusCode());
-			}
+			WsSessionManager.updateUserAccount(params[0]);
 
 			return null;
 		}
