@@ -12,7 +12,7 @@ import com.riverflows.wsclient.UsgsCsvDataSource;
 public class RiverGaugesDb extends SQLiteOpenHelper {
 	
 	public static final String DB_NAME = "RiverFlows";
-	public static final int DB_VERSION = 6;
+	public static final int DB_VERSION = 7;
 	
 	private Integer upgradedFromVersion = null;
 	
@@ -116,6 +116,35 @@ public class RiverGaugesDb extends SQLiteOpenHelper {
 		}
 		if(fromVersion < 6) {
 			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.ORDER + " INTEGER;");
+		}
+		if(fromVersion < 7) {
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.DEST_NAME + " INTEGER;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.DESCRIPTION + " INTEGER;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.DEST_USER_ID + " INTEGER;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.VISUAL_GAUGE_LATITUDE + " REAL;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.VISUAL_GAUGE_LONGITUDE + " REAL;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.DEST_CREATED_AT + " INTEGER;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.DEST_UPDATED_AT + " INTEGER;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.FACET_DESCRIPTION + " TEXT;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.DESTINATION_FACET_ID + " INTEGER;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.FACET_USER_ID + " INTEGER;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.TOO_LOW + " REAL;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.LOW + " REAL;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.MED + " REAL;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.HIGH + " REAL;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.HIGH_PLUS + " REAL;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.LOW_DIFFICULTY + " INTEGER;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.MED_DIFFICULTY + " INTEGER;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.HIGH_DIFFICULTY + " INTEGER;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.FACET_CREATED_AT + " INTEGER;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.FACET_UPDATED_AT + " INTEGER;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.FACET_TYPE + " INTEGER;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.LOW_PORT_DIFFICULTY + " INTEGER;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.MED_PORT_DIFFICULTY + " INTEGER;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.HIGH_PORT_DIFFICULTY + " INTEGER;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.QUALITY_LOW + " INTEGER;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.QUALITY_MED + " INTEGER;");
+			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.QUALITY_HIGH + " INTEGER;");
 		}
 	}
 

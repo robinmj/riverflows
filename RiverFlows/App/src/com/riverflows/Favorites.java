@@ -62,6 +62,8 @@ public class Favorites extends ListActivity {
 	private static final String TAG = Home.TAG;
 	
 	public static final String FAVORITES_PATH = "/favorites/";
+
+	public static final String PREF_MIGRATE_DESTINATIONS_NOTICE_SHOWN = "pref_share_favorites_notice_shown";
 	
 	public static final int REQUEST_EDIT_FAVORITE = 1;
 	public static final int REQUEST_REORDER_FAVORITES = 2;
@@ -331,7 +333,18 @@ public class Favorites extends ListActivity {
 	}
 	
 	public void displayFavorites() {
+
 		if(this.loadTask.gauges != null) {
+
+//			if(this.loadTask.gauges.size() > 0) {
+//				SharedPreferences settings = getSharedPreferences(Home.PREFS_FILE, MODE_PRIVATE);
+//				boolean showDestinationsNotice = !settings.getBoolean(PREF_MIGRATE_DESTINATIONS_NOTICE_SHOWN, false);
+//
+//				if (showDestinationsNotice) {
+//					startActivity(new Intent(this, MigrateToDestinations.class));
+//				}
+//			}
+
 			setListAdapter(new SiteAdapter(getApplicationContext(), this.loadTask.gauges));
 			registerForContextMenu(getListView());
 		}
@@ -977,10 +990,10 @@ public class Favorites extends ListActivity {
 				return;
 			}
 
-			//if(userAccount.getNickname() == null) {
+			if(userAccount.getFacetTypes() == 0) {
 				//set up this user's account
 				startActivityForResult(new Intent(Favorites.this, AccountSettings.class), REQUEST_CREATE_ACCOUNT);
-			//}
+			}
 		}
 
 		@Override

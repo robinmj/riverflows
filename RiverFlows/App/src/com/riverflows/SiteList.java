@@ -43,6 +43,7 @@ import com.riverflows.data.Variable;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.db.SitesDaoImpl;
 import com.riverflows.wsclient.DataSourceController;
+import com.riverflows.wsclient.WsSessionManager;
 
 public abstract class SiteList extends ListActivity {
 	
@@ -449,7 +450,31 @@ public abstract class SiteList extends ListActivity {
 			return true;
 		}
 	}
-	
+
+	private class CreateDestinationListener implements MenuItem.OnMenuItemClickListener{
+
+		private Site selectedStation = null;
+		private Variable selectedVariable = null;
+
+		public CreateDestinationListener(Site selectedStation, Variable selectedVariable) {
+			this.selectedStation = selectedStation;
+			this.selectedVariable = selectedVariable;
+		}
+
+
+		@Override
+		public boolean onMenuItemClick(MenuItem item) {
+
+			Intent i = new Intent(SiteList.this, EditDestination.class);
+			i.putExtra(EditDestination.KEY_SITE, selectedStation);
+			i.putExtra(EditDestination.KEY_VARIABLE, selectedVariable);
+
+			startActivity(i);
+
+			return true;
+		}
+	}
+
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
@@ -460,8 +485,15 @@ public abstract class SiteList extends ListActivity {
 		SiteData siteData = adapter.getItem(info.position);
 		
 		Variable[] supportedVars = siteData.getSite().getSupportedVariables();
-		
-		SubMenu submenu = menu.addSubMenu(ContextMenu.NONE, supportedVars.length, supportedVars.length, "Add To Favorites");
+
+		boolean loggedIn = (WsSessionManager.getSession() != null);
+
+		SubMenu submenu = null;
+		if(loggedIn) {
+			submenu = menu.addSubMenu(ContextMenu.NONE, supportedVars.length, supportedVars.length, "Create Destination");
+		} else {
+			submenu = menu.addSubMenu(ContextMenu.NONE, supportedVars.length, supportedVars.length, "Add To Favorites");
+		}
 		
 		for(int a = 0; a < supportedVars.length; a++) {
 			MenuItem viewVariableItem = menu.add(ContextMenu.NONE,a,a,supportedVars[a].getName() + ", " + supportedVars[a].getCommonVariable().getUnit());
@@ -471,6 +503,10 @@ public abstract class SiteList extends ListActivity {
 			addFavoriteItem.setCheckable(true);
 			addFavoriteItem.setChecked(FavoritesDaoImpl.isFavorite(getApplicationContext(), siteData.getSite().getSiteId(), supportedVars[a]));
 			addFavoriteItem.setOnMenuItemClickListener(new AddToFavoritesListener(siteData.getSite(), supportedVars[a]));
+
+			if(loggedIn) {
+				addFavoriteItem.setOnMenuItemClickListener(new CreateDestinationListener(siteData.getSite(), supportedVars[a]));
+			}
 		}
 	}
 	

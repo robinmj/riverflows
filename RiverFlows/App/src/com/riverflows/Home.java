@@ -104,6 +104,9 @@ public class Home extends TabActivity {
 	    } else {
 	    	tabHost.setCurrentTab(0);
 	    }
+
+		//attempt to set up session for accessing web services, but don't display a login screen
+		initSession.execute();
 	}
 
 	@Override
@@ -128,8 +131,6 @@ public class Home extends TabActivity {
 
 		@Override
 		protected String doApiCall(Session session, String... params) {
-			Log.v(TAG, "successfully obtained authToken: " + session.authToken);
-			
 			return null;
 		}
 		
