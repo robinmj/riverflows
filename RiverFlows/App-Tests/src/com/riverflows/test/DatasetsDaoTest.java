@@ -17,7 +17,6 @@ import com.riverflows.data.USState;
 import com.riverflows.data.Variable;
 import com.riverflows.data.Variable.CommonVariable;
 import com.riverflows.db.DatasetsDaoImpl;
-import com.riverflows.db.SitesDaoImpl;
 import com.riverflows.wsclient.UsgsCsvDataSource;
 import com.riverflows.wsclient.UsgsXmlDataSource;
 
@@ -57,13 +56,6 @@ public class DatasetsDaoTest extends AndroidTestCase {
 		
 		List<SiteData> caSites = new ArrayList<SiteData>();
 		caSites.add(caSite);
-		
-		SitesDaoImpl.saveSites(getContext(), USState.CA, caSites);
-		
-		caSites = SitesDaoImpl.getSitesInState(getContext(), USState.CA, null);
-		if(caSites.size() == 0) {
-			throw new RuntimeException("CA has no sites");
-		}
 		
 		Random r = new Random();
 		

@@ -17,14 +17,14 @@ import org.apache.http.message.BasicStatusLine;
 import android.content.res.AssetFileDescriptor;
 import android.content.res.AssetManager;
 
-import com.riverflows.wsclient.MockUsgsCsvHttpClient;
+import com.riverflows.wsclient.DefaultHttpClientWrapper;
 
 /**
  * Mock HTTP client that instead returns static files from the application assets
  * @author robin
  *
  */
-public abstract class AssetHttpClientWrapper extends MockUsgsCsvHttpClient {
+public abstract class AssetHttpClientWrapper extends DefaultHttpClientWrapper {
 
 	private static final Log LOG = LogFactory.getLog(AssetHttpClientWrapper.class);
 	
