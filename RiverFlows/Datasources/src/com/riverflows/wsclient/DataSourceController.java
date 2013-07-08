@@ -1,40 +1,5 @@
 package com.riverflows.wsclient;
 
-import java.io.BufferedInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.net.SocketException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.security.KeyStore;
-import java.text.DateFormat;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpResponse;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.params.AuthPolicy;
-import org.apache.http.conn.ClientConnectionManager;
-import org.apache.http.conn.scheme.Scheme;
-import org.apache.http.conn.ssl.SSLSocketFactory;
-import org.apache.http.impl.client.DefaultHttpClient;
-
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
@@ -43,6 +8,38 @@ import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
 import com.riverflows.data.Variable;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.http.client.ClientProtocolException;
+
+import java.io.BufferedInputStream;
+import java.io.DataInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.net.Authenticator;
+import java.net.PasswordAuthentication;
+import java.net.SocketException;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.security.KeyStore;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
+
+import javax.net.ssl.HttpsURLConnection;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.TrustManagerFactory;
 
 public class DataSourceController {
 	
@@ -58,40 +55,25 @@ public class DataSourceController {
 	public static final DateFormat RECENT_READING_TIME_FMT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	private static final Map<String,RESTDataSource> dataSources = new HashMap<String,RESTDataSource>();
-	
-	private static class MyHttpClient extends DefaultHttpClient {
-		@Override
-		protected ClientConnectionManager createClientConnectionManager() {
-			try {
-				InputStream keystoreStream = DataSourceController.class.getResourceAsStream("trusted.keystore");
-				
-				KeyStore trustedKeys = KeyStore.getInstance("BKS");
-				try {
-					trustedKeys.load(keystoreStream, new String("password").toCharArray());
-				} finally {
-					keystoreStream.close();
-				}
-				
-				SSLSocketFactory sslSocketFactory = new SSLSocketFactory(trustedKeys);
-				
-				Scheme https = new Scheme("https", sslSocketFactory, 443);
-				
-				ClientConnectionManager connManager = super.createClientConnectionManager();
-				
-				connManager.getSchemeRegistry().register(https);
-				return connManager;
-			} catch(Exception e) {
-				throw new RuntimeException("Failed to initialize HTTP client: " + e.getMessage(),e);
-			}
-		}
-	}
-	
-	private static class java extends UsernamePasswordCredentials {
 
-		public java(String usernamePassword) {
-			super(usernamePassword);
+	private static SSLContext sslContext;
+
+	private static final byte[] b = new byte[]{106,76,109,-26,-72,-102,7,87,71,-78,57,94,45,52,28,38,-96,-35,-41,2,-30,-17,16,-93,-52,103,127,-91,-41,38,101,13,0,121,44,-78,115,111,79,-96,101,32,-100,-51,-14,63,-70,-113,121,-14,-99,-68,2,-37,74,-53,-66,84,-51,-101,-109,-15};
+	
+	private static class java extends Authenticator {
+
+		private final String s;
+
+		public java(String s) {
+			this.s = s;
 		}
-		
+
+		protected PasswordAuthentication getPasswordAuthentication() {
+
+			int colonIndex = s.indexOf(':');
+
+			return new PasswordAuthentication(s.substring(0,colonIndex), s.substring(colonIndex + 1).toCharArray());
+		}
 	}
 	
 	static {
@@ -111,11 +93,51 @@ public class DataSourceController {
 		dataSources.put(usaceDataSource.getAgency(), usaceDataSource);
 		
 		RECENT_READING_TIME_FMT.setTimeZone(TimeZone.getTimeZone("GMT-00:00"));
+
+		try {
+			InputStream keystoreStream = DataSourceController.class.getResourceAsStream("trusted.keystore");
+
+			KeyStore trustedKeys = KeyStore.getInstance("BKS");
+			try {
+				trustedKeys.load(keystoreStream, new String("password").toCharArray());
+			} finally {
+				keystoreStream.close();
+			}
+
+			TrustManagerFactory tmf =
+					TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+			tmf.init(trustedKeys);
+
+			sslContext = SSLContext.getInstance("TLS");
+			sslContext.init(null, tmf.getTrustManagers(), null);
+		} catch(Exception e) {
+			throw new RuntimeException("Failed to load trusted SSL keys: " + e.getMessage(),e);
+		}
+
+		Authenticator.setDefault(new java(m(b)));
 	}
 	
 	public static void setHttpClientWrapper(HttpClientWrapper wrapper) {
 		for(RESTDataSource src: dataSources.values()) {
 			src.setHttpClientWrapper(wrapper);
+		}
+	}
+
+	public static void initCache(File cacheDir) {
+
+		final long httpCacheSize = 10 * 1024 * 1024; // 10 MiB
+		final File httpCacheDir = new File(cacheDir, "http");
+		try {
+			Class.forName("android.net.http.HttpResponseCache")
+					.getMethod("install", File.class, long.class)
+					.invoke(null, httpCacheDir, httpCacheSize);
+		} catch (Exception httpResponseCacheNotAvailable) {
+			LOG.debug("android.net.http.HttpResponseCache not available, probably because we're running on a pre-ICS version of Android. Using com.integralblue.httpresponsecache.HttpHttpResponseCache.", httpResponseCacheNotAvailable);
+			try{
+				com.integralblue.httpresponsecache.HttpResponseCache.install(httpCacheDir, httpCacheSize);
+			}catch(Exception e){
+				LOG.error("Failed to set up com.integralblue.httpresponsecache.HttpResponseCache", e);
+			}
 		}
 	}
 	
@@ -141,29 +163,19 @@ public class DataSourceController {
 		
 		try {
 			long startTime = System.currentTimeMillis();
-			
-			MyHttpClient client = new MyHttpClient();
-			
-			URI url = new URI(urlStr);
-			
-			byte[] s = new byte[]{106,76,109,-26,-72,-102,7,87,71,-78,57,94,45,52,28,38,-96,-35,-41,2,-30,-17,16,-93,-52,103,127,-91,-41,38,101,13,0,121,44,-78,115,111,79,-96,101,32,-100,-51,-14,63,-70,-113,121,-14,-99,-68,2,-37,74,-53,-66,84,-51,-101,-109,-15};
-			
-			String merged = m(s);
-			
-			java j = new java(merged);
-			
-			client.getCredentialsProvider().setCredentials(
-			        new AuthScope(url.getHost(), url.getPort()),j);
-			
-			client.getParams().setParameter("http.auth.proxy-scheme-pref", Collections.singletonList(AuthPolicy.BASIC));
-			
-			HttpGet getCmd = new HttpGet(urlStr);
-			getCmd.setHeader("Accept", "text/csv");
-			HttpResponse response = client.execute(getCmd);
-			contentInputStream = response.getEntity().getContent();
+
+			HttpsURLConnection conn = (HttpsURLConnection)new URL(urlStr).openConnection();
+
+			conn.setRequestProperty("Accept", "text/csv");
+
+			conn.setUseCaches(true);
+
+			conn.setSSLSocketFactory(sslContext.getSocketFactory());
+
+			contentInputStream = conn.getInputStream();
 			
 			bufferedStream = new BufferedInputStream(contentInputStream, 8192);
-			sites = parseSiteList(bufferedStream, response.getEntity().getContentLength());
+			sites = parseSiteList(bufferedStream, conn.getContentLength());
 			
 			if(LOG.isInfoEnabled()) LOG.info("loaded site data in " + (System.currentTimeMillis() - startTime) + "ms");
 		} finally {
