@@ -4,7 +4,6 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -17,7 +16,6 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
-import com.riverflows.db.SitesDaoImpl;
 import com.riverflows.wsclient.DataSourceController;
 
 public class RiverSelect extends SiteList {
@@ -72,72 +70,45 @@ public class RiverSelect extends SiteList {
 						hardRefresh = true;
 					}
 				}
-				
-				//2 weeks ago
-				Date staleDate = new Date(System.currentTimeMillis() - (14 * 24 * 60 * 60 * 1000));
-				
-				List<SiteData> sites = SitesDaoImpl.getSitesInState(getApplicationContext(), state, staleDate);
-				
-				boolean reloadRecentReadings = false;
-				
-				if(hardRefresh || sites == null || sites.size() == 0) {
-					reloadRecentReadings = true;
-				} else {
-//					for(int a = 0; a < sites.size(); a++) {
-//						if(SitesDaoImpl.hasStaleReading(sites.get(a))) {
-//							reloadRecentReadings = true;
-//							break;
-//						}
-//					}
-				}
-				
-				if(reloadRecentReadings) {
-					
-					//cache miss or hard refresh
-			        //TODO toast notification of each site loaded?
-					try {
-						Map<SiteId,SiteData> siteDataMap = DataSourceController.getSiteData(state);
-						
-						sites = new ArrayList<SiteData>(siteDataMap.values());
-						
-						long startTime = System.currentTimeMillis();
-						Collections.sort(sites, SiteData.SORT_BY_SITE_NAME);
-				        if(Log.isLoggable(TAG, Log.VERBOSE)) {
-				        	Log.v(TAG, "sorted in " + (System.currentTimeMillis() - startTime));
-				        }
-					} catch (UnknownHostException uhe) {
-						setLoadErrorMsg("no network access");
-						if(sites != null && sites.size() > 0) {
-							//re-use cached site info
-							return sites;
-						}
-						return null;
-					} catch(HttpHostConnectException hhce) {
-						setLoadErrorMsg("could not reach RiverFlows server");
-						Log.e(TAG, "",hhce);
-						EasyTracker.getTracker().sendException(this.getClass().getName() + " loadSites " + hhce.getMessage(), hhce, false);
-						return null;
-					} catch(SocketException se) {
-						setLoadErrorMsg("could not connect to RiverFlows server");
-						Log.e(TAG, "",se);
-						return null;
-					} catch(Exception e) {
-						setLoadErrorMsg(e.getMessage());
-						Log.e(TAG, "",e);
-						
-						EasyTracker.getTracker().sendException(this.getClass().getName() + " loadSites", e, true);
-						return null;
+
+				ArrayList<SiteData> sites = null;
+
+				//cache miss or hard refresh
+				//TODO toast notification of each site loaded?
+				try {
+					Map<SiteId,SiteData> siteDataMap = DataSourceController.getSiteData(state);
+
+					sites = new ArrayList<SiteData>(siteDataMap.values());
+
+					long startTime = System.currentTimeMillis();
+					Collections.sort(sites, SiteData.SORT_BY_SITE_NAME);
+					if(Log.isLoggable(TAG, Log.VERBOSE)) {
+						Log.v(TAG, "sorted in " + (System.currentTimeMillis() - startTime));
 					}
-					
-					try {
-						SitesDaoImpl.saveSites(getApplicationContext(), state, sites);
-					} catch(Exception e) {
-						Log.e(TAG, "failed to cache sites for state: " + state, e);
-						
-						EasyTracker.getTracker().sendException(this.getClass().getName() + " saveSites", e, true);
+				} catch (UnknownHostException uhe) {
+					setLoadErrorMsg("no network access");
+					if(sites != null && sites.size() > 0) {
+						//re-use cached site info
+						return sites;
 					}
+					return null;
+				} catch(HttpHostConnectException hhce) {
+					setLoadErrorMsg("could not reach RiverFlows server");
+					Log.e(TAG, "",hhce);
+					EasyTracker.getTracker().sendException(this.getClass().getName() + " loadSites " + hhce.getMessage(), hhce, false);
+					return null;
+				} catch(SocketException se) {
+					setLoadErrorMsg("could not connect to RiverFlows server");
+					Log.e(TAG, "",se);
+					return null;
+				} catch(Exception e) {
+					setLoadErrorMsg(e.getMessage());
+					Log.e(TAG, "", e);
+
+					EasyTracker.getTracker().sendException(this.getClass().getName() + " loadSites", e, true);
+					return null;
 				}
-				
+
 				if(sites == null) {
 					setLoadErrorMsg("Failed to load sites for unknown reason");
 				}

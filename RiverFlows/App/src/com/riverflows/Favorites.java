@@ -5,12 +5,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.http.conn.HttpHostConnectException;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -45,14 +42,11 @@ import com.riverflows.data.Series;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
-import com.riverflows.data.USState;
 import com.riverflows.data.ValueConverter;
 import com.riverflows.data.Variable;
 import com.riverflows.data.Variable.CommonVariable;
 import com.riverflows.db.FavoritesDaoImpl;
-import com.riverflows.db.SitesDaoImpl;
 import com.riverflows.wsclient.DataSourceController;
-import com.riverflows.wsclient.UsgsCsvDataSource;
 
 public class Favorites extends ListActivity {
 	
@@ -380,10 +374,6 @@ public class Favorites extends ListActivity {
 				if(favorites.size() == 0) {
 					return Collections.emptyList();
 				}
-				
-				//migrate any favorites without a variable set
-				checkForOldFavorites(favorites);
-				
 
 				boolean hardRefresh = (params.length > 0 && params[0].equals(HARD_REFRESH));
 				
@@ -476,115 +466,6 @@ public class Favorites extends ListActivity {
 				expandedDatasets.add(expandedDataset);
 			}
 			return expandedDatasets;
-		}
-		
-		private void checkForOldFavorites(List<Favorite> favorites) {
-			
-			if(favorites.size() > 0) {
-				
-				HashSet<USState> favoriteStates = new HashSet<USState>();
-	
-				//check for favorites which still don't have a variable set
-				
-				Iterator<Favorite> favoritesI = favorites.iterator();
-				
-				boolean progressStartPublished = false;
-				
-				while(favoritesI.hasNext()) {
-					Favorite f = favoritesI.next();
-					if(f.getVariable() == null) {
-						if(!progressStartPublished) {
-							publishProgress(-1, 0);
-							progressStartPublished = true;
-						}
-						
-						USState favoriteState = f.getSite().getState();
-						
-						if(!favoriteStates.contains(favoriteState)) {
-							//download the list of all sites in this favorite's state in order to get its supported variables
-							try {
-								Map<SiteId, SiteData> sitesMap = DataSourceController.getSiteData(favoriteState);
-								List<SiteData> sites = new ArrayList<SiteData>(sitesMap.values());
-								SitesDaoImpl.saveSites(getApplicationContext(), favoriteState, sites);
-								favoriteStates.add(favoriteState);
-							} catch(UnknownHostException ioe) {
-								setLoadErrorMsg("Could not upgrade favorites list format: No network access");
-								favorites.clear();
-								publishProgress(-1, 100);
-								return;
-							} catch(HttpHostConnectException hhce) {
-								setLoadErrorMsg("Could not upgrade favorites list format: Network error - please try again later");
-								favorites.clear();
-								publishProgress(-1, 100);
-								return;
-							} catch(Exception ioe) {
-								//don't know what else to do- just delete the favorite
-								FavoritesDaoImpl.deleteFavorite(getApplicationContext(), f.getSite().getSiteId(), null);
-								favoritesI.remove();
-								
-								EasyTracker.getTracker().sendException("checkForOldFavorites", ioe, true);
-								
-								continue;
-							}
-						}
-						
-						//get updated set of supported variables from the sites table
-						List<SiteData> siteDataList = SitesDaoImpl.getSites(getApplicationContext(), Collections.singletonList(f.getSite().getSiteId()));
-						
-						//delete the old favorite
-						FavoritesDaoImpl.deleteFavorite(getApplicationContext(), f.getSite().getSiteId(), null);
-
-						if(siteDataList.size() == 0) {
-							//The user's sites table probably isn't fully initialized for whatever reason- hopefully it
-							// will be next time this code is reached.
-							Log.w(getClass().getSimpleName(), "failed to find favorite site: " + f.getSite().getId());
-							favoritesI.remove();
-							continue;
-						}
-						SiteData favoriteSiteData = siteDataList.get(0);
-						
-						Variable[] siteVars = favoriteSiteData.getSite().getSupportedVariables();
-						
-						//f.site is now stale since we've downloaded a fresh sitelist- update it
-						f.setSite(favoriteSiteData.getSite());
-						
-						if(siteVars == null || siteVars.length == 0) {
-							Log.e(getClass().getSimpleName(), "Site has no supported variables! " + favoriteSiteData.getSite().getSiteId());
-							favoritesI.remove();
-							continue;
-						}
-						
-						Variable favoriteVar = null;
-						
-						//prefer streamflow over gauge height
-						String[] oldSupportedVarIds = new String[]{UsgsCsvDataSource.VTYPE_STREAMFLOW_CFS.getId(), UsgsCsvDataSource.VTYPE_GAUGE_HEIGHT_FT.getId()};
-						
-						//try to use one of the two variables that was supported in a previous version of riverflows
-						for(int a = 0; a < oldSupportedVarIds.length; a++) {
-							for(int b = 0; b < siteVars.length; b++) {
-								if(siteVars[b].getId().equals(oldSupportedVarIds[a])) {
-									favoriteVar = siteVars[b];
-									break;
-								}
-							}
-							if(favoriteVar != null) {
-								break;
-							}
-						}
-						
-						if(favoriteVar == null) {
-							//shouldn't happen, but we can just use the first supported variable
-							favoriteVar = siteVars[0];
-						}
-						
-						//set the favorite variable using the site's first supported variable,
-						// save the updated favorite
-						f.setVariable(favoriteVar.getId());
-						FavoritesDaoImpl.createFavorite(getApplicationContext(), f);
-					}
-				}
-				publishProgress(-1, 100);
-			}
 		}
 		
 		@Override

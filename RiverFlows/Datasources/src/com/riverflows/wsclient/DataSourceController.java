@@ -403,6 +403,15 @@ public class DataSourceController {
 		
 		return variables;
 	}
+
+    public static final String variablesToString(final Variable[] variables) {
+        StringBuilder variablesStr = new StringBuilder();
+        for(Variable v: variables) {
+            variablesStr.append(v.getId() + " ");
+        }
+
+        return variablesStr.toString().trim();
+    }
 	
 	/**
 	 * Out of a multi-series dataset, get the best series for previewing purposes.

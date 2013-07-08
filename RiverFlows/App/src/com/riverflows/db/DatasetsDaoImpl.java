@@ -19,11 +19,6 @@ public class DatasetsDaoImpl {
 	
 	static final String ID = "id";
 	
-	/**
-	 * references SitesDaoImpl.ID
-	 */
-	static final String SITE_ID = "siteId";
-	
 	static final String FILE = "file";
 	
 	static final String TIMESTAMP = "timestamp";

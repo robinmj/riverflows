@@ -8,7 +8,6 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -62,7 +61,6 @@ import com.riverflows.data.ValueConverter;
 import com.riverflows.data.Variable;
 import com.riverflows.data.Variable.CommonVariable;
 import com.riverflows.db.FavoritesDaoImpl;
-import com.riverflows.db.SitesDaoImpl;
 import com.riverflows.view.HydroGraph;
 import com.riverflows.wsclient.DataParseException;
 import com.riverflows.wsclient.DataSourceController;
@@ -142,8 +140,9 @@ public class ViewChart extends Activity {
 	        this.variable = (Variable)extras.get(KEY_VARIABLE);
         } else {
         	SiteId siteId = new SiteId(getIntent().getData().getSchemeSpecificPart());
-        	List<SiteData> sites = SitesDaoImpl.getSites(getApplicationContext(), Collections.singletonList(siteId));
-        	this.station = sites.get(0).getSite();
+			List<Favorite> favorites = FavoritesDaoImpl.getFavorites(getApplicationContext(), siteId, getIntent().getData().getFragment());
+
+        	this.station = favorites.get(0).getSite();
         	this.variable = DataSourceController.getVariable(this.station.getAgency(), getIntent().getData().getFragment());
         }
         
