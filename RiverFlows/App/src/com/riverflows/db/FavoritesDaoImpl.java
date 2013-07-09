@@ -74,25 +74,187 @@ public class FavoritesDaoImpl {
      */
     static final String CREATED_DATE = "created";
 
-    /**
-     * The sort order
-     * <P>Type: INTEGER (0 comes first)</P>
-     */
-    static final String ORDER = "`order`";
+	/**
+	 * The sort order
+	 * <P>Type: INTEGER (0 comes first)</P>
+	 */
+	static final String ORDER = "`order`";
 
-	
-    static final String CREATE_SQL = "CREATE TABLE " + NAME
-		+ " ( " + ID + " INTEGER PRIMARY KEY,"
-		+ SITE_ID + " TEXT,"
-		+ SITE_NAME + " TEXT,"
-		+ AGENCY + " TEXT,"
-		+ VARIABLE + " TEXT,"
-		+ CREATED_DATE + " INTEGER,"
-		+ LAST_VIEWED + " INTEGER,"
-		+ LATITUDE + " REAL,"
-		+ LONGITUDE + " REAL,"
-		+ ORDER + " INTEGER );";
-    
+	/**
+	 * corresponds to remote destination field
+	 */
+	static final String DEST_NAME = "dest_name";
+
+	/**
+	 * corresponds to remote destination field
+	 */
+	static final String DESCRIPTION = "description";
+
+	/**
+	 * corresponds to remote destination field
+	 */
+	static final String DEST_USER_ID = "dest_user_id";
+
+	/**
+	 * corresponds to remote destination field
+	 */
+	static final String VISUAL_GAUGE_LATITUDE = "visual_gauge_latitude";
+
+	/**
+	 * corresponds to remote destination field
+	 */
+	static final String VISUAL_GAUGE_LONGITUDE = "visual_gauge_longitude";
+
+	/**
+	 * corresponds to remote destination.created_at field
+	 */
+	static final String DEST_CREATED_AT = "dest_created_at";
+
+	/**
+	 * corresponds to remote destination.updated_at field
+	 */
+	static final String DEST_UPDATED_AT = "dest_updated_at";
+
+	/**
+	 * corresponds to remote destination_facet.description field
+	 */
+	static final String FACET_DESCRIPTION = "facet_description";
+
+	/**
+	 * corresponds to remote destination_facet field
+	 */
+	static final String DESTINATION_FACET_ID = "destination_facet_id";
+
+	/**
+	 * corresponds to remote destination_facet.user_id field
+	 */
+	static final String FACET_USER_ID = "facet_user_id";
+
+	/**
+	 * corresponds to remote destination_facet field
+	 */
+	static final String TOO_LOW = "too_low";
+
+	/**
+	 * corresponds to remote destination_facet field
+	 */
+	static final String LOW = "low";
+
+	/**
+	 * corresponds to remote destination_facet field
+	 */
+	static final String MED = "med";
+
+	/**
+	 * corresponds to remote destination_facet field
+	 */
+	static final String HIGH = "high";
+
+	/**
+	 * corresponds to remote destination_facet field
+	 */
+	static final String HIGH_PLUS = "high_plus";
+
+	/**
+	 * corresponds to remote destination_facet field
+	 */
+	static final String LOW_DIFFICULTY = "low_difficulty";
+
+	/**
+	 * corresponds to remote destination_facet field
+	 */
+	static final String MED_DIFFICULTY = "med_difficulty";
+
+	/**
+	 * corresponds to remote destination_facet field
+	 */
+	static final String HIGH_DIFFICULTY = "high_difficulty";
+
+	/**
+	 * corresponds to remote destination_facet.created_at field
+	 */
+	static final String FACET_CREATED_AT = "facet_created_at";
+
+	/**
+	 * corresponds to remote destination_facet.updated_at field
+	 */
+	static final String FACET_UPDATED_AT = "facet_updated_at";
+
+	/**
+	 * corresponds to remote destination_facet field
+	 */
+	static final String FACET_TYPE = "facet_type";
+
+	/**
+	 * corresponds to remote destination_facet field
+	 */
+	static final String LOW_PORT_DIFFICULTY = "low_port_difficulty";
+
+	/**
+	 * corresponds to remote destination_facet field
+	 */
+	static final String MED_PORT_DIFFICULTY = "med_port_difficulty";
+
+	/**
+	 * corresponds to remote destination_facet field
+	 */
+	static final String HIGH_PORT_DIFFICULTY = "high_port_difficulty";
+
+	/**
+	 * corresponds to remote destination_facet field
+	 */
+	static final String QUALITY_LOW = "quality_low";
+
+	/**
+	 * corresponds to remote destination_facet field
+	 */
+	static final String QUALITY_MED = "quality_med";
+
+	/**
+	 * corresponds to remote destination_facet field
+	 */
+	static final String QUALITY_HIGH = "quality_high";
+
+
+	static final String CREATE_SQL = "CREATE TABLE " + NAME
+			+ " ( " + ID + " INTEGER PRIMARY KEY,"
+			+ SITE_ID + " TEXT,"
+			+ SITE_NAME + " TEXT,"
+			+ AGENCY + " TEXT,"
+			+ VARIABLE + " TEXT,"
+			+ CREATED_DATE + " INTEGER,"
+			+ LAST_VIEWED + " INTEGER,"
+			+ LATITUDE + " REAL,"
+			+ LONGITUDE + " REAL,"
+			+ ORDER + " INTEGER,"
+			+ DEST_NAME + " INTEGER,"
+			+ DESCRIPTION + " INTEGER,"
+			+ DEST_USER_ID + " INTEGER,"
+			+ VISUAL_GAUGE_LATITUDE + " REAL,"
+			+ VISUAL_GAUGE_LONGITUDE + " REAL,"
+			+ DEST_CREATED_AT + " INTEGER,"
+			+ DEST_UPDATED_AT + " INTEGER,"
+			+ FACET_DESCRIPTION + " TEXT,"
+			+ DESTINATION_FACET_ID + " INTEGER,"
+			+ FACET_USER_ID + " INTEGER,"
+			+ TOO_LOW + " REAL,"
+			+ LOW + " REAL,"
+			+ MED + " REAL,"
+			+ HIGH + " REAL,"
+			+ HIGH_PLUS + " REAL,"
+			+ LOW_DIFFICULTY + " INTEGER,"
+			+ MED_DIFFICULTY + " INTEGER,"
+			+ HIGH_DIFFICULTY + " INTEGER,"
+			+ FACET_CREATED_AT + " INTEGER,"
+			+ FACET_UPDATED_AT + " INTEGER,"
+			+ FACET_TYPE + " INTEGER,"
+			+ LOW_PORT_DIFFICULTY + " INTEGER,"
+			+ MED_PORT_DIFFICULTY + " INTEGER,"
+			+ HIGH_PORT_DIFFICULTY + " INTEGER,"
+			+ QUALITY_LOW + " INTEGER,"
+			+ QUALITY_MED + " INTEGER,"
+			+ QUALITY_HIGH + " INTEGER );";
+
 
 	public static List<Favorite> getFavorites(Context ctx, SiteId siteId, String variableId) {
 		

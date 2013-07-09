@@ -14,4 +14,10 @@
 	<item android:id="@+id/mi_help"
     	android:title="Help"
     	android:icon="@drawable/ic_menu_help"/>
+    <item android:id="@+id/mi_sign_in"
+          android:title="Sign In"
+          android:visible="false"/>
+    <item android:id="@+id/mi_sign_out"
+          android:title="Sign Out"
+          android:visible="false"/>
 </menu>

@@ -10,6 +10,7 @@ import android.app.TabActivity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.content.pm.ApplicationInfo;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
@@ -18,6 +19,7 @@ import android.view.Window;
 import android.widget.TabHost;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.riverflows.db.CachingHttpClientWrapper;
 import com.riverflows.db.DatasetsDaoImpl;
 import com.riverflows.db.DbMaintenance;
@@ -64,6 +66,10 @@ public class Home extends TabActivity {
 				getApplicationContext(), getCacheDir(), CACHE_TTL, "text/xml"));
 	    
 	    Logger.getLogger("").setLevel(Level.WARNING);
+
+		//disable Google Analytics when in debug mode
+		GoogleAnalytics myInstance = GoogleAnalytics.getInstance(this);
+		myInstance.setAppOptOut((getApplicationContext().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != ApplicationInfo.FLAG_DEBUGGABLE);
 	    
 	    requestWindowFeature(Window.FEATURE_NO_TITLE);
 	    setContentView(R.layout.main);
@@ -98,8 +104,9 @@ public class Home extends TabActivity {
 	    } else {
 	    	tabHost.setCurrentTab(0);
 	    }
-	    
-	    initSession.execute();
+
+		//attempt to set up session for accessing web services, but don't display a login screen
+		initSession.execute();
 	}
 
 	@Override
@@ -109,7 +116,7 @@ public class Home extends TabActivity {
 	    EasyTracker.getInstance().activityStart(this);
 	}
 	
-	private static final int REQUEST_CHOOSE_ACCOUNT = 281546;
+	static final int REQUEST_CHOOSE_ACCOUNT = 281546;
 	static final int REQUEST_HANDLE_RECOVERABLE_AUTH_EXC = 95436;
 
 	private class InitSession extends ApiCallTask<String, Integer, String> {
@@ -124,8 +131,6 @@ public class Home extends TabActivity {
 
 		@Override
 		protected String doApiCall(Session session, String... params) {
-			Log.v(TAG, "successfully obtained authToken: " + session.authToken);
-			
 			return null;
 		}
 		

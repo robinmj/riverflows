@@ -6,10 +6,13 @@ import android.content.Intent;
 import android.util.Log;
 
 import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.AccountPicker;
 import com.riverflows.Home;
 import com.riverflows.wsclient.WsSessionManager.Session;
 import com.subalpine.DeferredExceptionAsyncTask;
+
+import java.io.IOException;
 
 public abstract class ApiCallTask<Params, Progress, Result> extends
 		DeferredExceptionAsyncTask<Params, Progress, Result> {
@@ -35,7 +38,6 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 	/**
 	 * For re-running the task after authentication has succeeded
 	 * @param oldTask
-	 * @param accountName
 	 */
 	public ApiCallTask(ApiCallTask<Params, Progress, Result> oldTask) {
 		this.activity = oldTask.activity;
@@ -54,38 +56,23 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 			return currentSession;
 		}
 		
-		if(this.loginRequired || !WsSessionManager.wasPromptedToLogin()) {
-			this.sendToLoginScreen = true;
-			return null;
-		}
-		
 		if(accountName == null) {
+
+			if(this.loginRequired || !WsSessionManager.wasPromptedToLogin()) {
+				this.sendToLoginScreen = true;
+				return null;
+			}
+
 			//login anonymously
 			currentSession = WsSessionManager.getWsAuthToken("anonymous", null, null);
 			WsSessionManager.setPromptedToLogin();
 		} else {
-			currentSession = WsSessionManager.loginWithGoogleOAuth2(this.activity, accountName, recoveryRequestCode);
+			currentSession = WsSessionManager.loginWithGoogleOAuth2(this.activity, accountName);
 		}
 		
         WsSessionManager.notifyAccountSessionChange(currentSession, null);
 		
 		return currentSession;
-		
-		//check for facebook access token- if one exists, use it to get a request token and start a session
-//		Facebook facebook = FacebookHelper.getFacebook(context);
-//		
-//		if(facebook.isSessionValid()) {
-//			//this shouldn't happen very often since it's unlikely that the refresh token will be invalid
-//			// while a valid facebook token is present
-//			Log.d(TAG, "found saved facebook token");
-//			try {
-//				currentSession = associateFacebook(this.context, facebook.getAccessToken(), facebook.getAccessExpires(), currentSession);
-//			} finally {
-//				//this will result in a duplicate call to the session listeners (not ideal), but it will
-//				// happen only on very rare occasions (see above)
-//		        notifyAccountSessionChange(currentSession, null);
-//			}
-//		}
 	}
 	
 	protected final Result tryInBackground(Params... params) throws Exception {
@@ -105,13 +92,25 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 	 * @param params
 	 * @return
 	 */
-	protected abstract Result doApiCall(Session session, Params...params);
+	protected abstract Result doApiCall(Session session, Params...params) throws Exception;
 	
 	public boolean isSecondTry() {
 		return this.secondTry;
 	}
 	
 	protected final void onPostExecute(Result result) {
+		if(exception != null) {
+			if(exception instanceof UserRecoverableAuthException) {
+				activity.startActivityForResult(((UserRecoverableAuthException)exception).getIntent(), recoveryRequestCode);
+				return;
+			}
+
+			if(exception instanceof IOException && exception.getMessage().equals("NetworkError")) {
+				onNetworkError();
+			}
+
+		}
+
 		if(sendToLoginScreen && !secondTry) {
 
 //			Intent loginIntent = new Intent(activity, Login.class);
@@ -164,6 +163,8 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 			throw new RuntimeException(cnse);
 		}
 	}
+
+	protected void onNetworkError() {}
 	
 	/**
 	 * Called if the user was logged in without the need for

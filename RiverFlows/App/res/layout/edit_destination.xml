@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+    <LinearLayout
+                android:orientation="vertical"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="10dp">
+
+        <EditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Destination Name"
+                android:id="@+id/fld_dest_name"/>
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Gage Station"/>
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content">
+            <ImageView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/agency_icon"/>
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textAppearance="?android:attr/textAppearanceSmall"
+                    android:text=""
+                    android:id="@+id/lbl_dest_gage"/>
+        </LinearLayout>
+
+        <Spinner
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:id="@+id/select_facet"
+                android:layout_gravity="center"/>
+
+        <TextView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:text="Level Definitions"/>
+
+        <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:padding="10dp">
+
+            <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_weight="0.5"
+                    android:background="#fff"
+                    android:paddingTop="1sp"
+                    android:paddingLeft="1dp"
+                    android:paddingBottom="1dp">
+
+                <TextView
+                        style="@style/LevelLabel"
+                        android:textColor="@color/txt_level_too_high"
+                        android:background="@color/bg_level_too_high"
+                        android:layout_marginRight="1dp"
+                        android:text="Too High"
+                        android:id="@+id/lbl_too_high"/>
+
+                <TextView
+                        style="@style/LevelLabel"
+                        android:textColor="@color/txt_level_high"
+                        android:background="@color/bg_level_high"
+                        android:text="High"
+                        android:id="@+id/lbl_high"/>
+
+                <TextView
+                        style="@style/LevelLabel"
+                        android:textColor="@color/txt_level_medium"
+                        android:background="@color/bg_level_medium"
+                        android:text="Medium"
+                        android:id="@+id/lbl_medium"/>
+
+                <TextView
+                        style="@style/LevelLabel"
+                        android:textColor="@color/txt_level_low"
+                        android:background="@color/bg_level_low"
+                        android:text="Low"
+                        android:id="@+id/lbl_low"/>
+
+                <TextView
+                        style="@style/LevelLabel"
+                        android:textColor="@color/txt_level_too_low"
+                        android:background="@color/bg_level_too_low"
+                        android:layout_marginRight="1dp"
+                        android:text="Too Low"
+                        android:id="@+id/lbl_too_low"/>
+            </LinearLayout>
+
+            <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="25sp"
+                    android:orientation="vertical"
+                    android:layout_weight="1">
+
+                <FrameLayout
+                        style="@style/LevelCaretBalloon">
+                    <EditText
+                            style="@style/LevelField"
+                            android:id="@+id/fld_too_high"
+                            android:hint="Level"/>
+                    <TextView
+                        style="@style/LevelUnitLabel"
+                        android:id="@+id/lbl_too_high_unit"/>
+                </FrameLayout>
+
+
+                <FrameLayout
+                        style="@style/LevelCaretBalloon">
+                    <EditText
+                            style="@style/LevelField"
+                            android:id="@+id/fld_high"
+                            android:hint="Level"/>
+                    <TextView
+                            style="@style/LevelUnitLabel"
+                            android:id="@+id/lbl_high_unit"/>
+                </FrameLayout>
+
+                <FrameLayout
+                        style="@style/LevelCaretBalloon">
+                    <EditText
+                            style="@style/LevelField"
+                            android:id="@+id/fld_medium"
+                            android:hint="Level"/>
+                    <TextView
+                            style="@style/LevelUnitLabel"
+                            android:id="@+id/lbl_medium_unit"/>
+                </FrameLayout>
+
+
+
+                <FrameLayout
+                        style="@style/LevelCaretBalloon">
+                    <EditText
+                            style="@style/LevelField"
+                            android:id="@+id/fld_low"
+                            android:hint="Level"/>
+                    <TextView
+                            style="@style/LevelUnitLabel"
+                            android:id="@+id/lbl_low_unit"/>
+                </FrameLayout>
+            </LinearLayout>
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

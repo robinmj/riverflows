@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu
+  xmlns:android="http://schemas.android.com/apk/res/android">
+	<item android:id="@+id/ai_cancel"
+		android:title="Cancel"
+		android:icon="@drawable/cancel"
+        android:showAsAction="always"/>
+    <!--<item android:id="@+id/ai_save"
+          android:title="Save"
+          android:icon="@drawable/accept"
+          android:showAsAction="always"/>-->
+</menu>

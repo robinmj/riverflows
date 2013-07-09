@@ -59,7 +59,7 @@ public class DataSourceController {
 	
 	private static final Map<String,RESTDataSource> dataSources = new HashMap<String,RESTDataSource>();
 	
-	private static class MyHttpClient extends DefaultHttpClient {
+	public static class SSLHttpClient extends DefaultHttpClient {
 		@Override
 		protected ClientConnectionManager createClientConnectionManager() {
 			try {
@@ -142,7 +142,7 @@ public class DataSourceController {
 		try {
 			long startTime = System.currentTimeMillis();
 			
-			MyHttpClient client = new MyHttpClient();
+			SSLHttpClient client = new SSLHttpClient();
 			
 			URI url = new URI(urlStr);
 			
@@ -434,7 +434,7 @@ public class DataSourceController {
 	/**
 	 * @param site
 	 * @param hardRefresh TODO
-	 * @param variableTypes a suggestion of the variables to retrieve, in order of preference.  The DataSource
+	 * @param variables a suggestion of the variables to retrieve, in order of preference.  The DataSource
 	 * implementation may truncate this array if it only supports retrieving data for a limited number of variables
 	 * at once, but it will always attempt to retrieve data for the first variable.
 	 * @return TODO do we need to return a map here?
@@ -451,8 +451,6 @@ public class DataSourceController {
 	/**
 	 * Download or retrieve from a cache the last readings for the preferred variables of all the sites in a given state.
 	 * @param state
-	 * @param variableTypes
-	 * @param sites complete site objects to be used to populate the result
 	 * @return siteId -> SiteData mappings
 	 * @throws ClientProtocolException
 	 * @throws IOException
@@ -471,8 +469,6 @@ public class DataSourceController {
 	/**
 	 * 
 	 * @param hardRefresh TODO
-	 * @param sites
-	 * @param variables respective variables for each site
 	 * @return 
 	 * @throws ClientProtocolException
 	 * @throws IOException

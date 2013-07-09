@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:id="@+id/main">
+
+    <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:orientation="horizontal"
+            android:layout_marginLeft="10sp"
+            android:layout_marginRight="10sp"
+            android:layout_marginTop="2sp"
+            android:layout_marginBottom="2sp">
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="Logged In As"
+                android:id="@+id/logged_in_as"
+                android:layout_gravity="center"
+                android:layout_marginRight="10sp"/>
+        <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_margin="4dp"
+                android:id="@+id/sign_out"
+                android:src="@drawable/common_signin_btn_icon_normal_dark"
+                android:layout_gravity="center"/>
+
+        <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceMedium"
+                android:text="name"
+                android:id="@+id/username"
+                android:layout_gravity="center"/>
+
+    </LinearLayout>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceSmall"
+            android:text="Welcome to RiverFlows 2.0! Please select your interests in order to filter destinations by type."
+            android:id="@+id/textView"
+            android:layout_gravity="left|center_vertical"
+            android:layout_margin="10sp"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="Interests"
+            android:id="@+id/interests"
+            android:layout_gravity="left|center_vertical"
+            android:layout_marginLeft="10sp"
+            android:layout_marginRight="10sp"/>
+
+</LinearLayout>

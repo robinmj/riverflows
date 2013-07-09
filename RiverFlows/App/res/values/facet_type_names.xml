@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string-array
+            name="facet_type_names">
+        <item>Canoeing/Kayaking</item>
+        <item>Rafting</item>
+        <item>Fishing</item>
+        <item>Motor Boating</item>
+    </string-array>
+</resources>

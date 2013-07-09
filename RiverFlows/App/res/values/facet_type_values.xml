@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <integer-array
+            name="facet_type_values">
+        <item>2</item>
+        <item>4</item>
+        <item>8</item>
+        <item>16</item>
+    </integer-array>
+</resources>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+            android:text="Welcome To RiverFlows 2.0"
+            android:id="@+id/textView"
+            android:layout_gravity="center"/>
+
+    <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:text="It is now possible to store your favorites remotely, as well as share them publically as destinations. By creating ahave access to the shared destinations of others.n account you will also "
+            android:id="@+id/textView2"
+            android:layout_gravity="center"/>
+
+</LinearLayout>
