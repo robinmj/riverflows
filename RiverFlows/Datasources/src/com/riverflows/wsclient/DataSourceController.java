@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.Authenticator;
+import java.net.HttpURLConnection;
 import java.net.PasswordAuthentication;
 import java.net.SocketException;
 import java.net.URISyntaxException;
@@ -141,18 +142,18 @@ public class DataSourceController {
 		}
 	}
 	
-	public static Map<SiteId,SiteData> getAllSites() throws ClientProtocolException, IOException {
+	public static Map<SiteId,SiteData> getAllSites(boolean hardRefresh) throws ClientProtocolException, IOException {
 		
 		String urlStr = RIVERFLOWS_WS_BASEURL + SITES_WS_PATH + "?version=" + RIVERFLOWS_WS_API_VERSION; 
 		
 		try {
-			return getSites(urlStr);
+			return getSites(urlStr, hardRefresh);
 		} catch(URISyntaxException use) {
 			throw new RuntimeException("invalid URL: " + urlStr, use);
 		}
 	}
 	
-	public static Map<SiteId,SiteData> getSites(String urlStr) throws ClientProtocolException, IOException, URISyntaxException {
+	public static Map<SiteId,SiteData> getSites(String urlStr, boolean hardRefresh) throws ClientProtocolException, IOException, URISyntaxException {
 		
 		if(LOG.isInfoEnabled()) LOG.info("site data URL: " + urlStr);
 		
@@ -164,13 +165,15 @@ public class DataSourceController {
 		try {
 			long startTime = System.currentTimeMillis();
 
-			HttpsURLConnection conn = (HttpsURLConnection)new URL(urlStr).openConnection();
+			HttpURLConnection conn = (HttpURLConnection)new URL(urlStr).openConnection();
 
 			conn.setRequestProperty("Accept", "text/csv");
 
-			conn.setUseCaches(true);
+			conn.setUseCaches(!hardRefresh);
 
-			conn.setSSLSocketFactory(sslContext.getSocketFactory());
+            if(conn instanceof HttpsURLConnection) {
+                ((HttpsURLConnection)conn).setSSLSocketFactory(sslContext.getSocketFactory());
+            }
 
 			contentInputStream = conn.getInputStream();
 			
@@ -472,18 +475,17 @@ public class DataSourceController {
 	/**
 	 * Download or retrieve from a cache the last readings for the preferred variables of all the sites in a given state.
 	 * @param state
-	 * @param variableTypes
-	 * @param sites complete site objects to be used to populate the result
+	 * @param hardRefresh
 	 * @return siteId -> SiteData mappings
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public static Map<SiteId,SiteData> getSiteData(USState state) throws ClientProtocolException, IOException {
+	public static Map<SiteId,SiteData> getSiteData(USState state, boolean hardRefresh) throws ClientProtocolException, IOException {
 		
 		String urlStr = RIVERFLOWS_WS_BASEURL + SITES_WS_PATH + "?version=" + RIVERFLOWS_WS_API_VERSION + "&state=" + state.getAbbrev();
 
 		try {
-			return getSites(urlStr);
+			return getSites(urlStr, hardRefresh);
 		} catch(URISyntaxException use) {
 			throw new RuntimeException("invalid URL: " + urlStr, use);
 		}

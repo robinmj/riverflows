@@ -76,7 +76,7 @@ public class RiverSelect extends SiteList {
 				//cache miss or hard refresh
 				//TODO toast notification of each site loaded?
 				try {
-					Map<SiteId,SiteData> siteDataMap = DataSourceController.getSiteData(state);
+					Map<SiteId,SiteData> siteDataMap = DataSourceController.getSiteData(state, hardRefresh);
 
 					sites = new ArrayList<SiteData>(siteDataMap.values());
 

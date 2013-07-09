@@ -351,7 +351,7 @@ public abstract class SiteList extends ListActivity {
 		@Override
 		protected String doInBackground(Integer... params) {
 			try {
-				Map<SiteId,SiteData> siteData = DataSourceController.getAllSites();
+				Map<SiteId,SiteData> siteData = DataSourceController.getAllSites(true);
 			} catch (UnknownHostException uhe) {
 				return "no network access";
 			} catch(Exception e) {
