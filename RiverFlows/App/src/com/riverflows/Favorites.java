@@ -443,7 +443,12 @@ public class Favorites extends ListActivity {
 
 				//use custom name if one is defined
 				if(favorite.getName() != null) {
-					current.getSite().setName(favorite.getName());
+                    Site s = current.getSite();
+
+                    //modify a copy of the site since it may be used in more than one place
+                    Site customNamedSite = new Site(s.getSiteId(), favorite.getName(), s.getLongitude(), s.getLatitude(), s.getState(), s.getSupportedVariables());
+
+					current.setSite(customNamedSite);
 				}
 				
 				if(current.getDatasets().size() <= 1) {
