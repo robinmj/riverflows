@@ -6,22 +6,20 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import com.riverflows.wsclient.UsgsCsvDataSource;
-
 
 public class RiverGaugesDb extends SQLiteOpenHelper {
-	
+
 	public static final String DB_NAME = "RiverFlows";
-	public static final int DB_VERSION = 7;
-	
+	public static final int DB_VERSION = 8;
+
 	private Integer upgradedFromVersion = null;
-	
+
 	private static RiverGaugesDb helper;
 
 	private RiverGaugesDb(Context context) {
 		super(context, DB_NAME, null, DB_VERSION);
 	}
-	
+
 	public static RiverGaugesDb getHelper(Context context) {
 		if(helper == null) {
 			helper = new RiverGaugesDb(context);
@@ -32,78 +30,26 @@ public class RiverGaugesDb extends SQLiteOpenHelper {
 	@Override
 	public void onCreate(SQLiteDatabase db) {
 		db.execSQL(FavoritesDaoImpl.CREATE_SQL);
-		db.execSQL(SitesDaoImpl.CREATE_SQL);
 		db.execSQL(DatasetsDaoImpl.CREATE_SQL);
 	}
 
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int fromVersion, int toVersion) {
 		upgradedFromVersion = fromVersion;
-		
-		if(fromVersion < 2) {
-			String addNewCol = "ALTER TABLE " + SitesDaoImpl.NAME + " ADD COLUMN " + SitesDaoImpl.AGENCY + " TEXT;";
-			db.execSQL(addNewCol);
 
-			//up to this point, USGS was the only agency
-			ContentValues agencyValue = new ContentValues();
-			agencyValue.put(SitesDaoImpl.AGENCY, "USGS");
-			db.update(SitesDaoImpl.NAME, agencyValue, null, null);
-			
-			addNewCol = "ALTER TABLE " + SitesDaoImpl.NAME + " ADD COLUMN " + SitesDaoImpl.LAST_READING + " REAL;";
-			db.execSQL(addNewCol);
-			
-			addNewCol = "ALTER TABLE " + SitesDaoImpl.NAME + " ADD COLUMN " + SitesDaoImpl.LAST_READING_TIME + " REAL;";
-			db.execSQL(addNewCol);
-			
-			addNewCol = "ALTER TABLE " + SitesDaoImpl.NAME + " ADD COLUMN " + SitesDaoImpl.LAST_READING_VAR + " TEXT;";
-			db.execSQL(addNewCol);
-		}
 		if(fromVersion < 3) {
 
 			String addNewCol = "ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.AGENCY + " TEXT;";
 			db.execSQL(addNewCol);
-			
+
 			addNewCol = "ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.VARIABLE + " TEXT;";
 			db.execSQL(addNewCol);
-			
+
 			//up to this point, USGS was the only agency
 			ContentValues agencyValue = new ContentValues();
 			agencyValue.put(FavoritesDaoImpl.AGENCY, "USGS");
-			
+
 			db.update(FavoritesDaoImpl.NAME, agencyValue, null, null);
-			
-			
-			String deleteSitesWhereClause = null;
-			
-			Cursor favoriteSiteIds = db.query(FavoritesDaoImpl.NAME, new String[]{FavoritesDaoImpl.SITE_ID}, null, null, null, null, null);
-			
-			if(favoriteSiteIds.getCount() > 0) {
-				StringBuilder clause = new StringBuilder(SitesDaoImpl.SITE_ID + " NOT IN ('");
-				favoriteSiteIds.moveToFirst();
-				do {
-					clause.append(favoriteSiteIds.getString(0));
-					clause.append("','");
-				} while(favoriteSiteIds.moveToNext());
-				
-				int len = clause.length();
-				clause.delete(len - 2, len);
-				clause.append(")");
-				deleteSitesWhereClause = clause.toString();
-			}
-			
-			favoriteSiteIds.close();
-			
-			//delete everything in the sites table that is not referred to by a favorite rather than attempt to initialize supportedVariables
-			db.delete(SitesDaoImpl.NAME, deleteSitesWhereClause, null);
-			
-			addNewCol = "ALTER TABLE " + SitesDaoImpl.NAME + " ADD COLUMN " + SitesDaoImpl.SUPPORTED_VARS + " TEXT;";
-			
-			db.execSQL(addNewCol);
-			
-			//favorites will stop showing up if the sites they are associated with don't have supported variables
-			String setFavoriteVars = "UPDATE " + SitesDaoImpl.NAME + " SET " + SitesDaoImpl.SUPPORTED_VARS + " = '"
-				+ UsgsCsvDataSource.VTYPE_STREAMFLOW_CFS.getId() + " " + UsgsCsvDataSource.VTYPE_GAUGE_HEIGHT_FT.getId() + "', " + SitesDaoImpl.TIME_FOUND + " = 0";
-			db.execSQL(setFavoriteVars);
 		}
 		if(fromVersion < 4) {
 			db.execSQL(DatasetsDaoImpl.CREATE_SQL);
@@ -118,6 +64,47 @@ public class RiverGaugesDb extends SQLiteOpenHelper {
 			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.ORDER + " INTEGER;");
 		}
 		if(fromVersion < 7) {
+			db.execSQL("ALTER TABLE favorites ADD COLUMN name TEXT;");
+			db.execSQL("ALTER TABLE favorites ADD COLUMN state TEXT;");
+			db.execSQL("ALTER TABLE favorites ADD COLUMN supportedVariables TEXT;");
+
+			if(fromVersion > 1) {
+				String sql = "SELECT favorites.id, favorites.siteName, sites.siteName, sites.state, sites.supportedVariables" +
+						" FROM favorites JOIN sites ON (favorites.siteId = sites.siteId" +
+						" AND favorites.agency = sites.agency)";
+
+				Cursor c = db.rawQuery(sql, null);
+
+				ContentValues[] valuesToUpdate = new ContentValues[c.getCount()];
+				int[] favoriteIds = new int[c.getCount()];
+
+				if(c.getCount() == 0) {
+					c.close();
+				} else {
+					c.moveToFirst();
+
+					do {
+
+						favoriteIds[c.getPosition()] = c.getInt(0);
+
+						valuesToUpdate[c.getPosition()] = new ContentValues();
+						valuesToUpdate[c.getPosition()].put("siteName", c.getString(2));
+						valuesToUpdate[c.getPosition()].put("name", c.getString(1));
+						valuesToUpdate[c.getPosition()].put("state", c.getString(3));
+						valuesToUpdate[c.getPosition()].put("supportedVariables", c.getString(4));
+					} while(c.moveToNext());
+
+					c.close();
+				}
+
+				for(int a = 0; a < favoriteIds.length; a++) {
+					db.update("favorites", valuesToUpdate[a], "id = ?", new String[] { favoriteIds[a] + ""} );
+				}
+			}
+
+			db.execSQL("DROP TABLE IF EXISTS sites");
+		}
+		if(fromVersion < 8) {
 			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.DEST_NAME + " INTEGER;");
 			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.DESCRIPTION + " INTEGER;");
 			db.execSQL("ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.DEST_USER_ID + " INTEGER;");

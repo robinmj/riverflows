@@ -37,8 +37,8 @@ import com.riverflows.data.UserAccount;
  */
 public class WsSessionManager {
 
-	public static final String WS_BASE_URL = "https://ws-staging.riverflowsapp.com";
-	//public static final String WS_BASE_URL = "http://192.168.103.3:3000";
+	//public static final String WS_BASE_URL = "https://ws-staging.riverflowsapp.com";
+	public static final String WS_BASE_URL = "http://192.168.103.3:3000";
 
 	public static final String AUTH_APP_URL = WS_BASE_URL + "/application/check_mobile_login";
 	

@@ -33,38 +33,32 @@ import com.riverflows.data.Series;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
-import com.riverflows.data.USState;
 import com.riverflows.data.UserAccount;
 import com.riverflows.data.ValueConverter;
 import com.riverflows.data.Variable;
 import com.riverflows.data.Variable.CommonVariable;
 import com.riverflows.db.FavoritesDaoImpl;
-import com.riverflows.db.SitesDaoImpl;
 import com.riverflows.wsclient.ApiCallTask;
 import com.riverflows.wsclient.DataSourceController;
-import com.riverflows.wsclient.UsgsCsvDataSource;
 import com.riverflows.wsclient.WsSessionManager;
-
-import org.apache.http.conn.HttpHostConnectException;
 
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 public class Favorites extends ListActivity {
-	
+
 	private static final String TAG = Home.TAG;
-	
+
 	public static final String FAVORITES_PATH = "/favorites/";
 
 	public static final String PREF_MIGRATE_DESTINATIONS_NOTICE_SHOWN = "pref_share_favorites_notice_shown";
-	
+
 	public static final int REQUEST_EDIT_FAVORITE = 1;
 	public static final int REQUEST_REORDER_FAVORITES = 2;
 	public static final int REQUEST_CREATE_ACCOUNT = 83247;
@@ -75,7 +69,7 @@ public class Favorites extends ListActivity {
 	public static final int DIALOG_ID_MASTER_LOADING_ERROR = 4;
 	public static final int DIALOG_ID_UPGRADE_FAVORITES = 5;
 	public static final int DIALOG_ID_SIGNING_IN = 6;
-	
+
 	LoadSitesTask loadTask = null;
 
 	private SignIn signin;
@@ -85,28 +79,28 @@ public class Favorites extends ListActivity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		setContentView(R.layout.favorites);
 
 		ListView lv = getListView();
-		
+
 		hideInstructions();
 
 		TextView favoriteSubtext = (TextView)findViewById(R.id.favorite_instructions_subheader);
-		
+
 		SpannableString subtext = new SpannableString("If you select your favorite gauge sites, they will appear here.");
-		
+
 		subtext.setSpan(new URLSpan("riverflows://help/favorites.html"), 7, 39, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-		
+
 		favoriteSubtext.setText(subtext);
 		favoriteSubtext.setMovementMethod(LinkMovementMethod.getInstance());
 
 		SharedPreferences settings = getSharedPreferences(Home.PREFS_FILE, MODE_PRIVATE);
     	tempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
-		
+
 		lv.setTextFilterEnabled(true);
 		this.loadTask = getLastNonConfigurationInstance();
-		
+
 		if(this.loadTask != null) {
 			if(!this.loadTask.running) {
 				if(this.loadTask.gauges == null || this.loadTask.errorMsg != null) {
@@ -121,41 +115,41 @@ public class Favorites extends ListActivity {
 		} else {
 			loadSites(false);
 		}
-		
+
 		setTitle("Favorites");
 	}
-	
+
 	@Override
 	protected void onStart() {
 		super.onStart();
 		EasyTracker.getInstance().activityStart(this);
 	}
-	
+
 	@Override
 	protected void onStop() {
 		super.onStop();
 		EasyTracker.getInstance().activityStop(this);
 	}
-	
+
 	@Override
 	protected void onResume() {
 		super.onResume();
-		
+
 		//discard the cached list items after 2 hours
 		if((System.currentTimeMillis() - this.loadTask.loadTime.getTime()) > (2 * 60 * 60 * 1000)) {
 			loadSites(true);
 			return;
 		}
-		
+
 		//make sure list of favorites hasn't been modified
 //		LoadSitesTask currentLoadTask = this.loadTask;
 //		if(currentLoadTask.running) {
 			//not much we can do here- modifying the task's results will just cause thread contention problems
 //			return;
 //		}
-		
+
 		List<Favorite> currentFavs = FavoritesDaoImpl.getFavorites(this, null, null);
-		
+
 		if(!this.loadTask.running &&
 				(this.loadTask.favorites == null || (currentFavs.size() != this.loadTask.favorites.size()))) {
 			//a favorite has been removed- reload the list
@@ -163,7 +157,7 @@ public class Favorites extends ListActivity {
 			loadSites(false);
 			return;
 		}
-		
+
 		//there's still a possibility that the favorites list is the same length because
 		// a favorite was added while another was deleted
 		for(Favorite currentFav: currentFavs) {
@@ -173,23 +167,23 @@ public class Favorites extends ListActivity {
 				return;
 			}
 		}
-		
+
 		//temperature conversion has changed
 		SharedPreferences settings = getSharedPreferences(Home.PREFS_FILE, MODE_PRIVATE);
     	String newTempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
-    	
+
     	if(newTempUnit != tempUnit && (newTempUnit == null || !newTempUnit.equals(tempUnit))) {
 			tempUnit = newTempUnit;
 			loadSites(false);
 			return;
     	}
 	}
-	
+
 	@Override
     public LoadSitesTask onRetainNonConfigurationInstance() {
         return this.loadTask;
     }
-    
+
     @Override
     public LoadSitesTask getLastNonConfigurationInstance() {
     	return (LoadSitesTask)super.getLastNonConfigurationInstance();
@@ -201,15 +195,15 @@ public class Favorites extends ListActivity {
 		Intent i = new Intent(this, ViewChart.class);
 		Site selectedStation = null;
 		Variable selectedVariable = null;
-		
+
 		if(this.loadTask == null || this.loadTask.gauges == null) {
 			return;
 		}
-		
+
 		for(SiteData currentData: this.loadTask.gauges) {
 			if(SiteAdapter.getItemId(currentData) == id){
 				selectedStation = currentData.getSite();
-				
+
 				Series data = DataSourceController.getPreferredSeries(currentData);
 				if(data != null) {
 					selectedVariable = data.getVariable();
@@ -217,17 +211,17 @@ public class Favorites extends ListActivity {
 				break;
 			}
 		}
-		
+
 		if(selectedStation == null) {
 			Log.w(TAG,"no such station: " + id);
 			return;
 		}
-		
+
         i.putExtra(ViewChart.KEY_SITE, selectedStation);
         i.putExtra(ViewChart.KEY_VARIABLE, selectedVariable);
         startActivity(i);
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
@@ -258,7 +252,7 @@ public class Favorites extends ListActivity {
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
-	
+
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch(id) {
@@ -295,16 +289,16 @@ public class Favorites extends ListActivity {
 		}
 		return null;
 	}
-	
+
 	private class ErrorMsgDialog extends AlertDialog {
 
 		public ErrorMsgDialog(Context context, String msg) {
 			super(context);
 			setMessage(msg);
 		}
-		
+
 	}
-	
+
 	/**
 	 * @param hardRefresh if true, discard persisted site data as well
 	 */
@@ -312,26 +306,26 @@ public class Favorites extends ListActivity {
 		showDialog(DIALOG_ID_LOADING);
 
 		List<SiteData> currentGauges = null;
-		
+
 		if(this.loadTask != null) {
 			currentGauges = this.loadTask.gauges;
 			this.loadTask.cancel(true);
 		}
-		
+
 		getListView().getEmptyView().setVisibility(View.INVISIBLE);
-		
+
 		this.loadTask = new LoadSitesTask();
-		
+
 		//preserve existing gauges in case load fails
 		this.loadTask.gauges = currentGauges;
-		
+
 		if(hardRefresh) {
 			this.loadTask.execute(HARD_REFRESH);
 		} else {
 			this.loadTask.execute();
 		}
 	}
-	
+
 	public void displayFavorites() {
 
 		if(this.loadTask.gauges != null) {
@@ -370,10 +364,10 @@ public class Favorites extends ListActivity {
 		//needed for Android 3.0+
 		//invalidateOptionsMenu();
 	}
-	
+
 	private void showInstructions() {
 		getListView().getEmptyView().setVisibility(View.VISIBLE);
-		
+
 		/*
 		WebView instructions = (WebView)findViewById(R.id.favorite_instructions);
         instructions.setClickable(false);
@@ -387,56 +381,52 @@ public class Favorites extends ListActivity {
 
 	/** parameter for LoadSitesTask */
 	public static final Integer HARD_REFRESH = new Integer(1);
-	
+
 	public class LoadSitesTask extends AsyncTask<Integer, Integer, List<SiteData>> {
-		
+
 		protected static final int STATUS_UPGRADING_FAVORITES = -1;
 
 		public final Date loadTime = new Date();
 		public List<SiteData> gauges = null;
 		public List<Favorite> favorites = null;
-		
+
 		public boolean running = false;
-		
+
 		public String errorMsg = null;
-		
+
 		protected void setLoadErrorMsg(String errorMsg) {
 			this.errorMsg = errorMsg;
 		}
-		
+
 		@Override
 		protected List<SiteData> doInBackground(Integer... params) {
 			running = true;
 			try {
 				this.favorites = FavoritesDaoImpl.getFavorites(getApplicationContext(), null, null);
-				
+
 				if(favorites.size() == 0) {
 					return Collections.emptyList();
 				}
-				
-				//migrate any favorites without a variable set
-				checkForOldFavorites(favorites);
-				
 
 				boolean hardRefresh = (params.length > 0 && params[0].equals(HARD_REFRESH));
-				
+
 				Map<SiteId,SiteData> allSiteDataMap = new HashMap<SiteId,SiteData>();
-				
+
 				Map<SiteId,SiteData> siteDataMap = DataSourceController.getSiteData(favorites, hardRefresh);
 
 		    	Map<CommonVariable, CommonVariable> unitConversionMap = CommonVariable.temperatureConversionMap(tempUnit);
-				
+
 				for(SiteData currentData: siteDataMap.values()) {
-					
+
 					//convert °C to °F if that setting is enabled
 					Map<CommonVariable,Series> datasets = currentData.getDatasets();
 					for(Series dataset: datasets.values()) {
 						ValueConverter.convertIfNecessary(unitConversionMap, dataset);
 					}
-					
+
 					allSiteDataMap.put(currentData.getSite().getSiteId(), currentData);
 				}
-				
+
 				return expandDatasets(favorites, allSiteDataMap);
 			} catch (UnknownHostException uhe) {
 				setLoadErrorMsg("no network access");
@@ -452,48 +442,53 @@ public class Favorites extends ListActivity {
 		// this code is cut-n-pasted from the Favorites activity to the Favorites content provider
 		private List<SiteData> expandDatasets(List<Favorite> favorites, Map<SiteId,SiteData> siteDataMap) {
 			ArrayList<SiteData> expandedDatasets = new ArrayList<SiteData>(favorites.size());
-			
+
 			//build a list of SiteData objects corresponding to the list of favorites
 			for(Favorite favorite: favorites) {
 				SiteData current = siteDataMap.get(favorite.getSite().getSiteId());
-				
+
 				Variable favoriteVar = DataSourceController.getVariable(favorite.getSite().getAgency(), favorite.getVariable());
-				
+
 				if(favoriteVar == null) {
 					throw new NullPointerException("could not find variable: " + favorite.getSite().getAgency() + " " + favorite.getVariable());
 				}
-				
+
 				if(current == null) {
 					//failed to get data for this site- create a placeholder item
 					current = new SiteData();
 					current.setSite(favorite.getSite());
-					
+
 					Series nullSeries = new Series();
 					nullSeries.setVariable(favoriteVar);
-					
+
 					Reading placeHolderReading = new Reading();
 					placeHolderReading.setDate(new Date());
 					placeHolderReading.setQualifiers("Datasource Down");
-					
+
 					nullSeries.setReadings(Collections.singletonList(placeHolderReading));
 					nullSeries.setSourceUrl("");
-					
+
 					current.getDatasets().put(favoriteVar.getCommonVariable(), nullSeries);
-					
+
 					expandedDatasets.add(current);
 					continue;
 				}
 
 				//use custom name if one is defined
 				if(favorite.getName() != null) {
-					current.getSite().setName(favorite.getName());
+                    Site s = current.getSite();
+
+                    //modify a copy of the site since it may be used in more than one place
+                    Site customNamedSite = new Site(s.getSiteId(), favorite.getName(), s.getLongitude(), s.getLatitude(), s.getState(), s.getSupportedVariables());
+
+					current.setSite(customNamedSite);
 				}
-				
+
 				if(current.getDatasets().size() <= 1) {
 					expandedDatasets.add(current);
 					continue;
 				}
-				
+
 				//use the dataset for this favorite's variable
 				Series dataset = current.getDatasets().get(favoriteVar.getCommonVariable());
 				if(dataset == null) {
@@ -502,122 +497,13 @@ public class Favorites extends ListActivity {
 					dataset.setReadings(new ArrayList<Reading>(0));
 					dataset.setVariable(favoriteVar);
 				}
-				
+
 				SiteData expandedDataset = new SiteData();
 				expandedDataset.setSite(current.getSite());
 				expandedDataset.getDatasets().put(favoriteVar.getCommonVariable(), dataset);
 				expandedDatasets.add(expandedDataset);
 			}
 			return expandedDatasets;
-		}
-		
-		private void checkForOldFavorites(List<Favorite> favorites) {
-			
-			if(favorites.size() > 0) {
-				
-				HashSet<USState> favoriteStates = new HashSet<USState>();
-	
-				//check for favorites which still don't have a variable set
-				
-				Iterator<Favorite> favoritesI = favorites.iterator();
-				
-				boolean progressStartPublished = false;
-				
-				while(favoritesI.hasNext()) {
-					Favorite f = favoritesI.next();
-					if(f.getVariable() == null) {
-						if(!progressStartPublished) {
-							publishProgress(-1, 0);
-							progressStartPublished = true;
-						}
-						
-						USState favoriteState = f.getSite().getState();
-						
-						if(!favoriteStates.contains(favoriteState)) {
-							//download the list of all sites in this favorite's state in order to get its supported variables
-							try {
-								Map<SiteId, SiteData> sitesMap = DataSourceController.getSiteData(favoriteState);
-								List<SiteData> sites = new ArrayList<SiteData>(sitesMap.values());
-								SitesDaoImpl.saveSites(getApplicationContext(), favoriteState, sites);
-								favoriteStates.add(favoriteState);
-							} catch(UnknownHostException ioe) {
-								setLoadErrorMsg("Could not upgrade favorites list format: No network access");
-								favorites.clear();
-								publishProgress(-1, 100);
-								return;
-							} catch(HttpHostConnectException hhce) {
-								setLoadErrorMsg("Could not upgrade favorites list format: Network error - please try again later");
-								favorites.clear();
-								publishProgress(-1, 100);
-								return;
-							} catch(Exception ioe) {
-								//don't know what else to do- just delete the favorite
-								FavoritesDaoImpl.deleteFavorite(getApplicationContext(), f.getSite().getSiteId(), null);
-								favoritesI.remove();
-								
-								EasyTracker.getTracker().sendException("checkForOldFavorites", ioe, true);
-								
-								continue;
-							}
-						}
-						
-						//get updated set of supported variables from the sites table
-						List<SiteData> siteDataList = SitesDaoImpl.getSites(getApplicationContext(), Collections.singletonList(f.getSite().getSiteId()));
-						
-						//delete the old favorite
-						FavoritesDaoImpl.deleteFavorite(getApplicationContext(), f.getSite().getSiteId(), null);
-
-						if(siteDataList.size() == 0) {
-							//The user's sites table probably isn't fully initialized for whatever reason- hopefully it
-							// will be next time this code is reached.
-							Log.w(getClass().getSimpleName(), "failed to find favorite site: " + f.getSite().getId());
-							favoritesI.remove();
-							continue;
-						}
-						SiteData favoriteSiteData = siteDataList.get(0);
-						
-						Variable[] siteVars = favoriteSiteData.getSite().getSupportedVariables();
-						
-						//f.site is now stale since we've downloaded a fresh sitelist- update it
-						f.setSite(favoriteSiteData.getSite());
-						
-						if(siteVars == null || siteVars.length == 0) {
-							Log.e(getClass().getSimpleName(), "Site has no supported variables! " + favoriteSiteData.getSite().getSiteId());
-							favoritesI.remove();
-							continue;
-						}
-						
-						Variable favoriteVar = null;
-						
-						//prefer streamflow over gauge height
-						String[] oldSupportedVarIds = new String[]{UsgsCsvDataSource.VTYPE_STREAMFLOW_CFS.getId(), UsgsCsvDataSource.VTYPE_GAUGE_HEIGHT_FT.getId()};
-						
-						//try to use one of the two variables that was supported in a previous version of riverflows
-						for(int a = 0; a < oldSupportedVarIds.length; a++) {
-							for(int b = 0; b < siteVars.length; b++) {
-								if(siteVars[b].getId().equals(oldSupportedVarIds[a])) {
-									favoriteVar = siteVars[b];
-									break;
-								}
-							}
-							if(favoriteVar != null) {
-								break;
-							}
-						}
-						
-						if(favoriteVar == null) {
-							//shouldn't happen, but we can just use the first supported variable
-							favoriteVar = siteVars[0];
-						}
-						
-						//set the favorite variable using the site's first supported variable,
-						// save the updated favorite
-						f.setVariable(favoriteVar.getId());
-						FavoritesDaoImpl.createFavorite(getApplicationContext(), f);
-					}
-				}
-				publishProgress(-1, 100);
-			}
 		}
 		
 		@Override
