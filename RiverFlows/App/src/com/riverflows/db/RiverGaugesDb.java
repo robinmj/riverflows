@@ -51,6 +51,8 @@ public class RiverGaugesDb extends SQLiteOpenHelper {
 		upgradedFromVersion = fromVersion;
 
 		if(fromVersion < 3) {
+			//eliminate ancient favorites since they lack a variable, agency, or state
+			db.execSQL("DELETE FROM favorites;");
 
 			String addNewCol = "ALTER TABLE " + FavoritesDaoImpl.NAME + " ADD COLUMN " + FavoritesDaoImpl.AGENCY + " TEXT;";
 			db.execSQL(addNewCol);
