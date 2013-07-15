@@ -166,7 +166,14 @@ public class FavoritesDaoImpl {
 			String favoriteVarId = c.getString(3);
 
 			newStation.setName(c.getString(5));
-			newStation.setState(USState.valueOf(c.getString(9)));
+
+			if(c.getString(9) == null) {
+				//this shouldn't happen, but older favorites will have a null state
+				// use Iowa since it has the most commonly visited gages
+				newStation.setState(USState.IA);
+			} else {
+				newStation.setState(USState.valueOf(c.getString(9)));
+			}
 			
 			Favorite newFavorite = new Favorite(newStation, favoriteVarId);
 
