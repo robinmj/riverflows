@@ -771,6 +771,10 @@ public class ViewChart extends Activity {
 		if(otherVariables.length <= 1) {
 			return false;
 		}
+
+		if(variable == null) {
+			return false;
+		}
 		
         try {
 			for(int a = 0; a < otherVariables.length; a++) {
