@@ -2,7 +2,9 @@ package com.riverflows.wsclient;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.android.gms.auth.GoogleAuthUtil;
@@ -16,7 +18,7 @@ import java.io.IOException;
 
 public abstract class ApiCallTask<Params, Progress, Result> extends
 		DeferredExceptionAsyncTask<Params, Progress, Result> {
-	
+
 	protected final Activity activity;
 	protected final int requestCode;
 	protected final int recoveryRequestCode;
@@ -48,7 +50,7 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 	}
 	
 	private Session initSession() throws Exception {
-		Session currentSession = WsSessionManager.getSession();
+		Session currentSession = WsSessionManager.getSession(this.activity);
 		
 		if(!(currentSession == null || currentSession.authToken == null ||
 				currentSession.isExpired() || (currentSession.accountName == null && this.loginRequired))) {
@@ -120,18 +122,29 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 
 			//TODO make sure google play services is available
 
-			Intent launchChooser = AccountPicker.newChooseAccountIntent(null,
-					null,
-					new String[] {GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE},
-					false,
-					null,
-					null,
-					null,
-					null);
-			
-			this.activity.startActivityForResult(launchChooser, requestCode);
-			
-			return;
+
+			if(accountName == null) {
+
+				SharedPreferences settings = this.activity.getSharedPreferences(WsSessionManager.PREFS_FILE_NAME, Context.MODE_PRIVATE);
+
+				accountName = settings.getString(WsSessionManager.PREF_ACCOUNT_NAME, null);
+
+				if(accountName == null) {
+
+					Intent launchChooser = AccountPicker.newChooseAccountIntent(null,
+							null,
+							new String[] {GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE},
+							false,
+							null,
+							null,
+							null,
+							null);
+
+					this.activity.startActivityForResult(launchChooser, requestCode);
+
+					return;
+				}
+			}
 		}
 		onNoUIRequired(result);
 	};
@@ -154,6 +167,11 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 	private void reExecute(String accountName) {
         
         Log.d(Home.TAG, "account name: " + accountName);
+
+		SharedPreferences prefs = this.activity.getSharedPreferences(WsSessionManager.PREFS_FILE_NAME, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = prefs.edit();
+		editor.putString(WsSessionManager.PREF_ACCOUNT_NAME, accountName);
+		editor.commit();
         
 		try {
 	        ApiCallTask<Params, Progress, Result> newTask = clone();

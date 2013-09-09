@@ -483,7 +483,7 @@ public abstract class SiteList extends ListActivity {
 		
 		Variable[] supportedVars = siteData.getSite().getSupportedVariables();
 
-		boolean loggedIn = (WsSessionManager.getSession() != null);
+		boolean loggedIn = (WsSessionManager.getSession(this) != null);
 
 		SubMenu submenu = null;
 		if(loggedIn) {

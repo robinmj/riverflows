@@ -49,7 +49,7 @@ public class AccountSettings extends SherlockActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		currentUser = new UserAccount(WsSessionManager.getSession().userAccount);
+		currentUser = new UserAccount(WsSessionManager.getSession(this).userAccount);
 
 		setContentView(R.layout.account_settings);
 

@@ -573,7 +573,7 @@ public class Favorites extends ListActivity {
 		MenuItem signin = menu.findItem(R.id.mi_sign_in);
 		MenuItem signout = menu.findItem(R.id.mi_sign_out);
 
-		if(WsSessionManager.getSession() != null) {
+		if(WsSessionManager.getSession(this) != null) {
 			signin.setVisible(false);
 			signout.setVisible(true);
 		} else {
