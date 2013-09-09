@@ -116,6 +116,7 @@
                     <EditText
                             style="@style/LevelField"
                             android:id="@+id/fld_too_high"
+                            android:nextFocusForward="@+id/fld_high"
                             android:hint="(optional)"/>
                     <TextView
                         style="@style/LevelUnitLabel"
@@ -128,6 +129,7 @@
                     <EditText
                             style="@style/LevelField"
                             android:id="@+id/fld_high"
+                            android:nextFocusForward="@+id/fld_medium"
                             android:hint="Level"/>
                     <TextView
                             style="@style/LevelUnitLabel"
@@ -139,6 +141,7 @@
                     <EditText
                             style="@style/LevelField"
                             android:id="@+id/fld_medium"
+                            android:nextFocusForward="@+id/fld_low"
                             android:hint="Level"/>
                     <TextView
                             style="@style/LevelUnitLabel"

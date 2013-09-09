@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.RiverFlows" parent="@style/Theme.Sherlock"></style>
+    <style name="Theme.RiverFlows" parent="@style/Theme.Sherlock">
+        <item name="numberPickerStyle">@style/NPWidget.Holo.NumberPicker</item>
+    </style>
 
     <color name="txt_level_too_high">#fff</color>
     <color name="bg_level_too_high">#000</color>
