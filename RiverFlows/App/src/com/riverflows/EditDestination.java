@@ -4,7 +4,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,13 +27,14 @@ import java.util.concurrent.atomic.AtomicReference;
 /**
  * Created by robin on 6/23/13.
  */
-public class EditDestination extends SherlockFragmentActivity implements NumberPickerDialog.NumberPickerDialogListener {
+public class EditDestination extends SherlockFragmentActivity {
 	private static final int MAIN_LAYOUT_ID = 8631537;
 
 	public static final String KEY_SITE = "site";
 	public static final String KEY_VARIABLE = "variable";
 
 	private ActionMode mMode;
+	private EditDestinationFragment editDestination;
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -43,7 +43,7 @@ public class EditDestination extends SherlockFragmentActivity implements NumberP
 		if(manager.findFragmentByTag("edit_destination") == null) {
 			Bundle extras = getIntent().getExtras();
 
-			EditDestinationFragment editDestination = new EditDestinationFragment();
+			editDestination = new EditDestinationFragment();
 			editDestination.station = (Site)extras.get(KEY_SITE);
 			editDestination.variable = (Variable)extras.get(KEY_VARIABLE);
 
@@ -57,20 +57,22 @@ public class EditDestination extends SherlockFragmentActivity implements NumberP
 		mMode = startActionMode(new EditActionMode());
 	}
 
-	private TextView.OnFocusChangeListener levelFocusListener = new TextView.OnFocusChangeListener() {
-		@Override
-		public void onFocusChange(View textView, boolean hasFocus) {
-			if(hasFocus && !TextUtils.isEmpty(((TextView) textView).getText())) {
-				showEditDialog(textView.getId());
-			}
-		}
-	};
-
-	public class EditDestinationFragment extends SherlockFragment {
+	public static class EditDestinationFragment extends SherlockFragment implements NumberPickerDialog.NumberPickerDialogListener {
 
 		public Site station;
 		public Variable variable;
 		public DestinationFacet destinationFacet;
+
+		private TextView.OnFocusChangeListener levelFocusListener = new TextView.OnFocusChangeListener() {
+			@Override
+			public void onFocusChange(View textView, boolean hasFocus) {
+				if(hasFocus && !TextUtils.isEmpty(((TextView) textView).getText())) {
+					showEditDialog(textView.getId());
+				}
+			}
+		};
+
+		public EditDestinationFragment(){}
 
 		@Override
 		public void onSaveInstanceState(Bundle outState) {
@@ -132,15 +134,61 @@ public class EditDestination extends SherlockFragmentActivity implements NumberP
 
 			return v;
 		}
+
+		private AtomicReference<Integer> editedField = new AtomicReference<Integer>();
+
+		private void showEditDialog(int editedField) {
+			if(!this.editedField.compareAndSet(null, editedField)) {
+				return;
+			}
+
+			FragmentManager fm = getActivity().getSupportFragmentManager();
+			NumberPickerDialog levelSelectDialog = new NumberPickerDialog();
+			levelSelectDialog.setListener(this);
+			levelSelectDialog.show(fm, "fragment_number_picker");
+		}
+
+		@Override
+		public void onFinishNumberPicker(Float value) {
+
+			EditText editedField = (EditText)getView().findViewById(this.editedField.getAndSet(null));
+
+			if(value == null) {
+				editedField.setText(null);
+				return;
+			}
+
+			editedField.setText(value.toString());
+		}
 	}
 
-	private void save() {
+
+
+	@Override
+	public void onActionModeFinished(ActionMode mode) {
+		super.onActionModeFinished(mode);
+
+		EditText destNameField = (EditText)findViewById(R.id.fld_dest_name);
+
+		CharSequence destName = destNameField.getText();
+		if(TextUtils.isEmpty(destName)) {
+			destName = editDestination.station.getName();
+		}
+
+//		EditText levelField = (EditText)findViewById(R.id.fld_too_high);
+//		levelField = (EditText)findViewById(R.id.fld_high);
+//		levelField = (EditText)findViewById(R.id.fld_medium);
+//		levelField = (EditText)findViewById(R.id.fld_low);
+
 		//if creating a favorite {
 		//  sendBroadcast(Home.getWidgetUpdateIntent());
 		//}
 	}
 
 	private final class EditActionMode implements ActionMode.Callback {
+
+		private boolean save = true;
+
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 
@@ -156,9 +204,10 @@ public class EditDestination extends SherlockFragmentActivity implements NumberP
 
 		@Override
 		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
+			save = false;
 			switch(item.getItemId()) {
 				case R.id.ai_cancel:
-					//cancel()
+					//nothing specific to do here yet
 					break;
 			}
 			mode.finish();
@@ -169,7 +218,7 @@ public class EditDestination extends SherlockFragmentActivity implements NumberP
 
 		@Override
 		public void onDestroyActionMode(ActionMode mode) {
-			if(validateLevels()) {
+			if(!save || validateLevels()) {
 				EditDestination.this.finish();
 			} else {
 				mMode = startActionMode(new EditActionMode());
@@ -177,30 +226,14 @@ public class EditDestination extends SherlockFragmentActivity implements NumberP
 		}
 	}
 
-	private AtomicReference<Integer> editedField = new AtomicReference<Integer>();
-
-	private void showEditDialog(int editedField) {
-		if(!this.editedField.compareAndSet(null, editedField)) {
+	private void setErrorMessage(String message) {
+		TextView errorMsgView = (TextView)findViewById(R.id.lbl_error_msg);
+		if(message == null) {
+			errorMsgView.setVisibility(View.GONE);
 			return;
 		}
-
-		FragmentManager fm = getSupportFragmentManager();
-		NumberPickerDialog levelSelectDialog = new NumberPickerDialog();
-		levelSelectDialog.setListener(this);
-		levelSelectDialog.show(fm, "fragment_number_picker");
-	}
-
-	@Override
-	public void onFinishNumberPicker(Float value) {
-
-		EditText editedField = (EditText)findViewById(this.editedField.getAndSet(null));
-
-		if(value == null) {
-			editedField.setText(null);
-			return;
-		}
-
-		editedField.setText(value.toString());
+		errorMsgView.setText(message);
+		errorMsgView.setVisibility(View.VISIBLE);
 	}
 
 	private boolean validateLevels() {
@@ -209,25 +242,26 @@ public class EditDestination extends SherlockFragmentActivity implements NumberP
 		upperLimit = validateLevelField(R.id.fld_medium, upperLimit, null);
 		validateLevelField(R.id.fld_low, upperLimit, 0f);
 
-		return isValid(R.id.fld_too_high) && isValid(R.id.fld_high) && isValid(R.id.fld_medium) && isValid(R.id.fld_low);
-//		levelField = (EditText)findViewById(R.id.fld_too_high);
-//		levelField = (EditText)findViewById(R.id.fld_high);
-//		levelField = (EditText)findViewById(R.id.fld_medium);
-//		levelField = (EditText)findViewById(R.id.fld_low);
+		if(isValid(R.id.fld_high) && isValid(R.id.fld_medium) && isValid(R.id.fld_low)) {
+			return true;
+		}
+
+		setErrorMessage("Missing or invalid level definition(s)");
+
+		return false;
 	}
 
 	private Float validateLevelField(int resId, Float upperLimit, Float lowerLimit) {
-		int validLevelTextColor = getResources().getColor(android.R.color.white);
 
 		EditText levelField = (EditText)findViewById(resId);
-
-		int invalidColor = getResources().getColor(android.R.color.holo_red_dark);
 
 		CharSequence contents = levelField.getText();
 		if(TextUtils.isEmpty(contents)) {
 			//fld_too_high is an optional field
-			if(resId != R.id.fld_too_high) {
-				levelField.setTextColor(invalidColor);
+			if(resId == R.id.fld_too_high) {
+				setValid(levelField);
+			} else {
+				setInvalid(levelField);
 			}
 			return null;
 		}
@@ -236,23 +270,39 @@ public class EditDestination extends SherlockFragmentActivity implements NumberP
 			Float value =  new Float(contents.toString());
 			if(upperLimit != null && upperLimit.compareTo(value) <= 0) {
 				//mark as invalid
-				levelField.setTextColor(invalidColor);
+				setInvalid(levelField);
 				return value;
 			}
 			if(lowerLimit != null && lowerLimit.compareTo(value) >= 0) {
-				levelField.setTextColor(invalidColor);
+				setInvalid(levelField);
 				return value;
 			}
-			levelField.setTextColor(validLevelTextColor);
+			setValid(levelField);
 			return value;
 		} catch(NumberFormatException nfe) {
-			levelField.setTextColor(invalidColor);
+			setInvalid(levelField);
 		}
 		return upperLimit;
 	}
 
+	private void setValid(EditText field) {
+		int validTextColor = getResources().getColor(android.R.color.white);
+		int validBgColor = getResources().getColor(android.R.color.black);
+
+		field.setTextColor(validTextColor);
+		field.setBackgroundColor(validBgColor);
+	}
+
+	private void setInvalid(EditText field) {
+		int invalidTextColor = getResources().getColor(R.color.validation_error_color);
+		int invalidBgColor = getResources().getColor(R.color.validation_error_bgcolor);
+
+		field.setTextColor(invalidTextColor);
+		field.setBackgroundColor(invalidBgColor);
+	}
+
 	private boolean isValid(int resId) {
 		EditText levelField = (EditText)findViewById(resId);
-		return levelField.getCurrentTextColor() != getResources().getColor(android.R.color.holo_red_dark);
+		return levelField.getCurrentTextColor() != getResources().getColor(R.color.validation_error_color);
 	}
 }
