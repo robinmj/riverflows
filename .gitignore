@@ -1,3 +1,7 @@
-/RiverFlows/out
 .DS_Store
+/RiverFlows/.gradle/
+/RiverFlows/.idea/gradle.xml
 /RiverFlows/.idea/workspace.xml
+/RiverFlows/.idea/libraries/
+/RiverFlows/logarithmicnumberpicker
+build/
