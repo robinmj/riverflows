@@ -13,11 +13,9 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Site;
 import com.riverflows.data.Variable;
@@ -33,12 +31,65 @@ public class EditDestination extends SherlockFragmentActivity {
 	public static final String KEY_SITE = "site";
 	public static final String KEY_VARIABLE = "variable";
 
-	private ActionMode mMode;
 	private EditDestinationFragment editDestination;
+
+    private View.OnClickListener saveListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            if(editDestination.validateLevels()) {
+                //save
+                View fragView = editDestination.getView();
+
+                EditText destNameField = (EditText)fragView.findViewById(R.id.fld_dest_name);
+
+                CharSequence destName = destNameField.getText();
+                if(TextUtils.isEmpty(destName)) {
+                    destName = editDestination.station.getName();
+                }
+
+                EditText levelField = (EditText)fragView.findViewById(R.id.fld_too_high);
+                levelField = (EditText)fragView.findViewById(R.id.fld_high);
+                levelField = (EditText)fragView.findViewById(R.id.fld_medium);
+                levelField = (EditText)fragView.findViewById(R.id.fld_low);
+
+                //if creating a favorite {
+                //  sendBroadcast(Home.getWidgetUpdateIntent());
+                //}
+            }
+        }
+    };
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		FragmentManager manager = getSupportFragmentManager();
+
+        getSupportActionBar().setTitle("New Destination");
+
+        // BEGIN_INCLUDE (inflate_set_custom_view)
+        // Inflate a "Done/Cancel" custom action bar view.
+        final LayoutInflater inflater = (LayoutInflater) getActionBar().getThemedContext()
+                .getSystemService(LAYOUT_INFLATER_SERVICE);
+        final View customActionBarView = inflater.inflate(
+                R.layout.actionbar_custom_view_done_cancel, null);
+        customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(saveListener);
+        customActionBarView.findViewById(R.id.actionbar_cancel).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+
+        // Show the custom action bar view and hide the normal Home icon and title.
+        final ActionBar actionBar = getSupportActionBar();
+        actionBar.setDisplayOptions(
+                ActionBar.DISPLAY_SHOW_CUSTOM,
+                ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME
+                        | ActionBar.DISPLAY_SHOW_TITLE);
+        actionBar.setCustomView(customActionBarView,
+                new ActionBar.LayoutParams(
+                        ViewGroup.LayoutParams.MATCH_PARENT,
+                        ViewGroup.LayoutParams.MATCH_PARENT));
+        // END_INCLUDE (inflate_set_custom_view)
 
 		if(manager.findFragmentByTag("edit_destination") == null) {
 			Bundle extras = getIntent().getExtras();
@@ -51,10 +102,6 @@ public class EditDestination extends SherlockFragmentActivity {
 			transaction.add(android.R.id.content, editDestination, "edit_destination");
 			transaction.commit();
 		}
-
-		getSupportActionBar().setTitle("New Destination");
-
-		mMode = startActionMode(new EditActionMode());
 	}
 
 	public static class EditDestinationFragment extends SherlockFragment implements NumberPickerDialog.NumberPickerDialogListener {
@@ -160,149 +207,85 @@ public class EditDestination extends SherlockFragmentActivity {
 
 			editedField.setText(value.toString());
 		}
-	}
 
+        private void setErrorMessage(String message) {
+            TextView errorMsgView = (TextView)this.getView().findViewById(R.id.lbl_error_msg);
+            if(message == null) {
+                errorMsgView.setVisibility(View.GONE);
+                return;
+            }
+            errorMsgView.setText(message);
+            errorMsgView.setVisibility(View.VISIBLE);
+        }
 
+        private boolean validateLevels() {
+            Float upperLimit = validateLevelField(R.id.fld_too_high, null, null);
+            upperLimit = validateLevelField(R.id.fld_high, upperLimit, null);
+            upperLimit = validateLevelField(R.id.fld_medium, upperLimit, null);
+            validateLevelField(R.id.fld_low, upperLimit, 0f);
 
-	@Override
-	public void onActionModeFinished(ActionMode mode) {
-		super.onActionModeFinished(mode);
+            if(isValid(R.id.fld_high) && isValid(R.id.fld_medium) && isValid(R.id.fld_low)) {
+                return true;
+            }
 
-		EditText destNameField = (EditText)findViewById(R.id.fld_dest_name);
+            setErrorMessage("Missing or invalid level definition(s)");
 
-		CharSequence destName = destNameField.getText();
-		if(TextUtils.isEmpty(destName)) {
-			destName = editDestination.station.getName();
-		}
+            return false;
+        }
 
-//		EditText levelField = (EditText)findViewById(R.id.fld_too_high);
-//		levelField = (EditText)findViewById(R.id.fld_high);
-//		levelField = (EditText)findViewById(R.id.fld_medium);
-//		levelField = (EditText)findViewById(R.id.fld_low);
+        private Float validateLevelField(int resId, Float upperLimit, Float lowerLimit) {
 
-		//if creating a favorite {
-		//  sendBroadcast(Home.getWidgetUpdateIntent());
-		//}
-	}
+            EditText levelField = (EditText)this.getView().findViewById(resId);
 
-	private final class EditActionMode implements ActionMode.Callback {
+            CharSequence contents = levelField.getText();
+            if(TextUtils.isEmpty(contents)) {
+                //fld_too_high is an optional field
+                if(resId == R.id.fld_too_high) {
+                    setValid(levelField);
+                } else {
+                    setInvalid(levelField);
+                }
+                return null;
+            }
 
-		private boolean save = true;
+            try {
+                Float value =  new Float(contents.toString());
+                if(upperLimit != null && upperLimit.compareTo(value) <= 0) {
+                    //mark as invalid
+                    setInvalid(levelField);
+                    return value;
+                }
+                if(lowerLimit != null && lowerLimit.compareTo(value) >= 0) {
+                    setInvalid(levelField);
+                    return value;
+                }
+                setValid(levelField);
+                return value;
+            } catch(NumberFormatException nfe) {
+                setInvalid(levelField);
+            }
+            return upperLimit;
+        }
 
-		@Override
-		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
+        private void setValid(EditText field) {
+            int validTextColor = getResources().getColor(android.R.color.white);
+            int validBgColor = getResources().getColor(android.R.color.black);
 
-			getSupportMenuInflater().inflate(R.menu.edit_account_action_mode, menu);
+            field.setTextColor(validTextColor);
+            field.setBackgroundColor(validBgColor);
+        }
 
-			return true;
-		}
+        private void setInvalid(EditText field) {
+            int invalidTextColor = getResources().getColor(R.color.validation_error_color);
+            int invalidBgColor = getResources().getColor(R.color.validation_error_bgcolor);
 
-		@Override
-		public boolean onPrepareActionMode(ActionMode mode, Menu menu) {
-			return false;
-		}
+            field.setTextColor(invalidTextColor);
+            field.setBackgroundColor(invalidBgColor);
+        }
 
-		@Override
-		public boolean onActionItemClicked(ActionMode mode, MenuItem item) {
-			save = false;
-			switch(item.getItemId()) {
-				case R.id.ai_cancel:
-					//nothing specific to do here yet
-					break;
-			}
-			mode.finish();
-			return true;
-		}
-
-
-
-		@Override
-		public void onDestroyActionMode(ActionMode mode) {
-			if(!save || validateLevels()) {
-				EditDestination.this.finish();
-			} else {
-				mMode = startActionMode(new EditActionMode());
-			}
-		}
-	}
-
-	private void setErrorMessage(String message) {
-		TextView errorMsgView = (TextView)findViewById(R.id.lbl_error_msg);
-		if(message == null) {
-			errorMsgView.setVisibility(View.GONE);
-			return;
-		}
-		errorMsgView.setText(message);
-		errorMsgView.setVisibility(View.VISIBLE);
-	}
-
-	private boolean validateLevels() {
-		Float upperLimit = validateLevelField(R.id.fld_too_high, null, null);
-		upperLimit = validateLevelField(R.id.fld_high, upperLimit, null);
-		upperLimit = validateLevelField(R.id.fld_medium, upperLimit, null);
-		validateLevelField(R.id.fld_low, upperLimit, 0f);
-
-		if(isValid(R.id.fld_high) && isValid(R.id.fld_medium) && isValid(R.id.fld_low)) {
-			return true;
-		}
-
-		setErrorMessage("Missing or invalid level definition(s)");
-
-		return false;
-	}
-
-	private Float validateLevelField(int resId, Float upperLimit, Float lowerLimit) {
-
-		EditText levelField = (EditText)findViewById(resId);
-
-		CharSequence contents = levelField.getText();
-		if(TextUtils.isEmpty(contents)) {
-			//fld_too_high is an optional field
-			if(resId == R.id.fld_too_high) {
-				setValid(levelField);
-			} else {
-				setInvalid(levelField);
-			}
-			return null;
-		}
-
-		try {
-			Float value =  new Float(contents.toString());
-			if(upperLimit != null && upperLimit.compareTo(value) <= 0) {
-				//mark as invalid
-				setInvalid(levelField);
-				return value;
-			}
-			if(lowerLimit != null && lowerLimit.compareTo(value) >= 0) {
-				setInvalid(levelField);
-				return value;
-			}
-			setValid(levelField);
-			return value;
-		} catch(NumberFormatException nfe) {
-			setInvalid(levelField);
-		}
-		return upperLimit;
-	}
-
-	private void setValid(EditText field) {
-		int validTextColor = getResources().getColor(android.R.color.white);
-		int validBgColor = getResources().getColor(android.R.color.black);
-
-		field.setTextColor(validTextColor);
-		field.setBackgroundColor(validBgColor);
-	}
-
-	private void setInvalid(EditText field) {
-		int invalidTextColor = getResources().getColor(R.color.validation_error_color);
-		int invalidBgColor = getResources().getColor(R.color.validation_error_bgcolor);
-
-		field.setTextColor(invalidTextColor);
-		field.setBackgroundColor(invalidBgColor);
-	}
-
-	private boolean isValid(int resId) {
-		EditText levelField = (EditText)findViewById(resId);
-		return levelField.getCurrentTextColor() != getResources().getColor(R.color.validation_error_color);
+        private boolean isValid(int resId) {
+            EditText levelField = (EditText)getView().findViewById(resId);
+            return levelField.getCurrentTextColor() != getResources().getColor(R.color.validation_error_color);
+        }
 	}
 }
