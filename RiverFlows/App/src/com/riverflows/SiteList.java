@@ -2,7 +2,6 @@ package com.riverflows;
 
 import java.net.UnknownHostException;
 import java.text.MessageFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -41,7 +40,6 @@ import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.Variable;
 import com.riverflows.db.FavoritesDaoImpl;
-import com.riverflows.db.SitesDaoImpl;
 import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.WsSessionManager;
 
@@ -354,8 +352,7 @@ public abstract class SiteList extends ListActivity {
 		@Override
 		protected String doInBackground(Integer... params) {
 			try {
-				Map<SiteId,SiteData> siteData = DataSourceController.getAllSites();
-				SitesDaoImpl.saveSites(getApplicationContext(), new ArrayList<SiteData>(siteData.values()));
+				Map<SiteId,SiteData> siteData = DataSourceController.getAllSites(true);
 			} catch (UnknownHostException uhe) {
 				return "no network access";
 			} catch(Exception e) {
@@ -486,7 +483,7 @@ public abstract class SiteList extends ListActivity {
 		
 		Variable[] supportedVars = siteData.getSite().getSupportedVariables();
 
-		boolean loggedIn = (WsSessionManager.getSession() != null);
+		boolean loggedIn = (WsSessionManager.getSession(this) != null);
 
 		SubMenu submenu = null;
 		if(loggedIn) {

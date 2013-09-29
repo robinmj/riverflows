@@ -16,7 +16,6 @@ import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
 import com.riverflows.data.Variable.CommonVariable;
 import com.riverflows.db.FavoritesDaoImpl;
-import com.riverflows.db.SitesDaoImpl;
 import com.riverflows.test.AssetAhpsXmlHttpClient;
 import com.riverflows.test.AssetCoDwrCsvHttpClient;
 import com.riverflows.test.AssetUsgsCsvHttpClient;
@@ -55,8 +54,7 @@ public class FavoritesTest extends ActivityInstrumentationTestCase2<Favorites> {
 		
 		ArrayList<SiteData> preloadedSites = new ArrayList<SiteData>();
 		preloadedSites.add(animasAtDurangoData);
-		
-		SitesDaoImpl.saveSites(getActivity().getApplicationContext(), preloadedSites);
+
 		FavoritesDaoImpl.createFavorite(getActivity().getApplicationContext(), new Favorite(animasAtDurango, AHPSXmlDataSource.VTYPE_FLOW.getId()));
 		
 		getActivity().loadSites(false);

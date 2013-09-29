@@ -10,7 +10,6 @@ import java.util.concurrent.CopyOnWriteArraySet;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
@@ -22,11 +21,11 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.util.Log;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.riverflows.Home;
 import com.riverflows.data.UserAccount;
 
@@ -37,18 +36,17 @@ import com.riverflows.data.UserAccount;
  */
 public class WsSessionManager {
 
-	public static final String WS_BASE_URL = "https://ws-staging.riverflowsapp.com";
-	//public static final String WS_BASE_URL = "http://192.168.103.3:3000";
+	//public static final String WS_BASE_URL = "https://ws-staging.riverflowsapp.com";
+	public static final String WS_BASE_URL = "http://192.168.103.3:3000";
 
 	public static final String AUTH_APP_URL = WS_BASE_URL + "/application/check_mobile_login";
 	
 	private static final String TAG = "WsSessionManager";
-	
+
 	public static final String PREFS_FILE_NAME = "main";
-    public static final String PREF_REFRESH_TOKEN = "refresh_token";
-    public static final String PREF_REFRESH_TOKEN_EXPIRES = "refresh_token_expires";
-	public static final String PROMPTED_TO_SHARE_FAVORITES = "prompted_to_share_favorites";
-	public static final String CONVERTED_FAVORITES_TO_DESTINATIONS = "converted_favorites";
+    public static final String PREF_ACCESS_TOKEN = "refresh_token";
+    public static final String PREF_ACCESS_TOKEN_EXPIRES = "refresh_token_expires";
+	public static final String PREF_ACCOUNT_NAME = "account_name";
 
 	private static CopyOnWriteArraySet<SessionChangeListener> sessionListeners = new CopyOnWriteArraySet<WsSessionManager.SessionChangeListener>();
 	
@@ -107,8 +105,47 @@ public class WsSessionManager {
 		}
 	}
 	
-	public static Session getSession() {
-		return session;
+	public static Session getSession(Context ctx) {
+		if(session != null) {
+			return session;
+		}
+
+		SharedPreferences settings = ctx.getSharedPreferences(PREFS_FILE_NAME, Context.MODE_PRIVATE);
+
+		String accessToken = settings.getString(PREF_ACCESS_TOKEN, null);
+		if(accessToken != null) {
+			long accessTokenExpires = settings.getLong(PREF_ACCESS_TOKEN_EXPIRES, 0);
+
+			String accountName = settings.getString(PREF_ACCOUNT_NAME, null);
+
+			Session savedSession = new Session(accountName, null, accessToken, accessTokenExpires);
+
+			if(!savedSession.isExpired()) {
+
+				session = savedSession;
+
+				return savedSession;
+			}
+
+			discardSavedSession(settings);
+
+			return null;
+		}
+
+		return null;
+	}
+
+	private static void discardSavedSession(SharedPreferences settings) {
+		SharedPreferences.Editor editor = settings.edit();
+		editor.remove(PREF_ACCESS_TOKEN);
+		editor.remove(PREF_ACCESS_TOKEN_EXPIRES);
+		editor.commit();
+	}
+
+	private static void discardSavedAccountName(SharedPreferences settings) {
+		SharedPreferences.Editor editor = settings.edit();
+		editor.remove(PREF_ACCOUNT_NAME);
+		editor.commit();
 	}
 	
 	public static String getAccessToken() {
@@ -160,8 +197,11 @@ public class WsSessionManager {
 
 		String authToken = userObj.getString("authentication_token");
 
-		session = new Session(username, userAccount, authToken, Long.MAX_VALUE);
-		return session;
+		Session newSession = new Session(username, userAccount, authToken, Long.MAX_VALUE);
+
+		session = newSession;
+
+		return newSession;
 	}
 	
 	public static void logOut(Context ctx) {
@@ -169,6 +209,11 @@ public class WsSessionManager {
 		if(currentSession == null) {
 			return;
 		}
+
+		SharedPreferences sharedPreferences = ctx.getSharedPreferences(PREFS_FILE_NAME, Context.MODE_PRIVATE);
+
+		discardSavedSession(sharedPreferences);
+		discardSavedAccountName(sharedPreferences);
 
 		GoogleAuthUtil.invalidateToken(ctx.getApplicationContext(), currentSession.authToken);
 		WsSessionManager.session = null;
@@ -247,7 +292,15 @@ public class WsSessionManager {
 			return null;
 		}
 
-		return WsSessionManager.getWsAuthToken("google", accountName, gToken);
+		Session newSession = WsSessionManager.getWsAuthToken("google", accountName, gToken);
+
+		SharedPreferences settings = activity.getSharedPreferences(PREFS_FILE_NAME, Context.MODE_PRIVATE);
+		SharedPreferences.Editor editor = settings.edit();
+		editor.putString(PREF_ACCESS_TOKEN, newSession.authToken);
+		editor.putLong(PREF_ACCESS_TOKEN_EXPIRES, newSession.accessTokenExpires);
+		editor.commit();
+
+		return newSession;
 	}
 
 	public static void updateUserAccount(UserAccount newUserAccount) throws Exception {

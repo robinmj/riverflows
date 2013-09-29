@@ -164,7 +164,7 @@ public class ViewChartTest extends ActivityInstrumentationTestCase2<ViewChart> {
 		        
 		        //make sure the favorite was saved
 		        assertTrue(FavoritesDaoImpl.isFavorite(getActivity().getApplicationContext(), new SiteId("AHPS", "DRGC2"), AHPSXmlDataSource.VTYPE_FLOW));
-		        assertEquals(1, FavoritesDaoImpl.getFavorites(getActivity().getApplicationContext()).size());
+		        assertEquals(1, FavoritesDaoImpl.getFavorites(getActivity().getApplicationContext(), null, null).size());
 			}
 		});
         

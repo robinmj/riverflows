@@ -13,6 +13,7 @@ import android.content.SharedPreferences.Editor;
 import android.content.pm.ApplicationInfo;
 import android.content.res.Resources;
 import android.database.sqlite.SQLiteException;
+import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
@@ -40,7 +41,14 @@ public class Home extends TabActivity {
 
 	public static final String PREFS_FILE = "com.riverflows.prefs";
 	public static final String PREF_TEMP_UNIT = "tempUnit";
-	
+
+	static {
+		// Work around pre-Froyo bugs in HTTP connection reuse.
+		if (Integer.parseInt(Build.VERSION.SDK) < Build.VERSION_CODES.FROYO) {
+			System.setProperty("http.keepAlive", "false");
+		}
+	}
+
 	/**
 	 * 20 minutes
 	 */
@@ -59,11 +67,12 @@ public class Home extends TabActivity {
         	prefsEditor.putBoolean("widgetAdShown", true);
         	prefsEditor.commit();
         }
-	    
+
 		DataSourceController.setHttpClientWrapper(new CachingHttpClientWrapper(
 				getApplicationContext(), getCacheDir(), CACHE_TTL, "text/plain"));
 		DataSourceController.getDataSource("AHPS").setHttpClientWrapper(new CachingHttpClientWrapper(
 				getApplicationContext(), getCacheDir(), CACHE_TTL, "text/xml"));
+		DataSourceController.initCache(getCacheDir());
 	    
 	    Logger.getLogger("").setLevel(Level.WARNING);
 
@@ -201,7 +210,7 @@ public class Home extends TabActivity {
 		switch(id) {
 		case DIALOG_ID_MIGRATION_ERROR:
 			AlertDialog alert = new AlertDialog.Builder(this).create();
-			alert.setMessage("Sorry- There an error occurred while updating your favorites database. You will have to uninstall and reinstall RiverFlows to fix this.");
+			alert.setMessage("Sorry- An error occurred while updating your favorites database. You will have to uninstall and reinstall RiverFlows to fix this.");
 			return alert;
 		}
 		return null;

@@ -9,10 +9,22 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:padding="10dp">
+        <TextView
+                android:id="@+id/lbl_error_msg"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:padding="4dp"
+                android:textSize="20sp"
+                android:color="@color/validation_error_color"
+                android:background="@color/validation_error_bgcolor"
+                android:visibility="gone"/>
 
         <EditText
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_margin="10dp"
+                android:textSize="22sp"
                 android:hint="Destination Name"
                 android:id="@+id/fld_dest_name"/>
 
@@ -32,6 +44,7 @@
             <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="4sp"
                     android:textAppearance="?android:attr/textAppearanceSmall"
                     android:text=""
                     android:id="@+id/lbl_dest_gage"/>
@@ -115,7 +128,7 @@
                     <EditText
                             style="@style/LevelField"
                             android:id="@+id/fld_too_high"
-                            android:hint="Level"/>
+                            android:hint="(optional)"/>
                     <TextView
                         style="@style/LevelUnitLabel"
                         android:id="@+id/lbl_too_high_unit"/>
