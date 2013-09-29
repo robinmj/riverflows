@@ -33,7 +33,7 @@ import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.USACEDataSource;
 import com.riverflows.wsclient.UsgsCsvDataSource;
-import com.riverflows.wsclient.WsSessionManager.Session;
+import com.riverflows.wsclient.WsSession;
 
 public class Home extends TabActivity {
 	
@@ -139,7 +139,7 @@ public class Home extends TabActivity {
 		}
 
 		@Override
-		protected String doApiCall(Session session, String... params) {
+		protected String doApiCall(WsSession session, String... params) {
 			return null;
 		}
 		

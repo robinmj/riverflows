@@ -1,7 +1,6 @@
 package com.riverflows.wsclient;
 
 import java.io.IOException;
-import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -36,10 +35,7 @@ import com.riverflows.data.UserAccount;
  */
 public class WsSessionManager {
 
-	//public static final String WS_BASE_URL = "https://ws-staging.riverflowsapp.com";
-	public static final String WS_BASE_URL = "http://192.168.103.3:3000";
-
-	public static final String AUTH_APP_URL = WS_BASE_URL + "/application/check_mobile_login";
+	public static final String AUTH_APP_URL = DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + "/application/check_mobile_login";
 	
 	private static final String TAG = "WsSessionManager";
 
@@ -53,10 +49,10 @@ public class WsSessionManager {
 	private static volatile boolean promptedToLogin = false;
 
 	private static volatile boolean promptedToRegister = false;
-	private static volatile Session session = null;
+	private static volatile WsSession session = null;
 	
 	public static interface SessionChangeListener {
-		public void onSessionChange(Session newSession, String error);
+		public void onSessionChange(WsSession newSession, String error);
 	}
 	
 	public static boolean addListener(SessionChangeListener listener) {
@@ -66,36 +62,8 @@ public class WsSessionManager {
 	public static boolean removeListener(SessionChangeListener listener) {
 		return sessionListeners.remove(listener);
 	}
-	
-	public static class Session implements Serializable {
-		
-		private static final long serialVersionUID = -872458198770348431L;
-		
-		public final String accountName;
-		public final String authToken;
-		public final long accessTokenExpires;
-//		public final String refreshToken;
-//		public final long refreshTokenExpires;
-		public final UserAccount userAccount;
 
-		public Session(String accountName, UserAccount account, String accessToken, long accessTokenExpires) { //, String refreshToken, long refreshTokenExpires) {
-			super();
-			this.accountName = accountName;
-			this.authToken = accessToken;
-			this.accessTokenExpires = accessTokenExpires;
-			this.userAccount = account;
-		}
-		
-		public boolean isExpired() {
-			return System.currentTimeMillis() > this.accessTokenExpires;
-		}
-		
-//		public boolean isRefreshTokenExpired() {
-//			return System.currentTimeMillis() > this.refreshTokenExpires;
-//		}
-	}
-	
-	public static void notifyAccountSessionChange(Session newSession, String error) {
+	public static void notifyAccountSessionChange(WsSession newSession, String error) {
 		WsSessionManager.session = newSession;
 		
 		Iterator<SessionChangeListener> notifyListeners = WsSessionManager.sessionListeners.iterator();
@@ -105,7 +73,7 @@ public class WsSessionManager {
 		}
 	}
 	
-	public static Session getSession(Context ctx) {
+	public static WsSession getSession(Context ctx) {
 		if(session != null) {
 			return session;
 		}
@@ -118,7 +86,7 @@ public class WsSessionManager {
 
 			String accountName = settings.getString(PREF_ACCOUNT_NAME, null);
 
-			Session savedSession = new Session(accountName, null, accessToken, accessTokenExpires);
+			WsSession savedSession = new WsSession(accountName, null, accessToken, accessTokenExpires);
 
 			if(!savedSession.isExpired()) {
 
@@ -149,11 +117,11 @@ public class WsSessionManager {
 	}
 	
 	public static String getAccessToken() {
-		Session tmp = WsSessionManager.session;
+		WsSession tmp = WsSessionManager.session;
 		return (tmp == null) ? null : tmp.authToken;
 	}
 	
-	public static Session getWsAuthToken(String scheme, String username, String password) throws IOException, UnexpectedResultException, JSONException {
+	public static WsSession getWsAuthToken(String scheme, String username, String password) throws IOException, UnexpectedResultException, JSONException {
 		Log.d(Home.TAG, "authenticating with Riverflows server...");
 
 		HttpPost postCmd = new HttpPost(AUTH_APP_URL);
@@ -197,7 +165,7 @@ public class WsSessionManager {
 
 		String authToken = userObj.getString("authentication_token");
 
-		Session newSession = new Session(username, userAccount, authToken, Long.MAX_VALUE);
+		WsSession newSession = new WsSession(username, userAccount, authToken, Long.MAX_VALUE);
 
 		session = newSession;
 
@@ -205,7 +173,7 @@ public class WsSessionManager {
 	}
 	
 	public static void logOut(Context ctx) {
-		Session currentSession = session;
+		WsSession currentSession = session;
 		if(currentSession == null) {
 			return;
 		}
@@ -260,7 +228,7 @@ public class WsSessionManager {
 		}
 	}
 	
-	public static Session loginWithGoogleOAuth2(Activity activity, String accountName) throws IOException, GoogleAuthException, InterruptedException, JSONException {
+	public static WsSession loginWithGoogleOAuth2(Activity activity, String accountName) throws IOException, GoogleAuthException, InterruptedException, JSONException {
 
    		String gToken = null;
    		
@@ -292,7 +260,7 @@ public class WsSessionManager {
 			return null;
 		}
 
-		Session newSession = WsSessionManager.getWsAuthToken("google", accountName, gToken);
+		WsSession newSession = WsSessionManager.getWsAuthToken("google", accountName, gToken);
 
 		SharedPreferences settings = activity.getSharedPreferences(PREFS_FILE_NAME, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = settings.edit();
@@ -301,33 +269,5 @@ public class WsSessionManager {
 		editor.commit();
 
 		return newSession;
-	}
-
-	public static void updateUserAccount(UserAccount newUserAccount) throws Exception {
-
-		HttpPut putCmd = new HttpPut(WsSessionManager.WS_BASE_URL + "/account/update.json?auth_token=" + session.authToken);
-		HttpClient client = new DataSourceController.SSLHttpClient();
-
-		JSONObject entity = new JSONObject();
-
-		//entity.put("auth_token", session.authToken);
-		entity.put("account", UserAccounts.userAsJson(newUserAccount));
-
-		putCmd.setEntity(new StringEntity(entity.toString()));
-
-		putCmd.addHeader("Content-Type", "application/json");
-		putCmd.addHeader("Accept", "application/json");
-
-		HttpResponse httpResponse = client.execute(putCmd);
-
-		Log.d(Home.TAG, putCmd + " response: " + httpResponse.getStatusLine().getStatusCode() + " " + httpResponse.getStatusLine().getReasonPhrase());
-
-		if(httpResponse.getStatusLine().getStatusCode() != 200) {
-			throw new UnexpectedResultException(httpResponse.getStatusLine().getReasonPhrase(), httpResponse.getStatusLine().getStatusCode());
-		}
-
-		Session newSession = new Session(session.accountName, newUserAccount, session.authToken, session.accessTokenExpires);
-
-		notifyAccountSessionChange(newSession, null);
 	}
 }

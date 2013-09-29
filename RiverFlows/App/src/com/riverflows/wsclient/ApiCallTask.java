@@ -11,7 +11,6 @@ import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.AccountPicker;
 import com.riverflows.Home;
-import com.riverflows.wsclient.WsSessionManager.Session;
 import com.subalpine.DeferredExceptionAsyncTask;
 
 import java.io.IOException;
@@ -49,8 +48,8 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 		this.secondTry = true;
 	}
 	
-	private Session initSession() throws Exception {
-		Session currentSession = WsSessionManager.getSession(this.activity);
+	private WsSession initSession() throws Exception {
+		WsSession currentSession = WsSessionManager.getSession(this.activity);
 		
 		if(!(currentSession == null || currentSession.authToken == null ||
 				currentSession.isExpired() || (currentSession.accountName == null && this.loginRequired))) {
@@ -81,7 +80,7 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 		//save parameters for reExecute method
 		this.params = params;
 		
-		Session session = initSession();
+		WsSession session = initSession();
 		if(session == null) {
 			return null;
 		}
@@ -94,7 +93,7 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 	 * @param params
 	 * @return
 	 */
-	protected abstract Result doApiCall(Session session, Params...params) throws Exception;
+	protected abstract Result doApiCall(WsSession session, Params...params) throws Exception;
 	
 	public boolean isSecondTry() {
 		return this.secondTry;
@@ -185,8 +184,8 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 	protected void onNetworkError() {}
 	
 	/**
-	 * Called if the user was logged in without the need for
-	 * a redirect to the login screen, or this is the second try
+	 * Called on the UI thread after the user has successfully authenticated and {#doApiCall()} has
+     * been executed. If an IOException was thrown, {#onNetworkError()} will be called instead
 	 * @param result
 	 */
 	protected abstract void onNoUIRequired(Result result);

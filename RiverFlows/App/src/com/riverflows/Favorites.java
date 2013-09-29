@@ -40,6 +40,7 @@ import com.riverflows.data.Variable.CommonVariable;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.wsclient.ApiCallTask;
 import com.riverflows.wsclient.DataSourceController;
+import com.riverflows.wsclient.WsSession;
 import com.riverflows.wsclient.WsSessionManager;
 
 import java.net.UnknownHostException;
@@ -859,7 +860,7 @@ public class Favorites extends ListActivity {
 		}
 
 		@Override
-		protected UserAccount doApiCall(WsSessionManager.Session session, String... params) {
+		protected UserAccount doApiCall(WsSession session, String... params) {
 			return session.userAccount;
 		}
 

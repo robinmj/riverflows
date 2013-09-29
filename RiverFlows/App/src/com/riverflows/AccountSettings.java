@@ -11,22 +11,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.actionbarsherlock.view.ActionMode;
 import com.actionbarsherlock.view.Menu;
 import com.actionbarsherlock.view.MenuItem;
 import com.riverflows.data.UserAccount;
 import com.riverflows.wsclient.ApiCallTask;
-import com.riverflows.wsclient.DataSourceController;
-import com.riverflows.wsclient.UnexpectedResultException;
 import com.riverflows.wsclient.UserAccounts;
+import com.riverflows.wsclient.WsSession;
 import com.riverflows.wsclient.WsSessionManager;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.StringEntity;
-import org.json.JSONObject;
 
 /**
  * Created by robin on 6/4/13.
@@ -140,9 +132,13 @@ public class AccountSettings extends SherlockActivity {
 		}
 
 		@Override
-		protected String doApiCall(WsSessionManager.Session session, UserAccount... params) throws Exception {
+		protected String doApiCall(WsSession session, UserAccount... params) throws Exception {
 
-			WsSessionManager.updateUserAccount(params[0]);
+			UserAccounts.updateUserAccount(session, params[0]);
+
+			WsSession newSession = new WsSession(session.accountName, params[0], session.authToken, session.accessTokenExpires);
+
+			WsSessionManager.notifyAccountSessionChange(newSession, null);
 
 			return null;
 		}
