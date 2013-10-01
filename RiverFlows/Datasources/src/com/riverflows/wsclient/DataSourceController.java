@@ -2,6 +2,7 @@ package com.riverflows.wsclient;
 
 import android.util.Base64;
 
+import com.riverflows.data.Destination;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
@@ -19,6 +20,7 @@ import org.apache.http.conn.ClientConnectionManager;
 import org.apache.http.conn.scheme.Scheme;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONObject;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -57,7 +59,12 @@ public class DataSourceController {
 	//public static final String RIVERFLOWS_WS_BASEURL = "https://ws.riverflowsapp.com/";
 	//public static final String RIVERFLOWS_WS_BASEURL = "http://riverflows-ws.elasticbeanstalk.com/";
 	public static final String RIVERFLOWS_WS_BASEURL = "http://192.168.103.3:3000/";
-	public static final float RIVERFLOWS_WS_API_VERSION = 0.1f;
+
+	//TODO remove this once my.riverflowsapp.com features are out of beta
+	//public static final String MY_RIVERFLOWS_WS_BASE_URL = "https://ws-staging.riverflowsapp.com";
+	public static final String MY_RIVERFLOWS_WS_BASE_URL = "http://192.168.103.3:3000";
+
+	public static final float RIVERFLOWS_WS_API_VERSION = 0.2f;
 	public static final String SITES_WS_PATH = "sites/";
 
 	public static final DateFormat RECENT_READING_TIME_FMT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -251,8 +258,9 @@ public class DataSourceController {
 		//skip first line
 		String line = ds.readLine();
 
+		int currentId = -1;
 		String currentAgency = null;
-		String currentId = null;
+		String currentAgencyId = null;
 		String currentSiteName = null;
 		String currentLatitude = null;
 		String currentLongitude = null;
@@ -267,62 +275,71 @@ public class DataSourceController {
 				continue;
 			}
 			String[] tokens = Utils.split(line, '\t');
-			int colIndex = 0;;
+			int colIndex = 0;
 			for(String currentValue:tokens) {
 				currentValue = currentValue.trim();
 				switch(colIndex++) {
 				//parse out the different columns
 				case 0:
-					currentAgency = currentValue;
+					try {
+						currentId = Integer.parseInt(currentValue);
+					} catch(Exception e) {
+						LOG.error( "invalid primary key for site: " + currentValue);
+						continue;
+					}
 					break;
 				case 1:
-					currentId = currentValue;
+					currentAgency = currentValue;
 					break;
 				case 2:
-					currentSiteName = currentValue;
+					currentAgencyId = currentValue;
 					break;
 				case 3:
-					currentLatitude = currentValue;
+					currentSiteName = currentValue;
 					break;
 				case 4:
-					currentLongitude = currentValue;
+					currentLatitude = currentValue;
 					break;
 				case 5:
-					currentState = currentValue;
+					currentLongitude = currentValue;
 					break;
 				case 6:
-					supportedVarIds = currentValue.split(" ");
+					currentState = currentValue;
 					break;
 				case 7:
-					currentRecentReading = currentValue;
+					supportedVarIds = currentValue.split(" ");
 					break;
 				case 8:
-					currentRecentReadingTime = currentValue;
+					currentRecentReading = currentValue;
 					break;
 				case 9:
+					currentRecentReadingTime = currentValue;
+					break;
+				case 10:
 					currentRecentReadingVariable = currentValue;
 					break;
 				default:
-					LOG.error( "extra column for " + currentAgency + "/" + currentId + ": " + currentValue);
+					LOG.error( "extra column for " + currentAgency + "/" + currentAgencyId + ": " + currentValue);
 				}
 			}
 			if(currentSiteName == null) {
-				LOG.error( "missing name for " + currentAgency + "/" + currentId);
+				LOG.error( "missing name for " + currentAgency + "/" + currentAgencyId);
 				continue;
 			}
-			if(currentId == null) {
+			if(currentAgencyId == null) {
 				LOG.error( "missing id for " + currentAgency +"/" + currentSiteName);
 				continue;
 			}
 			if(currentAgency == null) {
-				LOG.error( "missing agency for " + currentSiteName + "/" + currentId);
+				LOG.error( "missing agency for " + currentSiteName + "/" + currentAgencyId);
 				continue;
 			}
 			if(currentState == null) {
-				LOG.error( "missing state for " + currentSiteName + "/" + currentId);
+				LOG.error( "missing state for " + currentSiteName + "/" + currentAgencyId);
 				continue;
 			}
-			SiteId id = new SiteId(currentAgency, currentId);
+
+			SiteId id = new SiteId(currentAgency, currentAgencyId, currentId);
 
 			Variable[] supportedVariables = new Variable[supportedVarIds.length];
 

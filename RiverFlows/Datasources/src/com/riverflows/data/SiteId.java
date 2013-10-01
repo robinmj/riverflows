@@ -71,7 +71,7 @@ public class SiteId implements Serializable {
 	}
 
 	/**
-	 * @return primary key used internally by the RiverFlows app database
+	 * @return primary key used to reference this site in the RiverFlows web service
 	 */
 	public Integer getPrimaryKey() {
 		return primaryKey;
@@ -79,7 +79,7 @@ public class SiteId implements Serializable {
 
 
 	/**
-	 * set the primary key used internally by the RiverFlows app database
+	 * set the primary key used by the RiverFlows web service
 	 */
 	public void setPrimaryKey(Integer primaryKey) {
 		this.primaryKey = primaryKey;
