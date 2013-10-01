@@ -31,10 +31,9 @@ public interface DataSource {
 	 * Download the last readings for a list of sites and their respective variables
 	 * @param hardRefresh TODO
 	 * @return
-	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public Map<SiteId,SiteData> getSiteData(List<Favorite> sites, boolean hardRefresh) throws ClientProtocolException, IOException;
+	public Map<SiteId,SiteData> getSiteData(List<Favorite> sites, boolean hardRefresh) throws IOException;
 	
 	/**
 	 * Download readings from the last week for a given site and variables.
@@ -43,11 +42,10 @@ public interface DataSource {
 	 * implementation may truncate this array if it only supports retrieving data for a limited number of variables
 	 * at once, but it will always attempt to retrieve data for the first variable.
 	 * @param hardRefresh TODO
-	 * @return 
-	 * @throws ClientProtocolException
+	 * @return
 	 * @throws IOException
 	 */
-	public SiteData getSiteData(Site site, Variable[] variableTypes, boolean hardRefresh) throws ClientProtocolException, IOException;
+	public SiteData getSiteData(Site site, Variable[] variableTypes, boolean hardRefresh) throws IOException;
 	
 	public String getExternalSiteUrl(String siteId);
 	
