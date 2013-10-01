@@ -6,30 +6,43 @@ import java.io.Serializable;
  * Created by robin on 6/27/13.
  */
 public class DestinationFacet implements Serializable {
-	private int userId;
+
+	private boolean placeholderObj = false;
+    private Integer id;
+	private UserAccount user;
 	private String description;
 	private Destination destination;
+    private int facetType;
+    private Variable variable;
 	private Double tooLow;
 	private Double low;
 	private Double med;
 	private Double high;
 	private Double highPlus;
-	private int lowDifficulty;
-	private int medDifficulty;
-	private int highDifficulty;
-	private int lowPortDifficulty;
-	private int medPortDifficulty;
-	private int highPortDifficulty;
-	private int qualityLow;
-	private int qualityMed;
-	private int qualityHigh;
+	private Integer lowDifficulty;
+	private Integer medDifficulty;
+	private Integer highDifficulty;
+	private Integer lowPortDifficulty;
+	private Integer medPortDifficulty;
+	private Integer highPortDifficulty;
+	private Integer qualityLow;
+	private Integer qualityMed;
+	private Integer qualityHigh;
 
-	public int getUserId() {
-		return userId;
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public UserAccount getUser() {
+		return user;
 	}
 
-	public void setUserId(int userId) {
-		this.userId = userId;
+	public void setUser(UserAccount user) {
+		this.user = user;
 	}
 
 	public String getDescription() {
@@ -48,7 +61,24 @@ public class DestinationFacet implements Serializable {
 		this.destination = destination;
 	}
 
-	public Double getTooLow() {
+    public int getFacetType() {
+        return facetType;
+    }
+
+    public void setFacetType(int facetType) {
+        this.facetType = facetType;
+    }
+
+    public Variable getVariable() {
+        return variable;
+    }
+
+    public void setVariable(Variable variable) {
+        this.variable = variable;
+    }
+
+
+    public Double getTooLow() {
 		return tooLow;
 	}
 
@@ -88,75 +118,83 @@ public class DestinationFacet implements Serializable {
 		this.highPlus = highPlus;
 	}
 
-	public int getLowDifficulty() {
+	public Integer getLowDifficulty() {
 		return lowDifficulty;
 	}
 
-	public void setLowDifficulty(int lowDifficulty) {
+	public void setLowDifficulty(Integer lowDifficulty) {
 		this.lowDifficulty = lowDifficulty;
 	}
 
-	public int getMedDifficulty() {
+	public Integer getMedDifficulty() {
 		return medDifficulty;
 	}
 
-	public void setMedDifficulty(int medDifficulty) {
+	public void setMedDifficulty(Integer medDifficulty) {
 		this.medDifficulty = medDifficulty;
 	}
 
-	public int getHighDifficulty() {
+	public Integer getHighDifficulty() {
 		return highDifficulty;
 	}
 
-	public void setHighDifficulty(int highDifficulty) {
+	public void setHighDifficulty(Integer highDifficulty) {
 		this.highDifficulty = highDifficulty;
 	}
 
-	public int getLowPortDifficulty() {
+	public Integer getLowPortDifficulty() {
 		return lowPortDifficulty;
 	}
 
-	public void setLowPortDifficulty(int lowPortDifficulty) {
+	public void setLowPortDifficulty(Integer lowPortDifficulty) {
 		this.lowPortDifficulty = lowPortDifficulty;
 	}
 
-	public int getMedPortDifficulty() {
+	public Integer getMedPortDifficulty() {
 		return medPortDifficulty;
 	}
 
-	public void setMedPortDifficulty(int medPortDifficulty) {
+	public void setMedPortDifficulty(Integer medPortDifficulty) {
 		this.medPortDifficulty = medPortDifficulty;
 	}
 
-	public int getHighPortDifficulty() {
+	public Integer getHighPortDifficulty() {
 		return highPortDifficulty;
 	}
 
-	public void setHighPortDifficulty(int highPortDifficulty) {
+	public void setHighPortDifficulty(Integer highPortDifficulty) {
 		this.highPortDifficulty = highPortDifficulty;
 	}
 
-	public int getQualityLow() {
+	public Integer getQualityLow() {
 		return qualityLow;
 	}
 
-	public void setQualityLow(int qualityLow) {
+	public void setQualityLow(Integer qualityLow) {
 		this.qualityLow = qualityLow;
 	}
 
-	public int getQualityMed() {
+	public Integer getQualityMed() {
 		return qualityMed;
 	}
 
-	public void setQualityMed(int qualityMed) {
+	public void setQualityMed(Integer qualityMed) {
 		this.qualityMed = qualityMed;
 	}
 
-	public int getQualityHigh() {
+	public Integer getQualityHigh() {
 		return qualityHigh;
 	}
 
-	public void setQualityHigh(int qualityHigh) {
+	public void setQualityHigh(Integer qualityHigh) {
 		this.qualityHigh = qualityHigh;
+	}
+
+	public boolean isPlaceholderObj() {
+		return placeholderObj;
+	}
+
+	public void setPlaceholderObj(boolean placeholderObj) {
+		this.placeholderObj = placeholderObj;
 	}
 }

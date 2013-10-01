@@ -1,12 +1,15 @@
 package com.riverflows.data;
 
+import java.io.Serializable;
 import java.util.Date;
 
 /**
  * Created by robin on 6/2/13.
  */
-public class UserAccount {
+public class UserAccount implements Serializable {
 
+	private boolean placeholderObj = false;
+    private Integer id;
 	private Date createdAt;
 	private Date updatedAt;
 	private String nickname;
@@ -31,7 +34,15 @@ public class UserAccount {
 		this.email = source.email;
 	}
 
-	public Date getCreatedAt() {
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Date getCreatedAt() {
 		return createdAt;
 	}
 
@@ -106,5 +117,13 @@ public class UserAccount {
 	@Override
 	protected Object clone() throws CloneNotSupportedException {
 		return new UserAccount(this);
+	}
+
+	public boolean isPlaceholderObj() {
+		return placeholderObj;
+	}
+
+	public void setPlaceholderObj(boolean placeholderObj) {
+		this.placeholderObj = placeholderObj;
 	}
 }

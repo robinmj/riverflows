@@ -7,18 +7,28 @@ import java.io.Serializable;
  */
 public class Destination implements Serializable{
 
-	private int userId;
+	private boolean placeholderObj = false;
+    private Integer id;
+	private UserAccount user;
 	private String name;
 	private Site site;
 	private String description;
 	private boolean shared;
 
-	public int getUserId() {
-		return userId;
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public UserAccount getUser() {
+		return user;
 	}
 
-	public void setUserId(int userId) {
-		this.userId = userId;
+	public void setUser(UserAccount user) {
+		this.user = user;
 	}
 
 	public String getName() {
@@ -51,5 +61,13 @@ public class Destination implements Serializable{
 
 	public void setShared(boolean shared) {
 		this.shared = shared;
+	}
+
+	public boolean isPlaceholderObj() {
+		return placeholderObj;
+	}
+
+	public void setPlaceholderObj(boolean placeholderObj) {
+		this.placeholderObj = placeholderObj;
 	}
 }
