@@ -15,6 +15,7 @@
     <color name="txt_level_too_low">#fff</color>
     <color name="bg_level_too_low">#666</color>
     <color name="validation_error_color">#d00</color>
+    <color name="validation_error_hint_color">#d00</color>
     <color name="validation_error_bgcolor">#f99</color>
 
     <style name="LevelLabel">

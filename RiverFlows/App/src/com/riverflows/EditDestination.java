@@ -1,9 +1,11 @@
 package com.riverflows;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,13 +14,20 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.actionbarsherlock.app.ActionBar;
 import com.actionbarsherlock.app.SherlockFragment;
 import com.actionbarsherlock.app.SherlockFragmentActivity;
+import com.riverflows.data.Destination;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Site;
 import com.riverflows.data.Variable;
+import com.riverflows.wsclient.ApiCallTask;
+import com.riverflows.wsclient.DestinationFacets;
+import com.riverflows.wsclient.Destinations;
+import com.riverflows.wsclient.WsSession;
+import com.riverflows.wsclient.WsSessionManager;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -26,31 +35,31 @@ import java.util.concurrent.atomic.AtomicReference;
  * Created by robin on 6/23/13.
  */
 public class EditDestination extends SherlockFragmentActivity {
-	private static final int MAIN_LAYOUT_ID = 8631537;
 
 	public static final String KEY_SITE = "site";
 	public static final String KEY_VARIABLE = "variable";
+    public static final String KEY_DESTINATION_FACET = "destination_facet";
+
+	public static final int REQUEST_SAVE_DESTINATION = 239432;
+	public static final int REQUEST_LOGIN_TO_SAVE_DESTINATION = 3529307;
 
 	private EditDestinationFragment editDestination;
+	private SaveDestination saveDestTask = null;
 
     private View.OnClickListener saveListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
             if(editDestination.validateLevels()) {
                 //save
-                View fragView = editDestination.getView();
 
-                EditText destNameField = (EditText)fragView.findViewById(R.id.fld_dest_name);
+				hideEditActionBar();
+				setSupportProgressBarIndeterminate(true);
 
-                CharSequence destName = destNameField.getText();
-                if(TextUtils.isEmpty(destName)) {
-                    destName = editDestination.station.getName();
-                }
+				DestinationFacet destinationFacet= editDestination.reloadDestinationFacet();
 
-                EditText levelField = (EditText)fragView.findViewById(R.id.fld_too_high);
-                levelField = (EditText)fragView.findViewById(R.id.fld_high);
-                levelField = (EditText)fragView.findViewById(R.id.fld_medium);
-                levelField = (EditText)fragView.findViewById(R.id.fld_low);
+				SaveDestination saveDestTask = new SaveDestination(false);
+				EditDestination.this.saveDestTask = saveDestTask;
+				saveDestTask.execute(destinationFacet);
 
                 //if creating a favorite {
                 //  sendBroadcast(Home.getWidgetUpdateIntent());
@@ -65,38 +74,20 @@ public class EditDestination extends SherlockFragmentActivity {
 
         getSupportActionBar().setTitle("New Destination");
 
-        // BEGIN_INCLUDE (inflate_set_custom_view)
-        // Inflate a "Done/Cancel" custom action bar view.
-        final LayoutInflater inflater = (LayoutInflater) getActionBar().getThemedContext()
-                .getSystemService(LAYOUT_INFLATER_SERVICE);
-        final View customActionBarView = inflater.inflate(
-                R.layout.actionbar_custom_view_done_cancel, null);
-        customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(saveListener);
-        customActionBarView.findViewById(R.id.actionbar_cancel).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
-
-        // Show the custom action bar view and hide the normal Home icon and title.
-        final ActionBar actionBar = getSupportActionBar();
-        actionBar.setDisplayOptions(
-                ActionBar.DISPLAY_SHOW_CUSTOM,
-                ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME
-                        | ActionBar.DISPLAY_SHOW_TITLE);
-        actionBar.setCustomView(customActionBarView,
-                new ActionBar.LayoutParams(
-                        ViewGroup.LayoutParams.MATCH_PARENT,
-                        ViewGroup.LayoutParams.MATCH_PARENT));
-        // END_INCLUDE (inflate_set_custom_view)
+		showEditBar();
 
 		if(manager.findFragmentByTag("edit_destination") == null) {
 			Bundle extras = getIntent().getExtras();
 
 			editDestination = new EditDestinationFragment();
-			editDestination.station = (Site)extras.get(KEY_SITE);
-			editDestination.variable = (Variable)extras.get(KEY_VARIABLE);
+
+            Destination destination = new Destination();
+            destination.setSite((Site)extras.get(KEY_SITE));
+            DestinationFacet destinationFacet = new DestinationFacet();
+            destinationFacet.setDestination(destination);
+            destinationFacet.setVariable((Variable)extras.get(KEY_VARIABLE));
+
+			editDestination.setDestinationFacet(destinationFacet);
 
 			FragmentTransaction transaction = manager.beginTransaction();
 			transaction.add(android.R.id.content, editDestination, "edit_destination");
@@ -104,11 +95,52 @@ public class EditDestination extends SherlockFragmentActivity {
 		}
 	}
 
+	private void showEditBar() {
+
+		// BEGIN_INCLUDE (inflate_set_custom_view)
+		// Inflate a "Done/Cancel" custom action bar view.
+		final LayoutInflater inflater = (LayoutInflater) getActionBar().getThemedContext()
+				.getSystemService(LAYOUT_INFLATER_SERVICE);
+		final View customActionBarView = inflater.inflate(
+				R.layout.actionbar_custom_view_done_cancel, null);
+		customActionBarView.findViewById(R.id.actionbar_done).setOnClickListener(saveListener);
+		customActionBarView.findViewById(R.id.actionbar_cancel).setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				finish();
+			}
+		});
+
+		// Show the custom action bar view and hide the normal Home icon and title.
+		final ActionBar actionBar = getSupportActionBar();
+		actionBar.setDisplayOptions(
+				ActionBar.DISPLAY_SHOW_CUSTOM,
+				ActionBar.DISPLAY_SHOW_CUSTOM | ActionBar.DISPLAY_SHOW_HOME
+						| ActionBar.DISPLAY_SHOW_TITLE);
+		actionBar.setCustomView(customActionBarView,
+				new ActionBar.LayoutParams(
+						ViewGroup.LayoutParams.MATCH_PARENT,
+						ViewGroup.LayoutParams.MATCH_PARENT));
+		// END_INCLUDE (inflate_set_custom_view)
+	}
+
+	private void hideEditActionBar() {
+		getSupportActionBar().setDisplayShowCustomEnabled(false);
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		this.saveDestTask.authorizeCallback(requestCode, resultCode, data);
+	}
+
 	public static class EditDestinationFragment extends SherlockFragment implements NumberPickerDialog.NumberPickerDialogListener {
 
-		public Site station;
-		public Variable variable;
 		public DestinationFacet destinationFacet;
+
+		private Integer validTextColor = null;
+		private Integer validBgColor = null;
+		private Integer validHintColor = null;
 
 		private TextView.OnFocusChangeListener levelFocusListener = new TextView.OnFocusChangeListener() {
 			@Override
@@ -124,20 +156,20 @@ public class EditDestination extends SherlockFragmentActivity {
 		@Override
 		public void onSaveInstanceState(Bundle outState) {
 			super.onSaveInstanceState(outState);
-			outState.putSerializable(KEY_SITE, station);
-			outState.putSerializable(KEY_VARIABLE, variable);
+
+            //sync destinationFacet object with contents of text fields
+            DestinationFacet destinationFacet = reloadDestinationFacet();
+			outState.putSerializable(KEY_DESTINATION_FACET, destinationFacet);
 		}
 
 		@Override
 		public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
 			if(savedInstanceState != null) {
-				Site savedStation = (Site)savedInstanceState.get(KEY_SITE);
-				Variable savedVariable = (Variable)savedInstanceState.get(KEY_VARIABLE);
+				DestinationFacet savedDestFacet = (DestinationFacet)savedInstanceState.get(KEY_DESTINATION_FACET);
 
-				if(savedStation != null) {
-					station = savedStation;
-					variable = savedVariable;
+				if(savedDestFacet != null) {
+					destinationFacet = savedDestFacet;
 				}
 			}
 
@@ -145,10 +177,10 @@ public class EditDestination extends SherlockFragmentActivity {
 
 			//populate station name
 			TextView stationName = (TextView)v.findViewById(R.id.lbl_dest_gage);
-			stationName.setText(station.getName());
+			stationName.setText(destinationFacet.getDestination().getSite().getName());
 
 			ImageView stationAgency = (ImageView)v.findViewById(R.id.agency_icon);
-			stationAgency.setImageResource(Home.getAgencyIconResId(station.getAgency()));
+			stationAgency.setImageResource(Home.getAgencyIconResId(destinationFacet.getDestination().getSite().getAgency()));
 
 			//populate dropdown menu
 			Spinner spinner = (Spinner)v.findViewById(R.id.select_facet);
@@ -157,8 +189,15 @@ public class EditDestination extends SherlockFragmentActivity {
 			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 			spinner.setAdapter(adapter);
 
+			int[] facetValues = getResources().getIntArray(R.array.facet_type_values);
+			for(int a = 0; a < facetValues.length; a++) {
+				if(facetValues[a] == destinationFacet.getFacetType()) {
+					spinner.setSelection(a);
+					break;
+				}
+			}
 
-			String unit = variable.getUnit();
+			String unit = destinationFacet.getVariable().getUnit();
 
 			//populate level units
 			TextView levelUnit = (TextView)v.findViewById(R.id.lbl_too_high_unit);
@@ -268,24 +307,145 @@ public class EditDestination extends SherlockFragmentActivity {
         }
 
         private void setValid(EditText field) {
-            int validTextColor = getResources().getColor(android.R.color.white);
-            int validBgColor = getResources().getColor(android.R.color.black);
+			if(validTextColor == null) {
+				//nothing has been made invalid yet
+				return;
+			}
 
             field.setTextColor(validTextColor);
             field.setBackgroundColor(validBgColor);
+			field.setHintTextColor(validHintColor);
         }
 
         private void setInvalid(EditText field) {
+
+			validTextColor = field.getTextColors().getDefaultColor();
+			validBgColor = field.getDrawingCacheBackgroundColor();
+			validHintColor = field.getHintTextColors().getDefaultColor();
+
             int invalidTextColor = getResources().getColor(R.color.validation_error_color);
             int invalidBgColor = getResources().getColor(R.color.validation_error_bgcolor);
+			int invalidHintColor = getResources().getColor(R.color.validation_error_hint_color);
 
             field.setTextColor(invalidTextColor);
             field.setBackgroundColor(invalidBgColor);
+			field.setHintTextColor(invalidHintColor);
         }
 
         private boolean isValid(int resId) {
             EditText levelField = (EditText)getView().findViewById(resId);
-            return levelField.getCurrentTextColor() != getResources().getColor(R.color.validation_error_color);
+            return levelField.getTextColors().getDefaultColor() != getResources().getColor(R.color.validation_error_color);
+        }
+
+        public DestinationFacet reloadDestinationFacet() {
+
+            View fragView = getView();
+
+            //destination name
+            EditText destNameField = (EditText)fragView.findViewById(R.id.fld_dest_name);
+
+            CharSequence destName = destNameField.getText();
+            if(TextUtils.isEmpty(destName)) {
+                destName = destinationFacet.getDestination().getSite().getName();
+            }
+
+            destinationFacet.getDestination().setName(destName.toString());
+
+            //destination facet type
+            Spinner spinner = (Spinner)fragView.findViewById(R.id.select_facet);
+            spinner.getSelectedItemPosition();
+
+            int[] facetTypes = getResources().getIntArray(R.array.facet_type_values);
+
+            destinationFacet.setFacetType(facetTypes[spinner.getSelectedItemPosition()]);
+
+            //destination facet level definitions
+
+            destinationFacet.setHighPlus(parseLevel(fragView, R.id.fld_too_high));
+            destinationFacet.setHigh(parseLevel(fragView, R.id.fld_high));
+            destinationFacet.setMed(parseLevel(fragView, R.id.fld_medium));
+            destinationFacet.setLow(parseLevel(fragView, R.id.fld_low));
+
+            return destinationFacet;
+        }
+
+        private Double parseLevel(View v, int resId) {
+            EditText levelField = (EditText)v.findViewById(resId);
+
+            CharSequence levelText = levelField.getText();
+
+            if(TextUtils.isEmpty(levelText)) {
+                return null;
+            }
+
+            try {
+                return Double.parseDouble(levelText.toString());
+            } catch(NumberFormatException nfe) {
+                Log.e(Home.TAG, "level field " + resId, nfe);
+            }
+            return null;
+        }
+
+        public void setDestinationFacet(DestinationFacet destinationFacet) {
+            this.destinationFacet = destinationFacet;
         }
 	}
+
+    private class SaveDestination extends ApiCallTask<DestinationFacet,Integer,DestinationFacet> {
+
+		public SaveDestination(boolean secondTry) {
+			super(EditDestination.this, REQUEST_SAVE_DESTINATION, REQUEST_LOGIN_TO_SAVE_DESTINATION, true, secondTry);
+		}
+
+        @Override
+        protected DestinationFacet doApiCall(WsSession session, DestinationFacet... params) throws Exception {
+			DestinationFacet facet = params[0];
+
+			//Destination dest = facet.getDestination();
+
+			facet = Destinations.saveDestinationWithFacet(session, facet);
+
+			//make sure facet knows about newly-created dest's primary key
+			/*
+			facet.setDestination(dest);
+			facet.setUser(session.userAccount);
+
+			facet = DestinationFacets.instance.create(session, facet);
+
+			facet.setDestination(dest);*/
+
+            return facet;
+        }
+
+		@Override
+		protected void onNetworkError() {
+			showEditBar();
+
+			if(exception != null) {
+				Toast.makeText(EditDestination.this, exception.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+				Log.e(Home.TAG,"", exception);
+				return;
+			} else {
+				Toast.makeText(EditDestination.this, "Network Error", Toast.LENGTH_LONG).show();
+			}
+		}
+
+		@Override
+        protected void onNoUIRequired(DestinationFacet destinationFacet) {
+			showEditBar();
+
+			setSupportProgressBarIndeterminate(false);
+
+			if(exception != null) {
+				Toast.makeText(EditDestination.this, exception.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+				Log.e(Home.TAG,"", exception);
+				return;
+			}
+
+            Intent resultIntent = new Intent();
+			resultIntent.putExtra(KEY_DESTINATION_FACET, destinationFacet);
+            setResult(RESULT_OK, resultIntent);
+            finish();
+        }
+    }
 }

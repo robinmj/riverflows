@@ -16,7 +16,7 @@
                 android:gravity="center"
                 android:padding="4dp"
                 android:textSize="20sp"
-                android:color="@color/validation_error_color"
+                android:textColor="@color/validation_error_color"
                 android:background="@color/validation_error_bgcolor"
                 android:visibility="gone"/>
 
