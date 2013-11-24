@@ -26,7 +26,6 @@ import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.Variable;
 import com.riverflows.data.Variable.CommonVariable;
-import com.riverflows.widget.LicenseCheckService.Status;
 import com.riverflows.wsclient.AHPSXmlDataSource;
 import com.riverflows.wsclient.CDECDataSource;
 import com.riverflows.wsclient.CODWRDataSource;
@@ -40,7 +39,6 @@ public class Provider extends AppWidgetProvider {
 	public static final String TAG = "RiverFlows-Widget";
 	
 	public static final String ACTION_UPDATE_WIDGET = "com.riverflows.widget.UPDATE";
-	public static final String ACTION_RETRY_LICENSE_CHECK = "com.riverflows.widget.RETRY_LICENSE_CHECK";
 	
 	private static final SimpleDateFormat lastReadingDateFmt = new SimpleDateFormat("h:mm aa");
 	
@@ -64,11 +62,6 @@ public class Provider extends AppWidgetProvider {
         }
         
         try {
-        	/*if(checkLicenseStatus(context, views)) {
-        		//license check failed- error message is ready to be displayed
-    	        appWidgetManager.updateAppWidget(thisWidget, views);
-    			return;
-        	}*/
         	
     		if(updateFavoriteViews(context, views) == null) {
     			throw new UpdateAbortedException();
@@ -112,39 +105,6 @@ public class Provider extends AppWidgetProvider {
     	views.setViewVisibility(R.id.reload_button, View.GONE);
 		views.setViewVisibility(R.id.empty_message_area, View.GONE);
         return views;
-	}
-	
-	/**
-	 * @param context
-	 * @param views
-	 * @return true if the RemoteViews are ready to be displayed, false if more processing must occur
-	 * @throws UpdateAbortedException
-	 */
-	private boolean checkLicenseStatus(Context context, RemoteViews views) throws UpdateAbortedException {
-		
-		Status licenseStatus = LicenseCheckService.getStatus();
-		Log.d(TAG,"license status: " + licenseStatus);
-        
-		if(licenseStatus == null) {
-			context.startService(new Intent(context,LicenseCheckService.class));
-			return true;
-		} else {
-			switch(licenseStatus) {
-			case CHECKING:
-				throw new UpdateAbortedException();
-			case PASSED:
-				views.setViewVisibility(R.id.empty_message_area, View.GONE);
-				break;
-			case FAILED:
-				showLicenseErrorMessage(context,views,"License check failed.  Please make sure you have internet access.");
-				return true;
-			case ERROR:
-		        //there's a faint possibility that licenseErrorCode will be incorrect here if it was modified by another thread
-				showLicenseErrorMessage(context,views, "License check failed due to error: " + LicenseCheckService.getErrorCode());
-				return true;
-			}
-		}
-		return false;
 	}
     
 	private RemoteViews updateFavoriteViews(Context context, RemoteViews views) {
@@ -539,23 +499,6 @@ public class Provider extends AppWidgetProvider {
 			updateRemoteViews(context, appWidgetManager, true);
 			return;
 		}
-
-		if(ACTION_RETRY_LICENSE_CHECK.equals(intent.getAction())) {
-			
-			Log.d(TAG,"received license retry intent");
-			LicenseCheckService.reset();
-	        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-			onUpdate(context, appWidgetManager, new int[]{});
-		}
-	}
-	
-	private void showLicenseErrorMessage(Context context, RemoteViews views, String message) {
-
-    	Intent retryLicenseIntent = new Intent(context, Provider.class);
-    	retryLicenseIntent.setAction(ACTION_RETRY_LICENSE_CHECK);
-    	PendingIntent retryLicensePendingIntent = PendingIntent.getBroadcast(context, 0, retryLicenseIntent, 0);
-    	
-    	showErrorMessage(context, views, message, "Retry", retryLicensePendingIntent);
 	}
 	
 	private void showErrorMessage(Context context, RemoteViews views, String message, String buttonText, PendingIntent buttonIntent) {
