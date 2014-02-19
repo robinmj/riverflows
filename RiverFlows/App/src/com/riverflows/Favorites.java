@@ -77,6 +77,8 @@ public class Favorites extends ListActivity {
 
 	private String tempUnit = null;
 
+	private Date v2MigrationDate = null;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -98,6 +100,10 @@ public class Favorites extends ListActivity {
 
 		SharedPreferences settings = getSharedPreferences(Home.PREFS_FILE, MODE_PRIVATE);
     	tempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
+		long destinationMigrationDate = settings.getLong("destination_migration", -1);
+		if(destinationMigrationDate != -1) {
+			v2MigrationDate = new Date(destinationMigrationDate);
+		}
 
 		lv.setTextFilterEnabled(true);
 		this.loadTask = getLastNonConfigurationInstance();
@@ -342,6 +348,14 @@ public class Favorites extends ListActivity {
 
 			setListAdapter(new SiteAdapter(getApplicationContext(), this.loadTask.gauges));
 			registerForContextMenu(getListView());
+
+			/*
+			NOT READY FOR PRIME TIME
+			if(v2MigrationDate == null && this.loadTask.gauges.size() > 0) {
+				Intent i = new Intent(this, DestinationOnboard.class);
+				startActivity(i);
+			}
+			 */
 		}
 		try {
 			removeDialog(DIALOG_ID_LOADING);

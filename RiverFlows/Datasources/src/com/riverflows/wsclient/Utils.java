@@ -4,7 +4,10 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import org.apache.http.HttpResponse;
 
@@ -81,6 +84,31 @@ public class Utils {
 		value = value / factor;
 		
 		return value + "";
+	}
+
+	public static String encodeUrl(Map<String, List<String>> parameters) {
+		if(parameters == null) {
+			return "";
+		}
+
+		StringBuilder sb = new StringBuilder();
+		boolean first = true;
+		for (String key : parameters.keySet()) {
+
+			List<String> values = parameters.get(key);
+			if (values != null) {
+				for(String value : values) {
+					if(first) {
+						first = false;
+					} else {
+						sb.append("&");
+					}
+
+					sb.append(URLEncoder.encode(key) + "=" + URLEncoder.encode(value));
+				}
+			}
+		}
+		return sb.toString();
 	}
 	
 	public static String responseString(HttpResponse response) throws IOException {

@@ -55,10 +55,10 @@ public class DataSourceController {
 
 	private static final Log LOG = LogFactory.getLog(DataSourceController.class);
 
-	//public static final String RIVERFLOWS_WS_BASEURL = "https://ws-staging.riverflowsapp.com/";
+	public static final String RIVERFLOWS_WS_BASEURL = "https://ws-staging.riverflowsapp.com/";
 	//public static final String RIVERFLOWS_WS_BASEURL = "https://ws.riverflowsapp.com/";
 	//public static final String RIVERFLOWS_WS_BASEURL = "http://riverflows-ws.elasticbeanstalk.com/";
-	public static final String RIVERFLOWS_WS_BASEURL = "http://192.168.103.3:3000/";
+	//public static final String RIVERFLOWS_WS_BASEURL = "http://192.168.103.3:3000/";
 
 	//TODO remove this once my.riverflowsapp.com features are out of beta
 	//public static final String MY_RIVERFLOWS_WS_BASE_URL = "https://ws-staging.riverflowsapp.com";
