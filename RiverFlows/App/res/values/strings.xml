@@ -11,4 +11,20 @@
 <div style="width: 620px; font-size: 0.8em; font-weight: bold; font-family: sans-serif; color: grey;">
 Shared using the <a href=\"http://www.riverflowsapp.com\">RiverFlows</a> mobile app<br/>
 </div>]]></string>
+    <string name="destinations_intro">
+        Welcome to RiverFlows 2.0!
+
+        It is now possible to save "destinations" on the my.riverflowsapp.com server.
+
+        This makes it possible for you to specify more information about your favorite gages including a custom name, description, and preferred level ranges.
+
+        Also, since destinations are stored remotely, they can be backed up and synchronized across devices.
+
+        To get started please log in using your Google Account
+    </string>
+    <string name="facet_type_intro">
+        Welcome to RiverFlows 2.0!
+
+        Please select the following activities that you use Riverflows for
+    </string>
 </resources>

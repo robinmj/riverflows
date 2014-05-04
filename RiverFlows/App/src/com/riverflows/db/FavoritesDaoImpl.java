@@ -277,69 +277,84 @@ public class FavoritesDaoImpl {
 
 		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
 		synchronized(RiverGaugesDb.class) {
-		SQLiteDatabase db = helper.getReadableDatabase();
+			SQLiteDatabase db = helper.getReadableDatabase();
 
-		String sql = "SELECT " + NAME + "." + TextUtils.join("," + NAME + ".", new String[]{ID, SITE_ID, AGENCY,  VARIABLE, ORDER, SITE_NAME, CREATED_DATE, FAVORITE_NAME, SUPPORTED_VARS, STATE })
-		 + " FROM " + NAME;
+			String sql = "SELECT " + getAllColumnsStr() + " FROM " + NAME;
 
-		String whereClause = "";
-		List<String> whereClauseParams = new ArrayList<String>(3);
-		if(siteId != null) {
-			whereClause += NAME + "." + AGENCY + " = ? AND " + NAME + "." + SITE_ID + " = ? ";
-			whereClauseParams.add(siteId.getAgency());
-			whereClauseParams.add(siteId.getId());
-		}
-
-		if(variableId != null) {
-			if(whereClause.length() > 0) {
-				whereClause += " AND ";
+			String whereClause = "";
+			List<String> whereClauseParams = new ArrayList<String>(3);
+			if(siteId != null) {
+				whereClause += NAME + "." + AGENCY + " = ? AND " + NAME + "." + SITE_ID + " = ? ";
+				whereClauseParams.add(siteId.getAgency());
+				whereClauseParams.add(siteId.getId());
 			}
-			whereClause += NAME + "." + VARIABLE + " = ? ";
-			whereClauseParams.add(variableId);
-		}
 
-		if(whereClause.length() > 0) {
-			whereClause = " WHERE " + whereClause;
-		}
+			if(variableId != null) {
+				if(whereClause.length() > 0) {
+					whereClause += " AND ";
+				}
+				whereClause += NAME + "." + VARIABLE + " = ? ";
+				whereClauseParams.add(variableId);
+			}
 
-		String orderClause = " ORDER BY " + ORDER;
+			if(whereClause.length() > 0) {
+				whereClause = " WHERE " + whereClause;
+			}
 
-		String[] whereClauseParamsA = new String[whereClauseParams.size()];
-		whereClauseParams.toArray(whereClauseParamsA);
+			String orderClause = " ORDER BY " + ORDER;
 
-		Cursor c = db.rawQuery(sql + whereClause + orderClause, whereClauseParamsA);
+			String[] whereClauseParamsA = new String[whereClauseParams.size()];
+			whereClauseParams.toArray(whereClauseParamsA);
 
-		List<Favorite> result = new ArrayList<Favorite>(c.getCount());
+			Cursor c = db.rawQuery(sql + whereClause + orderClause, whereClauseParamsA);
 
-		if(c.getCount() == 0) {
+			List<Favorite> result = new ArrayList<Favorite>(c.getCount());
+
+			if(c.getCount() == 0) {
+				c.close();
+				db.close();
+				return result;
+			}
+			c.moveToFirst();
+
+			do {
+				result.add(extractFavorite(c));
+			} while(c.moveToNext());
+
 			c.close();
-			db.close();
 			return result;
 		}
-		c.moveToFirst();
+	}
 
-		do {
-			Site newStation = new Site();
-			newStation.setSiteId(new SiteId(c.getString(2), c.getString(1)));
-			if(Log.isLoggable(TAG, Log.VERBOSE)) Log.v(TAG, "favorite: " + c.getString(1));
-			newStation.setSupportedVariables(DataSourceController.getVariablesFromString(c.getString(2), c.getString(8)));
+	public static List<Favorite> getLocalFavorites(Context ctx) {
 
-			String favoriteVarId = c.getString(3);
+		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
+		synchronized(RiverGaugesDb.class) {
+			SQLiteDatabase db = helper.getReadableDatabase();
 
-			newStation.setName(c.getString(5));
-			newStation.setState(USState.valueOf(c.getString(9)));
+			String sql = "SELECT " + getAllColumnsStr() + " FROM " + NAME;
 
-			Favorite newFavorite = new Favorite(newStation, favoriteVarId);
+			String whereClause =  " WHERE " + NAME + "." + DESTINATION_FACET_ID + " IS NULL";
 
-			newFavorite.setName(c.getString(7));
-			newFavorite.setCreationDate(new Date(c.getLong(6)));
-			newFavorite.setId(c.getInt(0));
-			newFavorite.setOrder(c.getInt(4));
-			result.add(newFavorite);
-		} while(c.moveToNext());
+			String orderClause = " ORDER BY " + ORDER;
 
-		c.close();
-		return result;
+			Cursor c = db.rawQuery(sql + whereClause + orderClause, null);
+
+			List<Favorite> result = new ArrayList<Favorite>(c.getCount());
+
+			if(c.getCount() == 0) {
+				c.close();
+				db.close();
+				return result;
+			}
+			c.moveToFirst();
+
+			do {
+				result.add(extractFavorite(c));
+			} while(c.moveToNext());
+
+			c.close();
+			return result;
 		}
 	}
 
@@ -426,6 +441,35 @@ public class FavoritesDaoImpl {
 
 		c.close();
     	return result;
+	}
+
+
+	private static String getAllColumnsStr() {
+		return NAME + "." + TextUtils.join("," + NAME + ".", new String[]{ID, SITE_ID, AGENCY,  VARIABLE, ORDER, SITE_NAME, CREATED_DATE, FAVORITE_NAME, SUPPORTED_VARS, STATE });
+	}
+
+	/**
+	 * @param c must be obtained from a query whose selection starts with {#getAllColumnsStr}
+	 */
+	private static Favorite extractFavorite(Cursor c) {
+
+		Site newStation = new Site();
+		newStation.setSiteId(new SiteId(c.getString(2), c.getString(1)));
+		if(Log.isLoggable(TAG, Log.VERBOSE)) Log.v(TAG, "favorite: " + c.getString(1));
+		newStation.setSupportedVariables(DataSourceController.getVariablesFromString(c.getString(2), c.getString(8)));
+
+		String favoriteVarId = c.getString(3);
+
+		newStation.setName(c.getString(5));
+		newStation.setState(USState.valueOf(c.getString(9)));
+
+		Favorite newFavorite = new Favorite(newStation, favoriteVarId);
+
+		newFavorite.setName(c.getString(7));
+		newFavorite.setCreationDate(new Date(c.getLong(6)));
+		newFavorite.setId(c.getInt(0));
+		newFavorite.setOrder(c.getInt(4));
+		return newFavorite;
 	}
 
 	public static void updateLastViewedTime(Context ctx, SiteId siteId) {

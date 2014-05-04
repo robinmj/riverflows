@@ -48,7 +48,9 @@ public abstract class SiteList extends ListActivity {
 	private static final String TAG = Home.TAG;
 	
 	public static final String PK_MASTER_SITE_LIST_LAST_LOAD_TIME = "masterSiteListLastLoadTime";
-	
+
+	private static final int REQUEST_CREATE_DESTINATION = 4359042;
+
 	/**
 	 * reload the master site list every 2 weeks
 	 */
@@ -466,7 +468,7 @@ public abstract class SiteList extends ListActivity {
 			i.putExtra(EditDestination.KEY_SITE, selectedStation);
 			i.putExtra(EditDestination.KEY_VARIABLE, selectedVariable);
 
-			startActivity(i);
+			startActivityForResult(i, REQUEST_CREATE_DESTINATION);
 
 			return true;
 		}

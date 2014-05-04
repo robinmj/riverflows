@@ -1,0 +1,35 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/container"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center"
+    android:orientation="vertical"
+    tools:context=".DestinationOnboard">
+    <TextView
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:textSize="18sp"
+            android:layout_margin="10dp"
+            android:text="RiverFlows 2.0 supports the creation of Destinations, which can be stored remotely and support other features such as setting runnable levels. Would you like to convert your favorites to Destinations now? (This can also be done later)"/>
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                  xmlns:tools="http://schemas.android.com/tools"
+                  android:layout_width="match_parent"
+                  android:layout_height="wrap_content"
+                  android:padding="10dp"
+                  android:gravity="center"
+                  android:orientation="horizontal">
+        <Button
+                android:id="@+id/ok_button"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:onClick="yesClicked"
+                android:text="Yes"/>
+        <Button
+                android:id="@+id/cancel_button"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:onClick="cancelClicked"
+                android:text="Cancel"/>
+    </LinearLayout>
+</LinearLayout>

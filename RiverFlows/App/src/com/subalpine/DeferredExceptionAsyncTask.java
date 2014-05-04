@@ -5,7 +5,7 @@ import android.os.AsyncTask;
 public abstract class DeferredExceptionAsyncTask<Params, Progress, Result> extends
 		AsyncTask<Params, Progress, Result> {
 	
-	protected Exception exception;
+	protected Exception exception = null;
 	
 	protected final Result doInBackground(Params... params) {
 		try {
@@ -17,4 +17,8 @@ public abstract class DeferredExceptionAsyncTask<Params, Progress, Result> exten
 	}
 	
 	protected abstract Result tryInBackground(Params... params) throws Exception;
+
+	public Exception getException() {
+		return exception;
+	}
 }

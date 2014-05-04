@@ -2,6 +2,8 @@ package com.riverflows.wsclient;
 
 import com.riverflows.data.Destination;
 import com.riverflows.data.DestinationFacet;
+import com.riverflows.data.Favorite;
+import com.riverflows.data.Page;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.UserAccount;
@@ -16,6 +18,10 @@ import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+
 /**
  * Created by robin on 9/26/13.
  */
@@ -28,6 +34,17 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 	@Override
 	public String getResource() {
 		return "/destination_facets";
+	}
+
+	public List<DestinationFacet> getSimilarDestinations(WsSession session, Favorite favorite) throws Exception {
+		HashMap<String,List<String>> params = new HashMap<String, List<String>>();
+		params.put("agency", Collections.singletonList(favorite.getSite().getAgency()));
+		params.put("agency_specific_id", Collections.singletonList(favorite.getSite().getId()));
+		params.put("variable_id", Collections.singletonList(favorite.getVariable()));
+
+		Page<DestinationFacet> resultPage = get(session,params, null, null);
+
+		return resultPage.pageElements;
 	}
 
 	public JSONObject toJson(DestinationFacet facet) throws JSONException {
