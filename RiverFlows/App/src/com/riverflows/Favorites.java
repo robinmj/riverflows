@@ -1,5 +1,6 @@
 package com.riverflows;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -27,6 +28,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
@@ -40,6 +42,7 @@ import com.riverflows.data.Variable.CommonVariable;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.wsclient.ApiCallTask;
 import com.riverflows.wsclient.DataSourceController;
+import com.riverflows.wsclient.DestinationFacets;
 import com.riverflows.wsclient.WsSession;
 import com.riverflows.wsclient.WsSessionManager;
 
@@ -48,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -63,6 +67,8 @@ public class Favorites extends ListActivity {
 	public static final int REQUEST_EDIT_FAVORITE = 1;
 	public static final int REQUEST_REORDER_FAVORITES = 2;
 	public static final int REQUEST_CREATE_ACCOUNT = 83247;
+	public static final int REQUEST_GET_FAVORITES = 15319;
+	public static final int REQUEST_GET_FAVORITES_RECOVER = 4193;
 
 	public static final int DIALOG_ID_LOADING = 1;
 	public static final int DIALOG_ID_LOADING_ERROR = 2;
@@ -71,7 +77,7 @@ public class Favorites extends ListActivity {
 	public static final int DIALOG_ID_UPGRADE_FAVORITES = 5;
 	public static final int DIALOG_ID_SIGNING_IN = 6;
 
-	LoadSitesTask loadTask = null;
+	LoadFavoritesTask loadTask = null;
 
 	private SignIn signin;
 
@@ -110,7 +116,7 @@ public class Favorites extends ListActivity {
 
 		if(this.loadTask != null) {
 			if(!this.loadTask.running) {
-				if(this.loadTask.gauges == null || this.loadTask.errorMsg != null) {
+				if(this.loadTask.getGauges() == null || this.loadTask.getErrorMsg() != null) {
 					loadSites(false);
 				} else {
 					displayFavorites();
@@ -143,7 +149,7 @@ public class Favorites extends ListActivity {
 		super.onResume();
 
 		//discard the cached list items after 2 hours
-		if((System.currentTimeMillis() - this.loadTask.loadTime.getTime()) > (2 * 60 * 60 * 1000)) {
+		if(this.loadTask.isStale()) {
 			loadSites(true);
 			return;
 		}
@@ -157,7 +163,7 @@ public class Favorites extends ListActivity {
 
 		List<Favorite> currentFavs = FavoritesDaoImpl.getFavorites(this, null, null);
 
-		if(!this.loadTask.running &&
+		if(!this.loadTask.isRunning() &&
 				(this.loadTask.favorites == null || (currentFavs.size() != this.loadTask.favorites.size()))) {
 			//a favorite has been removed- reload the list
 			// TODO it would be snappier if we just deleted item(s) from the currently displayed list
@@ -168,7 +174,10 @@ public class Favorites extends ListActivity {
 		//there's still a possibility that the favorites list is the same length because
 		// a favorite was added while another was deleted
 		for(Favorite currentFav: currentFavs) {
-			if(currentFav.getCreationDate().after(getLastLoadTime())) {
+
+			Date lastLoadTime = this.loadTask.getLoadTime();
+
+			if(lastLoadTime != null && currentFav.getCreationDate().after(lastLoadTime)) {
 				//a favorite has been added- reload the list
 				loadSites(false);
 				return;
@@ -187,13 +196,13 @@ public class Favorites extends ListActivity {
 	}
 
 	@Override
-    public LoadSitesTask onRetainNonConfigurationInstance() {
+    public LoadFavoritesTask onRetainNonConfigurationInstance() {
         return this.loadTask;
     }
 
     @Override
-    public LoadSitesTask getLastNonConfigurationInstance() {
-    	return (LoadSitesTask)super.getLastNonConfigurationInstance();
+    public LoadFavoritesTask getLastNonConfigurationInstance() {
+    	return (LoadFavoritesTask)super.getLastNonConfigurationInstance();
     }
 
 	@Override
@@ -203,11 +212,11 @@ public class Favorites extends ListActivity {
 		Site selectedStation = null;
 		Variable selectedVariable = null;
 
-		if(this.loadTask == null || this.loadTask.gauges == null) {
+		if(this.loadTask == null || this.loadTask.getGauges() == null) {
 			return;
 		}
 
-		for(SiteData currentData: this.loadTask.gauges) {
+		for(SiteData currentData: this.loadTask.getGauges()) {
 			if(SiteAdapter.getItemId(currentData) == id){
 				selectedStation = currentData.getSite();
 
@@ -270,7 +279,7 @@ public class Favorites extends ListActivity {
 	        dialog.setCancelable(true);
 	        return dialog;
 		case DIALOG_ID_LOADING_ERROR:
-			ErrorMsgDialog errorDialog = new ErrorMsgDialog(this, loadTask.errorMsg);
+			ErrorMsgDialog errorDialog = new ErrorMsgDialog(this, loadTask.getErrorMsg());
 			return errorDialog;
 		case DIALOG_ID_MASTER_LOADING:
 			ProgressDialog masterDialog = new ProgressDialog(this);
@@ -279,7 +288,7 @@ public class Favorites extends ListActivity {
 			masterDialog.setCancelable(true);
 	        return masterDialog;
 		case DIALOG_ID_MASTER_LOADING_ERROR:
-			ErrorMsgDialog masterErrorDialog = new ErrorMsgDialog(this, loadTask.errorMsg);
+			ErrorMsgDialog masterErrorDialog = new ErrorMsgDialog(this, loadTask.getErrorMsg());
 			return masterErrorDialog;
 		case DIALOG_ID_UPGRADE_FAVORITES:
 			ProgressDialog favoritesDialog = new ProgressDialog(this);
@@ -315,16 +324,16 @@ public class Favorites extends ListActivity {
 		List<SiteData> currentGauges = null;
 
 		if(this.loadTask != null) {
-			currentGauges = this.loadTask.gauges;
+			currentGauges = this.loadTask.getGauges();
 			this.loadTask.cancel(true);
 		}
 
 		getListView().getEmptyView().setVisibility(View.INVISIBLE);
 
-		this.loadTask = new LoadSitesTask();
+		this.loadTask = new LoadFavoritesTask(this, false, false, hardRefresh);
 
 		//preserve existing gauges in case load fails
-		this.loadTask.gauges = currentGauges;
+		this.loadTask.setGauges(currentGauges);
 
 		if(hardRefresh) {
 			this.loadTask.execute(HARD_REFRESH);
@@ -335,9 +344,9 @@ public class Favorites extends ListActivity {
 
 	public void displayFavorites() {
 
-		if(this.loadTask.gauges != null) {
+		if(this.loadTask.getGauges() != null) {
 
-//			if(this.loadTask.gauges.size() > 0) {
+//			if(this.loadTask.getGauges().size() > 0) {
 //				SharedPreferences settings = getSharedPreferences(Home.PREFS_FILE, MODE_PRIVATE);
 //				boolean showDestinationsNotice = !settings.getBoolean(PREF_MIGRATE_DESTINATIONS_NOTICE_SHOWN, false);
 //
@@ -346,33 +355,21 @@ public class Favorites extends ListActivity {
 //				}
 //			}
 
-			setListAdapter(new SiteAdapter(getApplicationContext(), this.loadTask.gauges));
+			setListAdapter(new SiteAdapter(getApplicationContext(), this.loadTask.getGauges()));
 			registerForContextMenu(getListView());
 
 			/*
 			NOT READY FOR PRIME TIME
-			if(v2MigrationDate == null && this.loadTask.gauges.size() > 0) {
+			if(v2MigrationDate == null && this.loadTask.getGauges().size() > 0) {
 				Intent i = new Intent(this, DestinationOnboard.class);
 				startActivity(i);
 			}
 			 */
 		}
-		try {
-			removeDialog(DIALOG_ID_LOADING);
-		} catch(IllegalArgumentException iae) {
-			if(Log.isLoggable(TAG, Log.INFO)) {
-				Log.i(TAG, "can't remove dialog; activity no longer active");
-			}
-		}
-		if(this.loadTask.gauges == null || this.loadTask.errorMsg != null) {
-			try {
-				showDialog(DIALOG_ID_LOADING_ERROR);
-			} catch(BadTokenException bte) {
-				if(Log.isLoggable(TAG, Log.INFO)) {
-					Log.i(TAG, "can't display dialog; activity no longer active");
-				}
-			}
-		} else if(this.loadTask.gauges.size() == 0) {
+		hideProgress();
+		if(this.loadTask.getGauges() == null || this.loadTask.getErrorMsg() != null) {
+			showError();
+		} else if(this.loadTask.getGauges().size() == 0) {
 			showInstructions();
 		}
 
@@ -397,17 +394,194 @@ public class Favorites extends ListActivity {
 	/** parameter for LoadSitesTask */
 	public static final Integer HARD_REFRESH = new Integer(1);
 
+	public class LoadFavoritesTask extends ApiCallTask<Integer, Integer, List<Favorite>> {
+		public List<Favorite> favorites = null;
+		private boolean hardRefresh = false;
+		private LoadSitesTask loadSitesTask = null;
+		private boolean running = false;
+		private List<SiteData> previousGauges = null;
+		private String errorMsg = null;
+
+		private LoadFavoritesTask(LoadFavoritesTask task) {
+			super(task);
+		}
+
+		public LoadFavoritesTask(Activity activity, boolean loginRequired, boolean secondTry, boolean hardRefresh) {
+			super(activity, REQUEST_GET_FAVORITES, REQUEST_GET_FAVORITES_RECOVER, loginRequired, secondTry);
+			this.hardRefresh = hardRefresh;
+		}
+
+		@Override
+		protected List<Favorite> doApiCall(WsSession session, Integer... params) throws Exception {
+			this.running = true;
+
+			List<Favorite> result = FavoritesDaoImpl.getFavorites(getApplicationContext(), null, null);
+
+			List<DestinationFacet> destinationFacets = DestinationFacets.instance.getFavorites(session);
+
+			HashSet<Integer> localDestFacetIds = new HashSet<Integer>(result.size());
+
+			//TODO do all this with a special SQLite call
+			for(int a = 0; a < result.size(); a++) {
+				
+				Favorite currentFav = result.get(a);
+
+				if(currentFav.getDestinationFacet() == null) {
+					//TODO send favorite to remote server
+
+					EasyTracker.getTracker().sendException("favorite is not synced", new Exception(), false);
+					Log.e(getClass().getName(), "favorite is not synced: " + currentFav.getId());
+				} else {
+					localDestFacetIds.add(currentFav.getDestinationFacet().getId());
+
+					for(int b = 0; b < destinationFacets.size(); b++) {
+
+						//if modification date of remote favorite is later than that of local favorite
+						if(currentFav.getDestinationFacet().getId().equals(destinationFacets.get(b).getId())
+						&& (destinationFacets.get(b).getModificationDate().after(currentFav.getDestinationFacet().getModificationDate())
+						|| destinationFacets.get(b).getDestination().getModificationDate().after(currentFav.getDestinationFacet().getDestination().getModificationDate()))) {
+							//update local favorite
+
+							currentFav.setDestinationFacet(destinationFacets.get(b));
+
+							FavoritesDaoImpl.updateFavorite(Favorites.this, currentFav);
+							break;
+						}
+					}
+				}
+			}
+
+			for(int a = 0; a < destinationFacets.size(); a++) {
+				DestinationFacet remoteDestFacet = destinationFacets.get(a);
+
+				if(!localDestFacetIds.contains(remoteDestFacet.getId())) {
+
+					Favorite newFav = new Favorite(remoteDestFacet.getDestination().getSite(), remoteDestFacet.getVariable().getId());
+
+					newFav.setDestinationFacet(remoteDestFacet);
+					newFav.setCreationDate(new Date());
+
+					//save new favorite locally
+					FavoritesDaoImpl.createFavorite(Favorites.this, newFav);
+					result.add(newFav);
+				}
+			}
+
+			this.running = false;
+			return result;
+		}
+
+		public List<SiteData> getGauges() {
+			if(this.loadSitesTask == null) {
+				return null;
+			}
+
+			if(this.loadSitesTask.gauges == null) {
+				return this.previousGauges;
+			}
+
+			return this.loadSitesTask.gauges;
+		}
+
+		public void setGauges(List<SiteData> gauges) {
+			this.previousGauges = gauges;
+		}
+
+		public boolean isStale() {
+			LoadSitesTask snapshot = this.loadSitesTask;
+			if(snapshot == null) {
+				return false;
+			}
+
+			return (System.currentTimeMillis() - snapshot.loadTime.getTime()) > (2 * 60 * 60 * 1000);
+		}
+
+		public Date getLoadTime() {
+			if(this.loadSitesTask == null) {
+				return null;
+			}
+
+			return this.loadSitesTask.loadTime;
+		}
+
+		public String getErrorMsg() {
+			if(this.loadSitesTask == null) {
+				return null;
+			}
+
+			return this.loadSitesTask.errorMsg;
+		}
+
+		public boolean isRunning() {
+			if(this.running) {
+				return true;
+			}
+
+			LoadSitesTask snapshot = this.loadSitesTask;
+			if(snapshot != null) {
+				return snapshot.running;
+			}
+
+			return false;
+		}
+
+		@Override
+		protected void onNetworkError() {
+			hideProgress();
+
+			if(this.exception != null) {
+				this.errorMsg = this.exception.toString() + ": " + exception.getMessage();
+				Log.w(Home.TAG,"failed to get remote favorites: ", exception);
+			}
+
+			showError();
+		}
+
+		@Override
+		protected void onNoUIRequired(List<Favorite> favorites) {
+			hideProgress();
+
+			if(this.exception != null) {
+				this.errorMsg = this.exception.toString() + ": " + exception.getMessage();
+				Log.e(Home.TAG,"failed to get remote favorites: ", exception);
+				EasyTracker.getTracker().sendException("loadFavorites", exception, false);
+				showError();
+				return;
+			}
+
+			this.loadSitesTask = new LoadSitesTask(favorites);
+
+			//preserve existing gauges in case load fails
+
+			if(this.hardRefresh) {
+				this.loadSitesTask.execute(HARD_REFRESH);
+			} else {
+				this.loadSitesTask.execute();
+			}
+		}
+
+		@Override
+		protected ApiCallTask<Integer, Integer, List<Favorite>> clone() throws CloneNotSupportedException {
+			return new LoadFavoritesTask(this);
+		}
+	}
+
 	public class LoadSitesTask extends AsyncTask<Integer, Integer, List<SiteData>> {
 
 		protected static final int STATUS_UPGRADING_FAVORITES = -1;
 
 		public final Date loadTime = new Date();
 		public List<SiteData> gauges = null;
-		public List<Favorite> favorites = null;
 
 		public boolean running = false;
 
 		public String errorMsg = null;
+
+		private List<Favorite> favorites;
+
+		public LoadSitesTask(List<Favorite> favorites) {
+			this.favorites = favorites;
+		}
 
 		protected void setLoadErrorMsg(String errorMsg) {
 			this.errorMsg = errorMsg;
@@ -417,7 +591,6 @@ public class Favorites extends ListActivity {
 		protected List<SiteData> doInBackground(Integer... params) {
 			running = true;
 			try {
-				this.favorites = FavoritesDaoImpl.getFavorites(getApplicationContext(), null, null);
 
 				if(favorites.size() == 0) {
 					return Collections.emptyList();
@@ -569,18 +742,29 @@ public class Favorites extends ListActivity {
 			}
 		}
 	}
-	
-	protected Date getLastLoadTime() {
-		if(this.loadTask == null) {
-			return null;
+
+	public void hideProgress() {
+		try {
+			removeDialog(DIALOG_ID_LOADING);
+		} catch(IllegalArgumentException iae) {
+			if(Log.isLoggable(TAG, Log.INFO)) {
+				Log.i(TAG, "can't remove dialog; activity no longer active");
+			}
 		}
-		
-		return this.loadTask.loadTime;
+	}	
+	public void showError() {
+		try {
+			showDialog(DIALOG_ID_LOADING_ERROR);
+		} catch(BadTokenException bte) {
+			if(Log.isLoggable(TAG, Log.INFO)) {
+				Log.i(TAG, "can't display dialog; activity no longer active");
+			}
+		}
 	}
 	
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		if(loadTask != null && loadTask.gauges != null && loadTask.gauges.size() > 0) {
+		if(loadTask != null && this.loadTask.getGauges() != null && this.loadTask.getGauges().size() > 0) {
 			MenuItem reorderFavorites = menu.findItem(R.id.mi_reorder);
 			reorderFavorites.setVisible(true);
 		}
@@ -644,6 +828,12 @@ public class Favorites extends ListActivity {
 
 		if(requestCode == Home.REQUEST_CHOOSE_ACCOUNT || requestCode == Home.REQUEST_HANDLE_RECOVERABLE_AUTH_EXC) {
 			signin.authorizeCallback(requestCode, resultCode, data);
+			return;
+		}
+
+		if(requestCode == REQUEST_GET_FAVORITES || requestCode == REQUEST_GET_FAVORITES_RECOVER) {
+			this.loadTask.authorizeCallback(requestCode, resultCode, data);
+			return;
 		}
 		
 		//update the view, if necessary
@@ -692,7 +882,7 @@ public class Favorites extends ListActivity {
 		        			
 		        			String newName = newFavorite.getName();
 		        			
-		        			for(SiteData favoriteData: loadTask.gauges) {
+		        			for(SiteData favoriteData: loadTask.getGauges()) {
 		        				if(favoriteData.getSite().getSiteId().equals(newFavorite.getSite().getSiteId())) {
 		        					Variable var = DataSourceController.getVariable(newFavorite.getSite().getAgency(), newFavorite.getVariable());
 		        					
@@ -721,7 +911,7 @@ public class Favorites extends ListActivity {
 			if(resultCode == RESULT_OK) {
 				sendBroadcast(Home.getWidgetUpdateIntent());
 				
-				if(loadTask == null || loadTask.gauges == null) {
+				if(this.loadTask == null || this.loadTask.getGauges() == null) {
 	        		//favorites haven't even loaded yet- return
 	        		return;
 	        	}
@@ -732,7 +922,7 @@ public class Favorites extends ListActivity {
 				
 				//reorder loadTask.gauges based on the new favorites order
 				for(Favorite newFav: newFavorites) {
-					for(SiteData siteData: loadTask.gauges) {
+					for(SiteData siteData: this.loadTask.getGauges()) {
 						if(siteData.getSite().getSiteId().equals(newFav.getSite().getSiteId())) {
         					Variable var = DataSourceController.getVariable(newFav.getSite().getAgency(), newFav.getVariable());
         					
@@ -740,7 +930,7 @@ public class Favorites extends ListActivity {
         						newSiteData.add(siteData);
         						//we can get away with this without a ConcurrentModificationException
         						// because it is immediately followed by a break statement
-        						loadTask.gauges.remove(siteData);
+        						this.loadTask.getGauges().remove(siteData);
         						break;
         					}
         				}
@@ -748,7 +938,7 @@ public class Favorites extends ListActivity {
 				}
 				
 				loadTask.favorites = newFavorites;
-				loadTask.gauges.addAll(newSiteData);
+				this.loadTask.getGauges().addAll(newSiteData);
 				((SiteAdapter)getListAdapter()).notifyDataSetChanged();
 			}
 		}
@@ -814,13 +1004,13 @@ public class Favorites extends ListActivity {
 			
 			FavoritesDaoImpl.deleteFavorite(Favorites.this, site.getSiteId(), variable);
 			
-			LoadSitesTask loadTask = Favorites.this.loadTask;
+			LoadFavoritesTask loadTask = Favorites.this.loadTask;
 			
 			if(loadTask == null) {
 				return true;
 			}
 			
-			if(loadTask.running) {
+			if(loadTask.isRunning()) {
 				//cancel and reload
 				loadSites(false);
 				
@@ -841,7 +1031,7 @@ public class Favorites extends ListActivity {
 				}
 			}
 			
-			Iterator<SiteData> gaugesI = loadTask.gauges.iterator();
+			Iterator<SiteData> gaugesI = loadTask.getGauges().iterator();
 			
 			while(gaugesI.hasNext()) {
 				SiteData gauge = gaugesI.next();

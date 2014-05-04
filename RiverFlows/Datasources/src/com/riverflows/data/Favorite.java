@@ -9,6 +9,7 @@ public class Favorite {
 	private String name;
 	private int order = 0;
 	private Date creationDate;
+	private DestinationFacet destinationFacet;
 	
 	public Favorite(Site site, String variableId) {
 		super();
@@ -62,5 +63,13 @@ public class Favorite {
 
 	public void setCreationDate(Date creationDate) {
 		this.creationDate = creationDate;
+	}
+
+	public DestinationFacet getDestinationFacet() {
+		return destinationFacet;
+	}
+
+	public void setDestinationFacet(DestinationFacet destinationFacet) {
+		this.destinationFacet = destinationFacet;
 	}
 }

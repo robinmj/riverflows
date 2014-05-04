@@ -142,6 +142,10 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 					this.activity.startActivityForResult(launchChooser, requestCode);
 
 					return;
+				} else {
+
+					Log.d(Home.TAG, "found username stored in prefs: " + accountName);
+					reExecute(accountName);
 				}
 			}
 		}
@@ -177,7 +181,7 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 	        newTask.accountName = accountName;
 	        newTask.execute(this.params);
 		} catch(CloneNotSupportedException cnse) {
-			throw new RuntimeException(cnse);
+			throw new RuntimeException(getClass().getName(), cnse);
 		}
 	}
 

@@ -6,6 +6,7 @@ import com.riverflows.data.Favorite;
 import com.riverflows.data.Page;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteId;
+import com.riverflows.data.USState;
 import com.riverflows.data.UserAccount;
 import com.riverflows.data.Variable;
 
@@ -18,9 +19,13 @@ import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.SortedMap;
 
 /**
  * Created by robin on 9/26/13.
@@ -45,6 +50,12 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 		Page<DestinationFacet> resultPage = get(session,params, null, null);
 
 		return resultPage.pageElements;
+	}
+
+	public List<DestinationFacet> getFavorites(WsSession session) throws Exception {
+		Page<DestinationFacet> remoteFavorites = get(session, "favorites", null, null, null);
+
+		return remoteFavorites.pageElements;
 	}
 
 	public JSONObject toJson(DestinationFacet facet) throws JSONException {
@@ -79,7 +90,7 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 		return result;
 	}
 
-	public DestinationFacet fromJson(JSONObject jsonObject) throws JSONException {
+	public DestinationFacet fromJson(JSONObject jsonObject) throws Exception {
 		DestinationFacet facet = new DestinationFacet();
 		if(jsonObject.has("id")) {
 			facet.setId(jsonObject.getInt("id"));
@@ -103,9 +114,25 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 		facet.setFacetType(jsonObject.getInt("facet_type"));
 
 		if(jsonObject.has("site_id")) {
-			facet.getDestination().setSite(new Site());
-			facet.getDestination().getSite().setSiteId(new SiteId("",""));
-			facet.getDestination().getSite().getSiteId().setPrimaryKey(jsonObject.getInt("site_id"));
+
+			Site site = new Site();
+			facet.getDestination().setSite(site);
+
+			if(jsonObject.has("site")) {
+				JSONObject siteObj = jsonObject.getJSONObject("site");
+
+				site.setSiteId(new SiteId(siteObj.getString("agency"), siteObj.getString("agency_specific_id")));
+				site.setName(siteObj.getString("name"));
+				site.setState(USState.valueOf(siteObj.getString("state")));
+				site.setSupportedVariables(DataSourceController.getVariablesFromString(
+						site.getAgency(),
+						siteObj.getString("supported_var_ids")));
+				site.setLatitude(siteObj.getDouble("latitude"));
+				site.setLongitude(siteObj.getDouble("longitude"));
+			} else {
+				site.setSiteId(new SiteId("", ""));
+			}
+			site.getSiteId().setPrimaryKey(jsonObject.getInt("site_id"));
 		}
 
 		if(jsonObject.has("variable_id")) {
@@ -121,11 +148,14 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 		facet.setQualityMed(getInteger(jsonObject, "quality_med"));
 		facet.setQualityHigh(getInteger(jsonObject, "quality_high"));
 
-		return facet;
-	}
+		facet.setCreationDate(getDate(jsonObject, "created_at"));
+		facet.setModificationDate(getDate(jsonObject, "updated_at"));
 
-	private boolean isEmpty(JSONObject jsonObject, String property) throws JSONException {
-		return !jsonObject.has(property) || jsonObject.getString(property).equals("null");
+		//TODO should these be separate from facet timestamps?
+		facet.getDestination().setCreationDate(facet.getCreationDate());
+		facet.getDestination().setModificationDate(facet.getModificationDate());
+
+		return facet;
 	}
 
 	private Integer getInteger(JSONObject jsonObject, String property) throws JSONException {

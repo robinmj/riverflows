@@ -1,6 +1,7 @@
 package com.riverflows.data;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
  * Created by robin on 6/27/13.
@@ -28,6 +29,8 @@ public class DestinationFacet implements Serializable {
 	private Integer qualityLow;
 	private Integer qualityMed;
 	private Integer qualityHigh;
+	private Date creationDate;
+	private Date modificationDate;
 
     public Integer getId() {
         return id;
@@ -196,5 +199,21 @@ public class DestinationFacet implements Serializable {
 
 	public void setPlaceholderObj(boolean placeholderObj) {
 		this.placeholderObj = placeholderObj;
+	}
+
+	public Date getCreationDate() {
+		return creationDate;
+	}
+
+	public void setCreationDate(Date creationDate) {
+		this.creationDate = creationDate;
+	}
+
+	public Date getModificationDate() {
+		return modificationDate;
+	}
+
+	public void setModificationDate(Date modificationDate) {
+		this.modificationDate = modificationDate;
 	}
 }

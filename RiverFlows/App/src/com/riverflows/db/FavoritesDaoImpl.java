@@ -12,10 +12,13 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.riverflows.Home;
+import com.riverflows.data.Destination;
+import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
+import com.riverflows.data.UserAccount;
 import com.riverflows.data.Variable;
 import com.riverflows.wsclient.DataSourceController;
 
@@ -363,8 +366,7 @@ public class FavoritesDaoImpl {
 		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
 		SQLiteDatabase db = helper.getReadableDatabase();
 
-		String sql = "SELECT " + NAME + "." + TextUtils.join("," + NAME + ".", new String[]{ID, SITE_ID, AGENCY,  VARIABLE, ORDER, SITE_NAME, CREATED_DATE, FAVORITE_NAME, SUPPORTED_VARS, STATE })
-		 + " FROM " + NAME + " WHERE " + NAME + "." + ID + " = ?";
+		String sql = "SELECT " + getAllColumnsStr() + " FROM " + NAME + " WHERE " + NAME + "." + ID + " = ?";
 
 		Cursor c = db.rawQuery(sql, new String[]{ primaryKey + "" });
 
@@ -375,21 +377,9 @@ public class FavoritesDaoImpl {
 		}
 		c.moveToFirst();
 
-		Site newStation = new Site();
-		newStation.setSiteId(new SiteId(c.getString(2), c.getString(1)));
 		if(Log.isLoggable(TAG, Log.VERBOSE)) Log.v(TAG, "favorite: " + c.getString(1));
-		newStation.setSupportedVariables(DataSourceController.getVariablesFromString(c.getString(2), c.getString(8)));
 
-		String favoriteVarId = c.getString(3);
-
-		newStation.setName(c.getString(5));
-		newStation.setState(USState.valueOf(c.getString(9)));
-
-		Favorite favorite = new Favorite(newStation, favoriteVarId);
-		favorite.setName(c.getString(7));
-		favorite.setCreationDate(new Date(c.getLong(6)));
-		favorite.setId(c.getInt(0));
-		favorite.setOrder(c.getInt(4));
+		Favorite favorite = extractFavorite(c);
 
 		c.close();
 		return favorite;
@@ -443,9 +433,24 @@ public class FavoritesDaoImpl {
     	return result;
 	}
 
+	private static final String[] allColumns = new String[]{ID, SITE_ID, AGENCY, VARIABLE, ORDER,
+			SITE_NAME, CREATED_DATE, FAVORITE_NAME, SUPPORTED_VARS, STATE, SUPPORTED_VARS, DEST_NAME, DESCRIPTION,
+			DEST_USER_ID , VISUAL_GAUGE_LATITUDE , VISUAL_GAUGE_LONGITUDE , DEST_CREATED_AT , DEST_UPDATED_AT ,
+			FACET_DESCRIPTION, DESTINATION_FACET_ID, FACET_USER_ID, TOO_LOW, LOW, MED, HIGH, HIGH_PLUS,
+			LOW_DIFFICULTY, MED_DIFFICULTY, HIGH_DIFFICULTY, FACET_CREATED_AT, FACET_UPDATED_AT, FACET_TYPE,
+			LOW_PORT_DIFFICULTY, MED_PORT_DIFFICULTY, HIGH_PORT_DIFFICULTY, QUALITY_LOW, QUALITY_MED, QUALITY_HIGH };
 
 	private static String getAllColumnsStr() {
-		return NAME + "." + TextUtils.join("," + NAME + ".", new String[]{ID, SITE_ID, AGENCY,  VARIABLE, ORDER, SITE_NAME, CREATED_DATE, FAVORITE_NAME, SUPPORTED_VARS, STATE });
+		return NAME + "." + TextUtils.join("," + NAME + ".", allColumns);
+	}
+
+	private static int getColumnIndex(String colName) {
+		for(int a = 0; a < allColumns.length; a++) {
+			if(allColumns[a].equals(colName)) {
+				return a;
+			}
+		}
+		throw new IllegalArgumentException("unknown column: " + colName);
 	}
 
 	/**
@@ -469,6 +474,48 @@ public class FavoritesDaoImpl {
 		newFavorite.setCreationDate(new Date(c.getLong(6)));
 		newFavorite.setId(c.getInt(0));
 		newFavorite.setOrder(c.getInt(4));
+
+		DestinationFacet facet = new DestinationFacet();
+
+		Destination dest = new Destination();
+
+		dest.setName(c.getString(getColumnIndex(DEST_NAME)));
+		dest.setCreationDate(new Date(c.getLong(getColumnIndex(DEST_CREATED_AT))));
+		dest.setDescription(c.getString(getColumnIndex(DESCRIPTION)));
+		dest.setSite(newStation);
+
+		dest.setModificationDate(new Date(c.getLong(getColumnIndex(DEST_UPDATED_AT))));
+
+		UserAccount destUser = new UserAccount();
+		destUser.setPlaceholderObj(true);
+		destUser.setId(c.getInt(getColumnIndex(DEST_USER_ID)));
+		dest.setUser(destUser);
+
+		facet.setDestination(dest);
+		facet.setDescription(c.getString(getColumnIndex(FACET_DESCRIPTION)));
+		facet.setId(c.getInt(getColumnIndex(DESTINATION_FACET_ID)));
+		facet.setCreationDate(new Date(c.getLong(getColumnIndex(FACET_CREATED_AT))));
+		facet.setModificationDate(new Date(c.getLong(getColumnIndex(FACET_UPDATED_AT))));
+
+		facet.setFacetType(c.getInt(getColumnIndex(FACET_TYPE)));
+		facet.setHighPlus(c.getDouble(getColumnIndex(HIGH_PLUS)));
+		facet.setHigh(c.getDouble(getColumnIndex(HIGH)));
+		facet.setMed(c.getDouble(getColumnIndex(MED)));
+		facet.setLow(c.getDouble(getColumnIndex(LOW)));
+		facet.setTooLow(c.getDouble(getColumnIndex(TOO_LOW)));
+		facet.setHighDifficulty(c.getInt(getColumnIndex(HIGH_DIFFICULTY)));
+		facet.setHighPortDifficulty(c.getInt(getColumnIndex(HIGH_PORT_DIFFICULTY)));
+		facet.setMedDifficulty(c.getInt(getColumnIndex(MED_DIFFICULTY)));
+		facet.setMedPortDifficulty(c.getInt(getColumnIndex(MED_PORT_DIFFICULTY)));
+		facet.setLowDifficulty(c.getInt(getColumnIndex(LOW_DIFFICULTY)));
+		facet.setLowPortDifficulty(c.getInt(getColumnIndex(LOW_PORT_DIFFICULTY)));
+		facet.setQualityHigh(c.getInt(getColumnIndex(QUALITY_HIGH)));
+		facet.setQualityMed(c.getInt(getColumnIndex(QUALITY_MED)));
+		facet.setQualityLow(c.getInt(getColumnIndex(QUALITY_LOW)));
+		facet.setVariable(DataSourceController.getVariable(newStation.getAgency(), favoriteVarId));
+
+		newFavorite.setDestinationFacet(facet);
+
 		return newFavorite;
 	}
 
@@ -487,21 +534,8 @@ public class FavoritesDaoImpl {
     }
 
 	public static void createFavorite(Context ctx, Favorite favorite) {
-		Site favoriteSite = favorite.getSite();
 
-		ContentValues favoriteValues = new ContentValues(1);
-		favoriteValues.put(SITE_ID, favoriteSite.getId());
-		favoriteValues.put(SITE_NAME,favoriteSite.getName());
-		favoriteValues.put(AGENCY,favoriteSite.getAgency());
-		favoriteValues.put(CREATED_DATE, System.currentTimeMillis());
-		favoriteValues.put(LAST_VIEWED, System.currentTimeMillis());
-		favoriteValues.put(LATITUDE, favoriteSite.getLatitude());
-		favoriteValues.put(LONGITUDE, favoriteSite.getLongitude());
-		favoriteValues.put(VARIABLE, favorite.getVariable());
-        favoriteValues.put(FAVORITE_NAME, favorite.getName());
-		favoriteValues.put(STATE, favoriteSite.getState().getAbbrev());
-        favoriteValues.put(SUPPORTED_VARS, DataSourceController.variablesToString(favoriteSite.getSupportedVariables()));
-		favoriteValues.put(ORDER, Integer.MAX_VALUE);
+		ContentValues favoriteValues = buildContentValues(favorite);
 
 		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
 		synchronized(RiverGaugesDb.class) {
@@ -516,9 +550,34 @@ public class FavoritesDaoImpl {
 			throw new NullPointerException();
 		}
 
+		ContentValues favoriteValues = buildContentValues(favorite);
+
+		DestinationFacet facet = favorite.getDestinationFacet();
+
+		if(facet != null) {
+
+			RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
+			synchronized(RiverGaugesDb.class) {
+				SQLiteDatabase db = helper.getWritableDatabase();
+				db.update(FavoritesDaoImpl.NAME, favoriteValues, DESTINATION_FACET_ID + " = ?", new String[]{facet.getId().toString()});
+			}
+			return;
+		}
+
+		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
+		synchronized(RiverGaugesDb.class) {
+			SQLiteDatabase db = helper.getWritableDatabase();
+			db.update(FavoritesDaoImpl.NAME, favoriteValues, ID + " = ?", new String[]{favorite.getId().toString()});
+		}
+	}
+
+
+
+	public static ContentValues buildContentValues(Favorite favorite) {
+
 		Site favoriteSite = favorite.getSite();
 
-		ContentValues favoriteValues = new ContentValues(1);
+		ContentValues favoriteValues = new ContentValues();
 		favoriteValues.put(SITE_ID, favoriteSite.getId());
 		favoriteValues.put(SITE_NAME,favoriteSite.getName());
 		favoriteValues.put(AGENCY,favoriteSite.getAgency());
@@ -526,18 +585,52 @@ public class FavoritesDaoImpl {
 		favoriteValues.put(LATITUDE, favoriteSite.getLatitude());
 		favoriteValues.put(LONGITUDE, favoriteSite.getLongitude());
 		favoriteValues.put(VARIABLE, favorite.getVariable());
-        favoriteValues.put(FAVORITE_NAME, favorite.getName());
+		favoriteValues.put(FAVORITE_NAME, favorite.getName());
 		favoriteValues.put(STATE, favoriteSite.getState().getAbbrev());
 		favoriteValues.put(SUPPORTED_VARS, DataSourceController.variablesToString(favoriteSite.getSupportedVariables()));
 		favoriteValues.put(ORDER, favorite.getOrder());
 
-		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
-		synchronized(RiverGaugesDb.class) {
-			SQLiteDatabase db = helper.getWritableDatabase();
-			db.update(FavoritesDaoImpl.NAME, favoriteValues,ID + " = ?", new String[]{ favorite.getId().toString() });
+		DestinationFacet facet = favorite.getDestinationFacet();
+
+		if(facet == null) {
+			return favoriteValues;
 		}
+
+		favoriteValues.put(DESTINATION_FACET_ID, facet.getId());
+
+		Destination dest = facet.getDestination();
+
+		favoriteValues.put(DEST_NAME, dest.getName());
+		favoriteValues.put(DESCRIPTION, dest.getDescription());
+
+		if(dest.getUser() != null) {
+			favoriteValues.put(DEST_USER_ID, dest.getUser().getId());
+		}
+		//favoriteValues.put(VISUAL_GAUGE_LATITUDE,
+		//favoriteValues.put(VISUAL_GAUGE_LONGITUDE,
+		favoriteValues.put(DEST_UPDATED_AT, System.currentTimeMillis());
+		favoriteValues.put(FACET_DESCRIPTION,facet.getDescription());
+		favoriteValues.put(FACET_USER_ID,facet.getUser().getId());
+		favoriteValues.put(FACET_TYPE, facet.getFacetType());
+		favoriteValues.put(HIGH_PLUS,facet.getHighPlus());
+		favoriteValues.put(HIGH,facet.getHigh());
+		favoriteValues.put(HIGH_DIFFICULTY,facet.getHighDifficulty());
+		favoriteValues.put(HIGH_PORT_DIFFICULTY,facet.getHighPortDifficulty());
+		favoriteValues.put(MED,facet.getMed());
+		favoriteValues.put(MED_DIFFICULTY, facet.getMedDifficulty());
+		favoriteValues.put(MED_PORT_DIFFICULTY,facet.getMedPortDifficulty());
+		favoriteValues.put(LOW,facet.getLow());
+		favoriteValues.put(LOW_DIFFICULTY,facet.getLowDifficulty());
+		favoriteValues.put(LOW_PORT_DIFFICULTY,facet.getLowPortDifficulty());
+		favoriteValues.put(TOO_LOW,facet.getTooLow());
+		favoriteValues.put(QUALITY_HIGH,facet.getQualityHigh());
+		favoriteValues.put(QUALITY_MED,facet.getQualityMed());
+		favoriteValues.put(QUALITY_LOW,facet.getQualityLow());
+		favoriteValues.put(FACET_UPDATED_AT, System.currentTimeMillis());
+
+		return favoriteValues;
 	}
-	
+
 	public static void deleteFavorite(Context ctx, SiteId siteId, Variable var) {
 		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
 		synchronized(RiverGaugesDb.class) {

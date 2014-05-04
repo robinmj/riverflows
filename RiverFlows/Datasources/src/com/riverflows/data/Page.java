@@ -11,10 +11,14 @@ import java.util.List;
  * @param <T>
  */
 public class Page<T> implements Iterable<T>{
-	public final int totalElementCount;
+	/**
+	 * null if no result count was specified in request, in which case you can
+	 * use pageElements.size() instead
+	 */
+	public final Integer totalElementCount;
 	public final List<T> pageElements;
 	
-	public Page(List<T> pageElements, int totalElementCount) {
+	public Page(List<T> pageElements, Integer totalElementCount) {
 		this.totalElementCount = totalElementCount;
 		this.pageElements = pageElements;
 	}
