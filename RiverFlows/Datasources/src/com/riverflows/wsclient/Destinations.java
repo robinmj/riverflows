@@ -14,12 +14,14 @@ import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.ParseException;
+
 import javax.net.ssl.HttpsURLConnection;
 
 /**
  * Created by robin on 9/25/13.
  */
-public class Destinations {
+public class Destinations extends WebModel<Destination> {
 
     private static final Log LOG = LogFactory.getLog(Destinations.class);
 
@@ -57,7 +59,27 @@ public class Destinations {
 		return result;
     }
 
-    public static final JSONObject destinationAsJson(Destination destination) throws JSONException {
+	@Override
+	public String getResource() {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public Destination fromJson(JSONObject json) throws Exception {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public JSONObject toJson(Destination obj) throws JSONException {
+		throw new UnsupportedOperationException();
+	}
+
+	@Override
+	public JSONObject getCreateEntity(Destination obj) throws JSONException {
+		throw new UnsupportedOperationException();
+	}
+
+	public static final JSONObject destinationAsJson(Destination destination) throws JSONException {
         JSONObject destJson = new JSONObject();
 		destJson.put("id", destination.getId());
 		if(destination.getUser() != null) {
@@ -71,7 +93,7 @@ public class Destinations {
 		return destJson;
     }
 
-	public static final Destination parseDestination(JSONObject destJson) throws JSONException {
+	public static final Destination parseDestination(JSONObject destJson) throws JSONException, ParseException {
 		Destination destination = new Destination();
 		if(destJson.has("id")) {
 			destination.setId(destJson.getInt("id"));
@@ -80,6 +102,8 @@ public class Destinations {
 		destination.getUser().setId(destJson.getInt("user_id"));
 		destination.setName(destJson.getString("name"));
 		destination.setDescription(destJson.getString("description"));
+		destination.setCreationDate(getDate(destJson, "created_at"));
+		destination.setModificationDate(getDate(destJson, "updated_at"));
 		return destination;
 	}
 }
