@@ -135,7 +135,7 @@ public class UsgsCsvDataSource implements RESTDataSource {
 		return ACCEPTED_VARIABLES;
 	}
 	
-	public static final String SITE_DATA_URL = "http://waterservices.usgs.gov/nwis/iv?format=rdb,1.0&";
+	public static final String SITE_DATA_URL = "http://waterservices.usgs.gov/nwis/iv/?format=rdb,1.0&";
 	
 	public void populateDataSets(SiteData site) {
 		if(!site.getSite().getAgency().equals(getAgency())) {
