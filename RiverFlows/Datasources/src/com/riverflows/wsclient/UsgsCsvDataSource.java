@@ -80,7 +80,7 @@ public class UsgsCsvDataSource implements RESTDataSource {
 	private HttpClientWrapper httpClientWrapper = new DefaultHttpClientWrapper();
 	
 	/**
-	 * The order of this array affects the behavior of {@link #getPreferredSeries(SiteData)}
+	 * The order of this array affects the behavior of {@link com.riverflows.wsclient.DataSourceController#getPreferredSeries(SiteData)}
 	 */
 	public static final Variable[] ACCEPTED_VARIABLES = new Variable[]{
 		VTYPE_STREAMFLOW_CFS,
@@ -450,6 +450,10 @@ public class UsgsCsvDataSource implements RESTDataSource {
 				}
 				
 				Series currentSeries = currentSiteData.getDatasets().get(var.getCommonVariable());
+
+                if(currentSeries == null) {
+                    throw new NullPointerException("dataset for " + var.getCommonVariable() + " not found");
+                }
 				
 				Reading newReading = new Reading();
 				try {
