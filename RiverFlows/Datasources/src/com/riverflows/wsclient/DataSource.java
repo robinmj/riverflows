@@ -1,16 +1,15 @@
 package com.riverflows.wsclient;
 
-import java.io.IOException;
-import java.util.List;
-import java.util.Map;
+import com.riverflows.data.Favorite;
+import com.riverflows.data.FavoriteData;
+import com.riverflows.data.Site;
+import com.riverflows.data.SiteData;
+import com.riverflows.data.Variable;
 
 import org.apache.http.client.ClientProtocolException;
 
-import com.riverflows.data.Favorite;
-import com.riverflows.data.Site;
-import com.riverflows.data.SiteData;
-import com.riverflows.data.SiteId;
-import com.riverflows.data.Variable;
+import java.io.IOException;
+import java.util.List;
 
 public interface DataSource {
 	/**
@@ -34,7 +33,7 @@ public interface DataSource {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public Map<SiteId,SiteData> getSiteData(List<Favorite> sites, boolean hardRefresh) throws ClientProtocolException, IOException;
+	public List<FavoriteData> getSiteData(List<Favorite> sites, boolean hardRefresh) throws ClientProtocolException, IOException;
 	
 	/**
 	 * Download readings from the last week for a given site and variables.

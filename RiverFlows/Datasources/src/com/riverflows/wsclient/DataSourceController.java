@@ -1,6 +1,7 @@
 package com.riverflows.wsclient;
 
 import com.riverflows.data.Favorite;
+import com.riverflows.data.FavoriteData;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
@@ -30,7 +31,8 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -458,7 +460,7 @@ public class DataSourceController {
 	/**
 	 * @param site
 	 * @param hardRefresh TODO
-	 * @param variableTypes a suggestion of the variables to retrieve, in order of preference.  The DataSource
+	 * @param variables a suggestion of the variables to retrieve, in order of preference.  The DataSource
 	 * implementation may truncate this array if it only supports retrieving data for a limited number of variables
 	 * at once, but it will always attempt to retrieve data for the first variable.
 	 * @return TODO do we need to return a map here?
@@ -494,34 +496,36 @@ public class DataSourceController {
 	/**
 	 * 
 	 * @param hardRefresh TODO
-	 * @param sites
-	 * @param variables respective variables for each site
+	 * @param favorites
 	 * @return 
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 * @throws NullPointerException if sites or variables is null
 	 * @throws IllegalArgumentException if sites and variables are of differing lengths
 	 */
-	public static Map<SiteId,SiteData> getSiteData(List<Favorite> gauges, boolean hardRefresh) throws ClientProtocolException, IOException {
+	public static List<FavoriteData> getSiteData(List<Favorite> favorites, boolean hardRefresh) throws ClientProtocolException, IOException {
 		
 		//get single readings from a number of different agencies
 		
-		// agency name -> list of sites
+		// agency name -> list of favorites
 		Map<String, List<Favorite>> agencySitesMap = new HashMap<String, List<Favorite>>();
 		
-		//break up list of sites by agency
-		for(Favorite gauge: gauges) {
-			List<Favorite> agencySites = agencySitesMap.get(gauge.getSite().getAgency());
+		//break up list of favorites by agency
+		for(Favorite favorite: favorites) {
+            assert (favorite.getId() != null);
+
+			List<Favorite> agencySites = agencySitesMap.get(favorite.getSite().getAgency());
 			if(agencySites == null) {
 				agencySites = new LinkedList<Favorite>();
-				agencySitesMap.put(gauge.getSite().getAgency(), agencySites);
+				agencySitesMap.put(favorite.getSite().getAgency(), agencySites);
 			}
-			agencySites.add(gauge);
+			agencySites.add(favorite);
 		}
 		
 		Set<String> agencies = agencySitesMap.keySet();
-		
-		Map<SiteId,SiteData> allData = new HashMap<SiteId,SiteData>();
+
+        // favorite id -> FavoriteData
+        HashMap<Integer, FavoriteData> returnedData = new HashMap<Integer, FavoriteData>(favorites.size());
 		
 		for(String agency: agencies) {
 			DataSource ds = dataSources.get(agency);
@@ -532,22 +536,35 @@ public class DataSourceController {
 			}
 			
 			try {
-				Map<SiteId,SiteData> agencyDataMap= ds.getSiteData(agencySitesMap.get(agency), hardRefresh);
-				
-				Collection<SiteData> agencyData = agencyDataMap.values();
+				List<FavoriteData> agencyData= ds.getSiteData(agencySitesMap.get(agency), hardRefresh);
 				
 				//copy results into consolidated map
-				for(SiteData siteData: agencyData) {
-					allData.put(siteData.getSite().getSiteId(), siteData);
-				}
+                for(FavoriteData returnedFav : agencyData) {
+                    returnedData.put(returnedFav.getFavorite().getId(), returnedFav);
+                }
 			} catch(SocketException se) {
 				LOG.error("could not access agency: " + agency, se);
 			} catch(DataParseException dpe) {
 				LOG.error("failed to parse data from agency: " + agency + " for site " + dpe.getSiteId(), dpe);
 			}
 		}
-		
-		return allData;
+
+        ArrayList<FavoriteData> result = new ArrayList<FavoriteData>(favorites.size());
+
+        for(int a = 0; a < favorites.size(); a++) {
+            Favorite requestedFav = favorites.get(a);
+            FavoriteData returnedFav = returnedData.get(requestedFav.getId());
+
+            //insert placeholder data for all favorites that failed to return
+            if(returnedFav == null) {
+                Variable requestedVar = getVariable(requestedFav.getSite().getAgency(), requestedFav.getVariable());
+                result.add(new FavoriteData(requestedFav, dataSourceDownData(requestedFav.getSite(), requestedVar), requestedVar));
+            } else {
+                result.add(returnedFav);
+            }
+        }
+
+		return result;
 	}
 	
 	private static String m(byte[] e) {
@@ -563,4 +580,30 @@ public class DataSourceController {
 			return null;
 		}
 	}
+
+    /**
+     * generate a response that should be returned when the datasource failed to retreive data
+     * for a site and variable
+     * @param site
+     * @param variable
+     * @return
+     */
+    public static SiteData dataSourceDownData(Site site, Variable variable) {
+        SiteData current = new SiteData();
+        current.setSite(site);
+
+        Series nullSeries = new Series();
+        nullSeries.setVariable(variable);
+
+        Reading placeHolderReading = new Reading();
+        placeHolderReading.setDate(new Date());
+        placeHolderReading.setQualifiers("Datasource Down");
+
+        nullSeries.setReadings(Collections.singletonList(placeHolderReading));
+        nullSeries.setSourceUrl("");
+
+        current.getDatasets().put(variable.getCommonVariable(), nullSeries);
+
+        return current;
+    }
 }

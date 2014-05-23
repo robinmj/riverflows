@@ -1,5 +1,24 @@
 package com.riverflows.wsclient;
 
+import com.riverflows.data.Favorite;
+import com.riverflows.data.FavoriteData;
+import com.riverflows.data.Reading;
+import com.riverflows.data.Series;
+import com.riverflows.data.Site;
+import com.riverflows.data.SiteData;
+import com.riverflows.data.SiteId;
+import com.riverflows.data.USState;
+import com.riverflows.data.USTimeZone;
+import com.riverflows.data.Variable;
+import com.riverflows.data.Variable.CommonVariable;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
@@ -11,30 +30,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.TimeZone;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-
-import com.riverflows.data.Favorite;
-import com.riverflows.data.Reading;
-import com.riverflows.data.Series;
-import com.riverflows.data.Site;
-import com.riverflows.data.SiteData;
-import com.riverflows.data.SiteId;
-import com.riverflows.data.USState;
-import com.riverflows.data.USTimeZone;
-import com.riverflows.data.Variable;
-import com.riverflows.data.Variable.CommonVariable;
 
 public class UsgsCsvDataSource implements RESTDataSource {
 	
@@ -87,6 +86,7 @@ public class UsgsCsvDataSource implements RESTDataSource {
 		VTYPE_GAUGE_HEIGHT_FT,
 		VTYPE_GAUGE_HEIGHT_ABOVE_DATUM_M,
 		VTYPE_DEPTH_TO_WATER_LEVEL_FT,
+        VTYPE_OBSERVED_DEPTH_FT,
 		VTYPE_STREAM_VELOCITY_FPS,
 		VTYPE_RES_STORAGE_ACRE_FT,
 		VTYPE_RES_ELEVATION_3,
@@ -145,7 +145,7 @@ public class UsgsCsvDataSource implements RESTDataSource {
 	}
 	
 	@Override
-	public Map<SiteId, SiteData> getSiteData(List<Favorite> favorites, boolean hardRefresh)
+	public List<FavoriteData> getSiteData(List<Favorite> favorites, boolean hardRefresh)
 			throws ClientProtocolException, IOException {
 		Site[] sitesArray = new Site[favorites.size()];
 		Variable[] vars = new Variable[favorites.size()];
@@ -153,33 +153,17 @@ public class UsgsCsvDataSource implements RESTDataSource {
 			sitesArray[a] = favorites.get(a).getSite();
 			vars[a] = getVariable(favorites.get(a).getVariable());
 		}
-		
-		Map<SiteId,SiteData> result = getSiteData(sitesArray, vars, true, hardRefresh);
-		
-		//since we can't associate variables with sites when retrieving data,
-		// datasets for variables not explicitly specified by the favorite will
-		// have to be removed.
-		//TODO don't throw this data away- filter in the UI instead
-		for(SiteData siteData: result.values()) {
-			Iterator<Entry<CommonVariable,Series>> datasets = siteData.getDatasets().entrySet().iterator();
-			while(datasets.hasNext()) {
-				Entry<CommonVariable,Series> curDataset = datasets.next();
-				
-				boolean found = false;
-				for(int a = 0; a < favorites.size(); a++) {
-					Favorite fav = favorites.get(a);
-					if(vars[a].getCommonVariable() == curDataset.getKey()
-							&& fav.getSite().getId().equals(siteData.getSite().getId())) {
-						found = true;
-						break;
-					}
-				}
-				
-				if(!found) {
-					datasets.remove();
-				}
-			}
-		}
+
+        ArrayList<FavoriteData> result = new ArrayList<FavoriteData>(favorites.size());
+
+        Map<SiteId,SiteData> data = getSiteData(sitesArray, vars, true, hardRefresh);
+
+        for(int a = 0; a < favorites.size(); a++) {
+
+            Favorite fav = favorites.get(a);
+
+            result.add(new FavoriteData(fav, data.get(fav.getSite().getSiteId()), vars[a]));
+        }
 		
 		return result;
 	}

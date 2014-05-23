@@ -1,14 +1,5 @@
 package com.riverflows;
 
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -37,7 +28,7 @@ import android.widget.TextView;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.riverflows.data.Favorite;
-import com.riverflows.data.Reading;
+import com.riverflows.data.FavoriteData;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
@@ -47,6 +38,15 @@ import com.riverflows.data.Variable;
 import com.riverflows.data.Variable.CommonVariable;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.wsclient.DataSourceController;
+
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class Favorites extends ListActivity {
 	
@@ -184,32 +184,26 @@ public class Favorites extends ListActivity {
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		Intent i = new Intent(this, ViewChart.class);
-		Site selectedStation = null;
-		Variable selectedVariable = null;
+		FavoriteData selectedFavorite = null;
 		
 		if(this.loadTask == null || this.loadTask.gauges == null) {
 			return;
 		}
 		
-		for(SiteData currentData: this.loadTask.gauges) {
-			if(SiteAdapter.getItemId(currentData) == id){
-				selectedStation = currentData.getSite();
-				
-				Series data = DataSourceController.getPreferredSeries(currentData);
-				if(data != null) {
-					selectedVariable = data.getVariable();
-				}
+		for(FavoriteData currentData: this.loadTask.gauges) {
+			if(FavoriteAdapter.getItemId(currentData) == id){
+                selectedFavorite = currentData;
 				break;
 			}
 		}
 		
-		if(selectedStation == null) {
-			Log.w(TAG,"no such station: " + id);
+		if(selectedFavorite == null) {
+			Log.w(TAG,"no such data: " + id);
 			return;
 		}
 		
-        i.putExtra(ViewChart.KEY_SITE, selectedStation);
-        i.putExtra(ViewChart.KEY_VARIABLE, selectedVariable);
+        i.putExtra(ViewChart.KEY_SITE, selectedFavorite.getFavorite().getSite());
+        i.putExtra(ViewChart.KEY_VARIABLE, selectedFavorite.getVariable());
         startActivity(i);
 	}
 	
@@ -283,7 +277,7 @@ public class Favorites extends ListActivity {
 	public void loadSites(boolean hardRefresh) {
 		showDialog(DIALOG_ID_LOADING);
 
-		List<SiteData> currentGauges = null;
+		List<FavoriteData> currentGauges = null;
 		
 		if(this.loadTask != null) {
 			currentGauges = this.loadTask.gauges;
@@ -306,7 +300,7 @@ public class Favorites extends ListActivity {
 	
 	public void displayFavorites() {
 		if(this.loadTask.gauges != null) {
-			setListAdapter(new SiteAdapter(getApplicationContext(), this.loadTask.gauges));
+			setListAdapter(new FavoriteAdapter(getApplicationContext(), this.loadTask.gauges));
 			registerForContextMenu(getListView());
 		}
 		try {
@@ -349,12 +343,12 @@ public class Favorites extends ListActivity {
 	/** parameter for LoadSitesTask */
 	public static final Integer HARD_REFRESH = new Integer(1);
 	
-	public class LoadSitesTask extends AsyncTask<Integer, Integer, List<SiteData>> {
+	public class LoadSitesTask extends AsyncTask<Integer, Integer, List<FavoriteData>> {
 		
 		protected static final int STATUS_UPGRADING_FAVORITES = -1;
 
 		public final Date loadTime = new Date();
-		public List<SiteData> gauges = null;
+		public List<FavoriteData> gauges = null;
 		public List<Favorite> favorites = null;
 		
 		public boolean running = false;
@@ -366,7 +360,7 @@ public class Favorites extends ListActivity {
 		}
 		
 		@Override
-		protected List<SiteData> doInBackground(Integer... params) {
+		protected List<FavoriteData> doInBackground(Integer... params) {
 			running = true;
 			try {
 				this.favorites = FavoritesDaoImpl.getFavorites(getApplicationContext(), null, null);
@@ -379,22 +373,20 @@ public class Favorites extends ListActivity {
 				
 				Map<SiteId,SiteData> allSiteDataMap = new HashMap<SiteId,SiteData>();
 				
-				Map<SiteId,SiteData> siteDataMap = DataSourceController.getSiteData(favorites, hardRefresh);
+				List<FavoriteData> favoriteData = DataSourceController.getSiteData(favorites, hardRefresh);
 
 		    	Map<CommonVariable, CommonVariable> unitConversionMap = CommonVariable.temperatureConversionMap(tempUnit);
 				
-				for(SiteData currentData: siteDataMap.values()) {
+				for(FavoriteData currentData: favoriteData) {
 					
 					//convert °C to °F if that setting is enabled
-					Map<CommonVariable,Series> datasets = currentData.getDatasets();
+					Map<CommonVariable,Series> datasets = currentData.getSiteData().getDatasets();
 					for(Series dataset: datasets.values()) {
 						ValueConverter.convertIfNecessary(unitConversionMap, dataset);
 					}
-					
-					allSiteDataMap.put(currentData.getSite().getSiteId(), currentData);
 				}
 				
-				return expandDatasets(favorites, allSiteDataMap);
+				return favoriteData;
 			} catch (UnknownHostException uhe) {
 				setLoadErrorMsg("no network access");
 			} catch(Exception e) {
@@ -405,76 +397,8 @@ public class Favorites extends ListActivity {
 			return null;
 		}
 
-		//TODO need a datatype that contains both the Favorite and SiteData so this is no longer necessary
-		// this code is cut-n-pasted from the Favorites activity to the Favorites content provider
-		private List<SiteData> expandDatasets(List<Favorite> favorites, Map<SiteId,SiteData> siteDataMap) {
-			ArrayList<SiteData> expandedDatasets = new ArrayList<SiteData>(favorites.size());
-			
-			//build a list of SiteData objects corresponding to the list of favorites
-			for(Favorite favorite: favorites) {
-				SiteData current = siteDataMap.get(favorite.getSite().getSiteId());
-				
-				Variable favoriteVar = DataSourceController.getVariable(favorite.getSite().getAgency(), favorite.getVariable());
-				
-				if(favoriteVar == null) {
-					throw new NullPointerException("could not find variable: " + favorite.getSite().getAgency() + " " + favorite.getVariable());
-				}
-				
-				if(current == null) {
-					//failed to get data for this site- create a placeholder item
-					current = new SiteData();
-					current.setSite(favorite.getSite());
-					
-					Series nullSeries = new Series();
-					nullSeries.setVariable(favoriteVar);
-					
-					Reading placeHolderReading = new Reading();
-					placeHolderReading.setDate(new Date());
-					placeHolderReading.setQualifiers("Datasource Down");
-					
-					nullSeries.setReadings(Collections.singletonList(placeHolderReading));
-					nullSeries.setSourceUrl("");
-					
-					current.getDatasets().put(favoriteVar.getCommonVariable(), nullSeries);
-					
-					expandedDatasets.add(current);
-					continue;
-				}
-
-				//use custom name if one is defined
-				if(favorite.getName() != null) {
-                    Site s = current.getSite();
-
-                    //modify a copy of the site since it may be used in more than one place
-                    Site customNamedSite = new Site(s.getSiteId(), favorite.getName(), s.getLongitude(), s.getLatitude(), s.getState(), s.getSupportedVariables());
-
-					current.setSite(customNamedSite);
-				}
-				
-				if(current.getDatasets().size() <= 1) {
-					expandedDatasets.add(current);
-					continue;
-				}
-				
-				//use the dataset for this favorite's variable
-				Series dataset = current.getDatasets().get(favoriteVar.getCommonVariable());
-				if(dataset == null) {
-					//if no dataset is found, create one so we know which variable is associated with the favorite
-					dataset = new Series();
-					dataset.setReadings(new ArrayList<Reading>(0));
-					dataset.setVariable(favoriteVar);
-				}
-				
-				SiteData expandedDataset = new SiteData();
-				expandedDataset.setSite(current.getSite());
-				expandedDataset.getDatasets().put(favoriteVar.getCommonVariable(), dataset);
-				expandedDatasets.add(expandedDataset);
-			}
-			return expandedDatasets;
-		}
-		
 		@Override
-		protected void onPostExecute(List<SiteData> result) {
+		protected void onPostExecute(List<FavoriteData> result) {
 			super.onPostExecute(result);
 			if(result != null) {
 				this.gauges = result;
@@ -554,29 +478,25 @@ public class Favorites extends ListActivity {
 			ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		
-		SiteAdapter adapter = (SiteAdapter)((ListView)v).getAdapter();
+		FavoriteAdapter adapter = (FavoriteAdapter)((ListView)v).getAdapter();
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 
-		SiteData siteData = adapter.getItem(info.position);
+		FavoriteData favoriteData = adapter.getItem(info.position);
 		
-		if(siteData == null) {
+		if(favoriteData == null) {
 			return;
 		}
-		
-		Series data = DataSourceController.getPreferredSeries(siteData);
-		if(data == null) {
-			return;
-		}
-		Variable variable = data.getVariable();
+
+		Variable variable = favoriteData.getSeries().getVariable();
 		
 		MenuItem view = menu.add("View");
-		view.setOnMenuItemClickListener(new ViewFavoriteListener(siteData.getSite(), variable));
+		view.setOnMenuItemClickListener(new ViewFavoriteListener(favoriteData.getFavorite().getSite(), variable));
 		
 		MenuItem edit = menu.add("Edit");
-		edit.setOnMenuItemClickListener(new EditFavoriteListener(siteData.getSite(), variable));
+		edit.setOnMenuItemClickListener(new EditFavoriteListener(favoriteData.getFavorite().getSite(), variable));
 		
 		MenuItem delete = menu.add("Delete");
-		delete.setOnMenuItemClickListener(new DeleteFavoriteListener(siteData.getSite(), variable));
+		delete.setOnMenuItemClickListener(new DeleteFavoriteListener(favoriteData.getFavorite().getSite(), variable));
 	}
 	
 	@Override
@@ -629,22 +549,20 @@ public class Favorites extends ListActivity {
 		        			
 		        			String newName = newFavorite.getName();
 		        			
-		        			for(SiteData favoriteData: loadTask.gauges) {
-		        				if(favoriteData.getSite().getSiteId().equals(newFavorite.getSite().getSiteId())) {
-		        					Variable var = DataSourceController.getVariable(newFavorite.getSite().getAgency(), newFavorite.getVariable());
-		        					
-		        					if(favoriteData.getDatasets().get(var.getCommonVariable()) != null) {
-		        						if(newName == null) {
-		        							//revert to original name of the site
-		        							newName = newFavorite.getSite().getName();
-		        						}
-		        						favoriteData.getSite().setName(newName);
-		        						((SiteAdapter)getListAdapter()).notifyDataSetChanged();
-		    		        			
-		    		        			oldFavorite.setName(newName);
-		    		        			return;
-		        					}
-		        				}
+		        			for(FavoriteData favoriteData: loadTask.gauges) {
+                                if(newFavorite.getId().equals(favoriteData.getFavorite().getId())) {
+                                    if(newName == null) {
+                                        //revert to original name of the site
+                                        newName = newFavorite.getSite().getName();
+                                    }
+
+                                    //update the favorite that is displayed so we don't have to
+                                    // reload anything
+                                    oldFavorite.setName(newName);
+
+                                    ((FavoriteAdapter)getListAdapter()).notifyDataSetChanged();
+                                    return;
+                                }
 		        			}
 		        		}
 		        	}
@@ -665,28 +583,24 @@ public class Favorites extends ListActivity {
 				
 				List<Favorite> newFavorites = FavoritesDaoImpl.getFavorites(this, null, null);
 				
-				List<SiteData> newSiteData = new ArrayList<SiteData>(newFavorites.size());
+				List<FavoriteData> newSiteData = new ArrayList<FavoriteData>(newFavorites.size());
 				
 				//reorder loadTask.gauges based on the new favorites order
 				for(Favorite newFav: newFavorites) {
-					for(SiteData siteData: loadTask.gauges) {
-						if(siteData.getSite().getSiteId().equals(newFav.getSite().getSiteId())) {
-        					Variable var = DataSourceController.getVariable(newFav.getSite().getAgency(), newFav.getVariable());
-        					
-        					if(siteData.getDatasets().get(var.getCommonVariable()) != null) {
-        						newSiteData.add(siteData);
-        						//we can get away with this without a ConcurrentModificationException
-        						// because it is immediately followed by a break statement
-        						loadTask.gauges.remove(siteData);
-        						break;
-        					}
+					for(FavoriteData favoriteData: loadTask.gauges) {
+						if(newFav.getId().equals(favoriteData.getFavorite().getId())) {
+                            newSiteData.add(favoriteData);
+                            //we can get away with this without a ConcurrentModificationException
+                            // because it is immediately followed by a break statement
+                            loadTask.gauges.remove(favoriteData);
+                            break;
         				}
 					}
 				}
 				
 				loadTask.favorites = newFavorites;
 				loadTask.gauges.addAll(newSiteData);
-				((SiteAdapter)getListAdapter()).notifyDataSetChanged();
+				((FavoriteAdapter)getListAdapter()).notifyDataSetChanged();
 			}
 		}
 	}
@@ -778,15 +692,15 @@ public class Favorites extends ListActivity {
 				}
 			}
 			
-			Iterator<SiteData> gaugesI = loadTask.gauges.iterator();
+			Iterator<FavoriteData> gaugesI = loadTask.gauges.iterator();
 			
 			while(gaugesI.hasNext()) {
-				SiteData gauge = gaugesI.next();
-				if(!gauge.getSite().getSiteId().equals(site.getSiteId())) {
+				FavoriteData gauge = gaugesI.next();
+				if(!gauge.getSiteData().getSite().getSiteId().equals(site.getSiteId())) {
 					continue;
 				}
 
-				if(gauge.getDatasets().containsKey(variable.getCommonVariable())) {
+				if(gauge.getSiteData().getDatasets().containsKey(variable.getCommonVariable())) {
 					gaugesI.remove();
 					break;
 				}

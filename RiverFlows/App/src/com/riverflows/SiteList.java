@@ -1,11 +1,5 @@
 package com.riverflows;
 
-import java.net.UnknownHostException;
-import java.text.MessageFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -18,12 +12,12 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.SubMenu;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnFocusChangeListener;
 import android.view.WindowManager.BadTokenException;
 import android.view.inputmethod.InputMethodManager;
@@ -41,6 +35,12 @@ import com.riverflows.data.SiteId;
 import com.riverflows.data.Variable;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.wsclient.DataSourceController;
+
+import java.net.UnknownHostException;
+import java.text.MessageFormat;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 public abstract class SiteList extends ListActivity {
 	
@@ -110,7 +110,7 @@ public abstract class SiteList extends ListActivity {
 		}
 		
 		if(selectedStation == null) {
-			Log.w(TAG,"no such station: " + id);
+			Log.w(TAG,"no such data: " + id);
 			return;
 		}
 		

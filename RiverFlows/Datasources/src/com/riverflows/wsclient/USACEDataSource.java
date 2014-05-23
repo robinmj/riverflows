@@ -1,19 +1,14 @@
 package com.riverflows.wsclient;
 
-import java.io.BufferedInputStream;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.TimeZone;
-
-import javax.xml.parsers.ParserConfigurationException;
+import com.riverflows.data.Favorite;
+import com.riverflows.data.FavoriteData;
+import com.riverflows.data.Reading;
+import com.riverflows.data.Series;
+import com.riverflows.data.Site;
+import com.riverflows.data.SiteData;
+import com.riverflows.data.SiteId;
+import com.riverflows.data.Variable;
+import com.riverflows.data.Variable.CommonVariable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,14 +23,20 @@ import org.jsoup.parser.Parser;
 import org.jsoup.select.Elements;
 import org.xml.sax.SAXException;
 
-import com.riverflows.data.Favorite;
-import com.riverflows.data.Reading;
-import com.riverflows.data.Series;
-import com.riverflows.data.Site;
-import com.riverflows.data.SiteData;
-import com.riverflows.data.SiteId;
-import com.riverflows.data.Variable;
-import com.riverflows.data.Variable.CommonVariable;
+import java.io.BufferedInputStream;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.TimeZone;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 public class USACEDataSource implements RESTDataSource {
 	
@@ -110,10 +111,11 @@ public class USACEDataSource implements RESTDataSource {
 	}
 
 	@Override
-	public Map<SiteId, SiteData> getSiteData(List<Favorite> favorites,
+	public List<FavoriteData> getSiteData(List<Favorite> favorites,
 			boolean hardRefresh) throws ClientProtocolException, IOException {
 			//TODO if this is slow, we may have to fork each request off into its own thread, like AHPSXmlDataSource
-			Map<SiteId,SiteData> result = new HashMap<SiteId,SiteData>();
+			List<FavoriteData> result = new ArrayList<FavoriteData>();
+            HashMap<SiteId, SiteData> siteData = new HashMap<SiteId, SiteData>(favorites.size());
 			Variable[] variables = new Variable[1];
 			for(Favorite favorite: favorites) {
 				variables[0] = getVariable(favorite.getVariable());
@@ -124,14 +126,19 @@ public class USACEDataSource implements RESTDataSource {
 				
 				SiteData newdata = getSiteData(favorite.getSite(), variables[0], getSiteDataUrl(favorite.getSite().getId(), variables[0], 1), hardRefresh);
 				
-				SiteData existingData = result.get(favorite.getSite().getSiteId());
-				
+				SiteData existingData = siteData.get(favorite.getSite().getSiteId());
+
+                //each FavoriteData object returned should contain data for other favorite
+                // variables at the same site, if there are any
 				if(existingData != null) {
 					Map<CommonVariable, Series> newDataSets = newdata.getDatasets();
 					existingData.getDatasets().putAll(newDataSets);
 				} else {
-					result.put(favorite.getSite().getSiteId(), newdata);
+                    existingData = newdata;
+					siteData.put(favorite.getSite().getSiteId(), newdata);
 				}
+
+                result.add(new FavoriteData(favorite, existingData, variables[0]));
 			}
 			return result;
 	}

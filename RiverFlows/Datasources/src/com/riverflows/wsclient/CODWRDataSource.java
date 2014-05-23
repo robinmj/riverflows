@@ -1,5 +1,22 @@
 package com.riverflows.wsclient;
 
+import com.riverflows.data.Favorite;
+import com.riverflows.data.FavoriteData;
+import com.riverflows.data.Reading;
+import com.riverflows.data.Series;
+import com.riverflows.data.Site;
+import com.riverflows.data.SiteData;
+import com.riverflows.data.SiteId;
+import com.riverflows.data.Variable;
+import com.riverflows.data.Variable.CommonVariable;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
 import java.io.File;
@@ -15,22 +32,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-
-import com.riverflows.data.Favorite;
-import com.riverflows.data.Reading;
-import com.riverflows.data.Series;
-import com.riverflows.data.Site;
-import com.riverflows.data.SiteData;
-import com.riverflows.data.SiteId;
-import com.riverflows.data.Variable;
-import com.riverflows.data.Variable.CommonVariable;
 
 public class CODWRDataSource implements RESTDataSource {
 	private static final Log LOG = LogFactory.getLog(CODWRDataSource.class);
@@ -108,9 +109,10 @@ public class CODWRDataSource implements RESTDataSource {
 	}
 	
 	@Override
-	public Map<SiteId, SiteData> getSiteData(List<Favorite> favorites, boolean hardRefresh)
+	public List<FavoriteData> getSiteData(List<Favorite> favorites, boolean hardRefresh)
 			throws ClientProtocolException, IOException {
-		Map<SiteId,SiteData> result = new HashMap<SiteId,SiteData>();
+        List<FavoriteData> result = new ArrayList<FavoriteData>();
+        HashMap<SiteId, SiteData> siteData = new HashMap<SiteId, SiteData>(favorites.size());
 		Variable[] variables = new Variable[1];
 		for(Favorite favorite: favorites) {
 			variables[0] = getVariable(favorite.getVariable());
@@ -121,15 +123,20 @@ public class CODWRDataSource implements RESTDataSource {
 			
 			SiteData newdata = getSiteData(favorite.getSite(), variables, 3, new Date(), null, hardRefresh);
 			
-			SiteData existingData = result.get(favorite.getSite().getSiteId());
-			
+			SiteData existingData = siteData.get(favorite.getSite().getSiteId());
+
+            //each FavoriteData object returned should contain data for other favorite
+            // variables at the same site, if there are any
 			if(existingData != null) {
 				Map<CommonVariable, Series> newDataSets = newdata.getDatasets();
 				existingData.getDatasets().putAll(newDataSets);
 			} else {
-				result.put(favorite.getSite().getSiteId(), newdata);
+                existingData = newdata;
+				siteData.put(favorite.getSite().getSiteId(), newdata);
 			}
-		}
+
+            result.add(new FavoriteData(favorite, existingData, variables[0]));
+        }
 		return result;
 	}
 	
