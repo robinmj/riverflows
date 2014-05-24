@@ -12,7 +12,12 @@ import com.riverflows.data.Variable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.conn.ClientConnectionManager;
+import org.apache.http.conn.scheme.Scheme;
+import org.apache.http.conn.ssl.SSLSocketFactory;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -45,29 +50,71 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
 public class DataSourceController {
-	
+
 	private static final Log LOG = LogFactory.getLog(DataSourceController.class);
 
-	//public static final String RIVERFLOWS_WS_BASEURL = "https://ws-staging.riverflowsapp.com/";
-	public static final String RIVERFLOWS_WS_BASEURL = "https://ws.riverflowsapp.com/";
+
+	public static final String RIVERFLOWS_WS_BASEURL = "https://ws-staging.riverflowsapp.com/";
+	//public static final String RIVERFLOWS_WS_BASEURL = "https://ws.riverflowsapp.com/";
 	//public static final String RIVERFLOWS_WS_BASEURL = "http://riverflows-ws.elasticbeanstalk.com/";
-	//public static final String RIVERFLOWS_WS_BASEURL = "http://192.168.103.13:3000/";
-	public static final float RIVERFLOWS_WS_API_VERSION = 0.1f;
+	//public static final String RIVERFLOWS_WS_BASEURL = "http://192.168.103.3:3000/";
+
+	//TODO remove this once my.riverflowsapp.com features are out of beta
+	public static final String MY_RIVERFLOWS_WS_BASE_URL = "https://ws-staging.riverflowsapp.com";
+	//public static final String MY_RIVERFLOWS_WS_BASE_URL = "http://192.168.103.3:3000";
+
 	public static final String SITES_WS_PATH = "sites/";
+
+	public static final float RIVERFLOWS_WS_API_VERSION = 0.2f;
 	
 	public static final DateFormat RECENT_READING_TIME_FMT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 	
 	private static final Map<String,RESTDataSource> dataSources = new HashMap<String,RESTDataSource>();
 
+	public static class SSLHttpClient extends DefaultHttpClient {
+		@Override
+		protected ClientConnectionManager createClientConnectionManager() {
+			try {
+				InputStream keystoreStream = DataSourceController.class.getResourceAsStream("trusted.keystore");
+
+				KeyStore trustedKeys = KeyStore.getInstance("BKS");
+				try {
+					trustedKeys.load(keystoreStream, new String("password").toCharArray());
+				} finally {
+					keystoreStream.close();
+				}
+
+				SSLSocketFactory sslSocketFactory = new SSLSocketFactory(trustedKeys);
+
+				Scheme https = new Scheme("https", sslSocketFactory, 443);
+
+				ClientConnectionManager connManager = super.createClientConnectionManager();
+
+				connManager.getSchemeRegistry().register(https);
+				return connManager;
+			} catch(Exception e) {
+				throw new RuntimeException("Failed to initialize HTTP client: " + e.getMessage(),e);
+			}
+		}
+	}
+
+	private static class java extends UsernamePasswordCredentials {
+
+		public java(String usernamePassword) {
+			super(usernamePassword);
+		}
+
+	}
+
 	private static SSLContext sslContext;
 
 	private static final byte[] b = new byte[]{106,76,109,-26,-72,-102,7,87,71,-78,57,94,45,52,28,38,-96,-35,-41,2,-30,-17,16,-93,-52,103,127,-91,-41,38,101,13,0,121,44,-78,115,111,79,-96,101,32,-100,-51,-14,63,-70,-113,121,-14,-99,-68,2,-37,74,-53,-66,84,-51,-101,-109,-15};
 	
-	private static class java extends Authenticator {
+	private static class java2 extends Authenticator {
 
 		private final String s;
 
-		public java(String s) {
+		public java2(String s) {
 			this.s = s;
 		}
 
@@ -117,7 +164,7 @@ public class DataSourceController {
 			throw new RuntimeException("Failed to load trusted SSL keys: " + e.getMessage(),e);
 		}
 
-		Authenticator.setDefault(new java(m(b)));
+		Authenticator.setDefault(new java2(m(b)));
 	}
 	
 	public static void setHttpClientWrapper(HttpClientWrapper wrapper) {

@@ -1,17 +1,6 @@
 package com.riverflows;
 
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
-import org.apache.http.conn.HttpHostConnectException;
-
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ListActivity;
@@ -62,6 +51,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -221,11 +211,11 @@ public class Favorites extends ListActivity {
 		Intent i = new Intent(this, ViewChart.class);
 		FavoriteData selectedFavorite = null;
 		
-		if(this.loadTask == null || this.loadTask.gauges == null) {
+		if(this.loadTask == null || this.loadTask.getGauges() == null) {
 			return;
 		}
 		
-		for(FavoriteData currentData: this.loadTask.gauges) {
+		for(FavoriteData currentData: this.loadTask.getGauges()) {
 			if(FavoriteAdapter.getItemId(currentData) == id){
                 selectedFavorite = currentData;
 				break;
@@ -347,7 +337,7 @@ public class Favorites extends ListActivity {
 	}
 
 	public void displayFavorites() {
-		if(this.loadTask.gauges != null) {
+		if(this.loadTask.getGauges() != null) {
 
 //			if(this.loadTask.getGauges().size() > 0) {
 //				SharedPreferences settings = getSharedPreferences(Home.PREFS_FILE, MODE_PRIVATE);
@@ -358,7 +348,7 @@ public class Favorites extends ListActivity {
 //				}
 //			
 			
-			setListAdapter(new FavoriteAdapter(getApplicationContext(), this.loadTask.gauges));
+			setListAdapter(new FavoriteAdapter(getApplicationContext(), this.loadTask.getGauges()));
 			registerForContextMenu(getListView());
 
 			/*
@@ -402,7 +392,7 @@ public class Favorites extends ListActivity {
 		private boolean hardRefresh = false;
 		private LoadSitesTask loadSitesTask = null;
 		private boolean running = false;
-		private List<SiteData> previousGauges = null;
+		private List<FavoriteData> previousGauges = null;
 		private String errorMsg = null;
 
 		private LoadFavoritesTask(LoadFavoritesTask task) {
@@ -474,7 +464,7 @@ public class Favorites extends ListActivity {
 			return result;
 		}
 
-		public List<SiteData> getGauges() {
+		public List<FavoriteData> getGauges() {
 			if(this.loadSitesTask == null) {
 				return null;
 			}
@@ -486,7 +476,7 @@ public class Favorites extends ListActivity {
 			return this.loadSitesTask.gauges;
 		}
 
-		public void setGauges(List<SiteData> gauges) {
+		public void setGauges(List<FavoriteData> gauges) {
 			this.previousGauges = gauges;
 		}
 
@@ -580,8 +570,6 @@ public class Favorites extends ListActivity {
 		public boolean running = false;
 
 		public String errorMsg = null;
-
-		private List<Favorite> favorites;
 
 		public LoadSitesTask(List<Favorite> favorites) {
 			this.favorites = favorites;
@@ -812,7 +800,7 @@ public class Favorites extends ListActivity {
 		        			
 		        			String newName = newFavorite.getName();
 		        			
-		        			for(FavoriteData favoriteData: loadTask.gauges) {
+		        			for(FavoriteData favoriteData: loadTask.getGauges()) {
                                 if(newFavorite.getId().equals(favoriteData.getFavorite().getId())) {
                                     if(newName == null) {
                                         //revert to original name of the site
@@ -850,19 +838,19 @@ public class Favorites extends ListActivity {
 				
 				//reorder loadTask.gauges based on the new favorites order
 				for(Favorite newFav: newFavorites) {
-					for(FavoriteData favoriteData: loadTask.gauges) {
+					for(FavoriteData favoriteData: loadTask.getGauges()) {
 						if(newFav.getId().equals(favoriteData.getFavorite().getId())) {
                             newSiteData.add(favoriteData);
                             //we can get away with this without a ConcurrentModificationException
                             // because it is immediately followed by a break statement
-                            loadTask.gauges.remove(favoriteData);
+                            loadTask.getGauges().remove(favoriteData);
                             break;
         				}
 					}
 				}
 				
 				loadTask.favorites = newFavorites;
-				loadTask.gauges.addAll(newSiteData);
+				loadTask.getGauges().addAll(newSiteData);
 				((FavoriteAdapter)getListAdapter()).notifyDataSetChanged();
 			}
 		}
@@ -955,7 +943,7 @@ public class Favorites extends ListActivity {
 				}
 			}
 			
-			Iterator<FavoriteData> gaugesI = loadTask.gauges.iterator();
+			Iterator<FavoriteData> gaugesI = loadTask.getGauges().iterator();
 			
 			while(gaugesI.hasNext()) {
 				FavoriteData gauge = gaugesI.next();
