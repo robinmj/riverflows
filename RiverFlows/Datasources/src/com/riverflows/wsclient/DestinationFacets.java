@@ -95,9 +95,9 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 		if(jsonObject.has("id")) {
 			facet.setId(jsonObject.getInt("id"));
 		}
+
 		facet.setDescription(jsonObject.getString("description"));
 		facet.setDestination(new Destination());
-		facet.getDestination().setPlaceholderObj(true);
 		facet.getDestination().setId(jsonObject.getInt("destination_id"));
 		facet.setUser(new UserAccount());
 		facet.getUser().setPlaceholderObj(true);
@@ -151,9 +151,17 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 		facet.setCreationDate(getDate(jsonObject, "created_at"));
 		facet.setModificationDate(getDate(jsonObject, "updated_at"));
 
-		//TODO should these be separate from facet timestamps?
-		facet.getDestination().setCreationDate(facet.getCreationDate());
-		facet.getDestination().setModificationDate(facet.getModificationDate());
+		if(jsonObject.has("destination")) {
+			JSONObject jsonDestination = jsonObject.getJSONObject("destination");
+			facet.getDestination().setName(jsonDestination.getString("name"));
+			facet.getDestination().setCreationDate(getDate(jsonObject, "created_at"));
+			facet.getDestination().setModificationDate(getDate(jsonObject, "updated_at"));
+		} else {
+			facet.getDestination().setPlaceholderObj(true);
+			//TODO this shouldn't be necessary
+			facet.getDestination().setCreationDate(facet.getCreationDate());
+			facet.getDestination().setModificationDate(facet.getModificationDate());
+		}
 
 		return facet;
 	}
