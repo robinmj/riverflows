@@ -19,10 +19,10 @@
       <excludeFolder url="file://$MODULE_DIR$/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
     </content>
-    <orderEntry type="jdk" jdkName="Android API 19 Platform" jdkType="Android SDK" />
+    <orderEntry type="jdk" jdkName="1.6" jdkType="JavaSDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" exported="" name="junit-3.8.1" level="project" />
-    <orderEntry type="module" module-name="Datasources" exported="" />
+    <orderEntry type="library" name="junit-3.8.1" level="project" />
+    <orderEntry type="module" module-name="Datasources" />
   </component>
 </module>
 
