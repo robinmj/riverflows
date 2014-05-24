@@ -222,10 +222,12 @@ public class ReorderFavorites extends ListActivity {
 	        // Bind the data efficiently with the holder.
 	        
 	        holder.favorite = getItem(position);
-	        if(holder.favorite.getName() == null) {
-	        	holder.text.setText(holder.favorite.getSite().getName());
+	        if(holder.favorite.getName() != null) {
+				holder.text.setText(holder.favorite.getName());
+			} else if(holder.favorite.getDestinationFacet() != null && holder.favorite.getDestinationFacet().getDestination().getName() != null) {
+				holder.text.setText(holder.favorite.getDestinationFacet().getDestination().getName());
 	        } else {
-	        	holder.text.setText(holder.favorite.getName());
+				holder.text.setText(holder.favorite.getSite().getName());
 	        }
 	        
 	        /*

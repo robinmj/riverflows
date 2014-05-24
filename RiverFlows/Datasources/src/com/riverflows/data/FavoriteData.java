@@ -32,6 +32,10 @@ public class FavoriteData {
             return favorite.getName();
         }
 
+		if(favorite.getDestinationFacet() != null && favorite.getDestinationFacet().getDestination().getName() != null) {
+			return favorite.getDestinationFacet().getDestination().getName();
+		}
+
         return siteData.getSite().getName();
     }
 

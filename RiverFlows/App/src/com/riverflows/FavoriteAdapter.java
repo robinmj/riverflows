@@ -4,6 +4,7 @@
 package com.riverflows;
 
 import android.content.Context;
+import android.content.res.Resources;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.FavoriteData;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
@@ -34,12 +36,14 @@ public class FavoriteAdapter extends BaseAdapter implements Filterable {
 
     private List<FavoriteData> favorites;
     private List<FavoriteData> displayedFavorites;
+	private Context context;
 
     public FavoriteAdapter(Context context, List<FavoriteData> favorites) {
         // Cache the LayoutInflate to avoid asking for a new one each time.
         this.inflater = LayoutInflater.from(context);
         this.favorites = favorites;
         this.displayedFavorites = favorites;
+		this.context = context;
     }
 
 	@Override
@@ -87,7 +91,7 @@ public class FavoriteAdapter extends BaseAdapter implements Filterable {
         // to reinflate it. We only inflate a new View when the convertView supplied
         // by ListView is null.
         if (convertView == null) {
-            convertView = this.inflater.inflate(R.layout.site_list_item, null);
+            convertView = this.inflater.inflate(R.layout.favorite_list_item, null);
 
             // Creates a ViewHolder and store references to the two children views
             // we want to bind data to.
@@ -138,6 +142,33 @@ public class FavoriteAdapter extends BaseAdapter implements Filterable {
     			String readingStr = Utils.abbreviateNumber(lastReading.getValue(), sigfigs);
         		
         		holder.subtext.setText(readingStr + " " + flowSeries.getVariable().getUnit());
+
+				DestinationFacet facet = holder.data.getFavorite().getDestinationFacet();
+
+				if(facet != null) {
+					if(facet.getLow() != null && lastReading.getValue() < facet.getLow()) {
+						//too low
+						holder.subtext.setBackgroundColor(context.getResources().getColor(R.color.bg_level_too_low));
+						holder.subtext.setTextColor(context.getResources().getColor(R.color.txt_level_too_low));
+					} else if(facet.getMed() != null && lastReading.getValue() < facet.getMed()) {
+						//low
+						holder.subtext.setBackgroundColor(context.getResources().getColor(R.color.bg_level_low));
+						holder.subtext.setTextColor(context.getResources().getColor(R.color.txt_level_low));
+					} else if(facet.getHigh() != null && lastReading.getValue() < facet.getHigh()) {
+						//medium
+						holder.subtext.setBackgroundColor(context.getResources().getColor(R.color.bg_level_medium));
+						holder.subtext.setTextColor(context.getResources().getColor(R.color.txt_level_medium));
+					} else if(facet.getHighPlus() != null && lastReading.getValue() > facet.getHighPlus()) {
+						//too high
+						holder.subtext.setBackgroundColor(context.getResources().getColor(R.color.bg_level_too_high));
+						holder.subtext.setTextColor(context.getResources().getColor(R.color.txt_level_too_high));
+					} else if(facet.getHigh() != null) {
+						//high
+						holder.subtext.setBackgroundColor(context.getResources().getColor(R.color.bg_level_high));
+						holder.subtext.setTextColor(context.getResources().getColor(R.color.txt_level_high));
+					}
+				}
+
         	}
         
         	//TODO come up with a better way of conveying a stale reading
