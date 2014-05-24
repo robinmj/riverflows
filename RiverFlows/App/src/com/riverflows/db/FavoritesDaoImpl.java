@@ -491,32 +491,50 @@ public class FavoritesDaoImpl {
 		destUser.setId(c.getInt(getColumnIndex(DEST_USER_ID)));
 		dest.setUser(destUser);
 
-		facet.setDestination(dest);
-		facet.setDescription(c.getString(getColumnIndex(FACET_DESCRIPTION)));
-		facet.setId(c.getInt(getColumnIndex(DESTINATION_FACET_ID)));
-		facet.setCreationDate(new Date(c.getLong(getColumnIndex(FACET_CREATED_AT))));
-		facet.setModificationDate(new Date(c.getLong(getColumnIndex(FACET_UPDATED_AT))));
+		if(!c.isNull(getColumnIndex(DESTINATION_FACET_ID))) {
 
-		facet.setFacetType(c.getInt(getColumnIndex(FACET_TYPE)));
-		facet.setHighPlus(c.getDouble(getColumnIndex(HIGH_PLUS)));
-		facet.setHigh(c.getDouble(getColumnIndex(HIGH)));
-		facet.setMed(c.getDouble(getColumnIndex(MED)));
-		facet.setLow(c.getDouble(getColumnIndex(LOW)));
-		facet.setTooLow(c.getDouble(getColumnIndex(TOO_LOW)));
-		facet.setHighDifficulty(c.getInt(getColumnIndex(HIGH_DIFFICULTY)));
-		facet.setHighPortDifficulty(c.getInt(getColumnIndex(HIGH_PORT_DIFFICULTY)));
-		facet.setMedDifficulty(c.getInt(getColumnIndex(MED_DIFFICULTY)));
-		facet.setMedPortDifficulty(c.getInt(getColumnIndex(MED_PORT_DIFFICULTY)));
-		facet.setLowDifficulty(c.getInt(getColumnIndex(LOW_DIFFICULTY)));
-		facet.setLowPortDifficulty(c.getInt(getColumnIndex(LOW_PORT_DIFFICULTY)));
-		facet.setQualityHigh(c.getInt(getColumnIndex(QUALITY_HIGH)));
-		facet.setQualityMed(c.getInt(getColumnIndex(QUALITY_MED)));
-		facet.setQualityLow(c.getInt(getColumnIndex(QUALITY_LOW)));
-		facet.setVariable(DataSourceController.getVariable(newStation.getAgency(), favoriteVarId));
+			facet.setDestination(dest);
+			facet.setDescription(c.getString(getColumnIndex(FACET_DESCRIPTION)));
+			facet.setId(c.getInt(getColumnIndex(DESTINATION_FACET_ID)));
+			facet.setCreationDate(new Date(c.getLong(getColumnIndex(FACET_CREATED_AT))));
+			facet.setModificationDate(new Date(c.getLong(getColumnIndex(FACET_UPDATED_AT))));
 
-		newFavorite.setDestinationFacet(facet);
+			UserAccount destFacetUser = new UserAccount();
+			destFacetUser.setPlaceholderObj(true);
+			destFacetUser.setId(c.getInt(getColumnIndex(FACET_USER_ID)));
+			facet.setUser(destFacetUser);
+
+			facet.setFacetType(c.getInt(getColumnIndex(FACET_TYPE)));
+			facet.setHighPlus(getDouble(c, HIGH_PLUS));
+			facet.setHigh(getDouble(c, HIGH));
+			facet.setMed(getDouble(c, MED));
+			facet.setLow(c.getDouble(getColumnIndex(LOW)));
+			facet.setTooLow(getDouble(c, TOO_LOW));
+			facet.setHighDifficulty(c.getInt(getColumnIndex(HIGH_DIFFICULTY)));
+			facet.setHighPortDifficulty(c.getInt(getColumnIndex(HIGH_PORT_DIFFICULTY)));
+			facet.setMedDifficulty(c.getInt(getColumnIndex(MED_DIFFICULTY)));
+			facet.setMedPortDifficulty(c.getInt(getColumnIndex(MED_PORT_DIFFICULTY)));
+			facet.setLowDifficulty(c.getInt(getColumnIndex(LOW_DIFFICULTY)));
+			facet.setLowPortDifficulty(c.getInt(getColumnIndex(LOW_PORT_DIFFICULTY)));
+			facet.setQualityHigh(c.getInt(getColumnIndex(QUALITY_HIGH)));
+			facet.setQualityMed(c.getInt(getColumnIndex(QUALITY_MED)));
+			facet.setQualityLow(c.getInt(getColumnIndex(QUALITY_LOW)));
+			facet.setVariable(DataSourceController.getVariable(newStation.getAgency(), favoriteVarId));
+
+			newFavorite.setDestinationFacet(facet);
+		}
 
 		return newFavorite;
+	}
+
+	private static Double getDouble(Cursor c, String columnName) {
+		int index = getColumnIndex(columnName);
+
+		if(!c.isNull(index)) {
+			return c.getDouble(index);
+		}
+
+		return null;
 	}
 
 	public static void updateLastViewedTime(Context ctx, SiteId siteId) {
