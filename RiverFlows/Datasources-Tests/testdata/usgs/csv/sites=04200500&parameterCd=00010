@@ -1,0 +1,24 @@
+# ---------------------------------- WARNING ----------------------------------------
+# Provisional data are subject to revision. Go to
+# http://waterdata.usgs.gov/nwis/help/?provisional for more information.
+#
+# File-format description:  http://waterdata.usgs.gov/nwis/?tab_delimited_format_info
+# Automated-retrieval info: http://waterdata.usgs.gov/nwis/?automated_retrieval_info
+#
+# Contact:   gs-w_support_nwisweb@usgs.gov
+# retrieved: 2014-05-17 19:44:49 EDT	(natwebvaas01)
+#
+# Data for the following 1 site(s) are contained in this file
+#    USGS 04200500 Black River at Elyria OH
+# -----------------------------------------------------------------------------------
+#
+# Data provided for site 04200500
+#    DD parameter   Description
+#    01   00010     Temperature, water, degrees Celsius
+#
+# Data-value qualification codes included in this output:
+#     P  Provisional data subject to revision.
+#
+agency_cd	site_no	datetime	tz_cd	01_00010	01_00010_cd
+5s	15s	20d	6s	14n	10s
+USGS	04200500	2014-05-17 19:00	EDT	14.2	P

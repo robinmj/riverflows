@@ -1,5 +1,30 @@
 package com.riverflows.wsclient;
 
+import com.riverflows.data.Favorite;
+import com.riverflows.data.FavoriteData;
+import com.riverflows.data.Forecast;
+import com.riverflows.data.Reading;
+import com.riverflows.data.Series;
+import com.riverflows.data.Site;
+import com.riverflows.data.SiteData;
+import com.riverflows.data.SiteId;
+import com.riverflows.data.USTimeZone;
+import com.riverflows.data.Variable;
+import com.riverflows.data.Variable.CommonVariable;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.http.Header;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.HttpGet;
+import org.xml.sax.Attributes;
+import org.xml.sax.ContentHandler;
+import org.xml.sax.InputSource;
+import org.xml.sax.Locator;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
+
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -20,30 +45,6 @@ import java.util.TimeZone;
 
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParserFactory;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.xml.sax.Attributes;
-import org.xml.sax.ContentHandler;
-import org.xml.sax.InputSource;
-import org.xml.sax.Locator;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-
-import com.riverflows.data.Favorite;
-import com.riverflows.data.Forecast;
-import com.riverflows.data.Reading;
-import com.riverflows.data.Series;
-import com.riverflows.data.Site;
-import com.riverflows.data.SiteData;
-import com.riverflows.data.SiteId;
-import com.riverflows.data.USTimeZone;
-import com.riverflows.data.Variable;
-import com.riverflows.data.Variable.CommonVariable;
 
 public class AHPSXmlDataSource implements RESTDataSource {
 	private static final Log LOG = LogFactory.getLog(AHPSXmlDataSource.class);
@@ -132,10 +133,10 @@ public class AHPSXmlDataSource implements RESTDataSource {
 	}
 	
 	@Override
-	public Map<SiteId, SiteData> getSiteData(List<Favorite> sites, boolean hardRefresh)
+	public List<FavoriteData> getSiteData(List<Favorite> sites, boolean hardRefresh)
 			throws ClientProtocolException, IOException {
 		
-		HashMap<SiteId, SiteData> result = new HashMap<SiteId, SiteData>();
+		List<FavoriteData> result = new ArrayList<FavoriteData>(sites.size());
 		
 		Map<SiteId, GetFavoriteDataThread> threads = new HashMap<SiteId, GetFavoriteDataThread>(sites.size());
 		
@@ -175,8 +176,10 @@ public class AHPSXmlDataSource implements RESTDataSource {
 					if(currentThread.ioe != null) {
 						throw currentThread.ioe;
 					}
+
+                    Favorite favorite = currentThread.favorites.get(0);
 					
-					result.put(currentThread.favorites.get(0).getSite().getSiteId(), currentThread.favData);
+                    result.add(new FavoriteData(favorite, currentThread.favData, getVariable(favorite.getVariable())));
 					threadsI.remove();
 				}
 			}

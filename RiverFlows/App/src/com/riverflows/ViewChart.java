@@ -66,6 +66,19 @@ import com.riverflows.wsclient.DataParseException;
 import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.Utils;
 
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.UnknownHostException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 /**
  * Experimenting with using AChartEngine for displaying the hydrograph
  * @author robin
@@ -131,6 +144,8 @@ public class ViewChart extends Activity {
         
         //LinearLayout layout = null;
         //((Windowlayout.getLayoutParams().
+
+        String title = null;
         
         if(getIntent().getData() == null) {
 			
@@ -138,16 +153,30 @@ public class ViewChart extends Activity {
 	        
 	        this.station = (Site)extras.get(KEY_SITE);
 	        this.variable = (Variable)extras.get(KEY_VARIABLE);
+
+            List<Favorite> favorites = FavoritesDaoImpl.getFavorites(getApplicationContext(), this.station.getSiteId(), this.variable.getId());
+
+            if(favorites.size() > 0) {
+                title = favorites.get(0).getName();
+            }
+
         } else {
         	SiteId siteId = new SiteId(getIntent().getData().getSchemeSpecificPart());
 			List<Favorite> favorites = FavoritesDaoImpl.getFavorites(getApplicationContext(), siteId, getIntent().getData().getFragment());
 
         	this.station = favorites.get(0).getSite();
+
+            title = favorites.get(0).getName();
+
         	this.variable = DataSourceController.getVariable(this.station.getAgency(), getIntent().getData().getFragment());
+        }
+
+        if(TextUtils.isEmpty(title)) {
+            title = this.station.getName();
         }
         
         TextView titleText = (TextView)findViewById(R.id.title);
-        titleText.setText(station.getName());
+        titleText.setText(title);
         
         CheckBox favoriteBtn = (CheckBox)findViewById(R.id.favorite_btn);
         favoriteBtn.setVisibility(View.GONE);
@@ -771,6 +800,10 @@ public class ViewChart extends Activity {
 		if(otherVariables.length <= 1) {
 			return false;
 		}
+
+		if(variable == null) {
+			return false;
+		}
 		
         try {
 			for(int a = 0; a < otherVariables.length; a++) {
@@ -792,7 +825,7 @@ public class ViewChart extends Activity {
 			}
         } catch(NullPointerException npe) {
         	//TODO remove this once we find the source of the NPE
-        	throw new RuntimeException("station: " + ViewChart.this.station.getSiteId() + " vars: " + otherVariables,npe);
+        	throw new RuntimeException("data: " + ViewChart.this.station.getSiteId() + " vars: " + otherVariables,npe);
         }
         return true;
 	}

@@ -1,13 +1,5 @@
 package com.riverflows.content;
 
-import java.io.IOException;
-import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-
 import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
@@ -21,6 +13,7 @@ import android.util.Log;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.riverflows.Home;
 import com.riverflows.data.Favorite;
+import com.riverflows.data.FavoriteData;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.SiteData;
@@ -31,6 +24,13 @@ import com.riverflows.data.Variable.CommonVariable;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.db.RiverGaugesDb;
 import com.riverflows.wsclient.DataSourceController;
+
+import java.io.IOException;
+import java.net.UnknownHostException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 
 public class Favorites extends ContentProvider {
 	
@@ -171,22 +171,11 @@ public class Favorites extends ContentProvider {
 			if(uLimit != null) {
 				favorites = favorites.subList(0, (favorites.size() < uLimit ? favorites.size() : uLimit));
 			}
-			
-			Map<SiteId,SiteData> allSiteDataMap = new HashMap<SiteId,SiteData>();
+
+            List<FavoriteData> favoriteDataList = null;
 			
 			try {
-				Map<SiteId,SiteData> siteDataMap = DataSourceController.getSiteData(favorites, true);
-				
-				for(SiteData currentData: siteDataMap.values()) {
-					
-					//convert °C to °F if that setting is enabled
-					Map<CommonVariable,Series> datasets = currentData.getDatasets();
-					for(Series dataset: datasets.values()) {
-						ValueConverter.convertIfNecessary(unitConversionMap, dataset);
-					}
-					
-					allSiteDataMap.put(currentData.getSite().getSiteId(), currentData);
-				}
+				favoriteDataList = DataSourceController.getSiteData(favorites, true);
 			} catch(UnknownHostException uhe) {
 				result.getExtras().putInt(EXTRA_ERROR_CODE, ERROR_UNKNOWN_HOST);
 				return result;
@@ -195,32 +184,33 @@ public class Favorites extends ContentProvider {
 				result.getExtras().putInt(EXTRA_ERROR_CODE, ERROR_NETWORK);
 				return result;
 			}
-			
-			List<SiteData> favoriteSiteData = expandDatasets(favorites, allSiteDataMap);
-			
-			for(SiteData siteData : favoriteSiteData) {
+
+            for(FavoriteData currentData: favoriteDataList) {
+
+                //convert °C to °F if that setting is enabled
+                Map<CommonVariable,Series> datasets = currentData.getSiteData().getDatasets();
+                for(Series dataset: datasets.values()) {
+                    ValueConverter.convertIfNecessary(unitConversionMap, dataset);
+                }
+
 				try {
 					MatrixCursor.RowBuilder row = result.newRow();
 					
-					row.add(siteData.getSite().getSiteId().getId());
-					row.add(siteData.getSite().getSiteId().getAgency());
-					row.add(siteData.getSite().getName());
-					
-					Iterator<Series> siteDataSeries = siteData.getDatasets().values().iterator();
-					
-					if(siteDataSeries.hasNext()) {
-						Series series = siteDataSeries.next();
-						
-						row.add(series.getVariable().getId());
-						
-						Reading lastReading = series.getLastObservation();
-						if(lastReading != null) {
-							row.add(lastReading.getDate().getTime());
-							row.add(lastReading.getValue());
-							row.add(lastReading.getQualifiers());
-							row.add(series.getVariable().getCommonVariable().getUnit());
-						}
-					}
+					row.add(currentData.getSiteData().getSite().getSiteId().getId());
+					row.add(currentData.getSiteData().getSite().getSiteId().getAgency());
+					row.add(currentData.getName());
+
+                    Series series = currentData.getSeries();
+
+                    row.add(series.getVariable().getId());
+
+                    Reading lastReading = series.getLastObservation();
+                    if(lastReading != null) {
+                        row.add(lastReading.getDate().getTime());
+                        row.add(lastReading.getValue());
+                        row.add(lastReading.getQualifiers());
+                        row.add(series.getVariable().getCommonVariable().getUnit());
+                    }
 				} catch(NullPointerException npe) {
 					Log.e(TAG, "",npe);
 				}
