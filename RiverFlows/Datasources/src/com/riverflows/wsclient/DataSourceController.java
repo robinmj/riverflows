@@ -252,7 +252,8 @@ public class DataSourceController {
 		
 		//skip first line
 		String line = ds.readLine();
-		
+
+		String currentRemoteId = null;
 		String currentAgency = null;
 		String currentId = null;
 		String currentSiteName = null;
@@ -275,33 +276,36 @@ public class DataSourceController {
 				switch(colIndex++) {
 				//parse out the different columns
 				case 0:
-					currentAgency = currentValue;
+					currentRemoteId = currentValue;
 					break;
 				case 1:
-					currentId = currentValue;
+					currentAgency = currentValue;
 					break;
 				case 2:
-					currentSiteName = currentValue;
+					currentId = currentValue;
 					break;
 				case 3:
-					currentLatitude = currentValue;
+					currentSiteName = currentValue;
 					break;
 				case 4:
-					currentLongitude = currentValue;
+					currentLatitude = currentValue;
 					break;
 				case 5:
-					currentState = currentValue;
+					currentLongitude = currentValue;
 					break;
 				case 6:
-					supportedVarIds = currentValue.split(" ");
+					currentState = currentValue;
 					break;
 				case 7:
-					currentRecentReading = currentValue;
+					supportedVarIds = currentValue.split(" ");
 					break;
 				case 8:
-					currentRecentReadingTime = currentValue;
+					currentRecentReading = currentValue;
 					break;
 				case 9:
+					currentRecentReadingTime = currentValue;
+					break;
+				case 10:
 					currentRecentReadingVariable = currentValue;
 					break;
 				default:
@@ -325,6 +329,7 @@ public class DataSourceController {
 				continue;
 			}
 			SiteId id = new SiteId(currentAgency, currentId);
+			id.setPrimaryKey(Integer.parseInt(currentRemoteId));
 			
 			Variable[] supportedVariables = new Variable[supportedVarIds.length];
 			
