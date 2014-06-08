@@ -141,10 +141,12 @@ public class ViewChart extends Activity {
 	        this.station = (Site)extras.get(KEY_SITE);
 	        this.variable = (Variable)extras.get(KEY_VARIABLE);
 
-            List<Favorite> favorites = FavoritesDaoImpl.getFavorites(getApplicationContext(), this.station.getSiteId(), this.variable.getId());
+            if(this.variable != null) {
+                List<Favorite> favorites = FavoritesDaoImpl.getFavorites(getApplicationContext(), this.station.getSiteId(), this.variable.getId());
 
-            if(favorites.size() > 0) {
-                title = favorites.get(0).getName();
+                if(favorites.size() > 0) {
+                    title = favorites.get(0).getName();
+                }
             }
 
         } else {
