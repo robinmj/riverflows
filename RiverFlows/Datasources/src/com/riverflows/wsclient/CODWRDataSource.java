@@ -121,7 +121,7 @@ public class CODWRDataSource implements RESTDataSource {
 				continue;
 			}
 			
-			SiteData newdata = getSiteData(favorite.getSite(), variables, 3, new Date(), null, hardRefresh);
+			SiteData newdata = getSiteData(favorite.getSite(), variables, hardRefresh);
 			
 			SiteData existingData = siteData.get(favorite.getSite().getSiteId());
 
