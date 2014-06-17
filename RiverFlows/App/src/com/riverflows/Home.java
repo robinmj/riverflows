@@ -1,24 +1,25 @@
 package com.riverflows;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.TabActivity;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.pm.ApplicationInfo;
-import android.content.res.Resources;
 import android.database.sqlite.SQLiteException;
 import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
-import android.view.Window;
-import android.widget.TabHost;
+import android.view.View;
+import android.widget.ArrayAdapter;
 
+import com.actionbarsherlock.app.ActionBar;
+import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.riverflows.db.CachingHttpClientWrapper;
@@ -35,12 +36,32 @@ import com.riverflows.wsclient.USACEDataSource;
 import com.riverflows.wsclient.UsgsCsvDataSource;
 import com.riverflows.wsclient.WsSession;
 
-public class Home extends TabActivity {
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+public class Home extends SherlockFragmentActivity implements ActionBar.TabListener {
+
+	public static final int TAB_FAVORITES = 0;
+	public static final int TAB_SITES = 1;
 	
 	public static final String TAG = "RiverFlows";
 
 	public static final String PREFS_FILE = "com.riverflows.prefs";
 	public static final String PREF_TEMP_UNIT = "tempUnit";
+
+	public static final int DIALOG_ID_LOADING = 1;
+	public static final int DIALOG_ID_LOADING_ERROR = 2;
+	public static final int DIALOG_ID_MASTER_LOADING = 3;
+	public static final int DIALOG_ID_MASTER_LOADING_ERROR = 4;
+	public static final int DIALOG_ID_UPGRADE_FAVORITES = 5;
+	public static final int DIALOG_ID_SIGNING_IN = 6;
+	public static final int DIALOG_ID_MIGRATION_ERROR = 7;
+
+	private Favorites favorites = new Favorites();
+	private StateSelect states = new StateSelect();
+
+	private Fragment currentFragment = favorites;
+	private volatile int currentTabId = TAB_FAVORITES;
 
 	static {
 		// Work around pre-Froyo bugs in HTTP connection reuse.
@@ -57,6 +78,13 @@ public class Home extends TabActivity {
 	private InitSession initSession = new InitSession(this, REQUEST_CHOOSE_ACCOUNT, REQUEST_HANDLE_RECOVERABLE_AUTH_EXC, false, false);
 	
 	public void onCreate(Bundle savedInstanceState) {
+
+		setContentView(R.layout.main);
+
+		final ActionBar ab = getSupportActionBar();
+
+		ab.hide();
+
 	    super.onCreate(savedInstanceState);
 	    
 	    SharedPreferences settings = getPreferences(0);
@@ -79,40 +107,52 @@ public class Home extends TabActivity {
 		//disable Google Analytics when in debug mode
 		GoogleAnalytics myInstance = GoogleAnalytics.getInstance(this);
 		myInstance.setAppOptOut((getApplicationContext().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != ApplicationInfo.FLAG_DEBUGGABLE);
-	    
-	    requestWindowFeature(Window.FEATURE_NO_TITLE);
-	    setContentView(R.layout.main);
 
-	    Resources res = getResources();
-	    TabHost tabHost = getTabHost();
-	    TabHost.TabSpec spec;
-	    Intent intent;
+		addTab(ab, TAB_FAVORITES, "Favorites");
+		addTab(ab, TAB_SITES, "Sites");
 
-	    // Create an Intent to launch an Activity for the tab (to be reused)
-	    intent = new Intent().setClass(this, StateSelect.class);
-	    spec = tabHost.newTabSpec("browse").setIndicator("Browse by State",
-	                      res.getDrawable(R.drawable.ic_tab_browse))
-	                  .setContent(intent);
-	    tabHost.addTab(spec);
-	    
-	    intent = new Intent().setClass(this, Favorites.class);
-	    spec = tabHost.newTabSpec("favorites").setIndicator("Favorites",
-	                      res.getDrawable(R.drawable.ic_tab_favorites))
-	                  .setContent(intent);
-	    tabHost.addTab(spec);
+		ArrayAdapter<?> navigationAdapter = ArrayAdapter
+				.createFromResource(ab.getThemedContext(), R.array.sections,
+						com.actionbarsherlock.R.layout.sherlock_spinner_item);
+		navigationAdapter.setDropDownViewResource(com.actionbarsherlock.R.layout.sherlock_spinner_dropdown_item);
+
+		ab.setListNavigationCallbacks(navigationAdapter,
+				new ActionBar.OnNavigationListener() {
+					public boolean onNavigationItemSelected(int itemPosition,
+															long itemId) {
+
+						FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+						tabSelected(itemPosition, ft);
+						ft.commit();
+						return true;
+					}
+				});
+
+		ab.setDisplayShowTitleEnabled(false);
+		ab.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+
+		if(savedInstanceState != null) {
+
+			//switch to the tab that the user was at last
+			currentTabId = savedInstanceState.getInt("tabId", TAB_FAVORITES);
+
+			Log.v(TAG, "reopening tab " + currentTabId);
+		} else {
+			if(FavoritesDaoImpl.hasFavorites(getApplicationContext())) {
+				currentTabId = TAB_FAVORITES;
+			} else {
+				currentTabId = TAB_SITES;
+			}
+		}
 
 	    try {
 	    	DbMaintenance.upgradeIfNecessary(getApplicationContext());
 		} catch(SQLiteException sqle) {
+			Log.w(TAG, "", sqle);
+
 			showDialog(DIALOG_ID_MIGRATION_ERROR);
 			return;
 		}
-	    
-	    if(FavoritesDaoImpl.hasFavorites(getCurrentActivity())) {
-	    	tabHost.setCurrentTab(1);
-	    } else {
-	    	tabHost.setCurrentTab(0);
-	    }
 
 		//attempt to set up session for accessing web services, but don't display a login screen
 		initSession.execute();
@@ -145,6 +185,12 @@ public class Home extends TabActivity {
 		
 		@Override
 		protected void onNoUIRequired(String result) {
+
+			findViewById(R.id.initial_progress).setVisibility(View.GONE);
+
+			getSupportActionBar().show();
+
+			getSupportActionBar().setSelectedNavigationItem(currentTabId);
 		}
 		
 		@Override
@@ -202,17 +248,96 @@ public class Home extends TabActivity {
 		i.setClassName("com.riverflows.widget", "com.riverflows.widget.Provider");
 		return i;
 	}
-	
-	public static final int DIALOG_ID_MIGRATION_ERROR = 1;
+
+	private class ErrorMsgDialog extends AlertDialog {
+
+		public ErrorMsgDialog(Context context, String msg) {
+			super(context);
+			setMessage(msg);
+		}
+
+	}
 	
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch(id) {
+			case Home.DIALOG_ID_LOADING:
+				ProgressDialog dialog = new ProgressDialog(this);
+				dialog.setMessage("Loading Sites...");
+				dialog.setIndeterminate(true);
+				dialog.setCancelable(true);
+				return dialog;
+			case Home.DIALOG_ID_LOADING_ERROR:
+				ErrorMsgDialog errorDialog = new ErrorMsgDialog(this, favorites.loadTask.getErrorMsg());
+				return errorDialog;
+			case Home.DIALOG_ID_MASTER_LOADING:
+				ProgressDialog masterDialog = new ProgressDialog(this);
+				masterDialog.setMessage("Downloading Master Site List...");
+				masterDialog.setIndeterminate(true);
+				masterDialog.setCancelable(true);
+				return masterDialog;
+			case Home.DIALOG_ID_MASTER_LOADING_ERROR:
+				ErrorMsgDialog masterErrorDialog = new ErrorMsgDialog(this, favorites.loadTask.getErrorMsg());
+				return masterErrorDialog;
+			case Home.DIALOG_ID_UPGRADE_FAVORITES:
+				ProgressDialog favoritesDialog = new ProgressDialog(this);
+				favoritesDialog.setMessage("Upgrading Favorites\nthis may take a few minutes");
+				favoritesDialog.setIndeterminate(true);
+				favoritesDialog.setCancelable(true);
+				return favoritesDialog;
+			case Home.DIALOG_ID_SIGNING_IN:
+				ProgressDialog signingInDialog = new ProgressDialog(this);
+				signingInDialog.setMessage("Signing In...");
+				signingInDialog.setIndeterminate(true);
+				signingInDialog.setCancelable(true);
+				return signingInDialog;
 		case DIALOG_ID_MIGRATION_ERROR:
 			AlertDialog alert = new AlertDialog.Builder(this).create();
 			alert.setMessage("Sorry- An error occurred while updating your favorites database. You will have to uninstall and reinstall RiverFlows to fix this.");
 			return alert;
 		}
 		return null;
+	}
+
+	public void onTabSelected(ActionBar.Tab tab, FragmentTransaction ft) {
+		tabSelected(((Integer)tab.getTag()).intValue(), ft);
+	}
+
+	@Override
+	public void onTabReselected(ActionBar.Tab tab, FragmentTransaction ft) {
+		//((RefreshableFragment)this.currentFragment).refresh(false);
+	}
+
+	@Override
+	public void onTabUnselected(ActionBar.Tab tab, FragmentTransaction ft) {
+	}
+
+	private void tabSelected(int id, FragmentTransaction ft) {
+		currentTabId = id;
+
+		Fragment nextFrag = null;
+		switch (id) {
+			case TAB_FAVORITES:
+				nextFrag = this.favorites;
+				break;
+			case TAB_SITES:
+				nextFrag = this.states;
+				break;
+		}
+
+		Log.d(TAG, "tabSelected " + id);
+
+		this.currentFragment = nextFrag;
+		ft.replace(R.id.root, nextFrag);
+	}
+
+	private ActionBar.Tab addTab(ActionBar ab, int key, String title) {
+
+		ActionBar.Tab t = ab.newTab();
+		t.setTag(key);
+		t.setText(title);
+		t.setTabListener(this);
+		ab.addTab(t);
+		return t;
 	}
 }

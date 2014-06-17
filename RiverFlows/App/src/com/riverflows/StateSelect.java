@@ -1,25 +1,27 @@
 package com.riverflows;
 
-import android.app.ListActivity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnFocusChangeListener;
+import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.ListView;
 
+import com.actionbarsherlock.app.SherlockListFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuInflater;
+import com.actionbarsherlock.view.MenuItem;
 import com.riverflows.data.USState;
 
-public class StateSelect extends ListActivity {
+public class StateSelect extends SherlockListFragment {
 	
 	public static final String TAG = Home.TAG;
 	
@@ -45,30 +47,34 @@ public class StateSelect extends ListActivity {
 			}
 		}
 	};
-	
+
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+							 Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.state_select, container, false);
+	}
+
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 		
-		setContentView(R.layout.state_select);
-		
-		StateAdapter adapter = new StateAdapter(this);
+		StateAdapter adapter = new StateAdapter(getActivity());
 		setListAdapter(adapter);
 
 		ListView lv = getListView();
 		lv.setTextFilterEnabled(true);
 		
-		EditText stateFilterField = (EditText)findViewById(R.id.state_filter_field);
+		EditText stateFilterField = (EditText)getView().findViewById(R.id.state_filter_field);
 		stateFilterField.addTextChangedListener(filterFieldWatcher);
 		stateFilterField.setOnFocusChangeListener(filterFieldFocusListener);
 		stateFilterField.requestFocus();
 	}
 	
 	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
+	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		hideSoftKeyboard();
-		Intent i = new Intent(this, RiverSelect.class);
+		Intent i = new Intent(getActivity(), RiverSelect.class);
         i.putExtra(RiverSelect.KEY_STATE, USState.values()[(int)id]);
         startActivity(i);
 	}
@@ -88,23 +94,22 @@ public class StateSelect extends ListActivity {
 			return -1;
 		}
 	}
-	
-	public boolean onCreateOptionsMenu(Menu menu) {
-	    MenuInflater inflater = getMenuInflater();
+
+	@Override
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 	    inflater.inflate(R.menu.standard_menu, menu);
 	    
 	    menu.findItem(R.id.mi_home).setVisible(false);
 	    menu.findItem(R.id.mi_reload).setVisible(false);
-	    return true;
 	}
-	
+
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
     	hideSoftKeyboard();
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.mi_about:
-			Intent i = new Intent(this, About.class);
+			Intent i = new Intent(getActivity(), About.class);
 			startActivity(i);
 	        return true;
 	    default:
@@ -115,9 +120,9 @@ public class StateSelect extends ListActivity {
 	private void hideSoftKeyboard() {
 		Log.d(TAG,"hiding soft keyboard");
 		
-		InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+		InputMethodManager imm = (InputMethodManager)getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 
-		EditText stateFilterField = (EditText)findViewById(R.id.state_filter_field);
+		EditText stateFilterField = (EditText)getView().findViewById(R.id.state_filter_field);
 		imm.hideSoftInputFromWindow(stateFilterField.getWindowToken(), 0);
 	}
 }

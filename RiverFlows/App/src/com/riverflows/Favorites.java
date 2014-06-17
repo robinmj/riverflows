@@ -3,7 +3,6 @@ package com.riverflows;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -17,16 +16,17 @@ import android.text.method.LinkMovementMethod;
 import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.WindowManager.BadTokenException;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.actionbarsherlock.app.SherlockListFragment;
+import com.actionbarsherlock.view.Menu;
+import com.actionbarsherlock.view.MenuItem;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
@@ -56,7 +56,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class Favorites extends ListActivity {
+public class Favorites extends SherlockListFragment {
 
 	private static final String TAG = Home.TAG;
 
@@ -70,13 +70,6 @@ public class Favorites extends ListActivity {
 	public static final int REQUEST_GET_FAVORITES = 15319;
 	public static final int REQUEST_GET_FAVORITES_RECOVER = 4193;
 
-	public static final int DIALOG_ID_LOADING = 1;
-	public static final int DIALOG_ID_LOADING_ERROR = 2;
-	public static final int DIALOG_ID_MASTER_LOADING = 3;
-	public static final int DIALOG_ID_MASTER_LOADING_ERROR = 4;
-	public static final int DIALOG_ID_UPGRADE_FAVORITES = 5;
-	public static final int DIALOG_ID_SIGNING_IN = 6;
-
 	LoadFavoritesTask loadTask = null;
 
 	private SignIn signin;
@@ -86,16 +79,20 @@ public class Favorites extends ListActivity {
 	private Date v2MigrationDate = null;
 
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+							 Bundle savedInstanceState) {
+		return inflater.inflate(R.layout.favorites, container, false);
+	}
 
-		setContentView(R.layout.favorites);
+	@Override
+	public void onActivityCreated(Bundle savedInstanceState) {
+		super.onActivityCreated(savedInstanceState);
 
 		ListView lv = getListView();
 
 		hideInstructions();
 
-		TextView favoriteSubtext = (TextView)findViewById(R.id.favorite_instructions_subheader);
+		TextView favoriteSubtext = (TextView)getView().findViewById(R.id.favorite_instructions_subheader);
 
 		SpannableString subtext = new SpannableString("If you select your favorite gauge sites, they will appear here.");
 
@@ -104,7 +101,7 @@ public class Favorites extends ListActivity {
 		favoriteSubtext.setText(subtext);
 		favoriteSubtext.setMovementMethod(LinkMovementMethod.getInstance());
 
-		SharedPreferences settings = getSharedPreferences(Home.PREFS_FILE, MODE_PRIVATE);
+		SharedPreferences settings = getActivity().getSharedPreferences(Home.PREFS_FILE, Activity.MODE_PRIVATE);
     	tempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
 		long destinationMigrationDate = settings.getLong("destination_migration", -1);
 		if(destinationMigrationDate != -1) {
@@ -112,7 +109,7 @@ public class Favorites extends ListActivity {
 		}
 
 		lv.setTextFilterEnabled(true);
-		this.loadTask = getLastNonConfigurationInstance();
+		//this.loadTask = getLastNonConfigurationInstance();
 
 		if(this.loadTask != null) {
 			if(!this.loadTask.running) {
@@ -123,29 +120,15 @@ public class Favorites extends ListActivity {
 				}
 			} else {
 				//if the loadTask is running, just wait until it finishes
-				showDialog(DIALOG_ID_LOADING);
+				showDialog(Home.DIALOG_ID_LOADING);
 			}
 		} else {
 			loadSites(false);
 		}
-
-		setTitle("Favorites");
 	}
 
 	@Override
-	protected void onStart() {
-		super.onStart();
-		EasyTracker.getInstance().activityStart(this);
-	}
-
-	@Override
-	protected void onStop() {
-		super.onStop();
-		EasyTracker.getInstance().activityStop(this);
-	}
-
-	@Override
-	protected void onResume() {
+	public void onResume() {
 		super.onResume();
 
 		//discard the cached list items after 2 hours
@@ -161,7 +144,7 @@ public class Favorites extends ListActivity {
 //			return;
 //		}
 
-		List<Favorite> currentFavs = FavoritesDaoImpl.getFavorites(this, null, null);
+		List<Favorite> currentFavs = FavoritesDaoImpl.getFavorites(getActivity().getApplicationContext(), null, null);
 
 		if(!this.loadTask.isRunning() &&
 				(this.loadTask.favorites == null || (currentFavs.size() != this.loadTask.favorites.size()))) {
@@ -185,7 +168,7 @@ public class Favorites extends ListActivity {
 		}
 
 		//temperature conversion has changed
-		SharedPreferences settings = getSharedPreferences(Home.PREFS_FILE, MODE_PRIVATE);
+		SharedPreferences settings = getActivity().getSharedPreferences(Home.PREFS_FILE, Activity.MODE_PRIVATE);
     	String newTempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
 
     	if(newTempUnit != tempUnit && (newTempUnit == null || !newTempUnit.equals(tempUnit))) {
@@ -196,19 +179,9 @@ public class Favorites extends ListActivity {
 	}
 
 	@Override
-    public LoadFavoritesTask onRetainNonConfigurationInstance() {
-        return this.loadTask;
-    }
-
-    @Override
-    public LoadFavoritesTask getLastNonConfigurationInstance() {
-    	return (LoadFavoritesTask)super.getLastNonConfigurationInstance();
-    }
-
-	@Override
-	protected void onListItemClick(ListView l, View v, int position, long id) {
+	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		Intent i = new Intent(this, ViewChart.class);
+		Intent i = new Intent(getActivity(), ViewChart.class);
 		FavoriteData selectedFavorite = null;
 		
 		if(this.loadTask == null || this.loadTask.getGauges() == null) {
@@ -237,14 +210,14 @@ public class Favorites extends ListActivity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case R.id.mi_about:
-			Intent i = new Intent(this, About.class);
+			Intent i = new Intent(getActivity(), About.class);
 			startActivity(i);
 	        return true;
 	    case R.id.mi_reload:
 	    	loadSites(true);
 	    	return true;
 	    case R.id.mi_reorder:
-	    	Intent i_reorder = new Intent(this, ReorderFavorites.class);
+	    	Intent i_reorder = new Intent(getActivity(), ReorderFavorites.class);
 	    	startActivityForResult(i_reorder, REQUEST_REORDER_FAVORITES);
 	    	return true;
 	    case R.id.mi_help:
@@ -256,64 +229,18 @@ public class Favorites extends ListActivity {
 			signin.execute();
 			return true;
 		case R.id.mi_sign_out:
-			WsSessionManager.logOut(this);
+			WsSessionManager.logOut(getActivity());
 			return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
 
-	@Override
-	protected Dialog onCreateDialog(int id) {
-		switch(id) {
-		case DIALOG_ID_LOADING:
-			ProgressDialog dialog = new ProgressDialog(this);
-	        dialog.setMessage("Loading Sites...");
-	        dialog.setIndeterminate(true);
-	        dialog.setCancelable(true);
-	        return dialog;
-		case DIALOG_ID_LOADING_ERROR:
-			ErrorMsgDialog errorDialog = new ErrorMsgDialog(this, loadTask.getErrorMsg());
-			return errorDialog;
-		case DIALOG_ID_MASTER_LOADING:
-			ProgressDialog masterDialog = new ProgressDialog(this);
-			masterDialog.setMessage("Downloading Master Site List...");
-			masterDialog.setIndeterminate(true);
-			masterDialog.setCancelable(true);
-	        return masterDialog;
-		case DIALOG_ID_MASTER_LOADING_ERROR:
-			ErrorMsgDialog masterErrorDialog = new ErrorMsgDialog(this, loadTask.getErrorMsg());
-			return masterErrorDialog;
-		case DIALOG_ID_UPGRADE_FAVORITES:
-			ProgressDialog favoritesDialog = new ProgressDialog(this);
-			favoritesDialog.setMessage("Upgrading Favorites\nthis may take a few minutes");
-			favoritesDialog.setIndeterminate(true);
-			favoritesDialog.setCancelable(true);
-	        return favoritesDialog;
-		case DIALOG_ID_SIGNING_IN:
-			ProgressDialog signingInDialog = new ProgressDialog(this);
-			signingInDialog.setMessage("Signing In...");
-			signingInDialog.setIndeterminate(true);
-			signingInDialog.setCancelable(true);
-			return signingInDialog;
-		}
-		return null;
-	}
-
-	private class ErrorMsgDialog extends AlertDialog {
-
-		public ErrorMsgDialog(Context context, String msg) {
-			super(context);
-			setMessage(msg);
-		}
-
-	}
-
 	/**
 	 * @param hardRefresh if true, discard persisted site data as well
 	 */
 	public void loadSites(boolean hardRefresh) {
-		showDialog(DIALOG_ID_LOADING);
+		showDialog(Home.DIALOG_ID_LOADING);
 
 		List<FavoriteData> currentGauges = null;
 		
@@ -324,7 +251,7 @@ public class Favorites extends ListActivity {
 
 		getListView().getEmptyView().setVisibility(View.INVISIBLE);
 
-		this.loadTask = new LoadFavoritesTask(this, false, false, hardRefresh);
+		this.loadTask = new LoadFavoritesTask(getActivity(), false, false, hardRefresh);
 
 		//preserve existing gauges in case load fails
 		this.loadTask.setGauges(currentGauges);
@@ -337,6 +264,12 @@ public class Favorites extends ListActivity {
 	}
 
 	public void displayFavorites() {
+		Activity activity = getActivity();
+
+		if(activity == null) {
+			return;
+		}
+
 		if(this.loadTask.getGauges() != null) {
 
 //			if(this.loadTask.getGauges().size() > 0) {
@@ -348,7 +281,7 @@ public class Favorites extends ListActivity {
 //				}
 //			
 			
-			setListAdapter(new FavoriteAdapter(getApplicationContext(), this.loadTask.getGauges()));
+			setListAdapter(new FavoriteAdapter(activity, this.loadTask.getGauges()));
 			registerForContextMenu(getListView());
 
 			/*
@@ -408,7 +341,7 @@ public class Favorites extends ListActivity {
 		protected List<Favorite> doApiCall(WsSession session, Integer... params) throws Exception {
 			this.running = true;
 
-			List<Favorite> result = FavoritesDaoImpl.getFavorites(getApplicationContext(), null, null);
+			List<Favorite> result = FavoritesDaoImpl.getFavorites(getActivity(), null, null);
 
 			List<DestinationFacet> destinationFacets = DestinationFacets.instance.getFavorites(session);
 
@@ -437,7 +370,7 @@ public class Favorites extends ListActivity {
 
 							currentFav.setDestinationFacet(destinationFacets.get(b));
 
-							FavoritesDaoImpl.updateFavorite(Favorites.this, currentFav);
+							FavoritesDaoImpl.updateFavorite(Favorites.this.getActivity(), currentFav);
 							break;
 						}
 					}
@@ -455,7 +388,7 @@ public class Favorites extends ListActivity {
 					newFav.setCreationDate(new Date());
 
 					//save new favorite locally
-					FavoritesDaoImpl.createFavorite(Favorites.this, newFav);
+					FavoritesDaoImpl.createFavorite(Favorites.this.getActivity(), newFav);
 					result.add(newFav);
 				}
 			}
@@ -635,8 +568,8 @@ public class Favorites extends ListActivity {
 			if(values.length == 2 && values[0] == STATUS_UPGRADING_FAVORITES) {
 				if(values[1] == 0) {
 					try {
-						removeDialog(DIALOG_ID_LOADING);
-						showDialog(DIALOG_ID_UPGRADE_FAVORITES);
+						removeDialog(Home.DIALOG_ID_LOADING);
+						showDialog(Home.DIALOG_ID_UPGRADE_FAVORITES);
 					} catch(BadTokenException bte) {
 						if(Log.isLoggable(TAG, Log.INFO)) {
 							Log.i(TAG, "can't display dialog; activity no longer active");
@@ -649,8 +582,8 @@ public class Favorites extends ListActivity {
 				}
 				if(values[1] == 100) {
 					try {
-						removeDialog(DIALOG_ID_UPGRADE_FAVORITES);
-						showDialog(DIALOG_ID_LOADING);
+						removeDialog(Home.DIALOG_ID_UPGRADE_FAVORITES);
+						showDialog(Home.DIALOG_ID_LOADING);
 					} catch(BadTokenException bte) {
 						if(Log.isLoggable(TAG, Log.INFO)) {
 							Log.i(TAG, "can't display dialog; activity no longer active");
@@ -666,26 +599,14 @@ public class Favorites extends ListActivity {
 	}
 
 	public void hideProgress() {
-		try {
-			removeDialog(DIALOG_ID_LOADING);
-		} catch(IllegalArgumentException iae) {
-			if(Log.isLoggable(TAG, Log.INFO)) {
-				Log.i(TAG, "can't remove dialog; activity no longer active");
-			}
-		}
-	}	
+		removeDialog(Home.DIALOG_ID_LOADING);
+	}
 	public void showError() {
-		try {
-			showDialog(DIALOG_ID_LOADING_ERROR);
-		} catch(BadTokenException bte) {
-			if(Log.isLoggable(TAG, Log.INFO)) {
-				Log.i(TAG, "can't display dialog; activity no longer active");
-			}
-		}
+		showDialog(Home.DIALOG_ID_LOADING_ERROR);
 	}
 	
 	@Override
-	public boolean onPrepareOptionsMenu(Menu menu) {
+	public void onPrepareOptionsMenu(Menu menu) {
 		if(loadTask != null && this.loadTask.getGauges() != null && this.loadTask.getGauges().size() > 0) {
 			MenuItem reorderFavorites = menu.findItem(R.id.mi_reorder);
 			reorderFavorites.setVisible(true);
@@ -694,7 +615,7 @@ public class Favorites extends ListActivity {
 		MenuItem signin = menu.findItem(R.id.mi_sign_in);
 		MenuItem signout = menu.findItem(R.id.mi_sign_out);
 
-		if(WsSessionManager.getSession(this) != null) {
+		if(WsSessionManager.getSession(getActivity()) != null) {
 			signin.setVisible(false);
 			signout.setVisible(true);
 		} else {
@@ -702,21 +623,19 @@ public class Favorites extends ListActivity {
 			signout.setVisible(false);
 		}
 		
-		return super.onPrepareOptionsMenu(menu);
+		super.onPrepareOptionsMenu(menu);
 	}
 	
-	public boolean onCreateOptionsMenu(Menu menu) {
-	    super.onCreateOptionsMenu(menu);
+	public void onCreateOptionsMenu(Menu menu, com.actionbarsherlock.view.MenuInflater inflater) {
+	    super.onCreateOptionsMenu(menu, inflater);
 	    
-	    MenuInflater inflater = getMenuInflater();
 	    inflater.inflate(R.menu.favorites_menu, menu);
 	    
-	    return true;
 	}
 	
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
+			ContextMenu.ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
 		
 		FavoriteAdapter adapter = (FavoriteAdapter)((ListView)v).getAdapter();
@@ -730,18 +649,18 @@ public class Favorites extends ListActivity {
 
 		Variable variable = favoriteData.getSeries().getVariable();
 		
-		MenuItem view = menu.add("View");
+		android.view.MenuItem view = menu.add("View");
 		view.setOnMenuItemClickListener(new ViewFavoriteListener(favoriteData.getFavorite().getSite(), variable));
-		
-		MenuItem edit = menu.add("Edit");
+
+		android.view.MenuItem edit = menu.add("Edit");
 		edit.setOnMenuItemClickListener(new EditFavoriteListener(favoriteData.getFavorite().getSite(), variable));
-		
-		MenuItem delete = menu.add("Delete");
+
+		android.view.MenuItem delete = menu.add("Delete");
 		delete.setOnMenuItemClickListener(new DeleteFavoriteListener(favoriteData.getFavorite().getSite(), variable));
 	}
 	
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
 		if(requestCode == Home.REQUEST_CHOOSE_ACCOUNT || requestCode == Home.REQUEST_HANDLE_RECOVERABLE_AUTH_EXC) {
@@ -758,8 +677,8 @@ public class Favorites extends ListActivity {
 		
 		switch(requestCode) {
 		case REQUEST_EDIT_FAVORITE:
-			if(resultCode == RESULT_OK) {
-				sendBroadcast(Home.getWidgetUpdateIntent());
+			if(resultCode == Activity.RESULT_OK) {
+				getActivity().sendBroadcast(Home.getWidgetUpdateIntent());
 				
 	        	if(loadTask == null || loadTask.favorites == null) {
 	        		//favorites haven't even loaded yet- return
@@ -786,7 +705,7 @@ public class Favorites extends ListActivity {
 	        	try {
 		        	for(Favorite oldFavorite: loadTask.favorites) {
 		        		if(oldFavorite.getId() == favoriteId) {
-		        			Favorite newFavorite = FavoritesDaoImpl.getFavorite(this, favoriteId);
+		        			Favorite newFavorite = FavoritesDaoImpl.getFavorite(getActivity(), favoriteId);
 		        			
 		        			if(!oldFavorite.getVariable().equals(newFavorite.getVariable())) {
 		        				//variable has been changed- we need to reload
@@ -824,15 +743,15 @@ public class Favorites extends ListActivity {
 			}
     		return;
 		case REQUEST_REORDER_FAVORITES:
-			if(resultCode == RESULT_OK) {
-				sendBroadcast(Home.getWidgetUpdateIntent());
+			if(resultCode == Activity.RESULT_OK) {
+				getActivity().sendBroadcast(Home.getWidgetUpdateIntent());
 				
 				if(this.loadTask == null || this.loadTask.getGauges() == null) {
 	        		//favorites haven't even loaded yet- return
 	        		return;
 	        	}
 				
-				List<Favorite> newFavorites = FavoritesDaoImpl.getFavorites(this, null, null);
+				List<Favorite> newFavorites = FavoritesDaoImpl.getFavorites(getActivity(), null, null);
 				
 				List<FavoriteData> newSiteData = new ArrayList<FavoriteData>(newFavorites.size());
 				
@@ -856,7 +775,7 @@ public class Favorites extends ListActivity {
 		}
 	}
 	
-	private class ViewFavoriteListener implements MenuItem.OnMenuItemClickListener {
+	private class ViewFavoriteListener implements android.view.MenuItem.OnMenuItemClickListener {
 		
 		private Site site;
 		private Variable variable;
@@ -868,8 +787,8 @@ public class Favorites extends ListActivity {
 		}
 
 		@Override
-		public boolean onMenuItemClick(MenuItem item) {
-			Intent i = new Intent(Favorites.this, ViewChart.class);
+		public boolean onMenuItemClick(android.view.MenuItem item) {
+			Intent i = new Intent(Favorites.this.getActivity(), ViewChart.class);
 	        i.putExtra(ViewChart.KEY_SITE, site);
 	        i.putExtra(ViewChart.KEY_VARIABLE, variable);
 	        startActivity(i);
@@ -877,7 +796,7 @@ public class Favorites extends ListActivity {
 		}
 	};
 	
-	private class EditFavoriteListener implements MenuItem.OnMenuItemClickListener {
+	private class EditFavoriteListener implements android.view.MenuItem.OnMenuItemClickListener {
 		
 		private Site site;
 		private Variable variable;
@@ -889,9 +808,9 @@ public class Favorites extends ListActivity {
 		}
 
 		@Override
-		public boolean onMenuItemClick(MenuItem item) {
+		public boolean onMenuItemClick(android.view.MenuItem item) {
 			
-			Intent i = new Intent(Favorites.this, EditFavorite.class);
+			Intent i = new Intent(Favorites.this.getActivity(), EditFavorite.class);
 
 	        i.putExtra(EditFavorite.KEY_SITE_ID, site.getSiteId());
 	        i.putExtra(EditFavorite.KEY_VARIABLE_ID, variable.getId());
@@ -900,7 +819,7 @@ public class Favorites extends ListActivity {
 		}
 	}
 	
-	private class DeleteFavoriteListener implements MenuItem.OnMenuItemClickListener {
+	private class DeleteFavoriteListener implements android.view.MenuItem.OnMenuItemClickListener {
 		
 		private Site site;
 		private Variable variable;
@@ -912,9 +831,9 @@ public class Favorites extends ListActivity {
 		}
 
 		@Override
-		public boolean onMenuItemClick(MenuItem item) {
+		public boolean onMenuItemClick(android.view.MenuItem item) {
 			
-			FavoritesDaoImpl.deleteFavorite(Favorites.this, site.getSiteId(), variable);
+			FavoritesDaoImpl.deleteFavorite(Favorites.this.getActivity(), site.getSiteId(), variable);
 			
 			LoadFavoritesTask loadTask = Favorites.this.loadTask;
 			
@@ -966,13 +885,13 @@ public class Favorites extends ListActivity {
 
 	private class SignIn extends ApiCallTask<String, Integer, UserAccount> {
 		public SignIn(){
-			super(Favorites.this, Home.REQUEST_CHOOSE_ACCOUNT, Home.REQUEST_HANDLE_RECOVERABLE_AUTH_EXC, true, false);
-			showDialog(DIALOG_ID_SIGNING_IN);
+			super(Favorites.this.getActivity(), Home.REQUEST_CHOOSE_ACCOUNT, Home.REQUEST_HANDLE_RECOVERABLE_AUTH_EXC, true, false);
+			showDialog(Home.DIALOG_ID_SIGNING_IN);
 		}
 
 		public SignIn(SignIn oldTask) {
 			super(oldTask);
-			showDialog(DIALOG_ID_SIGNING_IN);
+			showDialog(Home.DIALOG_ID_SIGNING_IN);
 		}
 
 		@Override
@@ -983,7 +902,7 @@ public class Favorites extends ListActivity {
 		@Override
 		protected void onNoUIRequired(UserAccount userAccount) {
 
-			removeDialog(DIALOG_ID_SIGNING_IN);
+			removeDialog(Home.DIALOG_ID_SIGNING_IN);
 
 			if(exception != null) {
 				Log.e(Home.TAG, "", exception);
@@ -995,13 +914,27 @@ public class Favorites extends ListActivity {
 
 			if(userAccount.getFacetTypes() == 0) {
 				//set up this user's account
-				startActivityForResult(new Intent(Favorites.this, AccountSettings.class), REQUEST_CREATE_ACCOUNT);
+				startActivityForResult(new Intent(Favorites.this.getActivity(), AccountSettings.class), REQUEST_CREATE_ACCOUNT);
 			}
 		}
 
 		@Override
 		protected ApiCallTask<String, Integer, UserAccount> clone() throws CloneNotSupportedException {
 			return new SignIn(this);
+		}
+	}
+
+	private void showDialog(int id) {
+		Activity activity = getActivity();
+		if(activity != null) {
+			activity.showDialog(id);
+		}
+	}
+
+	private void removeDialog(int id) {
+		Activity activity = getActivity();
+		if(activity != null) {
+			activity.removeDialog(id);
 		}
 	}
 }
