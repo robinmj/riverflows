@@ -1,11 +1,16 @@
 package com.riverflows.wsclient;
 
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
+import com.riverflows.data.Favorite;
+import com.riverflows.data.FavoriteData;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
@@ -80,4 +85,27 @@ public class CODWRDataSourceTest extends TestCase {
 		//site with no data (PLABAICO)
 		//variable with qualified null
 	}
+
+    public void testGetFavorites() throws Throwable {
+        Site lakeCreek = new Site();
+        lakeCreek.setSiteId(new SiteId(CODWRDataSource.AGENCY, "LAKATLCO"));
+        lakeCreek.setName("LAKE CREEK ABOVE TWIN LAKES");
+        lakeCreek.setState(USState.CO);
+        lakeCreek.setSupportedVariables(new Variable[]{CODWRDataSource.VTYPE_STREAMFLOW_CFS, CODWRDataSource.VTYPE_AIRTEMP});
+
+        List<Favorite> favs = Collections.singletonList(new Favorite(lakeCreek, CODWRDataSource.VTYPE_STREAMFLOW_CFS.getId()));
+
+        List<FavoriteData> result = src.getSiteData(favs, true);
+
+        Reading r = result.get(0).getSeries().getLastObservation();
+
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.set(2014, 5, 6, 21, 30, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.setTimeZone(TimeZone.getTimeZone("GMT-06:00"));
+
+        assertEquals(cal.getTime(), r.getDate());
+        assertEquals(2030.0d, r.getValue());
+        assertNull(r.getQualifiers());
+    }
 }
