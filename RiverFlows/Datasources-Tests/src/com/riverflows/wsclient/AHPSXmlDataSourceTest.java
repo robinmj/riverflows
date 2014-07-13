@@ -206,5 +206,10 @@ public class AHPSXmlDataSourceTest extends TestCase {
         assertEquals(cal.getTime(), r.getDate());
         assertEquals(1740.0d, r.getValue());
         assertFalse(r instanceof Forecast);
+
+        r = streamflowDataset.getReadings().get(202);
+        assertEquals(cal.getTime(), r.getDate());
+        assertEquals(1740.0d, r.getValue());
+        assertFalse(r instanceof Forecast);
     }
 }
