@@ -7,6 +7,9 @@ public class Series {
 	private List<Reading> readings;
 	private String sourceUrl;
 
+    /**
+     * Forecasts and Readings, sorted ascending by date
+     */
 	public List<Reading> getReadings() {
 		return readings;
 	}
@@ -32,7 +35,6 @@ public class Series {
 	}
 
     /**
-     * @param s cannot be null
      * @return the last non-forecasted reading in a series, or null if the series has no
      *  non-forecasted readings
      */

@@ -1,12 +1,17 @@
 package com.riverflows.wsclient;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.TimeZone;
 
 import junit.framework.TestCase;
 
+import com.riverflows.data.Favorite;
+import com.riverflows.data.FavoriteData;
 import com.riverflows.data.Forecast;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
@@ -44,7 +49,7 @@ public class AHPSXmlDataSourceTest extends TestCase {
 		assertTrue(Arrays.equals(dosBocas.getSupportedVariables(), result.getSite().getSupportedVariables()));
 		
 		GregorianCalendar cal = new GregorianCalendar();
-		cal.set(2011, 3, 12, 7, 45, 0);
+		cal.set(2011, 3, 02, 24, 0, 0);
 		cal.set(Calendar.MILLISECOND, 0);
 		cal.setTimeZone(TimeZone.getTimeZone("GMT-00:00"));
 		
@@ -57,7 +62,7 @@ public class AHPSXmlDataSourceTest extends TestCase {
 		
 		r = gaugeHeightDataset.getReadings().get(0);
 		assertEquals(cal.getTime(), r.getDate());
-		assertEquals(290.8d, r.getValue());
+		assertEquals(292.41d, r.getValue());
 		assertFalse(r instanceof Forecast);
 	}
 	
@@ -108,6 +113,11 @@ public class AHPSXmlDataSourceTest extends TestCase {
 		assertEquals(cal.getTime(), r.getDate());
 		assertEquals(5060.0d, r.getValue());
 		assertFalse(r instanceof Forecast);
+
+        r = streamflowDataset.getLastObservation();
+        assertEquals(cal.getTime(), r.getDate());
+        assertEquals(5060.0d, r.getValue());
+        assertFalse(r instanceof Forecast);
 		
 		cal.set(2011, 2, 17, 18, 0, 0);
 		//first forecasted reading
@@ -160,4 +170,46 @@ public class AHPSXmlDataSourceTest extends TestCase {
 		assertEquals(28.85d, r.getValue());
 		assertTrue(r instanceof Forecast);
 	}
+
+    public void testGetDRGC2() throws Throwable {
+        Site animas = new Site(new SiteId(AHPSXmlDataSource.AGENCY,"drgc2"),
+                "Animas River at Durango", -11.1111d, 11.1111d, USState.CO,
+                AHPSXmlDataSource.ACCEPTED_VARIABLES);
+
+        Favorite animasFav = new Favorite(animas, AHPSXmlDataSource.VTYPE_FLOW.getId());
+
+        List<Favorite> favorites = Collections.singletonList(animasFav);
+
+        List<FavoriteData> favoriteData = ds.getSiteData(favorites,true);
+
+        FavoriteData animasData = favoriteData.get(0);
+
+        Series streamflowDataset = animasData.getSeries();
+
+        assertNotNull(animasData.getSiteData().getSite());
+        assertEquals(animas.getKey(), animasData.getSiteData().getSite().getKey());
+        assertEquals(animas.getId(), animasData.getSiteData().getSite().getId());
+        assertEquals(animas.getAgency(), animasData.getSiteData().getSite().getAgency());
+        assertEquals(animas.getName(), animasData.getSiteData().getSite().getName());
+        assertEquals(animas.getLatitude(), animasData.getSiteData().getSite().getLatitude());
+        assertEquals(animas.getLongitude(), animasData.getSiteData().getSite().getLongitude());
+        assertEquals(animas.getState(), animasData.getSiteData().getSite().getState());
+        assertEquals(animas.getSupportedVariables().length, animasData.getSiteData().getSite().getSupportedVariables().length);
+        assertTrue(Arrays.equals(animas.getSupportedVariables(), animasData.getSiteData().getSite().getSupportedVariables()));
+
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.set(2014, 5, 22, 2, 30, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.setTimeZone(TimeZone.getTimeZone("GMT-00:00"));
+
+        Reading r = streamflowDataset.getLastObservation();
+        assertEquals(cal.getTime(), r.getDate());
+        assertEquals(1740.0d, r.getValue());
+        assertFalse(r instanceof Forecast);
+
+        r = streamflowDataset.getReadings().get(202);
+        assertEquals(cal.getTime(), r.getDate());
+        assertEquals(1740.0d, r.getValue());
+        assertFalse(r instanceof Forecast);
+    }
 }
