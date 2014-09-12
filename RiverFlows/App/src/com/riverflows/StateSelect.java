@@ -57,6 +57,8 @@ public class StateSelect extends SherlockListFragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
+
+		setHasOptionsMenu(true);
 		
 		StateAdapter adapter = new StateAdapter(getActivity());
 		setListAdapter(adapter);

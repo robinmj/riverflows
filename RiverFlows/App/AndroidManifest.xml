@@ -26,11 +26,6 @@
 				<category android:name="android.intent.category.LAUNCHER" />
 			</intent-filter>
 		</activity>
-		
-	    <activity android:name="StateSelect"
-	              android:label="Browse by State"
-	              android:windowSoftInputMode="stateVisible"
-	              android:launchMode="singleTask"/>
 	              
 	    <activity android:name="RiverSelect"
 	              android:windowSoftInputMode="stateVisible"/>
@@ -67,9 +62,6 @@
 	    		<data android:scheme="http" android:host="waterservices.usgs.gov" />
     		</intent-filter> -->
     	</activity>
-    	
-	    <activity android:name="Favorites"
-	              android:launchMode="singleTask"/>
 	    
 	    <activity android:name="ReorderFavorites"/>
 	    		
@@ -80,7 +72,8 @@
         <activity android:name=".SetupDestinations"/>
 
         <provider android:name=".content.Favorites"
-		android:authorities="com.riverflows.content.favorites">
+		android:authorities="com.riverflows.content.favorites"
+        android:exported="true">
 		</provider>
 	</application>
 </manifest> 

@@ -49,12 +49,8 @@ public class Home extends SherlockFragmentActivity implements ActionBar.TabListe
 	public static final String PREFS_FILE = "com.riverflows.prefs";
 	public static final String PREF_TEMP_UNIT = "tempUnit";
 
-	public static final int DIALOG_ID_LOADING = 1;
-	public static final int DIALOG_ID_LOADING_ERROR = 2;
 	public static final int DIALOG_ID_MASTER_LOADING = 3;
 	public static final int DIALOG_ID_MASTER_LOADING_ERROR = 4;
-	public static final int DIALOG_ID_UPGRADE_FAVORITES = 5;
-	public static final int DIALOG_ID_SIGNING_IN = 6;
 	public static final int DIALOG_ID_MIGRATION_ERROR = 7;
 
 	private Favorites favorites = new Favorites();
@@ -102,7 +98,7 @@ public class Home extends SherlockFragmentActivity implements ActionBar.TabListe
 				getApplicationContext(), getCacheDir(), CACHE_TTL, "text/xml"));
 		DataSourceController.initCache(getCacheDir());
 	    
-	    Logger.getLogger("").setLevel(Level.WARNING);
+	    //Logger.getLogger("").setLevel(Level.WARNING);
 
 		//disable Google Analytics when in debug mode
 		GoogleAnalytics myInstance = GoogleAnalytics.getInstance(this);
@@ -165,8 +161,8 @@ public class Home extends SherlockFragmentActivity implements ActionBar.TabListe
 	    EasyTracker.getInstance().activityStart(this);
 	}
 	
-	static final int REQUEST_CHOOSE_ACCOUNT = 281546;
-	static final int REQUEST_HANDLE_RECOVERABLE_AUTH_EXC = 95436;
+	static final int REQUEST_CHOOSE_ACCOUNT = 2154;
+	static final int REQUEST_HANDLE_RECOVERABLE_AUTH_EXC = 5436;
 
 	private class InitSession extends ApiCallTask<String, Integer, String> {
 		
@@ -261,36 +257,6 @@ public class Home extends SherlockFragmentActivity implements ActionBar.TabListe
 	@Override
 	protected Dialog onCreateDialog(int id) {
 		switch(id) {
-			case Home.DIALOG_ID_LOADING:
-				ProgressDialog dialog = new ProgressDialog(this);
-				dialog.setMessage("Loading Sites...");
-				dialog.setIndeterminate(true);
-				dialog.setCancelable(true);
-				return dialog;
-			case Home.DIALOG_ID_LOADING_ERROR:
-				ErrorMsgDialog errorDialog = new ErrorMsgDialog(this, favorites.loadTask.getErrorMsg());
-				return errorDialog;
-			case Home.DIALOG_ID_MASTER_LOADING:
-				ProgressDialog masterDialog = new ProgressDialog(this);
-				masterDialog.setMessage("Downloading Master Site List...");
-				masterDialog.setIndeterminate(true);
-				masterDialog.setCancelable(true);
-				return masterDialog;
-			case Home.DIALOG_ID_MASTER_LOADING_ERROR:
-				ErrorMsgDialog masterErrorDialog = new ErrorMsgDialog(this, favorites.loadTask.getErrorMsg());
-				return masterErrorDialog;
-			case Home.DIALOG_ID_UPGRADE_FAVORITES:
-				ProgressDialog favoritesDialog = new ProgressDialog(this);
-				favoritesDialog.setMessage("Upgrading Favorites\nthis may take a few minutes");
-				favoritesDialog.setIndeterminate(true);
-				favoritesDialog.setCancelable(true);
-				return favoritesDialog;
-			case Home.DIALOG_ID_SIGNING_IN:
-				ProgressDialog signingInDialog = new ProgressDialog(this);
-				signingInDialog.setMessage("Signing In...");
-				signingInDialog.setIndeterminate(true);
-				signingInDialog.setCancelable(true);
-				return signingInDialog;
 		case DIALOG_ID_MIGRATION_ERROR:
 			AlertDialog alert = new AlertDialog.Builder(this).create();
 			alert.setMessage("Sorry- An error occurred while updating your favorites database. You will have to uninstall and reinstall RiverFlows to fix this.");
