@@ -122,6 +122,7 @@ public class ViewChart extends Activity {
     			FavoritesDaoImpl.deleteFavorite(getApplicationContext(), ViewChart.this.station.getSiteId(), ViewChart.this.variable);
     		}
 			sendBroadcast(Home.getWidgetUpdateIntent());
+			sendBroadcast(new Intent(Home.ACTION_FAVORITES_CHANGED));
     	}
     }
     

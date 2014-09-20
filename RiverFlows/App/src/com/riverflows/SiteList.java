@@ -441,6 +441,7 @@ public abstract class SiteList extends ListActivity {
 				item.setChecked(true);
 			}
 			sendBroadcast(Home.getWidgetUpdateIntent());
+			sendBroadcast(new Intent(Home.ACTION_FAVORITES_CHANGED));
 
 			String confirmation =  MessageFormat.format(getString(R.string.add_favorite_confirmation), selectedVariable.getName(), selectedStation.getName());
 			

@@ -49,6 +49,8 @@ public class Home extends SherlockFragmentActivity implements ActionBar.TabListe
 	public static final String PREFS_FILE = "com.riverflows.prefs";
 	public static final String PREF_TEMP_UNIT = "tempUnit";
 
+	public static final String ACTION_FAVORITES_CHANGED = "com.riverflows.FAVORITES_CHANGED";
+
 	public static final int DIALOG_ID_MASTER_LOADING = 3;
 	public static final int DIALOG_ID_MASTER_LOADING_ERROR = 4;
 	public static final int DIALOG_ID_MIGRATION_ERROR = 7;
