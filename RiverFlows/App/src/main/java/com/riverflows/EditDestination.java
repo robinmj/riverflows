@@ -134,22 +134,13 @@ public class EditDestination extends SherlockFragmentActivity {
 		this.saveDestTask.authorizeCallback(requestCode, resultCode, data);
 	}
 
-	public static class EditDestinationFragment extends SherlockFragment implements NumberPickerDialog.NumberPickerDialogListener {
+	public static class EditDestinationFragment extends SherlockFragment {
 
 		public DestinationFacet destinationFacet;
 
 		private Integer validTextColor = null;
 		private Integer validBgColor = null;
 		private Integer validHintColor = null;
-
-		private TextView.OnFocusChangeListener levelFocusListener = new TextView.OnFocusChangeListener() {
-			@Override
-			public void onFocusChange(View textView, boolean hasFocus) {
-				if(hasFocus && !TextUtils.isEmpty(((TextView) textView).getText())) {
-					showEditDialog(textView.getId());
-				}
-			}
-		};
 
 		public EditDestinationFragment(){}
 
@@ -210,42 +201,14 @@ public class EditDestination extends SherlockFragmentActivity {
 			levelUnit.setText(unit);
 
 			EditText levelField = (EditText)v.findViewById(R.id.fld_too_high);
-			levelField.setOnFocusChangeListener(levelFocusListener);
 			levelField = (EditText)v.findViewById(R.id.fld_high);
-			levelField.setOnFocusChangeListener(levelFocusListener);
 			levelField = (EditText)v.findViewById(R.id.fld_medium);
-			levelField.setOnFocusChangeListener(levelFocusListener);
 			levelField = (EditText)v.findViewById(R.id.fld_low);
-			levelField.setOnFocusChangeListener(levelFocusListener);
 
 			return v;
 		}
 
 		private AtomicReference<Integer> editedField = new AtomicReference<Integer>();
-
-		private void showEditDialog(int editedField) {
-			if(!this.editedField.compareAndSet(null, editedField)) {
-				return;
-			}
-
-			FragmentManager fm = getActivity().getSupportFragmentManager();
-			NumberPickerDialog levelSelectDialog = new NumberPickerDialog();
-			levelSelectDialog.setListener(this);
-			levelSelectDialog.show(fm, "fragment_number_picker");
-		}
-
-		@Override
-		public void onFinishNumberPicker(Float value) {
-
-			EditText editedField = (EditText)getView().findViewById(this.editedField.getAndSet(null));
-
-			if(value == null) {
-				editedField.setText(null);
-				return;
-			}
-
-			editedField.setText(value.toString());
-		}
 
         private void setErrorMessage(String message) {
             TextView errorMsgView = (TextView)this.getView().findViewById(R.id.lbl_error_msg);

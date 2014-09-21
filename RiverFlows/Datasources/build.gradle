@@ -1,45 +1,47 @@
 buildscript {
     repositories {
-        mavenCentral()
+        jcenter()
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:0.7.+'
+        classpath 'com.android.tools.build:gradle:0.12.2'
     }
 }
-apply plugin: 'android-library'
+apply plugin: 'com.android.library'
 
-dependencies {
-    compile fileTree(dir: 'libs', include: '*.jar')
+repositories {
+    jcenter()
 }
 
 android {
     compileSdkVersion 19
-    buildToolsVersion '19.0.0'
+    buildToolsVersion "19.1.0"
 
-    sourceSets {
-        main {
-            manifest.srcFile 'AndroidManifest.xml'
-            java.srcDirs = ['src']
-            resources.srcDirs = ['src']
-            aidl.srcDirs = ['src']
-            renderscript.srcDirs = ['src']
-            res.srcDirs = ['res']
-            assets.srcDirs = ['assets']
-        }
-
-        // Move the build types to build-types/<type>
-        // For instance, build-types/debug/java, build-types/debug/AndroidManifest.xml, ...
-        // This moves them out of them default location under src/<type>/... which would
-        // conflict with src/ being used by the main source set.
-        // Adding new build types or product flavors should be accompanied
-        // by a similar customization.
-        debug.setRoot('build-types/debug')
-        release.setRoot('build-types/release')
+    defaultConfig {
+        applicationId "com.riverflows.data"
+        minSdkVersion 8
+        targetSdkVersion 10
+        versionCode 1
+        versionName "1.0"
     }
-
-    // Workaround for Gradle 0.7 bug: http://stackoverflow.com/questions/20673888/duplicate-files-copied-android-studio-0-4-0
-    packagingOptions {
-        exclude 'META-INF/LICENSE.txt'
-        exclude 'META-INF/NOTICE.txt'
+    buildTypes {
+        release {
+            runProguard false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
     }
 }
+
+dependencies {
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+}
+
+/*
+sourceSets {
+    main {
+        resources {
+            srcDir 'src/main/resources'
+            include '*.keystore'
+            output.resourcesDir = 'build/resources/main'
+        }
+    }
+}*/

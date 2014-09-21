@@ -1,5 +1,4 @@
-include ':App'
+include ':App', ':Datasources', ':Widget'
 include ':Datasources'
 include ':Datasources-Tests'
-include ':logarithmicnumberpicker'
 include ':Widget'

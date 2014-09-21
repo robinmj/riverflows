@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <style name="Theme.RiverFlows" parent="@style/Theme.Sherlock">
-        <item name="numberPickerStyle">@style/NPWidget.Holo.NumberPicker</item>
+        <!--<item name="numberPickerStyle">@style/NPWidget.Holo.NumberPicker</item>-->
     </style>
 
     <color name="txt_level_too_high">#fff</color>
