@@ -15,22 +15,19 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.entity.StringEntity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.text.ParseException;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.SortedMap;
 
 /**
  * Created by robin on 9/26/13.
  */
 public class DestinationFacets extends WebModel<DestinationFacet>{
+
+    private static final Log LOG = LogFactory.getLog(DestinationFacets.class);
 
 	//singleton
 	public static final DestinationFacets instance = new DestinationFacets();
@@ -56,6 +53,30 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 		Page<DestinationFacet> remoteFavorites = get(session, "favorites", null, null, null);
 
 		return remoteFavorites.pageElements;
+	}
+
+    public Favorite saveFavorite(WsSession session, int destFacetId) throws Exception {
+        HttpPost postCmd = new HttpPost(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource()
+                + "/" + destFacetId + "/save_favorite.json?auth_token=" + session.authToken);
+
+        HttpClient client = new DataSourceController.SSLHttpClient();
+
+        HttpResponse httpResponse = client.execute(postCmd);
+
+        LOG.debug(postCmd + " response: " + httpResponse.getStatusLine().getStatusCode() + " " + httpResponse.getStatusLine().getReasonPhrase());
+
+        if(httpResponse.getStatusLine().getStatusCode() != 201) {
+            throw new UnexpectedResultException(httpResponse.getStatusLine().getReasonPhrase(), httpResponse.getStatusLine().getStatusCode());
+        }
+
+        JSONObject responseObj = new JSONObject(Utils.getString(httpResponse.getEntity().getContent()));
+
+        LOG.info("responseJson: " + responseObj);
+
+        return RemoteFavorites.instance.fromJson(responseObj.getJSONObject("favorite"));
+    }
+
+    public void removeFavorite(WsSession session, int destFacetId) throws Exception {
 	}
 
 	public JSONObject toJson(DestinationFacet facet) throws JSONException {

@@ -99,7 +99,7 @@ public class EditDestination extends SherlockFragmentActivity {
 
 		// BEGIN_INCLUDE (inflate_set_custom_view)
 		// Inflate a "Done/Cancel" custom action bar view.
-		final LayoutInflater inflater = (LayoutInflater) getActionBar().getThemedContext()
+		final LayoutInflater inflater = (LayoutInflater) getSupportActionBar().getThemedContext()
 				.getSystemService(LAYOUT_INFLATER_SERVICE);
 		final View customActionBarView = inflater.inflate(
 				R.layout.actionbar_custom_view_done_cancel, null);
@@ -368,6 +368,13 @@ public class EditDestination extends SherlockFragmentActivity {
 
 			facet = Destinations.saveDestinationWithFacet(session, facet);
 
+            try {
+                DestinationFacets.instance.saveFavorite(session, facet.getId());
+            } catch(Exception e) {
+                //non-fatal exception
+                this.exception = e;
+            }
+
 			//make sure facet knows about newly-created dest's primary key
 			/*
 			facet.setDestination(dest);
@@ -402,7 +409,12 @@ public class EditDestination extends SherlockFragmentActivity {
 			if(exception != null) {
 				Toast.makeText(EditDestination.this, exception.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 				Log.e(Home.TAG,"", exception);
-				return;
+                if(destinationFacet == null) {
+                    return;
+                } else {
+                    sendBroadcast(Home.getWidgetUpdateIntent());
+                    sendBroadcast(new Intent(Home.ACTION_FAVORITES_CHANGED));
+                }
 			}
 
             Intent resultIntent = new Intent();
