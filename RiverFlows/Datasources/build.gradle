@@ -1,20 +1,9 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.12.2'
-    }
-}
+
 apply plugin: 'com.android.library'
 
-repositories {
-    jcenter()
-}
-
 android {
-    compileSdkVersion 19
-    buildToolsVersion "19.1.0"
+    compileSdkVersion 17
+    buildToolsVersion '19.1.0'
 
     defaultConfig {
         applicationId "com.riverflows.data"
