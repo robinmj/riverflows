@@ -173,7 +173,14 @@ public class Favorites extends SherlockListFragment implements LoaderManager.Loa
     	}
 	}
 
-	@Override
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+
+        getActivity().unregisterReceiver(this.favChangedReceiver);
+    }
+
+    @Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
 		Intent i = new Intent(getActivity(), ViewChart.class);
