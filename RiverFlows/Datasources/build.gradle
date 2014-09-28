@@ -2,8 +2,8 @@
 apply plugin: 'com.android.library'
 
 android {
-    compileSdkVersion 17
-    buildToolsVersion '19.1.0'
+    compileSdkVersion 20
+    buildToolsVersion '20.0.0'
 
     defaultConfig {
         applicationId "com.riverflows.data"
