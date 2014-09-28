@@ -1,18 +1,17 @@
 package com.riverflows;
 
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.actionbarsherlock.app.SherlockFragment;
 import com.riverflows.data.DestinationFacet;
-import com.riverflows.R;
 
 /**
  * Created by robin on 11/23/13.
  */
-public class DestinationFragment extends SherlockFragment {
+public class DestinationFragment extends Fragment {
 
 	private DestinationFacet destinationFacet;
 

@@ -2,8 +2,11 @@ package com.riverflows;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,9 +19,6 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragment;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.riverflows.data.Destination;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Site;
@@ -27,14 +27,13 @@ import com.riverflows.wsclient.ApiCallTask;
 import com.riverflows.wsclient.DestinationFacets;
 import com.riverflows.wsclient.Destinations;
 import com.riverflows.wsclient.WsSession;
-import com.riverflows.wsclient.WsSessionManager;
 
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
  * Created by robin on 6/23/13.
  */
-public class EditDestination extends SherlockFragmentActivity {
+public class EditDestination extends ActionBarActivity {
 
 	public static final String KEY_SITE = "site";
 	public static final String KEY_VARIABLE = "variable";
@@ -53,7 +52,7 @@ public class EditDestination extends SherlockFragmentActivity {
                 //save
 
 				hideEditActionBar();
-				setSupportProgressBarIndeterminate(true);
+                setProgressBarIndeterminate(true);
 
 				DestinationFacet destinationFacet= editDestination.reloadDestinationFacet();
 
@@ -134,7 +133,7 @@ public class EditDestination extends SherlockFragmentActivity {
 		this.saveDestTask.authorizeCallback(requestCode, resultCode, data);
 	}
 
-	public static class EditDestinationFragment extends SherlockFragment {
+	public static class EditDestinationFragment extends Fragment {
 
 		public DestinationFacet destinationFacet;
 
@@ -175,7 +174,7 @@ public class EditDestination extends SherlockFragmentActivity {
 
 			//populate dropdown menu
 			Spinner spinner = (Spinner)v.findViewById(R.id.select_facet);
-			ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getSherlockActivity(),
+			ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
 					R.array.facet_type_names, android.R.layout.simple_spinner_item);
 			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 			spinner.setAdapter(adapter);
@@ -404,7 +403,7 @@ public class EditDestination extends SherlockFragmentActivity {
         protected void onNoUIRequired(DestinationFacet destinationFacet) {
 			showEditBar();
 
-			setSupportProgressBarIndeterminate(false);
+			setProgressBarIndeterminate(false);
 
 			if(exception != null) {
 				Toast.makeText(EditDestination.this, exception.getLocalizedMessage(), Toast.LENGTH_LONG).show();

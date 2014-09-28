@@ -2,8 +2,8 @@ package com.riverflows;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
@@ -13,7 +13,6 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
@@ -27,7 +26,7 @@ import java.util.List;
 /**
  * Created by robin on 10/1/13.
  */
-public class SetupDestinations extends SherlockFragmentActivity implements LoaderManager.LoaderCallbacks<Pair<Favorite,List<DestinationFacet>>> {
+public class SetupDestinations extends FragmentActivity implements LoaderManager.LoaderCallbacks<Pair<Favorite,List<DestinationFacet>>> {
 
 	private static final int REQUEST_SIMILAR_DESTINATIONS = 36941;
 	private static final int RECOVERY_REQUEST_SIMILAR_DESTINATIONS = 6392;

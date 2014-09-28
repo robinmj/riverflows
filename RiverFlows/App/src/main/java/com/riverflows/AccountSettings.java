@@ -1,19 +1,20 @@
 package com.riverflows;
 
+import android.app.Activity;
 import android.content.res.Resources;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
+import android.support.v7.view.ActionMode;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.actionbarsherlock.app.SherlockActivity;
-import com.actionbarsherlock.view.ActionMode;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.riverflows.data.UserAccount;
 import com.riverflows.wsclient.ApiCallTask;
 import com.riverflows.wsclient.UserAccounts;
@@ -23,7 +24,7 @@ import com.riverflows.wsclient.WsSessionManager;
 /**
  * Created by robin on 6/4/13.
  */
-public class AccountSettings extends SherlockActivity {
+public class AccountSettings extends ActionBarActivity {
 
 	private static final int REQUEST_SAVE = 642048;
 	private static final int REQUEST_LOGIN_FOR_SAVE = 32078;
@@ -83,7 +84,7 @@ public class AccountSettings extends SherlockActivity {
 			mainLayout.addView(facetCheckBoxes[a]);
 		}
 
-		mMode = startActionMode(new EditActionMode());
+		mMode = startSupportActionMode(new EditActionMode());
 	}
 
 	@Override
@@ -161,7 +162,7 @@ public class AccountSettings extends SherlockActivity {
 		@Override
 		public boolean onCreateActionMode(ActionMode mode, Menu menu) {
 
-			getSupportMenuInflater().inflate(R.menu.edit_account_action_mode, menu);
+            getMenuInflater().inflate(R.menu.edit_account_action_mode, menu);
 
 			return true;
 		}

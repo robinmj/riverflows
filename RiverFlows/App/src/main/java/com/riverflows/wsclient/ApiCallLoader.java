@@ -1,21 +1,7 @@
 package com.riverflows.wsclient;
 
-import android.accounts.AccountManager;
 import android.app.Activity;
-import android.content.Context;
-import android.content.Intent;
-import android.content.SharedPreferences;
-import android.os.Bundle;
-import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
-import android.util.Log;
-
-import com.google.android.gms.auth.GoogleAuthUtil;
-import com.google.android.gms.auth.UserRecoverableAuthException;
-import com.google.android.gms.common.AccountPicker;
-import com.riverflows.Home;
-
-import java.io.IOException;
 
 /**
  * Created by robin on 7/19/14.

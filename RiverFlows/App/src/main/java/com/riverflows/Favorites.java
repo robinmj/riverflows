@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.text.SpannableString;
@@ -20,15 +21,15 @@ import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.actionbarsherlock.app.SherlockListFragment;
-import com.actionbarsherlock.view.Menu;
-import com.actionbarsherlock.view.MenuItem;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
@@ -54,7 +55,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-public class Favorites extends SherlockListFragment implements LoaderManager.LoaderCallbacks<List<FavoriteData>> {
+public class Favorites extends ListFragment implements LoaderManager.LoaderCallbacks<List<FavoriteData>> {
 
 	private static final String TAG = Home.TAG;
 
@@ -325,7 +326,7 @@ public class Favorites extends SherlockListFragment implements LoaderManager.Loa
 
 		showProgress();
 
-		getListView().getEmptyView().setVisibility(View.INVISIBLE);
+		//getListView().getEmptyView().setVisibility(View.INVISIBLE);
 
 		Bundle args = new Bundle();
 		args.putBoolean(FavoritesLoader.PARAM_HARD_REFRESH, hardRefresh);
@@ -461,7 +462,7 @@ public class Favorites extends SherlockListFragment implements LoaderManager.Loa
 		}
 	}
 
-	public class SignInDialogFragment extends DialogFragment {
+	public static class SignInDialogFragment extends DialogFragment {
 
 		@Override
 		public Dialog onCreateDialog(Bundle savedInstanceState) {
@@ -496,7 +497,7 @@ public class Favorites extends SherlockListFragment implements LoaderManager.Loa
 		super.onPrepareOptionsMenu(menu);
 	}
 	
-	public void onCreateOptionsMenu(Menu menu, com.actionbarsherlock.view.MenuInflater inflater) {
+	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 	    super.onCreateOptionsMenu(menu, inflater);
 	    
 	    inflater.inflate(R.menu.favorites_menu, menu);

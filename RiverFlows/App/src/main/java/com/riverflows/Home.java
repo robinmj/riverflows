@@ -3,7 +3,6 @@ package com.riverflows;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -14,12 +13,11 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
 
-import com.actionbarsherlock.app.ActionBar;
-import com.actionbarsherlock.app.SherlockFragmentActivity;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.riverflows.db.CachingHttpClientWrapper;
@@ -36,10 +34,7 @@ import com.riverflows.wsclient.USACEDataSource;
 import com.riverflows.wsclient.UsgsCsvDataSource;
 import com.riverflows.wsclient.WsSession;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-public class Home extends SherlockFragmentActivity implements ActionBar.TabListener {
+public class Home extends ActionBarActivity implements ActionBar.TabListener {
 
 	public static final int TAB_FAVORITES = 0;
 	public static final int TAB_SITES = 1;
@@ -77,13 +72,13 @@ public class Home extends SherlockFragmentActivity implements ActionBar.TabListe
 	
 	public void onCreate(Bundle savedInstanceState) {
 
-		setContentView(R.layout.main);
-
-		final ActionBar ab = getSupportActionBar();
-
-		ab.hide();
-
 	    super.onCreate(savedInstanceState);
+
+        setContentView(R.layout.main);
+
+        final ActionBar ab = getSupportActionBar();
+
+        ab.hide();
 	    
 	    SharedPreferences settings = getPreferences(0);
         boolean widgetAdShown = settings.getBoolean("widgetAdShown", false);
@@ -109,25 +104,8 @@ public class Home extends SherlockFragmentActivity implements ActionBar.TabListe
 		addTab(ab, TAB_FAVORITES, "Favorites");
 		addTab(ab, TAB_SITES, "Sites");
 
-		ArrayAdapter<?> navigationAdapter = ArrayAdapter
-				.createFromResource(ab.getThemedContext(), R.array.sections,
-						com.actionbarsherlock.R.layout.sherlock_spinner_item);
-		navigationAdapter.setDropDownViewResource(com.actionbarsherlock.R.layout.sherlock_spinner_dropdown_item);
-
-		ab.setListNavigationCallbacks(navigationAdapter,
-				new ActionBar.OnNavigationListener() {
-					public boolean onNavigationItemSelected(int itemPosition,
-															long itemId) {
-
-						FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-						tabSelected(itemPosition, ft);
-						ft.commit();
-						return true;
-					}
-				});
-
 		ab.setDisplayShowTitleEnabled(false);
-		ab.setNavigationMode(ActionBar.NAVIGATION_MODE_LIST);
+		ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 		if(savedInstanceState != null) {
 
