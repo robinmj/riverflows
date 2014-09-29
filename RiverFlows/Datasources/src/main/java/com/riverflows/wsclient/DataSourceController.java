@@ -570,7 +570,6 @@ public class DataSourceController {
 		
 		//break up list of favorites by agency
 		for(Favorite favorite: favorites) {
-            assert (favorite.getId() != null);
 
 			List<Favorite> agencySites = agencySitesMap.get(favorite.getSite().getAgency());
 			if(agencySites == null) {
@@ -582,8 +581,8 @@ public class DataSourceController {
 		
 		Set<String> agencies = agencySitesMap.keySet();
 
-        // favorite id -> FavoriteData
-        HashMap<Integer, FavoriteData> returnedData = new HashMap<Integer, FavoriteData>(favorites.size());
+        // favorite -> FavoriteData
+        HashMap<Favorite, FavoriteData> returnedData = new HashMap<Favorite, FavoriteData>(favorites.size());
 		
 		for(String agency: agencies) {
 			DataSource ds = dataSources.get(agency);
@@ -598,7 +597,7 @@ public class DataSourceController {
 				
 				//copy results into consolidated map
                 for(FavoriteData returnedFav : agencyData) {
-                    returnedData.put(returnedFav.getFavorite().getId(), returnedFav);
+                    returnedData.put(returnedFav.getFavorite(), returnedFav);
                 }
 			} catch(SocketException se) {
 				LOG.error("could not access agency: " + agency, se);
@@ -611,7 +610,7 @@ public class DataSourceController {
 
         for(int a = 0; a < favorites.size(); a++) {
             Favorite requestedFav = favorites.get(a);
-            FavoriteData returnedFav = returnedData.get(requestedFav.getId());
+            FavoriteData returnedFav = returnedData.get(requestedFav);
 
             //insert placeholder data for all favorites that failed to return
             if(returnedFav == null) {

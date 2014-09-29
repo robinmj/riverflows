@@ -196,6 +196,7 @@ public class AHPSXmlDataSourceTest extends TestCase {
         assertEquals(animas.getState(), animasData.getSiteData().getSite().getState());
         assertEquals(animas.getSupportedVariables().length, animasData.getSiteData().getSite().getSupportedVariables().length);
         assertTrue(Arrays.equals(animas.getSupportedVariables(), animasData.getSiteData().getSite().getSupportedVariables()));
+        assertEquals(animasFav, animasData.getFavorite());
 
         GregorianCalendar cal = new GregorianCalendar();
         cal.set(2014, 5, 22, 2, 30, 0);
