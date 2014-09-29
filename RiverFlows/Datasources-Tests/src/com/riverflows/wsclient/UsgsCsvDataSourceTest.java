@@ -11,9 +11,6 @@ import com.riverflows.data.Variable.CommonVariable;
 
 import junit.framework.TestCase;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
-import java.security.Security;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.List;
@@ -25,8 +22,6 @@ public class UsgsCsvDataSourceTest extends TestCase {
 	
 	static {
 		src.setHttpClientWrapper(new MockUsgsCsvHttpClient());
-
-        Security.addProvider(new BouncyCastleProvider());
 	}
 	
 	public void testGetSiteData() throws Throwable {

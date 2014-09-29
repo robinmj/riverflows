@@ -34,6 +34,9 @@ import com.riverflows.wsclient.USACEDataSource;
 import com.riverflows.wsclient.UsgsCsvDataSource;
 import com.riverflows.wsclient.WsSession;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 public class Home extends ActionBarActivity implements ActionBar.TabListener {
 
 	public static final int TAB_FAVORITES = 0;
@@ -55,18 +58,6 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
 
 	private Fragment currentFragment = favorites;
 	private volatile int currentTabId = TAB_FAVORITES;
-
-	static {
-		// Work around pre-Froyo bugs in HTTP connection reuse.
-		if (Integer.parseInt(Build.VERSION.SDK) < Build.VERSION_CODES.FROYO) {
-			System.setProperty("http.keepAlive", "false");
-		}
-	}
-
-	/**
-	 * 20 minutes
-	 */
-	public static final long CACHE_TTL = 20 * 60 * 1000;
 	
 	private InitSession initSession = new InitSession(this, REQUEST_CHOOSE_ACCOUNT, REQUEST_HANDLE_RECOVERABLE_AUTH_EXC, false, false);
 	
@@ -88,18 +79,6 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
         	prefsEditor.putBoolean("widgetAdShown", true);
         	prefsEditor.commit();
         }
-
-		DataSourceController.setHttpClientWrapper(new CachingHttpClientWrapper(
-				getApplicationContext(), getCacheDir(), CACHE_TTL, "text/plain"));
-		DataSourceController.getDataSource("AHPS").setHttpClientWrapper(new CachingHttpClientWrapper(
-				getApplicationContext(), getCacheDir(), CACHE_TTL, "text/xml"));
-		DataSourceController.initCache(getCacheDir());
-	    
-	    //Logger.getLogger("").setLevel(Level.WARNING);
-
-		//disable Google Analytics when in debug mode
-		GoogleAnalytics myInstance = GoogleAnalytics.getInstance(this);
-		myInstance.setAppOptOut((getApplicationContext().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != ApplicationInfo.FLAG_DEBUGGABLE);
 
 		addTab(ab, TAB_FAVORITES, "Favorites");
 		addTab(ab, TAB_SITES, "Sites");

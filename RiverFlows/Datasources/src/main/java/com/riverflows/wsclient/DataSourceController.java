@@ -75,22 +75,19 @@ public class DataSourceController {
 		@Override
 		protected ClientConnectionManager createClientConnectionManager() {
 			try {
-				InputStream keystoreStream = DataSourceController.class.getResourceAsStream("trusted.keystore");
 
-				KeyStore trustedKeys = KeyStore.getInstance("BKS");
-				try {
-					trustedKeys.load(keystoreStream, new String("password").toCharArray());
-				} finally {
-					keystoreStream.close();
-				}
+                ClientConnectionManager connManager = super.createClientConnectionManager();
 
-				SSLSocketFactory sslSocketFactory = new SSLSocketFactory(trustedKeys);
+                if(trustedKeys != null) {
 
-				Scheme https = new Scheme("https", sslSocketFactory, 443);
+                    SSLSocketFactory sslSocketFactory = new SSLSocketFactory(trustedKeys);
 
-				ClientConnectionManager connManager = super.createClientConnectionManager();
+				    Scheme https = new Scheme("https", sslSocketFactory, 443);
 
-				connManager.getSchemeRegistry().register(https);
+                    connManager.getSchemeRegistry().register(https);
+                } else {
+                    LOG.info("no keystore supplied: using normal https socket");
+                }
 				return connManager;
 			} catch(Exception e) {
 				throw new RuntimeException("Failed to initialize HTTP client: " + e.getMessage(),e);
@@ -107,6 +104,8 @@ public class DataSourceController {
 	}
 
 	private static SSLContext sslContext;
+
+    private static KeyStore trustedKeys;
 
 	private static final byte[] b = new byte[]{106,76,109,-26,-72,-102,7,87,71,-78,57,94,45,52,28,38,-96,-35,-41,2,-30,-17,16,-93,-52,103,127,-91,-41,38,101,13,0,121,44,-78,115,111,79,-96,101,32,-100,-51,-14,63,-70,-113,121,-14,-99,-68,2,-37,74,-53,-66,84,-51,-101,-109,-15};
 	
@@ -125,29 +124,32 @@ public class DataSourceController {
 			return new PasswordAuthentication(s.substring(0,colonIndex), s.substring(colonIndex + 1).toCharArray());
 		}
 	}
-	
+
 	static {
 		UsgsCsvDataSource usgsDataSource = new UsgsCsvDataSource();
 		dataSources.put(usgsDataSource.getAgency(), usgsDataSource);
 
 		CODWRDataSource coDWRDataSource = new CODWRDataSource();
 		dataSources.put(coDWRDataSource.getAgency(), coDWRDataSource);
-		
+
 		AHPSXmlDataSource ahpsDataSource = new AHPSXmlDataSource();
 		dataSources.put(ahpsDataSource.getAgency(), ahpsDataSource);
-		
+
 		CDECDataSource cdecDataSource = new CDECDataSource();
 		dataSources.put(cdecDataSource.getAgency(), cdecDataSource);
-		
+
 		USACEDataSource usaceDataSource = new USACEDataSource();
 		dataSources.put(usaceDataSource.getAgency(), usaceDataSource);
-		
+
 		RECENT_READING_TIME_FMT.setTimeZone(TimeZone.getTimeZone("GMT-00:00"));
+    }
+	
+	public static void useKeyStore(InputStream keystoreStream) {
 
 		try {
-			InputStream keystoreStream = DataSourceController.class.getResourceAsStream("trusted.keystore");
 
-			KeyStore trustedKeys = KeyStore.getInstance("BKS");
+			trustedKeys = KeyStore.getInstance("BKS");
+
 			try {
 				trustedKeys.load(keystoreStream, new String("password").toCharArray());
 			} finally {
@@ -221,7 +223,11 @@ public class DataSourceController {
 			conn.setUseCaches(!hardRefresh);
 
             if(conn instanceof HttpsURLConnection) {
-                ((HttpsURLConnection)conn).setSSLSocketFactory(sslContext.getSocketFactory());
+                if(sslContext != null) {
+                    ((HttpsURLConnection) conn).setSSLSocketFactory(sslContext.getSocketFactory());
+                } else {
+                    throw new IllegalStateException(DataSourceController.class.getSimpleName() + " not initialized!");
+                }
             }
 
 			contentInputStream = conn.getInputStream();

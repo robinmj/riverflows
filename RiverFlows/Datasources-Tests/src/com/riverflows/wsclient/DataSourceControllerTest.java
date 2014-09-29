@@ -9,17 +9,12 @@ import com.riverflows.data.Variable;
 
 import junit.framework.TestCase;
 
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
-
-import java.security.Security;
 import java.util.ArrayList;
 import java.util.List;
 
 public class DataSourceControllerTest extends TestCase {
 
     static {
-
-        Security.addProvider(new BouncyCastleProvider());
 
         DataSourceController.getDataSource("USGS").setHttpClientWrapper(new MockUsgsCsvHttpClient());
         DataSourceController.getDataSource("AHPS").setHttpClientWrapper(new MockAHPSHttpClient());
