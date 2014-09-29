@@ -49,10 +49,12 @@ public class Favorite {
 		this.order = order;
 	}
 
+    /** @return primary key of favorite in local database, or null if not yet stored */
 	public Integer getId() {
 		return id;
 	}
 
+    /** @param id primary key of favorite in local database */
 	public void setId(Integer id) {
 		this.id = id;
 	}
