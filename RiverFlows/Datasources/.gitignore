@@ -1,2 +1,2 @@
-/gen
-/dist
+/build
+/dist/*.jar

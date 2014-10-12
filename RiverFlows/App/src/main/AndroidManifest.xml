@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.riverflows"
+      android:versionCode="21"
+      android:versionName="1.6.5">
+    
+    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="17"/>
+	<uses-permission android:name="android.permission.INTERNET" />
+	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+
+    <supports-screens
+            android:anyDensity="true"
+            android:smallScreens="true"
+            android:normalScreens="true"
+            android:largeScreens="true"
+            android:xlargeScreens="true"/>
+    
+    <application
+        android:icon="@drawable/launcher"
+        android:label="@string/app_name"
+        android:theme="@style/Theme.RiverFlows"
+        android:name=".App">
+	    <activity android:name="Home"
+                  android:label="@string/app_name"
+                  android:launchMode="singleTask">
+	    	<intent-filter>
+	    		<action android:name="android.intent.action.MAIN" />
+				<category android:name="android.intent.category.LAUNCHER" />
+			</intent-filter>
+		</activity>
+	              
+	    <activity android:name="RiverSelect"
+	              android:windowSoftInputMode="stateVisible"/>
+	              
+        <activity android:name="About"
+                android:launchMode="singleTask"/>
+                
+	              
+        <activity android:name="Help"
+                android:launchMode="singleTask">
+            <intent-filter>
+	    		<action android:name="android.intent.action.VIEW"/>
+	    		<category android:name="android.intent.category.DEFAULT"/>
+	    		<data android:scheme="riverflows" android:pathPrefix="help/"/>
+    		</intent-filter>
+    	</activity>
+    	
+    	<activity android:name="WidgetAd"
+                android:launchMode="singleTask">
+        </activity>
+                
+      <activity android:name="DataSrcInfo"
+                android:launchMode="singleTask"/>
+                  
+    	<activity android:name="ViewChart">
+    		<intent-filter>
+	    		<action android:name="android.intent.action.VIEW"/>
+	    		<category android:name="android.intent.category.DEFAULT"/>
+	    		<data android:scheme="gauge"/>
+    		</intent-filter>
+    		<!-- <intent-filter>
+	    		<action android:name="android.intent.action.VIEW"/>
+	    		<category android:name="android.intent.category.ALTERNATIVE"/>
+	    		<data android:scheme="http" android:host="waterservices.usgs.gov" />
+    		</intent-filter> -->
+    	</activity>
+	    
+	    <activity android:name="ReorderFavorites"/>
+	    		
+	    <activity android:name="EditFavorite"/>
+        <activity android:name=".AccountSettings"/>
+        <activity android:name=".MigrateToDestinations"/>
+        <activity android:name=".EditDestination"/>
+        <activity android:name=".SetupDestinations"/>
+
+        <provider android:name=".content.Favorites"
+		android:authorities="com.riverflows.content.favorites"
+        android:exported="true">
+		</provider>
+	</application>
+</manifest> 

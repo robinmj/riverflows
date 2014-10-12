@@ -1,12 +1,5 @@
 package com.riverflows.wsclient;
 
-import java.util.Calendar;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.TimeZone;
-
-import junit.framework.TestCase;
-
 import com.riverflows.data.Reading;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
@@ -15,6 +8,13 @@ import com.riverflows.data.USState;
 import com.riverflows.data.USTimeZone;
 import com.riverflows.data.Variable;
 import com.riverflows.data.Variable.CommonVariable;
+
+import junit.framework.TestCase;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.TimeZone;
 
 public class UsgsCsvDataSourceTest extends TestCase {
 	

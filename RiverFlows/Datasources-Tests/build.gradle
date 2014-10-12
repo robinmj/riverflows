@@ -1,20 +1,5 @@
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath 'com.android.tools.build:gradle:0.7.+'
-    }
-}
+
 apply plugin: 'java'
-/*
-
-This will work if Datasources is ever converted to a java project
-
-dependencies {
-    compile fileTree(dir: 'lib', include: '*.jar')
-    compile ':Datasources'
-}
 
 sourceSets {
     main {
@@ -22,4 +7,11 @@ sourceSets {
             srcDir 'src'
         }
     }
-}*/
+}
+
+dependencies {
+    compile fileTree(dir: 'lib', include: '*.jar')
+    compile project(':Datasources')
+
+    compile "junit:junit:4.11"
+}
