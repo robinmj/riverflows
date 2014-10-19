@@ -13,8 +13,13 @@ import com.riverflows.data.Variable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.http.HttpResponse;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -59,13 +64,35 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
         HttpPost postCmd = new HttpPost(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource()
                 + "/" + destFacetId + "/save_favorite.json?auth_token=" + session.authToken);
 
-        HttpClient client = new DataSourceController.SSLHttpClient();
+        HttpClient client = getHttpClientFactory().getHttpClient();
 
         HttpResponse httpResponse = client.execute(postCmd);
 
         LOG.debug(postCmd + " response: " + httpResponse.getStatusLine().getStatusCode() + " " + httpResponse.getStatusLine().getReasonPhrase());
 
-        if(httpResponse.getStatusLine().getStatusCode() != 201) {
+        if(httpResponse.getStatusLine().getStatusCode() != HttpStatus.SC_CREATED) {
+            throw new UnexpectedResultException(httpResponse.getStatusLine().getReasonPhrase(), httpResponse.getStatusLine().getStatusCode());
+        }
+
+        JSONObject responseObj = new JSONObject(Utils.getString(httpResponse.getEntity().getContent()));
+
+        LOG.info("responseJson: " + responseObj);
+
+        return RemoteFavorites.instance.fromJson(responseObj.getJSONObject("favorite"));
+    }
+
+    public Favorite updateFavorite(WsSession session, int destFacetId, int order) throws Exception {
+        HttpPut putCmd = new HttpPut(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource()
+                + "/" + destFacetId + "/update_favorite.json?auth_token=" + session.authToken);
+        putCmd.setEntity(new UrlEncodedFormEntity(Collections.singletonList(new BasicNameValuePair("order", order + ""))));
+
+        HttpClient client = getHttpClientFactory().getHttpClient();
+
+        HttpResponse httpResponse = client.execute(putCmd);
+
+        LOG.debug(putCmd + " response: " + httpResponse.getStatusLine().getStatusCode() + " " + httpResponse.getStatusLine().getReasonPhrase());
+
+        if(httpResponse.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
             throw new UnexpectedResultException(httpResponse.getStatusLine().getReasonPhrase(), httpResponse.getStatusLine().getStatusCode());
         }
 
@@ -77,6 +104,21 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
     }
 
     public void removeFavorite(WsSession session, int destFacetId) throws Exception {
+        HttpDelete deleteCmd = new HttpDelete(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource()
+                + "/" + destFacetId + "/remove_favorite.json?auth_token=" + session.authToken);
+        HttpClient client = getHttpClientFactory().getHttpClient();
+
+        HttpResponse httpResponse = client.execute(deleteCmd);
+
+        LOG.debug(deleteCmd + " response: " + httpResponse.getStatusLine().getStatusCode() + " " + httpResponse.getStatusLine().getReasonPhrase());
+
+        if(httpResponse.getStatusLine().getStatusCode() != HttpStatus.SC_OK) {
+            throw new UnexpectedResultException(httpResponse.getStatusLine().getReasonPhrase(), httpResponse.getStatusLine().getStatusCode());
+        }
+
+        JSONObject responseObj = new JSONObject(Utils.getString(httpResponse.getEntity().getContent()));
+
+        LOG.info("responseJson: " + responseObj);
 	}
 
 	public JSONObject toJson(DestinationFacet facet) throws JSONException {
