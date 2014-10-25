@@ -1,6 +1,5 @@
 package com.riverflows.wsclient;
 
-import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Page;
 import com.riverflows.data.USTimeZone;
 
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TimeZone;
 
 /**
  * Created by robin on 9/26/13.
@@ -36,6 +34,15 @@ public abstract class WebModel<T> {
 		RAILS_DATE_FORMAT.setTimeZone(USTimeZone.MDT.getTimeZone());
 	}
 
+    private static HttpClientFactory httpClientFactory = new SSLHttpClientFactory();
+
+    public static HttpClientFactory getHttpClientFactory() {
+        return httpClientFactory;
+    }
+    public static void setHttpClientFactory(HttpClientFactory source) {
+        WebModel.httpClientFactory = source;
+    }
+
 	public final Page<T> get(WsSession session, HashMap<String, List<String>> params, Integer firstResultIndex, Integer resultCount) throws Exception {
 		return getPage(session, DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource() + ".json", params, firstResultIndex, resultCount);
 	}
@@ -46,7 +53,7 @@ public abstract class WebModel<T> {
 
 	private final Page<T> getPage(WsSession session, String url, HashMap<String, List<String>> params, Integer firstResultIndex, Integer resultCount) throws Exception {
 		HttpGet getCmd = new HttpGet(url + "?auth_token=" + session.authToken);
-		HttpClient client = new DataSourceController.SSLHttpClient();
+		HttpClient client = httpClientFactory.getHttpClient();
 
 		getCmd.addHeader("Accept", "application/json");
 
@@ -62,13 +69,7 @@ public abstract class WebModel<T> {
 
 		LOG.info("responseJson: " + responseStr);
 
-		ArrayList<T> resultList = new ArrayList<T>();
-		JSONArray results = new JSONArray(responseStr);
-
-		for(int a = 0; a < results.length(); a++) {
-
-			resultList.add(fromJson(results.getJSONObject(a)));
-		}
+        ArrayList<T> resultList = fromJsonArray(new JSONArray(responseStr));
 
 		Page<T> resultPage = new Page<T>(resultList,resultCount);
 
@@ -77,7 +78,7 @@ public abstract class WebModel<T> {
 
 	public final T create(WsSession session, T obj) throws Exception{
 		HttpPost postCmd = new HttpPost(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource() + ".json?auth_token=" + session.authToken);
-		HttpClient client = new DataSourceController.SSLHttpClient();
+		HttpClient client = getHttpClientFactory().getHttpClient();
 
 		postCmd.setEntity(new StringEntity(getCreateEntity(obj).toString()));
 
@@ -100,6 +101,17 @@ public abstract class WebModel<T> {
 
 		return fromJson(responseObj);
 	}
+
+    public ArrayList<T> fromJsonArray(JSONArray jsonArray) throws Exception {
+        ArrayList<T> resultList = new ArrayList<T>();
+
+        for(int a = 0; a < jsonArray.length(); a++) {
+
+            resultList.add(fromJson(jsonArray.getJSONObject(a)));
+        }
+
+        return resultList;
+    }
 
 	public JSONObject getCreateEntity(T obj) throws JSONException {
 		return toJson(obj);

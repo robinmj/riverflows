@@ -46,4 +46,30 @@ public class DataSourceControllerTest extends TestCase {
         assertEquals(AHPSXmlDataSource.VTYPE_STAGE, data.get(1).getSeries().getVariable());
         assertEquals(2, data.size());
 	}
+
+    public void testGetInitialFavorites() throws Throwable {
+        Variable[] blackVars = DataSourceController.getVariablesFromStrings("USGS", new String[]{"00010"});
+        Site blackRiver = new Site(new SiteId("USGS", "04200500"), "Black River at Elyria OH", USState.OH,
+                blackVars);
+
+        Site lagoDosBocas = new Site(new SiteId(AHPSXmlDataSource.AGENCY,"argp4"),
+                "Lago Dos Bocas at Utuado", -11.1111d, 11.1111d, USState.PR,
+                AHPSXmlDataSource.ACCEPTED_VARIABLES);
+
+        List<Favorite> favs = new ArrayList<Favorite>();
+        favs.add(new Favorite(blackRiver, "00010"));
+        //favorite IDs are null because they do not exist in the local DB yet
+        favs.add(new Favorite(lagoDosBocas, AHPSXmlDataSource.VTYPE_STAGE.getId()));
+        favs.get(0).setName("Best Run Ever");
+
+        List<FavoriteData> data = DataSourceController.getSiteData(favs, true);
+
+        assertEquals("Best Run Ever", data.get(0).getFavorite().getName());
+        assertEquals(UsgsCsvDataSource.VTYPE_WATER_TEMP_C, data.get(0).getVariable());
+        assertNull(data.get(1).getFavorite().getName());
+        assertEquals("argp4", data.get(1).getFavorite().getSite().getSiteId().getId());
+        assertEquals("Lago Dos Bocas at Utuado", data.get(1).getSiteData().getSite().getName());
+        assertEquals(AHPSXmlDataSource.VTYPE_STAGE, data.get(1).getSeries().getVariable());
+        assertEquals(2, data.size());
+    }
 }

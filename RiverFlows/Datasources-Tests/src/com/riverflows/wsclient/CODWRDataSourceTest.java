@@ -107,5 +107,6 @@ public class CODWRDataSourceTest extends TestCase {
         assertEquals(cal.getTime(), r.getDate());
         assertEquals(2030.0d, r.getValue());
         assertNull(r.getQualifiers());
+        assertEquals(favs.get(0), result.get(0).getFavorite());
     }
 }

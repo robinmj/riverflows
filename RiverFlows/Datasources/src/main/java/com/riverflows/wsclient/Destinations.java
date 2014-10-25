@@ -27,7 +27,7 @@ public class Destinations extends WebModel<Destination> {
 
     public static DestinationFacet saveDestinationWithFacet(WsSession session, DestinationFacet destination) throws Exception {
 		HttpPost postCmd = new HttpPost(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + "/destinations.json?auth_token=" + session.authToken);
-		HttpClient client = new DataSourceController.SSLHttpClient();
+		HttpClient client = getHttpClientFactory().getHttpClient();
 
 		JSONObject entity = new JSONObject();
 
