@@ -2,7 +2,7 @@
 apply plugin: 'java'
 
 sourceSets {
-    main {
+    test {
         java {
             srcDir 'src'
         }
@@ -10,8 +10,6 @@ sourceSets {
 }
 
 dependencies {
-    compile fileTree(dir: 'lib', include: '*.jar')
-    compile project(':Datasources')
-
-    compile "junit:junit:4.11"
+    testCompile fileTree(dir: 'lib', include: '*.jar')
+    testCompile project(':Datasources')
 }
