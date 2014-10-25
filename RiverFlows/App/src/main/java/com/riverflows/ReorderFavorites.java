@@ -33,6 +33,11 @@ public class ReorderFavorites extends ListActivity {
 
     private static final int REQUEST_SAVE_ORDER = 7234;
     private static final int REQUEST_SAVE_ORDER_RECOVER = 13936;
+
+    public static final int RESULT_SAVE_FAILED = RESULT_FIRST_USER;
+
+    public static final String EXTRA_SAVE_FAILED_EXCEPTION = "saveFailedException";
+    public static final String EXTRA_SAVE_FAILED_EXCEPTION_DETAIL = "saveFailedExceptionDetail";
 	
 	private LoadFavoritesTask loadTask = null;
 
@@ -318,6 +323,19 @@ public class ReorderFavorites extends ListActivity {
             }
 
             return RemoteFavorites.instance.reorderFavorites(session, destFacetIds);
+        }
+
+        @Override
+        protected void onNetworkError() {
+            if(getException() != null) {
+                Intent failIntent = new Intent(getIntent());
+                failIntent.putExtra(EXTRA_SAVE_FAILED_EXCEPTION, getException().toString());
+                failIntent.putExtra(EXTRA_SAVE_FAILED_EXCEPTION_DETAIL, getException().getMessage());
+                setResult(RESULT_SAVE_FAILED, failIntent);
+            } else {
+                setResult(RESULT_SAVE_FAILED);
+            }
+            finish();
         }
 
         @Override

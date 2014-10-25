@@ -625,6 +625,19 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 				getActivity().sendBroadcast(Home.getWidgetUpdateIntent());
 
 				loadSites(false);
+			} else if(resultCode == ReorderFavorites.RESULT_SAVE_FAILED) {
+                getActivity().sendBroadcast(Home.getWidgetUpdateIntent());
+
+                loadSites(false);
+
+                if(data != null) {
+                    String msg = data.getStringExtra(ReorderFavorites.EXTRA_SAVE_FAILED_EXCEPTION_DETAIL);
+                    if(msg != null) {
+                        showMessage(msg);
+                    }
+                } else {
+                    showMessage("Could not save order of favorites");
+                }
 			}
 		}
 	}
