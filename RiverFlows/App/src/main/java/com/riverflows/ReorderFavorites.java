@@ -22,11 +22,21 @@ import com.commonsware.cwac.tlv.TouchListView;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Variable;
 import com.riverflows.db.FavoritesDaoImpl;
+import com.riverflows.wsclient.ApiCallTask;
 import com.riverflows.wsclient.DataSourceController;
+import com.riverflows.wsclient.DestinationFacets;
+import com.riverflows.wsclient.RemoteFavorites;
+import com.riverflows.wsclient.WsSession;
+import com.riverflows.wsclient.WsSessionUIHelper;
 
 public class ReorderFavorites extends ListActivity {
+
+    private static final int REQUEST_SAVE_ORDER = 7234;
+    private static final int REQUEST_SAVE_ORDER_RECOVER = 13936;
 	
 	private LoadFavoritesTask loadTask = null;
+
+    private SaveOrderCall saveOrder = null;
 	
 	private FavoriteAdapter adapter = null;
 
@@ -109,10 +119,7 @@ public class ReorderFavorites extends ListActivity {
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
-	
-	/**
-	 * @param hardRefresh if true, discard persisted site data as well
-	 */
+
 	public void loadSites() {
 		setStatusText("Loading Sites...");
 		
@@ -271,17 +278,22 @@ public class ReorderFavorites extends ListActivity {
 	private OnClickListener saveListener = new OnClickListener() {
 		public void onClick(View v) {
 			FavoriteAdapter adapter = (FavoriteAdapter)getListAdapter();
+
 			if(adapter != null) {
-				for(int a = 0; a < loadTask.favorites.size(); a++) {
+
+                Favorite[] newFavorites = new Favorite[loadTask.favorites.size()];
+                for(int a = 0; a < loadTask.favorites.size(); a++) {
 					Favorite favorite = adapter.getItem(a);
 					favorite.setOrder(a);
-					
+
+                    newFavorites[a] = favorite;
 					FavoritesDaoImpl.updateFavorite(getApplicationContext(), favorite);
 				}
+
+                //save remote order
+
+                new SaveOrderCall(REQUEST_SAVE_ORDER, REQUEST_SAVE_ORDER_RECOVER, true, false).execute(newFavorites);
 			}
-			
-			setResult(RESULT_OK);
-			finish();
 		}
 	};
 	
@@ -291,4 +303,43 @@ public class ReorderFavorites extends ListActivity {
 			finish();
 		}
 	};
+
+    private class SaveOrderCall extends ApiCallTask<Favorite, Integer, List<Favorite>> {
+        public SaveOrderCall(int requestCode, int recoveryRequestCode, boolean loginRequired, boolean secondTry){
+            super(ReorderFavorites.this, requestCode, recoveryRequestCode, loginRequired, secondTry);
+        }
+
+        @Override
+        protected List<Favorite> doApiCall(WsSession session, Favorite... params) throws Exception {
+            int[] destFacetIds = new int[params.length];
+
+            for(int a = 0; a < destFacetIds.length; a++){
+                destFacetIds[a] = params[a].getDestinationFacet().getId();
+            }
+
+            return RemoteFavorites.instance.reorderFavorites(session, destFacetIds);
+        }
+
+        @Override
+        protected void onNoUIRequired(List<Favorite> favorites) {
+            setResult(RESULT_OK);
+            finish();
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == REQUEST_SAVE_ORDER || requestCode == REQUEST_SAVE_ORDER_RECOVER) {
+
+            if(this.saveOrder == null) {
+                Log.e(Home.TAG, "handling result from requestCode " + requestCode + " without session");
+                return;
+            }
+
+            this.saveOrder.authorizeCallback(requestCode, resultCode, data);
+            return;
+        }
+    }
 }
