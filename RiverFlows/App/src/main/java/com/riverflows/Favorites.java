@@ -68,6 +68,8 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 	public static final int REQUEST_CREATE_ACCOUNT = 83247;
 	public static final int REQUEST_GET_FAVORITES = 15319;
 	public static final int REQUEST_GET_FAVORITES_RECOVER = 4193;
+    public static final int REQUEST_DELETE_FAVORITE = 394;
+    public static final int REQUEST_DELETE_FAVORITE_RECOVER = 9423;
 
 	public static final int FAVORITES_LOADER_ID = 68312;
 
@@ -527,7 +529,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		edit.setOnMenuItemClickListener(new EditFavoriteListener(favoriteData.getFavorite().getSite(), variable));
 
 		android.view.MenuItem delete = menu.add("Delete");
-		delete.setOnMenuItemClickListener(new DeleteFavoriteListener(favoriteData.getFavorite().getSite(), variable));
+		delete.setOnMenuItemClickListener(new DeleteFavoriteListener(favoriteData));
 	}
 	
 	@Override
@@ -688,41 +690,70 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 	
 	private class DeleteFavoriteListener implements android.view.MenuItem.OnMenuItemClickListener {
 		
-		private Site site;
-		private Variable variable;
-		
-		public DeleteFavoriteListener(Site site, Variable variable) {
+		private FavoriteData favoriteData;
+
+		public DeleteFavoriteListener(FavoriteData favoriteData) {
 			super();
-			this.site = site;
-			this.variable = variable;
+			this.favoriteData = favoriteData;
 		}
 
 		@Override
 		public boolean onMenuItemClick(android.view.MenuItem item) {
-			
-			FavoritesDaoImpl.deleteFavorite(Favorites.this.getActivity(), site.getSiteId(), variable);
 
-			FavoriteAdapter adapter = getListAdapter();
-			
-			if(adapter == null) {
-				return true;
-			}
-			
-			for(int a = 0; a < adapter.getCount(); a++) {
-				Favorite fav = adapter.getItem(a).getFavorite();
-				if(!fav.getSite().getSiteId().equals(site.getSiteId())) {
-					continue;
-				}
-				
-				if(fav.getVariable().equals(variable.getId())) {
-					adapter.remove(adapter.getItem(a));
-					break;
-				}
-			}
-			
-			return true;
+            if(this.favoriteData.getFavorite().getDestinationFacet() != null) {
+                showProgress();
+                new DeleteRemoteFavoriteTask(getActivity()).execute(this.favoriteData);
+            } else {
+                FavoritesDaoImpl.deleteFavorite(Favorites.this.getActivity(), favoriteData.getFavorite().getSite().getSiteId(), favoriteData.getVariable());
+                deleteFavoriteFromView(this.favoriteData);
+            }
+            return true;
 		}
 	}
+
+    private class DeleteRemoteFavoriteTask extends ApiCallTask<FavoriteData,Integer,FavoriteData> {
+        private DeleteRemoteFavoriteTask(Activity activity) {
+            super(activity,REQUEST_DELETE_FAVORITE, REQUEST_DELETE_FAVORITE_RECOVER, true, false);
+        }
+
+        private DeleteRemoteFavoriteTask(DeleteRemoteFavoriteTask oldTask) {
+            super(oldTask);
+        }
+
+        @Override
+        protected FavoriteData doApiCall(WsSession session, FavoriteData... params) throws Exception {
+            DestinationFacets.instance.removeFavorite(session, params[0].getFavorite().getDestinationFacet().getId());
+
+            FavoritesDaoImpl.deleteFavorite(Favorites.this.getActivity(), params[0].getFavorite().getSite().getSiteId(), params[0].getVariable());
+            return params[0];
+        }
+
+        @Override
+        protected void onNetworkError() {
+            Favorites.this.showMessage("Failed to delete favorite: network error");
+            Log.i(App.TAG, "Failed to delete favorite: network error", getException());
+        }
+
+        @Override
+        protected void onNoUIRequired(FavoriteData favoriteData) {
+            if(getException() != null) {
+                Favorites.this.showMessage("Failed to delete favorite: " + getException().getMessage());
+                Log.e(App.TAG, "Failed to delete favorite: network error", getException());
+                EasyTracker.getTracker().sendException(getClass().getSimpleName(),getException(), false);
+
+                return;
+            }
+
+            hideProgress();
+            hideMessage();
+            deleteFavoriteFromView(favoriteData);
+        }
+
+        @Override
+        protected DeleteRemoteFavoriteTask clone() throws CloneNotSupportedException {
+            return new DeleteRemoteFavoriteTask(this);
+        }
+    }
 
 	private class SignIn extends ApiCallTask<String, Integer, UserAccount> {
 
@@ -793,4 +824,15 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 		v.findViewById(R.id.progress_bar).setVisibility(View.GONE);
 	}
+
+    private void deleteFavoriteFromView(FavoriteData favoriteData) {
+
+        FavoriteAdapter adapter = getListAdapter();
+
+        if(adapter == null) {
+            return;
+        }
+
+        adapter.remove(favoriteData);
+    }
 }
