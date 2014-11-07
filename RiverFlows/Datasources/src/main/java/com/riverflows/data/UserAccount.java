@@ -6,7 +6,7 @@ import java.util.Date;
 /**
  * Created by robin on 6/2/13.
  */
-public class UserAccount implements Serializable {
+public class UserAccount implements Serializable, RemoteObject {
 
 	private boolean placeholderObj = false;
     private Integer id;

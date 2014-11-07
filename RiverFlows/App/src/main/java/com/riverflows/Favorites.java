@@ -65,11 +65,12 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 	public static final int REQUEST_EDIT_FAVORITE = 1;
 	public static final int REQUEST_REORDER_FAVORITES = 2;
-	public static final int REQUEST_CREATE_ACCOUNT = 83247;
+	public static final int REQUEST_CREATE_ACCOUNT = 3247;
 	public static final int REQUEST_GET_FAVORITES = 15319;
 	public static final int REQUEST_GET_FAVORITES_RECOVER = 4193;
     public static final int REQUEST_DELETE_FAVORITE = 394;
     public static final int REQUEST_DELETE_FAVORITE_RECOVER = 9423;
+    public static final int REQUEST_EDIT_DESTINATION = 837;
 
 	public static final int FAVORITES_LOADER_ID = 68312;
 
@@ -406,16 +407,20 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 					for(int b = 0; b < destinationFacets.size(); b++) {
 
 						//if modification date of remote favorite is later than that of local favorite
-						if(currentFav.getDestinationFacet().getId().equals(destinationFacets.get(b).getId())
-						&& (destinationFacets.get(b).getModificationDate().after(currentFav.getDestinationFacet().getModificationDate())
-						|| destinationFacets.get(b).getDestination().getModificationDate().after(currentFav.getDestinationFacet().getDestination().getModificationDate()))) {
-							//update local favorite
+						if(currentFav.getDestinationFacet().getId().equals(destinationFacets.get(b).getId())) {
+                            //local DB doesn't store destination ID, which is needed for remotely updating destination
+                            currentFav.getDestinationFacet().getDestination().setId(destinationFacets.get(b).getDestination().getId());
 
-							currentFav.setDestinationFacet(destinationFacets.get(b));
+                            if(destinationFacets.get(b).getModificationDate().after(currentFav.getDestinationFacet().getModificationDate())
+                                || destinationFacets.get(b).getDestination().getModificationDate().after(currentFav.getDestinationFacet().getDestination().getModificationDate())) {
+                                //update local favorite
 
-							FavoritesDaoImpl.updateFavorite(FavoritesLoader.this.getContext(), currentFav);
-							break;
-						}
+                                currentFav.setDestinationFacet(destinationFacets.get(b));
+
+                                FavoritesDaoImpl.updateFavorite(FavoritesLoader.this.getContext(), currentFav);
+                                break;
+                            }
+                        }
 					}
 				}
 			}
@@ -525,8 +530,24 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		android.view.MenuItem view = menu.add("View");
 		view.setOnMenuItemClickListener(new ViewFavoriteListener(favoriteData.getFavorite().getSite(), variable));
 
-		android.view.MenuItem edit = menu.add("Edit");
-		edit.setOnMenuItemClickListener(new EditFavoriteListener(favoriteData.getFavorite().getSite(), variable));
+        boolean allowEdit = true;
+
+        if(favoriteData.getFavorite().getDestinationFacet() != null) {
+            WsSession session = WsSessionManager.getSession(getActivity());
+            //there is a slim possibility that we won't have a valid session here- in that case,
+            // still show the Edit menu item and allow EditDestination to be responsible for preventing
+            // editing if the user doesn't own the destination facet.
+            if(session != null && session.userAccount != null) {
+                if(!session.userAccount.getId().equals(favoriteData.getFavorite().getDestinationFacet().getUser().getId())) {
+                    allowEdit = false;
+                }
+            }
+        }
+
+        if(allowEdit) {
+            android.view.MenuItem edit = menu.add("Edit");
+            edit.setOnMenuItemClickListener(new EditFavoriteListener(favoriteData.getFavorite()));
+        }
 
 		android.view.MenuItem delete = menu.add("Delete");
 		delete.setOnMenuItemClickListener(new DeleteFavoriteListener(favoriteData));
@@ -622,6 +643,29 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 	        	}
 			}
     		return;
+        case REQUEST_EDIT_DESTINATION:
+
+            if(data == null) {
+                //nothing was changed
+                return;
+            }
+
+            DestinationFacet updatedFacet = (DestinationFacet)data.getSerializableExtra(EditDestination.KEY_DESTINATION_FACET);
+
+            if(updatedFacet != null) {
+
+                FavoriteAdapter adapter = getListAdapter();
+
+                if(adapter == null) {
+                    return;
+                }
+
+                FavoriteData changedFavorite = adapter.update(updatedFacet);
+
+                if(changedFavorite != null) {
+                    FavoritesDaoImpl.updateFavorite(this.getActivity(), changedFavorite.getFavorite());
+                }
+            }
 		case REQUEST_REORDER_FAVORITES:
 			if(resultCode == Activity.RESULT_OK) {
 				getActivity().sendBroadcast(Home.getWidgetUpdateIntent());
@@ -666,26 +710,33 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 	};
 	
 	private class EditFavoriteListener implements android.view.MenuItem.OnMenuItemClickListener {
+
+        private Favorite favorite;
 		
-		private Site site;
-		private Variable variable;
-		
-		public EditFavoriteListener(Site site, Variable variable) {
+		public EditFavoriteListener(Favorite favorite) {
 			super();
-			this.site = site;
-			this.variable = variable;
+			this.favorite = favorite;
 		}
 
 		@Override
 		public boolean onMenuItemClick(android.view.MenuItem item) {
-			
-			Intent i = new Intent(Favorites.this.getActivity(), EditFavorite.class);
 
-	        i.putExtra(EditFavorite.KEY_SITE_ID, site.getSiteId());
-	        i.putExtra(EditFavorite.KEY_VARIABLE_ID, variable.getId());
-	        startActivityForResult(i, REQUEST_EDIT_FAVORITE);
-			return true;
-		}
+            if(favorite.getDestinationFacet() == null) {
+
+                Intent i = new Intent(Favorites.this.getActivity(), EditFavorite.class);
+
+                i.putExtra(EditFavorite.KEY_SITE_ID, favorite.getSite().getSiteId());
+                i.putExtra(EditFavorite.KEY_VARIABLE_ID, favorite.getVariable());
+                startActivityForResult(i, REQUEST_EDIT_FAVORITE);
+                return true;
+            }
+
+            Intent i = new Intent(Favorites.this.getActivity(), EditDestination.class);
+            i.putExtra(EditDestination.KEY_DESTINATION_FACET, this.favorite.getDestinationFacet());
+
+            startActivityForResult(i, REQUEST_EDIT_DESTINATION);
+            return true;
+        }
 	}
 	
 	private class DeleteFavoriteListener implements android.view.MenuItem.OnMenuItemClickListener {

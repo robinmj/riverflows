@@ -6,7 +6,7 @@ import java.util.Date;
 /**
  * Created by robin on 6/27/13.
  */
-public class DestinationFacet implements Serializable {
+public class DestinationFacet implements Serializable, RemoteObject {
 
 	private boolean placeholderObj = false;
     private Integer id;

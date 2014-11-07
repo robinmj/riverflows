@@ -1,6 +1,7 @@
 package com.riverflows.wsclient;
 
 import com.riverflows.data.Page;
+import com.riverflows.data.RemoteObject;
 import com.riverflows.data.USTimeZone;
 
 import org.apache.commons.logging.Log;
@@ -9,6 +10,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.entity.StringEntity;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -24,7 +26,7 @@ import java.util.List;
 /**
  * Created by robin on 9/26/13.
  */
-public abstract class WebModel<T> {
+public abstract class WebModel<T extends RemoteObject> {
 
 	private static final Log LOG = LogFactory.getLog(WebModel.class);
 
@@ -76,11 +78,39 @@ public abstract class WebModel<T> {
 		return resultPage;
 	}
 
+    public final T get(WsSession session, Integer id) throws Exception {
+        if(id == null) {
+            throw new NullPointerException();
+        }
+
+        HttpGet getCmd = new HttpGet(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource() + '/' + id + ".json?auth_token=" + session.authToken);
+        HttpClient client = httpClientFactory.getHttpClient();
+
+        getCmd.addHeader("Accept", "application/json");
+
+        HttpResponse httpResponse = client.execute(getCmd);
+
+        LOG.info(getCmd + " response: " + httpResponse.getStatusLine().getStatusCode() + " " + httpResponse.getStatusLine().getReasonPhrase());
+
+        if(httpResponse.getStatusLine().getStatusCode() != 200) {
+            throw new UnexpectedResultException(httpResponse.getStatusLine().getReasonPhrase(), httpResponse.getStatusLine().getStatusCode());
+        }
+
+        String responseStr = Utils.getString(httpResponse.getEntity().getContent());
+
+        LOG.info("responseJson: " + responseStr);
+
+        return fromJson(new JSONObject(responseStr));
+    }
+
 	public final T create(WsSession session, T obj) throws Exception{
 		HttpPost postCmd = new HttpPost(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource() + ".json?auth_token=" + session.authToken);
 		HttpClient client = getHttpClientFactory().getHttpClient();
 
-		postCmd.setEntity(new StringEntity(getCreateEntity(obj).toString()));
+        JSONObject jsonEntity = new JSONObject();
+        jsonEntity.put(getResourceName(), getCreateEntity(obj));
+
+        postCmd.setEntity(new StringEntity(jsonEntity.toString()));
 
 		postCmd.addHeader("Content-Type", "application/json");
 		postCmd.addHeader("Accept", "application/json");
@@ -102,6 +132,31 @@ public abstract class WebModel<T> {
 		return fromJson(responseObj);
 	}
 
+    public final void update(WsSession session, T obj) throws Exception {
+        if(obj.getId() == null) {
+            throw new NullPointerException();
+        }
+
+        HttpPut putCmd = new HttpPut(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource() + "/" + obj.getId() + ".json?auth_token=" + session.authToken);
+        HttpClient client = getHttpClientFactory().getHttpClient();
+
+        JSONObject jsonEntity = new JSONObject();
+        jsonEntity.put(getResourceName(), getCreateEntity(obj));
+
+        putCmd.setEntity(new StringEntity(jsonEntity.toString()));
+
+        putCmd.addHeader("Content-Type", "application/json");
+        putCmd.addHeader("Accept", "application/json");
+
+        HttpResponse httpResponse = client.execute(putCmd);
+
+        LOG.debug(putCmd + " response: " + httpResponse.getStatusLine().getStatusCode() + " " + httpResponse.getStatusLine().getReasonPhrase());
+
+        if(httpResponse.getStatusLine().getStatusCode() != 204) {
+            throw new UnexpectedResultException(httpResponse.getStatusLine().getReasonPhrase(), httpResponse.getStatusLine().getStatusCode());
+        }
+    }
+
     public ArrayList<T> fromJsonArray(JSONArray jsonArray) throws Exception {
         ArrayList<T> resultList = new ArrayList<T>();
 
@@ -118,7 +173,7 @@ public abstract class WebModel<T> {
 	}
 
 	protected static boolean isEmpty(JSONObject jsonObject, String property) throws JSONException {
-		return !jsonObject.has(property) || jsonObject.getString(property).equals("null");
+		return !jsonObject.has(property) || jsonObject.isNull(property);
 	}
 
 	protected static Date getDate(JSONObject jsonObject, String property) throws JSONException, ParseException {
@@ -130,7 +185,56 @@ public abstract class WebModel<T> {
 		return RAILS_DATE_FORMAT.parse(dateStr);
 	}
 
-	public abstract String getResource();
+    protected static Object getObject(JSONObject jsonObj, String key) throws JSONException {
+        if(isEmpty(jsonObj, key)) {
+            return null;
+        }
+        return jsonObj.get(key);
+    }
+
+    protected static String getString(JSONObject jsonObj, String key) throws JSONException {
+        if(isEmpty(jsonObj, key)) {
+            return null;
+        }
+        return jsonObj.getString(key);
+    }
+
+    protected Integer getInteger(JSONObject jsonObject, String property) throws JSONException {
+        if(isEmpty(jsonObject, property)) {
+            return null;
+        }
+        return jsonObject.getInt(property);
+    }
+
+    protected void putInteger(JSONObject jsonObject, String property, Integer integer) throws JSONException {
+        if(integer == null) {
+            jsonObject.put(property, JSONObject.NULL);
+            return;
+        }
+        jsonObject.put(property, integer);
+    }
+
+    protected Double getDouble(JSONObject jsonObject, String property) throws JSONException {
+        if(isEmpty(jsonObject, property)) {
+            return null;
+        }
+        return jsonObject.getDouble(property);
+    }
+
+    protected void putDouble(JSONObject jsonObject, String property, Double doub) throws JSONException {
+        if(doub == null) {
+            jsonObject.put(property, JSONObject.NULL);
+            return;
+        }
+        jsonObject.put(property, doub);
+    }
+
+    public String getResource() {
+        return "/" + getResourceName() + "s";
+    }
+
+    public abstract String getResourceName();
 	public abstract T fromJson(JSONObject json) throws Exception;
 	public abstract JSONObject toJson(T obj) throws JSONException;
+
 }

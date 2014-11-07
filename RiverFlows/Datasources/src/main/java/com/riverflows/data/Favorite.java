@@ -1,8 +1,9 @@
 package com.riverflows.data;
 
+import java.io.Serializable;
 import java.util.Date;
 
-public class Favorite {
+public class Favorite implements Serializable, RemoteObject {
 	private Integer id;
 	private Site site;
 	private String variableId;
@@ -10,6 +11,7 @@ public class Favorite {
 	private int order = 0;
 	private Date creationDate;
 	private DestinationFacet destinationFacet;
+    private boolean placeholderObj = false;
 	
 	public Favorite(Site site, String variableId) {
 		super();
@@ -74,4 +76,12 @@ public class Favorite {
 	public void setDestinationFacet(DestinationFacet destinationFacet) {
 		this.destinationFacet = destinationFacet;
 	}
+
+    public boolean isPlaceholderObj() {
+        return placeholderObj;
+    }
+
+    public void setPlaceholderObj(boolean placeholderObj) {
+        this.placeholderObj = placeholderObj;
+    }
 }

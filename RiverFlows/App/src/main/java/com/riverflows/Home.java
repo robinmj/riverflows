@@ -164,7 +164,14 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
 	
 	protected void onActivityResult(final int requestCode, final int resultCode,
 	         final Intent data) {
-	     initSession.authorizeCallback(requestCode, resultCode, data);
+        super.onActivityResult(requestCode, resultCode, data);
+
+        switch(requestCode) {
+            case REQUEST_CHOOSE_ACCOUNT:
+            case REQUEST_HANDLE_RECOVERABLE_AUTH_EXC:
+                initSession.authorizeCallback(requestCode, resultCode, data);
+                return;
+        }
 	}
 	
 	@Override
