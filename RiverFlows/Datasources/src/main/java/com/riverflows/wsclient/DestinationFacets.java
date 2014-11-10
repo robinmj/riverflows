@@ -38,10 +38,10 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 	public static final DestinationFacets instance = new DestinationFacets();
 	private DestinationFacets(){}
 
-	@Override
-	public String getResource() {
-		return "/destination_facets";
-	}
+    @Override
+    public String getResourceName() {
+        return "destination_facet";
+    }
 
 	public List<DestinationFacet> getSimilarDestinations(WsSession session, Favorite favorite) throws Exception {
 		HashMap<String,List<String>> params = new HashMap<String, List<String>>();
@@ -124,31 +124,35 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 	public JSONObject toJson(DestinationFacet facet) throws JSONException {
 		JSONObject result = new JSONObject();
 		result.put("id", facet.getId());
-		result.put("description", facet.getDescription());
-		result.put("destination_id", facet.getDestination().getId());
+		result.putOpt("description", facet.getDescription());
+
+        if(facet.getDestination() != null) {
+            result.put("destination_id", facet.getDestination().getId());
+
+            //TODO maybe site property should be moved to DestinationFacet
+            result.put("site_id", facet.getDestination().getSite().getSiteId().getPrimaryKey());
+        }
+
 		if(facet.getUser() != null) {
 			result.put("user_id",facet.getUser().getId());
 		}
 		result.put("too_low",facet.getTooLow());
-		result.put("low",facet.getLow());
-		result.put("med",facet.getMed());
-		result.put("high",facet.getHigh());
-		result.put("high_plus",facet.getHighPlus());
-		result.put("low_difficulty",facet.getLowDifficulty());
-		result.put("med_difficulty",facet.getMedDifficulty());
-		result.put("high_difficulty",facet.getHighDifficulty());
-		result.put("facet_type", facet.getFacetType());
-
-		//TODO maybe site property should be moved to DestinationFacet
-		result.put("site_id", facet.getDestination().getSite().getSiteId().getPrimaryKey());
+        putDouble(result,"low",facet.getLow());
+        putDouble(result,"med",facet.getMed());
+        putDouble(result,"high",facet.getHigh());
+        putDouble(result,"high_plus", facet.getHighPlus());
+        putInteger(result,"low_difficulty",facet.getLowDifficulty());
+        putInteger(result,"med_difficulty",facet.getMedDifficulty());
+        putInteger(result,"high_difficulty",facet.getHighDifficulty());
+        result.put("facet_type", facet.getFacetType());
 
 		result.put("variable_id", facet.getVariable().getId());
-		result.put("low_port_difficulty",facet.getLowPortDifficulty());
-		result.put("med_port_difficulty",facet.getMedPortDifficulty());
-		result.put("high_port_difficulty",facet.getHighPortDifficulty());
-		result.put("quality_low",facet.getQualityLow());
-		result.put("quality_med",facet.getQualityMed());
-		result.put("quality_high",facet.getQualityHigh());
+        putInteger(result,"low_port_difficulty",facet.getLowPortDifficulty());
+        putInteger(result,"med_port_difficulty",facet.getMedPortDifficulty());
+        putInteger(result,"high_port_difficulty",facet.getHighPortDifficulty());
+        putInteger(result,"quality_low",facet.getQualityLow());
+        putInteger(result,"quality_med",facet.getQualityMed());
+        putInteger(result,"quality_high",facet.getQualityHigh());
 
 		return result;
 	}
@@ -159,7 +163,7 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 			facet.setId(jsonObject.getInt("id"));
 		}
 
-		facet.setDescription(jsonObject.getString("description"));
+        facet.setDescription(getString(jsonObject, "description"));
 		facet.setDestination(new Destination());
 		facet.getDestination().setId(jsonObject.getInt("destination_id"));
 		facet.setUser(new UserAccount());
@@ -192,15 +196,18 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 						siteObj.getString("supported_var_ids")));
 				site.setLatitude(siteObj.getDouble("latitude"));
 				site.setLongitude(siteObj.getDouble("longitude"));
+
+                if(jsonObject.has("variable_id")) {
+                    facet.setVariable(DataSourceController.getVariable(site.getAgency(), jsonObject.getString("variable_id")));
+                }
 			} else {
 				site.setSiteId(new SiteId("", ""));
+                if(jsonObject.has("variable_id")) {
+                    facet.setVariable(new Variable());
+                    facet.getVariable().setId(jsonObject.getString("variable_id"));
+                }
 			}
 			site.getSiteId().setPrimaryKey(jsonObject.getInt("site_id"));
-		}
-
-		if(jsonObject.has("variable_id")) {
-			facet.setVariable(new Variable());
-			facet.getVariable().setId(jsonObject.getString("variable_id"));
 		}
 
 		facet.setLowPortDifficulty(getInteger(jsonObject, "low_port_difficulty"));
@@ -219,6 +226,10 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 			facet.getDestination().setName(jsonDestination.getString("name"));
 			facet.getDestination().setCreationDate(getDate(jsonObject, "created_at"));
 			facet.getDestination().setModificationDate(getDate(jsonObject, "updated_at"));
+            UserAccount destUser = new UserAccount();
+            destUser.setPlaceholderObj(true);
+            destUser.setId(jsonDestination.getInt("user_id"));
+            facet.getDestination().setUser(destUser);
 		} else {
 			facet.getDestination().setPlaceholderObj(true);
 			//TODO this shouldn't be necessary
@@ -227,19 +238,5 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 		}
 
 		return facet;
-	}
-
-	private Integer getInteger(JSONObject jsonObject, String property) throws JSONException {
-		if(isEmpty(jsonObject, property)) {
-			return null;
-		}
-		return jsonObject.getInt(property);
-	}
-
-	private Double getDouble(JSONObject jsonObject, String property) throws JSONException {
-		if(isEmpty(jsonObject, property)) {
-			return null;
-		}
-		return jsonObject.getDouble(property);
 	}
 }

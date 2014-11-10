@@ -32,8 +32,8 @@ public class RemoteFavorites extends WebModel<Favorite> {
     public static final RemoteFavorites instance = new RemoteFavorites();
 
     @Override
-    public String getResource() {
-        return "/favorites";
+    public String getResourceName() {
+        return "favorite";
     }
 
     @Override

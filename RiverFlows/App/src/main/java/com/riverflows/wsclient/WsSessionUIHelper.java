@@ -48,6 +48,12 @@ public class WsSessionUIHelper {
 
 		if(!(currentSession == null || currentSession.authToken == null ||
 				currentSession.isExpired() || (currentSession.accountName == null && this.loginRequired))) {
+
+            WsSession updatedSession = WsSessionManager.loadUserAccount();
+            if(updatedSession != null) {
+                return updatedSession;
+            }
+
 			//session already initialized
 			return currentSession;
 		}

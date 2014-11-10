@@ -27,6 +27,7 @@ import com.riverflows.wsclient.ApiCallTask;
 import com.riverflows.wsclient.DestinationFacets;
 import com.riverflows.wsclient.Destinations;
 import com.riverflows.wsclient.WsSession;
+import com.riverflows.wsclient.WsSessionManager;
 
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -41,6 +42,9 @@ public class EditDestination extends ActionBarActivity {
 
 	public static final int REQUEST_SAVE_DESTINATION = 239432;
 	public static final int REQUEST_LOGIN_TO_SAVE_DESTINATION = 3529307;
+
+    public static final int RESULT_NOT_LOGGED_IN = RESULT_FIRST_USER;
+    public static final int RESULT_NOT_DEST_FACET_OWNER = RESULT_FIRST_USER + 1;
 
 	private EditDestinationFragment editDestination;
 	private SaveDestination saveDestTask = null;
@@ -76,16 +80,53 @@ public class EditDestination extends ActionBarActivity {
 		showEditBar();
 
 		if(manager.findFragmentByTag("edit_destination") == null) {
+
+            DestinationFacet destinationFacet = null;
+
+            Bundle intentExtras = getIntent().getExtras();
+
+            if(intentExtras != null) {
+                destinationFacet = (DestinationFacet)intentExtras.get(KEY_DESTINATION_FACET);
+            }
+
 			Bundle extras = getIntent().getExtras();
 
-			editDestination = new EditDestinationFragment();
+            boolean isDestinationOwner = true;
+            //boolean isDestinationFacetOwner = true;
 
-            Destination destination = new Destination();
-            destination.setSite((Site)extras.get(KEY_SITE));
-            DestinationFacet destinationFacet = new DestinationFacet();
-            destinationFacet.setDestination(destination);
-            destinationFacet.setVariable((Variable)extras.get(KEY_VARIABLE));
+            if(destinationFacet == null) {
+                Destination destination = new Destination();
+                destination.setSite((Site) extras.get(KEY_SITE));
+                destinationFacet = new DestinationFacet();
+                destinationFacet.setDestination(destination);
+                destinationFacet.setVariable((Variable) extras.get(KEY_VARIABLE));
+            } else {
+                WsSession session = WsSessionManager.getSession(this);
+                if(session == null || session.userAccount == null) {
+                    Log.e(App.TAG, "Could not edit destination- not logged in");
+                    setResult(RESULT_NOT_LOGGED_IN);
+                    finish();
+                    return;
+                }
 
+                if(!session.userAccount.getId().equals(destinationFacet.getDestination().getUser().getId())) {
+                    isDestinationOwner = false;
+                }
+
+                if(!session.userAccount.getId().equals(destinationFacet.getUser().getId())) {
+                    //isDestinationFacetOwner = false;
+                    Log.e(App.TAG, "Could not edit destination- not owner");
+                    setResult(RESULT_NOT_DEST_FACET_OWNER);
+                    finish();
+                    return;
+                }
+            }
+
+            editDestination = new EditDestinationFragment();
+            Bundle arguments = new Bundle();
+            arguments.putBoolean("isDestinationOwner", isDestinationOwner);
+            //arguments.putBoolean("isDestinationFacetOwner", isDestinationFacetOwner);
+            editDestination.setArguments(arguments);
 			editDestination.setDestinationFacet(destinationFacet);
 
 			FragmentTransaction transaction = manager.beginTransaction();
@@ -163,7 +204,21 @@ public class EditDestination extends ActionBarActivity {
 				}
 			}
 
+            Bundle arguments = getArguments();
+
+            boolean isDestinationOwner = arguments.getBoolean("isDestinationOwner");
+            //boolean isDestinationFacetOwner = arguments.getBoolean("isDestinationFacetOwner");
+
 			View v =  inflater.inflate(R.layout.edit_destination, container, false);
+
+            EditText destName = (EditText)v.findViewById(R.id.fld_dest_name);
+            if(destinationFacet.getDestination().getName() != null) {
+                destName.setText(destinationFacet.getDestination().getName());
+            }
+
+            if(destinationFacet.getId() != null) {
+                destName.setEnabled(isDestinationOwner);
+            }
 
 			//populate station name
 			TextView stationName = (TextView)v.findViewById(R.id.lbl_dest_gage);
@@ -199,13 +254,21 @@ public class EditDestination extends ActionBarActivity {
 			levelUnit = (TextView)v.findViewById(R.id.lbl_low_unit);
 			levelUnit.setText(unit);
 
-			EditText levelField = (EditText)v.findViewById(R.id.fld_too_high);
-			levelField = (EditText)v.findViewById(R.id.fld_high);
-			levelField = (EditText)v.findViewById(R.id.fld_medium);
-			levelField = (EditText)v.findViewById(R.id.fld_low);
+            setLevelFieldValue(v, R.id.fld_too_high, destinationFacet.getHighPlus());
+            setLevelFieldValue(v, R.id.fld_high, destinationFacet.getHigh());
+            setLevelFieldValue(v, R.id.fld_medium, destinationFacet.getMed());
+            setLevelFieldValue(v, R.id.fld_low, destinationFacet.getLow());
 
 			return v;
 		}
+
+        private void setLevelFieldValue(View v, int resId, Double value) {
+            if(value == null) {
+                return;
+            }
+            EditText levelField = (EditText)v.findViewById(resId);
+            levelField.setText("" + value);
+        }
 
 		private AtomicReference<Integer> editedField = new AtomicReference<Integer>();
 
@@ -363,25 +426,25 @@ public class EditDestination extends ActionBarActivity {
         protected DestinationFacet doApiCall(WsSession session, DestinationFacet... params) throws Exception {
 			DestinationFacet facet = params[0];
 
-			//Destination dest = facet.getDestination();
+			Destination dest = facet.getDestination();
 
-			facet = Destinations.saveDestinationWithFacet(session, facet);
+            if(facet.getId() == null) {
 
-            try {
-                DestinationFacets.instance.saveFavorite(session, facet.getId());
-            } catch(Exception e) {
-                //non-fatal exception
-                this.exception = e;
+                facet = Destinations.saveDestinationWithFacet(session, facet);
+
+                try {
+                    DestinationFacets.instance.saveFavorite(session, facet.getId());
+                } catch (Exception e) {
+                    //non-fatal exception
+                    this.exception = e;
+                }
+
+            } else {
+                if(facet.getDestination().getUser().getId().equals(dest.getUser().getId())) {
+                    Destinations.instance.update(session, dest);
+                }
+                DestinationFacets.instance.update(session, facet);
             }
-
-			//make sure facet knows about newly-created dest's primary key
-			/*
-			facet.setDestination(dest);
-			facet.setUser(session.userAccount);
-
-			facet = DestinationFacets.instance.create(session, facet);
-
-			facet.setDestination(dest);*/
 
             return facet;
         }
@@ -408,13 +471,14 @@ public class EditDestination extends ActionBarActivity {
 			if(exception != null) {
 				Toast.makeText(EditDestination.this, exception.getLocalizedMessage(), Toast.LENGTH_LONG).show();
 				Log.e(Home.TAG,"", exception);
-                if(destinationFacet == null) {
-                    return;
-                } else {
-                    sendBroadcast(Home.getWidgetUpdateIntent());
-                    sendBroadcast(new Intent(Home.ACTION_FAVORITES_CHANGED));
-                }
 			}
+
+            if(destinationFacet == null) {
+                return;
+            } else {
+                sendBroadcast(Home.getWidgetUpdateIntent());
+                sendBroadcast(new Intent(Home.ACTION_FAVORITES_CHANGED));
+            }
 
             Intent resultIntent = new Intent();
 			resultIntent.putExtra(KEY_DESTINATION_FACET, destinationFacet);

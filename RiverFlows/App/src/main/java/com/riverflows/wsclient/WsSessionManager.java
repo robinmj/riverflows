@@ -161,7 +161,7 @@ public class WsSessionManager {
 
 		Log.d(Home.TAG, "user: " + responseObj.getString("user"));
 
-		UserAccount userAccount = UserAccounts.parseUser(userObj);
+		UserAccount userAccount = UserAccounts.instance.fromJson(userObj);
 
 		String authToken = userObj.getString("authentication_token");
 
@@ -171,6 +171,26 @@ public class WsSessionManager {
 
 		return newSession;
 	}
+
+    public static WsSession loadUserAccount() throws Exception {
+        WsSession sessionSnapshot = session;
+
+        if(sessionSnapshot.userAccount != null) {
+            return sessionSnapshot;
+        }
+
+        if(sessionSnapshot.accountName == null) {
+            return null;
+        }
+
+        UserAccount account = UserAccounts.instance.get(sessionSnapshot);
+
+        WsSession newSession = new WsSession(sessionSnapshot.accountName, account, sessionSnapshot.authToken, Long.MAX_VALUE);
+
+        session = newSession;
+
+        return newSession;
+    }
 	
 	public static void logOut(Context ctx) {
 		WsSession currentSession = session;

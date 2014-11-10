@@ -25,6 +25,10 @@ public class Destinations extends WebModel<Destination> {
 
     private static final Log LOG = LogFactory.getLog(Destinations.class);
 
+    //singleton
+    public static final Destinations instance = new Destinations();
+    private Destinations(){}
+
     public static DestinationFacet saveDestinationWithFacet(WsSession session, DestinationFacet destination) throws Exception {
 		HttpPost postCmd = new HttpPost(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + "/destinations.json?auth_token=" + session.authToken);
 		HttpClient client = getHttpClientFactory().getHttpClient();
@@ -60,23 +64,18 @@ public class Destinations extends WebModel<Destination> {
     }
 
 	@Override
-	public String getResource() {
-		throw new UnsupportedOperationException();
+	public String getResourceName() {
+		return "destination";
 	}
 
 	@Override
 	public Destination fromJson(JSONObject json) throws Exception {
-		throw new UnsupportedOperationException();
+		return parseDestination(json);
 	}
 
 	@Override
 	public JSONObject toJson(Destination obj) throws JSONException {
-		throw new UnsupportedOperationException();
-	}
-
-	@Override
-	public JSONObject getCreateEntity(Destination obj) throws JSONException {
-		throw new UnsupportedOperationException();
+	    return destinationAsJson(obj);
 	}
 
 	public static final JSONObject destinationAsJson(Destination destination) throws JSONException {

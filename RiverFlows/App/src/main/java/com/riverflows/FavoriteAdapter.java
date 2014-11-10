@@ -311,4 +311,31 @@ public class FavoriteAdapter extends BaseAdapter implements Filterable {
         }
         notifyDataSetChanged();
     }
+
+    public FavoriteData update(DestinationFacet changedFacet) {
+        FavoriteData changedFavorite = null;
+
+        synchronized (arrayLock) {
+
+            for (int a = 0; a < favorites.size(); a++) {
+                DestinationFacet favFacet = favorites.get(a).getFavorite().getDestinationFacet();
+
+                if(favFacet == null || favFacet.getId() == null) {
+                    continue;
+                }
+
+                if(changedFacet.getId().equals(favFacet.getId())) {
+                    changedFavorite = favorites.get(a);
+                    changedFavorite.getFavorite().setDestinationFacet(changedFacet);
+                    break;
+                }
+            }
+        }
+
+        if(changedFavorite != null) {
+            notifyDataSetChanged();
+        }
+
+        return changedFavorite;
+    }
 }
