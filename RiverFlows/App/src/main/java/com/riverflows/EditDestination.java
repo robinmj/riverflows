@@ -174,6 +174,10 @@ public class EditDestination extends ActionBarActivity {
 		this.saveDestTask.authorizeCallback(requestCode, resultCode, data);
 	}
 
+    public EditDestinationFragment getEditDestinationFragment() {
+        return this.editDestination;
+    }
+
 	public static class EditDestinationFragment extends Fragment {
 
 		public DestinationFacet destinationFacet;

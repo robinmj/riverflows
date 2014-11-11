@@ -9,7 +9,7 @@ buildscript {
 }
 
 apply plugin: 'com.android.application'
-//apply plugin: 'robolectric'
+apply plugin: 'robolectric'
 
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
@@ -18,14 +18,15 @@ dependencies {
     compile 'com.google.android.gms:play-services:3.2.+'
     compile project(':Datasources')
 
-//    androidTestCompile "junit:junit:4.11"
-//    androidTestCompile("org.robolectric:robolectric:2.3") {
-//        exclude module: "commons-logging"
-//        exclude module: "httpclient"
-//    }
-//    androidTestCompile files("testlibs/android-20-stripped.jar")
-//    androidTestCompile files("testlibs/bcprov-jdk15on-150.jar")
-//    androidTestCompile files("build/intermediates/exploded-aar/RiverFlows/Datasources/unspecified/classes.jar")
+    //androidTestCompile "org.jmockit:jmockit:1.13"
+    androidTestCompile "junit:junit:4.11"
+    androidTestCompile("org.robolectric:robolectric:2.3") {
+        exclude module: "commons-logging"
+        exclude module: "httpclient"
+    }
+    androidTestCompile files("testlibs/android-20-stripped.jar")
+    androidTestCompile files("testlibs/bcprov-jdk15on-150.jar")
+    androidTestCompile files("build/intermediates/exploded-aar/RiverFlows/Datasources/unspecified/classes.jar")
 }
 
 android {
@@ -38,12 +39,12 @@ android {
     }
 }
 
-//robolectric {
-//    include "**/*Test.class"
-//}
-//
-//// tell gradle to include robolectric test classes
-//task copyTestClasses(type: Copy) {
-//    from "build/test-classes"
-//    into "build/intermediates/classes/debug"
-//}
+robolectric {
+    include "**/*Test.class"
+}
+
+// tell gradle to include robolectric test classes
+task copyTestClasses(type: Copy) {
+    from "build/test-classes"
+    into "build/intermediates/classes/debug"
+}
