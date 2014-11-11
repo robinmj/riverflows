@@ -10,12 +10,10 @@ import com.riverflows.data.USState;
 import com.riverflows.data.Variable;
 import com.riverflows.wsclient.CODWRDataSource;
 
-import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.util.ActivityController;
 
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -27,12 +25,6 @@ import static org.junit.Assert.assertThat;
  */
 @RunWith(RobolectricTestRunner.class)
 public class EditDestinationTest {
-
-    @Before
-    public void setUp() {
-        ShadowApplication shadowApplication = Robolectric.shadowOf(Robolectric.application);
-        shadowApplication.declareActionUnbindable("com.google.android.gms.analytics.service.START");
-    }
 
     public EditDestination createEditDestination(Intent i) throws Exception {
         ActivityController<EditDestination> activityController= Robolectric.buildActivity(EditDestination.class);

@@ -25,7 +25,6 @@ dependencies {
         exclude module: "httpclient"
     }
     androidTestCompile files("testlibs/android-20-stripped.jar")
-    androidTestCompile files("testlibs/bcprov-jdk15on-150.jar")
     androidTestCompile files("build/intermediates/exploded-aar/RiverFlows/Datasources/unspecified/classes.jar")
 }
 

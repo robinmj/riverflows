@@ -106,7 +106,6 @@
     <orderEntry type="library" exported="" scope="TEST" name="robolectric-2.3" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="maven-plugin-registry-2.2.1" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="maven-settings-2.2.1" level="project" />
-    <orderEntry type="library" exported="" scope="TEST" name="bcprov-jdk15on-150" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="wagon-file-1.0-beta-6" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="vtd-xml-2.11" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="asm-commons-5.0.1" level="project" />
