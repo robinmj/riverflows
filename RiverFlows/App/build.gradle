@@ -18,7 +18,6 @@ dependencies {
     compile 'com.google.android.gms:play-services:3.2.+'
     compile project(':Datasources')
 
-    //androidTestCompile "org.jmockit:jmockit:1.13"
     androidTestCompile "junit:junit:4.11"
     androidTestCompile("org.robolectric:robolectric:2.3") {
         exclude module: "commons-logging"

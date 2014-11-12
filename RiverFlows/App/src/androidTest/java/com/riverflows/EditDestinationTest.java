@@ -1,6 +1,7 @@
 package com.riverflows;
 
 import android.content.Intent;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.riverflows.data.DestinationFacet;
@@ -19,12 +20,15 @@ import org.robolectric.util.ActivityController;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.robolectric.Robolectric.clickOn;
 
 /**
  * Created by robin on 11/10/14.
  */
 @RunWith(RobolectricTestRunner.class)
 public class EditDestinationTest {
+
+    private Site clearCreek = null;
 
     public EditDestination createEditDestination(Intent i) throws Exception {
         ActivityController<EditDestination> activityController= Robolectric.buildActivity(EditDestination.class);
@@ -34,12 +38,10 @@ public class EditDestinationTest {
         return activityController.get();
     }
 
-    @Test
-    public void shouldCreateDestinationFacetIfNoneSpecified() throws Exception {
-
+    public EditDestination editNewDestination() throws Exception {
         Intent i = new Intent(Robolectric.application, EditFavorite.class);
 
-        Site clearCreek = new Site();
+        clearCreek = new Site();
         clearCreek.setSiteId(new SiteId(CODWRDataSource.AGENCY, "CCACCRCO"));
         clearCreek.setName("CLEAR CREEK ABOVE CLEAR CREEK RESERVOIR");
         clearCreek.setState(USState.CO);
@@ -48,7 +50,13 @@ public class EditDestinationTest {
         i.putExtra(EditDestination.KEY_SITE, clearCreek);
         i.putExtra(EditDestination.KEY_VARIABLE, CODWRDataSource.VTYPE_GAUGE_HEIGHT_FT);
 
-        EditDestination activity = createEditDestination(i);
+        return createEditDestination(i);
+    }
+
+    @Test
+    public void shouldCreateDestinationFacetIfNoneSpecified() throws Exception {
+
+        EditDestination activity = editNewDestination();
 
         DestinationFacet prebuiltFacet = activity.getEditDestinationFragment().destinationFacet;
 
@@ -62,5 +70,19 @@ public class EditDestinationTest {
 
         //destination name should be set to site name
         assertThat(((TextView)frag.getView().findViewById(R.id.lbl_dest_gage)).getText().toString(), equalTo(clearCreek.getName()));
+    }
+
+    @Test
+    public void shouldValidateFields() throws Throwable {
+
+        EditDestination activity = editNewDestination();
+
+        clickOn(activity.getSupportActionBar().getCustomView().findViewById(R.id.actionbar_done));
+
+        EditText highField = (EditText) activity.findViewById(R.id.fld_high);
+
+        //high field should be in error
+        assertThat(highField.getTextColors().getDefaultColor(), equalTo(Robolectric.application.getResources().getColor(R.color.validation_error_color)));
+
     }
 }
