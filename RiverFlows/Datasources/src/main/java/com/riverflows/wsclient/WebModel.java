@@ -45,11 +45,11 @@ public abstract class WebModel<T extends RemoteObject> {
         WebModel.httpClientFactory = source;
     }
 
-	public final Page<T> get(WsSession session, HashMap<String, List<String>> params, Integer firstResultIndex, Integer resultCount) throws Exception {
+	public Page<T> get(WsSession session, HashMap<String, List<String>> params, Integer firstResultIndex, Integer resultCount) throws Exception {
 		return getPage(session, DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource() + ".json", params, firstResultIndex, resultCount);
 	}
 
-	public final Page<T> get(WsSession session, String action, HashMap<String, List<String>> params, Integer firstResultIndex, Integer resultCount) throws Exception {
+	public Page<T> get(WsSession session, String action, HashMap<String, List<String>> params, Integer firstResultIndex, Integer resultCount) throws Exception {
 		return getPage(session, DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource() + '/' + action + ".json", params, firstResultIndex, resultCount);
 	}
 
@@ -78,7 +78,7 @@ public abstract class WebModel<T extends RemoteObject> {
 		return resultPage;
 	}
 
-    public final T get(WsSession session, Integer id) throws Exception {
+    public T get(WsSession session, Integer id) throws Exception {
         if(id == null) {
             throw new NullPointerException();
         }
@@ -103,7 +103,7 @@ public abstract class WebModel<T extends RemoteObject> {
         return fromJson(new JSONObject(responseStr));
     }
 
-	public final T create(WsSession session, T obj) throws Exception{
+	public T create(WsSession session, T obj) throws Exception{
 		HttpPost postCmd = new HttpPost(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource() + ".json?auth_token=" + session.authToken);
 		HttpClient client = getHttpClientFactory().getHttpClient();
 
@@ -132,7 +132,7 @@ public abstract class WebModel<T extends RemoteObject> {
 		return fromJson(responseObj);
 	}
 
-    public final void update(WsSession session, T obj) throws Exception {
+    public void update(WsSession session, T obj) throws Exception {
         if(obj.getId() == null) {
             throw new NullPointerException();
         }

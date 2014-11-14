@@ -6,7 +6,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,6 +18,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.inject.Inject;
 import com.riverflows.data.Destination;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Site;
@@ -31,17 +31,20 @@ import com.riverflows.wsclient.WsSessionManager;
 
 import java.util.concurrent.atomic.AtomicReference;
 
+import roboguice.RoboGuice;
+import roboguice.activity.RoboActionBarActivity;
+
 /**
  * Created by robin on 6/23/13.
  */
-public class EditDestination extends ActionBarActivity {
+public class EditDestination extends RoboActionBarActivity {
 
 	public static final String KEY_SITE = "site";
 	public static final String KEY_VARIABLE = "variable";
     public static final String KEY_DESTINATION_FACET = "destination_facet";
 
-	public static final int REQUEST_SAVE_DESTINATION = 239432;
-	public static final int REQUEST_LOGIN_TO_SAVE_DESTINATION = 3529307;
+	public static final int REQUEST_SAVE_DESTINATION = 23943;
+	public static final int REQUEST_LOGIN_TO_SAVE_DESTINATION = 35293;
 
     public static final int RESULT_NOT_LOGGED_IN = RESULT_FIRST_USER;
     public static final int RESULT_NOT_DEST_FACET_OWNER = RESULT_FIRST_USER + 1;
@@ -422,8 +425,15 @@ public class EditDestination extends ActionBarActivity {
 
     private class SaveDestination extends ApiCallTask<DestinationFacet,Integer,DestinationFacet> {
 
+        @Inject
+        private Destinations destinations;
+
+        @Inject
+        private DestinationFacets destinationFacets;
+
 		public SaveDestination(boolean secondTry) {
 			super(EditDestination.this, REQUEST_SAVE_DESTINATION, REQUEST_LOGIN_TO_SAVE_DESTINATION, true, secondTry);
+            RoboGuice.getInjector(EditDestination.this).injectMembers(this);
 		}
 
         @Override
@@ -434,10 +444,10 @@ public class EditDestination extends ActionBarActivity {
 
             if(facet.getId() == null) {
 
-                facet = Destinations.saveDestinationWithFacet(session, facet);
+                facet = destinations.saveDestinationWithFacet(session, facet);
 
                 try {
-                    DestinationFacets.instance.saveFavorite(session, facet.getId());
+                    destinationFacets.saveFavorite(session, facet.getId());
                 } catch (Exception e) {
                     //non-fatal exception
                     this.exception = e;
@@ -445,9 +455,9 @@ public class EditDestination extends ActionBarActivity {
 
             } else {
                 if(facet.getDestination().getUser().getId().equals(dest.getUser().getId())) {
-                    Destinations.instance.update(session, dest);
+                    destinations.update(session, dest);
                 }
-                DestinationFacets.instance.update(session, facet);
+                destinationFacets.update(session, facet);
             }
 
             return facet;

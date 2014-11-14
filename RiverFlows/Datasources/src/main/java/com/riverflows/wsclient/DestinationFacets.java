@@ -1,5 +1,6 @@
 package com.riverflows.wsclient;
 
+import com.google.inject.Singleton;
 import com.riverflows.data.Destination;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
@@ -30,6 +31,7 @@ import java.util.List;
 /**
  * Created by robin on 9/26/13.
  */
+@Singleton
 public class DestinationFacets extends WebModel<DestinationFacet>{
 
     private static final Log LOG = LogFactory.getLog(DestinationFacets.class);

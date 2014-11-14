@@ -4,22 +4,38 @@ import android.content.Intent;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.inject.AbstractModule;
+import com.riverflows.data.Destination;
 import com.riverflows.data.DestinationFacet;
+import com.riverflows.data.Favorite;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
+import com.riverflows.data.UserAccount;
 import com.riverflows.data.Variable;
 import com.riverflows.wsclient.CODWRDataSource;
+import com.riverflows.wsclient.DestinationFacets;
+import com.riverflows.wsclient.Destinations;
+import com.riverflows.wsclient.WsSession;
+import com.riverflows.wsclient.WsSessionManager;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.util.ActivityController;
 
+import roboguice.RoboGuice;
+
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
+import static org.mockito.Matchers.any;
+import static org.mockito.Matchers.anyInt;
+import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.clickOn;
 
 /**
@@ -28,14 +44,43 @@ import static org.robolectric.Robolectric.clickOn;
 @RunWith(RobolectricTestRunner.class)
 public class EditDestinationTest {
 
+    private Destinations destinationsMock = mock(Destinations.class);
+    private DestinationFacets destinationFacetsMock = mock(DestinationFacets.class);
+
+    private EditText nameField;
+    private EditText highField;
+    private EditText medField;
+    private EditText lowField;
+    private EditText tooHighField;
+
     private Site clearCreek = null;
+
+    @Before
+    public void setup() {
+        RoboGuice.overrideApplicationInjector(Robolectric.application, new MockWsClients());
+    }
 
     public EditDestination createEditDestination(Intent i) throws Exception {
         ActivityController<EditDestination> activityController= Robolectric.buildActivity(EditDestination.class);
 
         activityController.withIntent(i).create().start().resume().visible();
 
-        return activityController.get();
+        EditDestination activity = activityController.get();
+
+        UserAccount account = new UserAccount();
+        account.setEmail("robin.m.j@gmail.com");
+        WsSession session = new WsSession("robin.m.j", account, "T9HLJkUvA7JwELEeHjsu", System.currentTimeMillis() + 10 * 60 * 1000);
+
+        WsSessionManager.setSession(session);
+
+        nameField = (EditText) activity.findViewById(R.id.fld_dest_name);
+
+        highField = (EditText) activity.findViewById(R.id.fld_high);
+        medField = (EditText) activity.findViewById(R.id.fld_medium);
+        lowField = (EditText) activity.findViewById(R.id.fld_low);
+        tooHighField = (EditText) activity.findViewById(R.id.fld_too_high);
+
+        return activity;
     }
 
     public EditDestination editNewDestination() throws Exception {
@@ -54,7 +99,7 @@ public class EditDestinationTest {
     }
 
     @Test
-    public void shouldCreateDestinationFacetIfNoneSpecified() throws Exception {
+    public void shouldPopulateSite() throws Exception {
 
         EditDestination activity = editNewDestination();
 
@@ -68,21 +113,67 @@ public class EditDestinationTest {
         assertThat(frag, notNullValue());
         assertThat(frag.getView(), notNullValue());
 
-        //destination name should be set to site name
-        assertThat(((TextView)frag.getView().findViewById(R.id.lbl_dest_gage)).getText().toString(), equalTo(clearCreek.getName()));
+        //site name should be displayed
+        assertThat(((TextView) frag.getView().findViewById(R.id.lbl_dest_gage)).getText().toString(), equalTo(clearCreek.getName()));
     }
 
     @Test
-    public void shouldValidateFields() throws Throwable {
+    public void levelFieldsShouldBeRequired() throws Throwable {
+
+        //the WebModels should not be modified
+        doThrow(new RuntimeException()).when(destinationsMock).update(any(WsSession.class), any(Destination.class));
+        doThrow(new RuntimeException()).when(destinationsMock).saveDestinationWithFacet(any(WsSession.class), any(DestinationFacet.class));
+        doThrow(new RuntimeException()).when(destinationFacetsMock).update(any(WsSession.class), any(DestinationFacet.class));
+        doThrow(new RuntimeException()).when(destinationFacetsMock).saveFavorite(any(WsSession.class), anyInt());
 
         EditDestination activity = editNewDestination();
 
         clickOn(activity.getSupportActionBar().getCustomView().findViewById(R.id.actionbar_done));
 
-        EditText highField = (EditText) activity.findViewById(R.id.fld_high);
-
         //high field should be in error
         assertThat(highField.getTextColors().getDefaultColor(), equalTo(Robolectric.application.getResources().getColor(R.color.validation_error_color)));
+    }
 
+    @Test
+    public void shouldSaveNewDestination() throws Throwable {
+
+        //the WebModels should not be modified
+        doThrow(new RuntimeException()).when(destinationsMock).update(any(WsSession.class), any(Destination.class));
+        doThrow(new RuntimeException()).when(destinationFacetsMock).update(any(WsSession.class), any(DestinationFacet.class));
+
+        Destination newDestination = new Destination();
+        newDestination.setId(6);
+        newDestination.setUser(new UserAccount());
+        newDestination.setName("Excellent Destination");
+        newDestination.setSite(clearCreek);
+
+        DestinationFacet newFacet = new DestinationFacet();
+        newFacet.setId(23);
+        newFacet.setHigh(800.0);
+        newFacet.setMed(600.0);
+        newFacet.setLow(400.0);
+        newFacet.setDestination(newDestination);
+
+        Favorite newFavorite= new Favorite(clearCreek, CODWRDataSource.VTYPE_GAUGE_HEIGHT_FT.getId());
+        newFavorite.setDestinationFacet(newFacet);
+
+        when(destinationsMock.saveDestinationWithFacet(any(WsSession.class), any(DestinationFacet.class))).thenReturn(newFacet);
+        when(destinationFacetsMock.saveFavorite(any(WsSession.class), anyInt())).thenReturn(newFavorite);
+
+        EditDestination activity = editNewDestination();
+
+        highField.setText("800");
+        medField.setText("600");
+        lowField.setText("400.0");
+
+        clickOn(activity.getSupportActionBar().getCustomView().findViewById(R.id.actionbar_done));
+    }
+
+    public class MockWsClients  extends AbstractModule {
+        @Override
+        protected void configure() {
+            bind(Destinations.class).toInstance(destinationsMock);
+            bind(DestinationFacets.class).toInstance(destinationFacetsMock);
+        }
     }
 }
