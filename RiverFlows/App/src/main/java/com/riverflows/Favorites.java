@@ -187,7 +187,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
     @Override
 	public void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
-		Intent i = new Intent(getActivity(), ViewChart.class);
 
 		FavoriteAdapter adapter = getListAdapter();
 		
@@ -201,6 +200,17 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 			Log.w(TAG,"no such data: " + id);
 			return;
 		}
+
+        DestinationFacet destinationFacet = selectedFavorite.getFavorite().getDestinationFacet();
+
+        if(destinationFacet != null) {
+            Intent i = new Intent(Favorites.this.getActivity(), ViewDestination.class);
+            i.putExtra(EditDestination.KEY_DESTINATION_FACET, destinationFacet);
+            startActivity(i);
+            return;
+        }
+
+        Intent i = new Intent(getActivity(), ViewChart.class);
 		
         i.putExtra(ViewChart.KEY_SITE, selectedFavorite.getFavorite().getSite());
         i.putExtra(ViewChart.KEY_VARIABLE, selectedFavorite.getVariable());

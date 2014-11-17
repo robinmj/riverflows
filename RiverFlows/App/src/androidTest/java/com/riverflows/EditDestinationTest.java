@@ -4,7 +4,6 @@ import android.content.Intent;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.google.inject.AbstractModule;
 import com.riverflows.data.Destination;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
@@ -14,8 +13,6 @@ import com.riverflows.data.USState;
 import com.riverflows.data.UserAccount;
 import com.riverflows.data.Variable;
 import com.riverflows.wsclient.CODWRDataSource;
-import com.riverflows.wsclient.DestinationFacets;
-import com.riverflows.wsclient.Destinations;
 import com.riverflows.wsclient.WsSession;
 import com.riverflows.wsclient.WsSessionManager;
 
@@ -34,7 +31,6 @@ import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.doThrow;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.clickOn;
 
@@ -44,9 +40,6 @@ import static org.robolectric.Robolectric.clickOn;
 @RunWith(RobolectricTestRunner.class)
 public class EditDestinationTest {
 
-    private Destinations destinationsMock = mock(Destinations.class);
-    private DestinationFacets destinationFacetsMock = mock(DestinationFacets.class);
-
     private EditText nameField;
     private EditText highField;
     private EditText medField;
@@ -55,9 +48,11 @@ public class EditDestinationTest {
 
     private Site clearCreek = null;
 
+    private MockWsClient wsClient = new MockWsClient();
+
     @Before
     public void setup() {
-        RoboGuice.overrideApplicationInjector(Robolectric.application, new MockWsClients());
+        RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient);
     }
 
     public EditDestination createEditDestination(Intent i) throws Exception {
@@ -121,10 +116,10 @@ public class EditDestinationTest {
     public void levelFieldsShouldBeRequired() throws Throwable {
 
         //the WebModels should not be modified
-        doThrow(new RuntimeException()).when(destinationsMock).update(any(WsSession.class), any(Destination.class));
-        doThrow(new RuntimeException()).when(destinationsMock).saveDestinationWithFacet(any(WsSession.class), any(DestinationFacet.class));
-        doThrow(new RuntimeException()).when(destinationFacetsMock).update(any(WsSession.class), any(DestinationFacet.class));
-        doThrow(new RuntimeException()).when(destinationFacetsMock).saveFavorite(any(WsSession.class), anyInt());
+        doThrow(new RuntimeException()).when(wsClient.destinationsMock).update(any(WsSession.class), any(Destination.class));
+        doThrow(new RuntimeException()).when(wsClient.destinationsMock).saveDestinationWithFacet(any(WsSession.class), any(DestinationFacet.class));
+        doThrow(new RuntimeException()).when(wsClient.destinationFacetsMock).update(any(WsSession.class), any(DestinationFacet.class));
+        doThrow(new RuntimeException()).when(wsClient.destinationFacetsMock).saveFavorite(any(WsSession.class), anyInt());
 
         EditDestination activity = editNewDestination();
 
@@ -138,8 +133,8 @@ public class EditDestinationTest {
     public void shouldSaveNewDestination() throws Throwable {
 
         //the WebModels should not be modified
-        doThrow(new RuntimeException()).when(destinationsMock).update(any(WsSession.class), any(Destination.class));
-        doThrow(new RuntimeException()).when(destinationFacetsMock).update(any(WsSession.class), any(DestinationFacet.class));
+        doThrow(new RuntimeException()).when(wsClient.destinationsMock).update(any(WsSession.class), any(Destination.class));
+        doThrow(new RuntimeException()).when(wsClient.destinationFacetsMock).update(any(WsSession.class), any(DestinationFacet.class));
 
         Destination newDestination = new Destination();
         newDestination.setId(6);
@@ -157,8 +152,8 @@ public class EditDestinationTest {
         Favorite newFavorite= new Favorite(clearCreek, CODWRDataSource.VTYPE_GAUGE_HEIGHT_FT.getId());
         newFavorite.setDestinationFacet(newFacet);
 
-        when(destinationsMock.saveDestinationWithFacet(any(WsSession.class), any(DestinationFacet.class))).thenReturn(newFacet);
-        when(destinationFacetsMock.saveFavorite(any(WsSession.class), anyInt())).thenReturn(newFavorite);
+        when(wsClient.destinationsMock.saveDestinationWithFacet(any(WsSession.class), any(DestinationFacet.class))).thenReturn(newFacet);
+        when(wsClient.destinationFacetsMock.saveFavorite(any(WsSession.class), anyInt())).thenReturn(newFavorite);
 
         EditDestination activity = editNewDestination();
 
@@ -167,13 +162,5 @@ public class EditDestinationTest {
         lowField.setText("400.0");
 
         clickOn(activity.getSupportActionBar().getCustomView().findViewById(R.id.actionbar_done));
-    }
-
-    public class MockWsClients  extends AbstractModule {
-        @Override
-        protected void configure() {
-            bind(Destinations.class).toInstance(destinationsMock);
-            bind(DestinationFacets.class).toInstance(destinationFacetsMock);
-        }
     }
 }
