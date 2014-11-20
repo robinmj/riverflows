@@ -1,5 +1,6 @@
 package com.riverflows.wsclient;
 
+import com.google.inject.Singleton;
 import com.riverflows.data.Destination;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.UserAccount;
@@ -21,6 +22,7 @@ import javax.net.ssl.HttpsURLConnection;
 /**
  * Created by robin on 9/25/13.
  */
+@Singleton
 public class Destinations extends WebModel<Destination> {
 
     private static final Log LOG = LogFactory.getLog(Destinations.class);
@@ -29,7 +31,7 @@ public class Destinations extends WebModel<Destination> {
     public static final Destinations instance = new Destinations();
     private Destinations(){}
 
-    public static DestinationFacet saveDestinationWithFacet(WsSession session, DestinationFacet destination) throws Exception {
+    public DestinationFacet saveDestinationWithFacet(WsSession session, DestinationFacet destination) throws Exception {
 		HttpPost postCmd = new HttpPost(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + "/destinations.json?auth_token=" + session.authToken);
 		HttpClient client = getHttpClientFactory().getHttpClient();
 

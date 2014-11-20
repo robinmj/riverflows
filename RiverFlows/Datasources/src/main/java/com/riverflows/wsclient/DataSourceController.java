@@ -434,6 +434,14 @@ public class DataSourceController {
 	public static final RESTDataSource getDataSource(String agency) {
 		return dataSources.get(agency);
 	}
+
+    /**
+    For testing.
+     TODO make DataSourceController mockable/injectable instead
+     */
+    public static final RESTDataSource setDataSource(String agency, RESTDataSource datasource) {
+        return dataSources.put(agency, datasource);
+    }
 	
 	public static final Variable[] getVariablesFromString(String agency, String variables) {
 		if(variables == null || variables.trim().length() == 0) {

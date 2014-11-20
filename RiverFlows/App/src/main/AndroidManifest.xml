@@ -73,6 +73,7 @@
         <activity android:name=".MigrateToDestinations"/>
         <activity android:name=".EditDestination"/>
         <activity android:name=".SetupDestinations"/>
+        <activity android:name=".ViewDestination"/>
 
         <provider android:name=".content.Favorites"
 		android:authorities="com.riverflows.content.favorites"

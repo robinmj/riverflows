@@ -409,7 +409,15 @@ public class FavoritesDaoImpl {
 		return result;
 	}
 
-	public static boolean isFavorite(Context ctx, SiteId siteId, Variable var) {
+    public static boolean isFavorite(Context ctx, SiteId siteId, Variable var) {
+        String varId = null;
+        if(var != null) {
+            varId = var.getId();
+        }
+        return isFavorite(ctx, siteId, varId);
+    }
+
+	public static boolean isFavorite(Context ctx, SiteId siteId, String varId) {
 		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
 		SQLiteDatabase db = helper.getReadableDatabase();
 
@@ -418,9 +426,9 @@ public class FavoritesDaoImpl {
 
 		String[] parameters = null;
 
-		if(var != null) {
+		if(varId != null) {
 			whereClause = whereClause + " AND " + VARIABLE + " = ?";
-			parameters = new String[]{ siteId.getId(), siteId.getAgency(), var.getId() };
+			parameters = new String[]{ siteId.getId(), siteId.getAgency(), varId };
 		} else {
 			parameters = new String[]{ siteId.getId(), siteId.getAgency() };
 		}
@@ -649,15 +657,22 @@ public class FavoritesDaoImpl {
 		return favoriteValues;
 	}
 
-	public static void deleteFavorite(Context ctx, SiteId siteId, Variable var) {
+    public static void deleteFavorite(Context ctx, SiteId siteId, Variable var) {
+        String varId = null;
+        if(var != null) {
+            varId = var.getId();
+        }
+        deleteFavorite(ctx, siteId, varId);
+    }
+	public static void deleteFavorite(Context ctx, SiteId siteId, String varId) {
 		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
 		synchronized(RiverGaugesDb.class) {
 			SQLiteDatabase db = helper.getWritableDatabase();
 			
-			if(var != null) {
+			if(varId != null) {
 				db.delete(FavoritesDaoImpl.NAME,  SITE_ID + " = ? AND "
 					+ AGENCY + " = ? AND " + VARIABLE + " = ? ", 
-					new String[]{ siteId.getId(), siteId.getAgency(), var.getId() });
+					new String[]{ siteId.getId(), siteId.getAgency(), varId });
 			} else {
 				db.delete(FavoritesDaoImpl.NAME,  SITE_ID + " = ? AND "
 						+ AGENCY + " = ?", 

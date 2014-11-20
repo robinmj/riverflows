@@ -103,6 +103,15 @@ public class WsSessionManager {
 		return null;
 	}
 
+    /**
+     * Only use this for testing
+     * TODO make WsSessionManager into an injectable singleton so this isn't necessary
+     * @param session
+     */
+    public static void setSession(WsSession session) {
+        WsSessionManager.session = session;
+    }
+
 	private static void discardSavedSession(SharedPreferences settings) {
 		SharedPreferences.Editor editor = settings.edit();
 		editor.remove(PREF_ACCESS_TOKEN);
