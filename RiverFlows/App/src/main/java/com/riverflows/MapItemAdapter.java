@@ -18,13 +18,14 @@ import android.widget.Filterable;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.riverflows.data.MapItem;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.SiteData;
 import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.Utils;
 
-public class SiteAdapter extends BaseAdapter implements Filterable {
+public class MapItemAdapter extends BaseAdapter implements Filterable {
 	
 	public static final String TAG = Home.TAG;
 	
@@ -32,19 +33,19 @@ public class SiteAdapter extends BaseAdapter implements Filterable {
     
     private Object arrayLock = new Object();
     
-    private List<SiteData> stations;
-    private List<SiteData> displayedStations;
+    private List<MapItem> items;
+    private List<MapItem> displayedItems;
 
-    public SiteAdapter(Context context, List<SiteData> stations) {
+    public MapItemAdapter(Context context, List<MapItem> items) {
         // Cache the LayoutInflate to avoid asking for a new one each time.
         this.inflater = LayoutInflater.from(context);
-        this.stations = stations;
-        this.displayedStations = stations;
+        this.items = items;
+        this.displayedItems = items;
     }
     
 	@Override
 	public int getCount() {
-		return displayedStations.size();
+		return displayedItems.size();
 	}
 	
 	@Override
@@ -52,36 +53,23 @@ public class SiteAdapter extends BaseAdapter implements Filterable {
 		return getItemId(getItem(position));
 	}
 	
-	public static final long getItemId(SiteData item) {
-		long varHashCode = 0;
-		try {
-			varHashCode = item.getDatasets().values().iterator().next().getVariable().getId().hashCode();
-		} catch(ArrayIndexOutOfBoundsException aioobe) {
-		} catch(NoSuchElementException nsee) {
-		} catch(NullPointerException npe) {
-		}
-		
-		try {
-			return item.getSite().getSiteId().hashCode() ^ varHashCode;
-		} catch(NullPointerException npe) {
-		}
-		return -1;
-		
+	public static final long getItemId(MapItem item) {
+        return item.hashCode();
 	}
 	
 	@Override
-	public SiteData getItem(int position) {
-		if(displayedStations.size() == 0)
+	public MapItem getItem(int position) {
+		if(displayedItems.size() == 0)
 			return null;
 		
-		return displayedStations.get(position);
+		return displayedItems.get(position);
 	}
 	
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		// A ViewHolder keeps references to children views to avoid unneccessary calls
         // to findViewById() on each row.
-        SiteAdapter.ViewHolder holder;
+        MapItemAdapter.ViewHolder holder;
 
         // When convertView is not null, we can reuse it directly, there is no need
         // to reinflate it. We only inflate a new View when the convertView supplied
@@ -95,31 +83,45 @@ public class SiteAdapter extends BaseAdapter implements Filterable {
             holder.text = (TextView) convertView.findViewById(R.id.list_item_txt);
             holder.subtext = (TextView) convertView.findViewById(R.id.subtext);
             holder.agencyIcon = (ImageView)convertView.findViewById(R.id.agencyIcon);
+            holder.destinationIcon = (ImageView)convertView.findViewById(R.id.destinationIcon);
 
             convertView.setTag(holder);
         } else {
             // Get the ViewHolder back to get fast access to the TextView
             // and the ImageView.
-            holder = (SiteAdapter.ViewHolder) convertView.getTag();
+            holder = (MapItemAdapter.ViewHolder) convertView.getTag();
         }
 
         // Bind the data efficiently with the holder.
-        holder.station = this.displayedStations.get(position);
-        holder.text.setText(holder.station.getSite().getName());
-        String siteAgency = holder.station.getSite().getAgency();
-        holder.agencyIcon.setVisibility(View.VISIBLE);
-        
-        Integer agencyIconResId = Home.getAgencyIconResId(siteAgency);
-        if(agencyIconResId != null) {
-            holder.agencyIcon.setImageResource(agencyIconResId);
-        } else {
-        	Log.e(TAG, "no icon for agency: " + siteAgency);
+        holder.mapItem = this.displayedItems.get(position);
+
+        if(holder.mapItem.isDestination()) {
+            holder.text.setText(holder.mapItem.destinationFacet.getDestination().getName());
             holder.agencyIcon.setVisibility(View.GONE);
+            holder.destinationIcon.setVisibility(View.VISIBLE);
+        } else {
+            holder.text.setText(holder.mapItem.getSite().getName());
+            String siteAgency = holder.mapItem.getSite().getAgency();
+            holder.agencyIcon.setVisibility(View.VISIBLE);
+            holder.destinationIcon.setVisibility(View.GONE);
+
+            Integer agencyIconResId = Home.getAgencyIconResId(siteAgency);
+            if (agencyIconResId != null) {
+                holder.agencyIcon.setImageResource(agencyIconResId);
+            } else {
+                Log.e(TAG, "no icon for agency: " + siteAgency);
+                holder.agencyIcon.setVisibility(View.GONE);
+            }
         }
         
         //display the last reading for this site, if present
-        Series flowSeries = DataSourceController.getPreferredSeries(holder.station);
-    	Reading lastReading = getLastReadingValue(flowSeries);
+
+        Series flowSeries = null;
+        Reading lastReading = null;
+        if(holder.mapItem.siteData != null) {
+            flowSeries = holder.mapItem.getPreferredSeries();
+            lastReading = getLastReadingValue(flowSeries);
+        }
     	
         if(lastReading == null) {
         	holder.subtext.setText("");
@@ -184,19 +186,19 @@ public class SiteAdapter extends BaseAdapter implements Filterable {
 			FilterResults results = new FilterResults();
 
             if (constraint == null || constraint.length() == 0) {
-                ArrayList<SiteData> list = new ArrayList<SiteData>(SiteAdapter.this.stations);
+                ArrayList<MapItem> list = new ArrayList<MapItem>(MapItemAdapter.this.items);
                 results.values = list;
                 results.count = list.size();
             } else {
                 String prefixString = constraint.toString().toLowerCase();
 
-                final List<SiteData> values = SiteAdapter.this.stations;
+                final List<MapItem> values = MapItemAdapter.this.items;
                 final int count = values.size();
 
-                final ArrayList<SiteData> newValues = new ArrayList<SiteData>(count);
+                final ArrayList<MapItem> newValues = new ArrayList<MapItem>(count);
 
                 for (int i = 0; i < count; i++) {
-                    final SiteData station = values.get(i);
+                    final MapItem station = values.get(i);
                     final String valueText = station.getSite().getName().toLowerCase();
 
                     // First match against the whole, non-splitted value
@@ -225,11 +227,11 @@ public class SiteAdapter extends BaseAdapter implements Filterable {
 		@Override
 		protected void publishResults(CharSequence constraint,
 				FilterResults results) {
-			SiteAdapter.this.displayedStations = (List<SiteData>) results.values;
+			MapItemAdapter.this.displayedItems = (List<MapItem>) results.values;
             if (results.count > 0) {
-            	SiteAdapter.this.notifyDataSetChanged();
+            	MapItemAdapter.this.notifyDataSetChanged();
             } else {
-            	SiteAdapter.this.notifyDataSetInvalidated();
+            	MapItemAdapter.this.notifyDataSetInvalidated();
             }
         }
 	};
@@ -240,10 +242,11 @@ public class SiteAdapter extends BaseAdapter implements Filterable {
 	}
 
     static class ViewHolder {
-    	SiteData station;
+    	MapItem mapItem;
         TextView text;
         TextView subtext;
         ImageView agencyIcon;
+        ImageView destinationIcon;
     }
 
 
@@ -253,14 +256,14 @@ public class SiteAdapter extends BaseAdapter implements Filterable {
      * @param object The object to insert into the array.
      * @param index The index at which the object must be inserted.
      */
-    public void insert(SiteData object, int index) {
-        if (stations != null) {
+    public void insert(MapItem object, int index) {
+        if (items != null) {
             synchronized (arrayLock) {
-            	stations.add(index, object);
+            	items.add(index, object);
                 notifyDataSetChanged();
             }
         } else {
-            displayedStations.add(index, object);
+            displayedItems.add(index, object);
             notifyDataSetChanged();
         }
     }
@@ -270,13 +273,13 @@ public class SiteAdapter extends BaseAdapter implements Filterable {
      *
      * @param object The object to remove.
      */
-    public void remove(SiteData object) {
-        if (stations != null) {
+    public void remove(MapItem object) {
+        if (items != null) {
             synchronized (arrayLock) {
-                stations.remove(object);
+                items.remove(object);
             }
         } else {
-        	displayedStations.remove(object);
+        	displayedItems.remove(object);
         }
         notifyDataSetChanged();
     }

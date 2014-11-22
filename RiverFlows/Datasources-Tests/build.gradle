@@ -1,10 +1,25 @@
 
+repositories {
+    maven {
+        //this is the only place to get Betamax 1.2-SNAPSHOT
+        url 'https://oss.sonatype.org/content/repositories/snapshots'
+    }
+}
+
 apply plugin: 'java'
 
 sourceSets {
     test {
+        //The IntelliJ JUnit plugin doesn't include the resources dir in the classpath. This little
+        // hack fixes it.
+        output.resourcesDir = output.classesDir
+
         java {
             srcDir 'src'
+        }
+
+        resources {
+            srcDir 'resources'
         }
     }
 }
@@ -12,4 +27,7 @@ sourceSets {
 dependencies {
     testCompile fileTree(dir: 'lib', include: '*.jar')
     testCompile project(':Datasources')
+    //betamax 1.2 has issues with groovy 2.3
+    testCompile 'org.codehaus.groovy:groovy-all:2.2.0'
+    testCompile 'co.freeside:betamax:1.2-SNAPSHOT'
 }

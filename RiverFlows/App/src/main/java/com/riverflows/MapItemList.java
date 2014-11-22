@@ -28,6 +28,7 @@ import android.widget.Toast;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.riverflows.data.Favorite;
+import com.riverflows.data.MapItem;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
@@ -43,7 +44,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public abstract class SiteList extends ListActivity {
+import roboguice.activity.RoboListActivity;
+
+public abstract class MapItemList extends RoboListActivity {
 	
 	private static final String TAG = Home.TAG;
 	
@@ -56,7 +59,7 @@ public abstract class SiteList extends ListActivity {
 	 */
 	public static final long MASTER_SITE_LIST_RELOAD_INTERVAL = 14 * 24 * 60 * 60 * 1000;
 	
-	private List<SiteData> gauges = null;
+	private List<MapItem> items = null;
 	public static final int DIALOG_ID_LOADING = 1;
 	public static final int DIALOG_ID_LOADING_ERROR = 2;
 	public static final int DIALOG_ID_MASTER_LOADING = 3;
@@ -80,7 +83,7 @@ public abstract class SiteList extends ListActivity {
         		return;
         	}
         	
-            ((SiteAdapter)getListAdapter()).getFilter().filter(s.toString());
+            ((MapItemAdapter)getListAdapter()).getFilter().filter(s.toString());
         }
     };
 	
@@ -96,29 +99,31 @@ public abstract class SiteList extends ListActivity {
 	protected void onListItemClick(ListView l, View v, int position, long id) {
 		super.onListItemClick(l, v, position, id);
     	hideSoftKeyboard();
-		Intent i = new Intent(this, ViewChart.class);
-		Site selectedStation = null;
-		Variable selectedVariable = null;
+
+        MapItem selectedItem = null;
 		
-		for(SiteData currentData: gauges) {
-			if(SiteAdapter.getItemId(currentData) == id){
-				selectedStation = currentData.getSite();
-				
-				Series data = DataSourceController.getPreferredSeries(currentData);
-				if(data != null) {
-					selectedVariable = data.getVariable();
-				}
+		for(MapItem currentItem: items) {
+			if(MapItemAdapter.getItemId(currentItem) == id){
+                selectedItem = currentItem;
 				break;
 			}
 		}
 		
-		if(selectedStation == null) {
+		if(selectedItem == null) {
 			Log.w(TAG,"no such data: " + id);
 			return;
 		}
-		
-        i.putExtra(ViewChart.KEY_SITE, selectedStation);
-        i.putExtra(ViewChart.KEY_VARIABLE, selectedVariable);
+
+        if(selectedItem.destinationFacet != null) {
+            Intent i = new Intent(this, ViewDestination.class);
+            i.putExtra(ViewDestination.KEY_DESTINATION_FACET, selectedItem.destinationFacet);
+            startActivity(i);
+            return;
+        }
+
+        Intent i = new Intent(this, ViewChart.class);
+        i.putExtra(ViewChart.KEY_SITE, selectedItem.getSite());
+        i.putExtra(ViewChart.KEY_VARIABLE, selectedItem.getVariable());
         startActivity(i);
 	}
 	
@@ -178,14 +183,14 @@ public abstract class SiteList extends ListActivity {
     			this.loadTask.setActivity(this);
         		this.errorMsg = this.loadTask.errorMsg;
     		}
-    		this.gauges = (List<SiteData>)data[1];
+    		this.items = (List<MapItem>)data[1];
     		displaySites();
     	}
 	}
 	
 	@Override
 	public Object[] onRetainNonConfigurationInstance() {
-		return new Object[]{this.loadTask, this.gauges};
+		return new Object[]{this.loadTask, this.items};
 	}
 	
 	@Override
@@ -253,8 +258,8 @@ public abstract class SiteList extends ListActivity {
 	}
 	
 	public void displaySites() {
-		if(gauges != null) {
-			setListAdapter(new SiteAdapter(getApplicationContext(), gauges));
+		if(items != null) {
+			setListAdapter(new MapItemAdapter(getApplicationContext(), items));
 
 			registerForContextMenu(getListView());
 		}
@@ -284,15 +289,15 @@ public abstract class SiteList extends ListActivity {
 	/** parameter for LoadSitesTask */
 	public static final Integer HARD_REFRESH = new Integer(1);
 	
-	public abstract class LoadSitesTask extends AsyncTask<Integer, Integer, List<SiteData>> {
+	public abstract class LoadSitesTask extends AsyncTask<Integer, Integer, List<MapItem>> {
 		
 		protected static final int STATUS_UPGRADING_FAVORITES = -1;
 
 		public final Date loadTime = new Date();
 		private String errorMsg = null;
-		private SiteList activity;
+		private MapItemList activity;
 		
-		public void setActivity(SiteList activity) {
+		public void setActivity(MapItemList activity) {
 			this.activity = activity;
 			this.activity.loadTask = this;
 		}
@@ -302,11 +307,11 @@ public abstract class SiteList extends ListActivity {
 		}
 		
 		@Override
-		protected abstract List<SiteData> doInBackground(Integer... params);
+		protected abstract List<MapItem> doInBackground(Integer... params);
 		
 		@Override
-		protected void onPostExecute(List<SiteData> result) {
-			this.activity.gauges = result;
+		protected void onPostExecute(List<MapItem> result) {
+			this.activity.items = result;
 			this.activity.errorMsg = this.errorMsg;
 			this.activity.displaySites();
 			this.activity.loadTask = null;
@@ -345,43 +350,6 @@ public abstract class SiteList extends ListActivity {
 							Log.i(TAG, "can't remove dialog; activity no longer active");
 						}
 					}
-				}
-			}
-		}
-	}
-	
-	public class LoadMasterSiteListTask extends AsyncTask<Integer, Integer, String> {
-		@Override
-		protected String doInBackground(Integer... params) {
-			try {
-				Map<SiteId,SiteData> siteData = DataSourceController.getAllSites(true);
-			} catch (UnknownHostException uhe) {
-				return "no network access";
-			} catch(Exception e) {
-				Log.e(TAG, "",e);
-				
-				EasyTracker.getInstance().setContext(SiteList.this);
-				EasyTracker.getTracker().sendException(this.getClass().getName(), e, true);
-				
-				return e.getMessage();
-			}
-			return null;
-		}
-		@Override
-		protected void onPostExecute(String errorMsg) {
-			super.onPostExecute(errorMsg);
-			try {
-				removeDialog(DIALOG_ID_MASTER_LOADING);
-				if(errorMsg != null) {
-					showDialog(DIALOG_ID_MASTER_LOADING_ERROR);
-				}
-			} catch(BadTokenException bte) {
-				if(Log.isLoggable(TAG, Log.INFO)) {
-					Log.i(TAG, "can't display dialog; activity no longer active");
-				}
-			} catch(IllegalArgumentException iae) {
-				if(Log.isLoggable(TAG, Log.INFO)) {
-					Log.i(TAG, "can't remove dialog; activity no longer active");
 				}
 			}
 		}
@@ -465,7 +433,7 @@ public abstract class SiteList extends ListActivity {
 		@Override
 		public boolean onMenuItemClick(MenuItem item) {
 
-			Intent i = new Intent(SiteList.this, EditDestination.class);
+			Intent i = new Intent(MapItemList.this, EditDestination.class);
 			i.putExtra(EditDestination.KEY_SITE, selectedStation);
 			i.putExtra(EditDestination.KEY_VARIABLE, selectedVariable);
 
@@ -479,12 +447,12 @@ public abstract class SiteList extends ListActivity {
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
 		
-		SiteAdapter adapter = (SiteAdapter)((ListView)v).getAdapter();
+		MapItemAdapter adapter = (MapItemAdapter)((ListView)v).getAdapter();
 		AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 		
-		SiteData siteData = adapter.getItem(info.position);
+		MapItem mapItem = adapter.getItem(info.position);
 		
-		Variable[] supportedVars = siteData.getSite().getSupportedVariables();
+		Variable[] supportedVars = mapItem.getSite().getSupportedVariables();
 
 		boolean loggedIn = (WsSessionManager.getSession(this) != null);
 
@@ -497,15 +465,15 @@ public abstract class SiteList extends ListActivity {
 		
 		for(int a = 0; a < supportedVars.length; a++) {
 			MenuItem viewVariableItem = menu.add(ContextMenu.NONE,a,a,supportedVars[a].getName() + ", " + supportedVars[a].getCommonVariable().getUnit());
-			viewVariableItem.setOnMenuItemClickListener(new ViewVariableListener(siteData.getSite(), supportedVars[a]));
+			viewVariableItem.setOnMenuItemClickListener(new ViewVariableListener(mapItem.getSite(), supportedVars[a]));
 			
 			MenuItem addFavoriteItem = submenu.add(ContextMenu.NONE,a,a,supportedVars[a].getName() + ", " + supportedVars[a].getCommonVariable().getUnit());
 			addFavoriteItem.setCheckable(true);
-			addFavoriteItem.setChecked(FavoritesDaoImpl.isFavorite(getApplicationContext(), siteData.getSite().getSiteId(), supportedVars[a]));
-			addFavoriteItem.setOnMenuItemClickListener(new AddToFavoritesListener(siteData.getSite(), supportedVars[a]));
+			addFavoriteItem.setChecked(FavoritesDaoImpl.isFavorite(getApplicationContext(), mapItem.getSite().getSiteId(), supportedVars[a]));
+			addFavoriteItem.setOnMenuItemClickListener(new AddToFavoritesListener(mapItem.getSite(), supportedVars[a]));
 
 			if(loggedIn) {
-				addFavoriteItem.setOnMenuItemClickListener(new CreateDestinationListener(siteData.getSite(), supportedVars[a]));
+				addFavoriteItem.setOnMenuItemClickListener(new CreateDestinationListener(mapItem.getSite(), supportedVars[a]));
 			}
 		}
 	}

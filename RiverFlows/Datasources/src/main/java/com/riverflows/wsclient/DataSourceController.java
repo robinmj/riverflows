@@ -1,5 +1,6 @@
 package com.riverflows.wsclient;
 
+import com.google.inject.Singleton;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.FavoriteData;
 import com.riverflows.data.Reading;
@@ -49,6 +50,7 @@ import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManagerFactory;
 
+@Singleton
 public class DataSourceController {
 
 	private static final Log LOG = LogFactory.getLog(DataSourceController.class);
@@ -194,7 +196,7 @@ public class DataSourceController {
 		}
 	}
 	
-	public static Map<SiteId,SiteData> getAllSites(boolean hardRefresh) throws ClientProtocolException, IOException {
+	public Map<SiteId,SiteData> getAllSites(boolean hardRefresh) throws ClientProtocolException, IOException {
 		
 		String urlStr = RIVERFLOWS_WS_BASEURL + SITES_WS_PATH + "?version=" + RIVERFLOWS_WS_API_VERSION; 
 		
@@ -205,7 +207,7 @@ public class DataSourceController {
 		}
 	}
 	
-	public static Map<SiteId,SiteData> getSites(String urlStr, boolean hardRefresh) throws ClientProtocolException, IOException, URISyntaxException {
+	public Map<SiteId,SiteData> getSites(String urlStr, boolean hardRefresh) throws ClientProtocolException, IOException, URISyntaxException {
 		
 		if(LOG.isInfoEnabled()) LOG.info("site data URL: " + urlStr);
 		
@@ -434,14 +436,6 @@ public class DataSourceController {
 	public static final RESTDataSource getDataSource(String agency) {
 		return dataSources.get(agency);
 	}
-
-    /**
-    For testing.
-     TODO make DataSourceController mockable/injectable instead
-     */
-    public static final RESTDataSource setDataSource(String agency, RESTDataSource datasource) {
-        return dataSources.put(agency, datasource);
-    }
 	
 	public static final Variable[] getVariablesFromString(String agency, String variables) {
 		if(variables == null || variables.trim().length() == 0) {
@@ -532,7 +526,7 @@ public class DataSourceController {
 	 * at once, but it will always attempt to retrieve data for the first variable.
 	 * @return TODO do we need to return a map here?
 	 */
-	public static SiteData getSiteData(Site site, Variable[] variables, boolean hardRefresh) throws ClientProtocolException, IOException {
+	public SiteData getSiteData(Site site, Variable[] variables, boolean hardRefresh) throws ClientProtocolException, IOException {
 		DataSource ds = dataSources.get(site.getAgency());
 		if(ds == null) {
 			LOG.error(site.getSiteId() + " has no associated datasource");
@@ -549,7 +543,7 @@ public class DataSourceController {
 	 * @throws ClientProtocolException
 	 * @throws IOException
 	 */
-	public static Map<SiteId,SiteData> getSiteData(USState state, boolean hardRefresh) throws ClientProtocolException, IOException {
+	public Map<SiteId,SiteData> getSiteData(USState state, boolean hardRefresh) throws ClientProtocolException, IOException {
 		
 		String urlStr = RIVERFLOWS_WS_BASEURL + SITES_WS_PATH + "?version=" + RIVERFLOWS_WS_API_VERSION + "&state=" + state.getAbbrev();
 
@@ -561,8 +555,8 @@ public class DataSourceController {
 	}
 	
 	/**
-	 * 
-	 * @param hardRefresh TODO
+	 * TODO make this method non-static
+	 * @param hardRefresh
 	 * @param favorites
 	 * @return 
 	 * @throws ClientProtocolException

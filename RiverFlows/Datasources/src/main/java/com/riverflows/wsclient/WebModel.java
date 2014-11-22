@@ -11,17 +11,22 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.client.methods.HttpPut;
+import org.apache.http.client.utils.URIUtils;
 import org.apache.http.entity.StringEntity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by robin on 9/26/13.
@@ -31,6 +36,8 @@ public abstract class WebModel<T extends RemoteObject> {
 	private static final Log LOG = LogFactory.getLog(WebModel.class);
 
 	protected static final SimpleDateFormat RAILS_DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+    public static final String REQUEST_ENCODING = "UTF-8";
 
 	static {
 		RAILS_DATE_FORMAT.setTimeZone(USTimeZone.MDT.getTimeZone());
@@ -45,16 +52,37 @@ public abstract class WebModel<T extends RemoteObject> {
         WebModel.httpClientFactory = source;
     }
 
-	public Page<T> get(WsSession session, HashMap<String, List<String>> params, Integer firstResultIndex, Integer resultCount) throws Exception {
+	public Page<T> get(WsSession session, Map<String, List<String>> params, Integer firstResultIndex, Integer resultCount) throws Exception {
 		return getPage(session, DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource() + ".json", params, firstResultIndex, resultCount);
 	}
 
-	public Page<T> get(WsSession session, String action, HashMap<String, List<String>> params, Integer firstResultIndex, Integer resultCount) throws Exception {
+	public Page<T> get(WsSession session, String action, Map<String, List<String>> params, Integer firstResultIndex, Integer resultCount) throws Exception {
 		return getPage(session, DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource() + '/' + action + ".json", params, firstResultIndex, resultCount);
 	}
 
-	private final Page<T> getPage(WsSession session, String url, HashMap<String, List<String>> params, Integer firstResultIndex, Integer resultCount) throws Exception {
-		HttpGet getCmd = new HttpGet(url + "?auth_token=" + session.authToken);
+	private final Page<T> getPage(WsSession session, String url, Map<String, List<String>> params, Integer firstResultIndex, Integer resultCount) throws Exception {
+
+        //insert authToken into params
+        if(params == null) {
+            params = new HashMap<String, List<String>>();
+        } else {
+            params = new HashMap<String, List<String>>(params);
+        }
+        List prevAuthToken = params.put("auth_token", Collections.singletonList(session.authToken));
+
+        //params shouldn't contain anything called auth_token
+        assert(prevAuthToken == null);
+
+        if(firstResultIndex != null) {
+            List prevFirstParam = params.put("first", Collections.singletonList(firstResultIndex.toString()));
+            assert(prevFirstParam == null);
+        }
+        if(resultCount != null) {
+            List prevCountParam = params.put("count", Collections.singletonList(resultCount.toString()));
+            assert(prevCountParam == null);
+        }
+
+		HttpGet getCmd = new HttpGet(url + generateQueryString(params));
 		HttpClient client = httpClientFactory.getHttpClient();
 
 		getCmd.addHeader("Accept", "application/json");
@@ -77,6 +105,32 @@ public abstract class WebModel<T extends RemoteObject> {
 
 		return resultPage;
 	}
+
+    private String generateQueryString(Map<String, List<String>> params) throws UnsupportedEncodingException {
+
+        if(params == null) {
+            return "";
+        }
+
+        StringBuilder queryString = new StringBuilder();
+
+        for(Map.Entry<String, List<String>> entry : params.entrySet()) {
+            for(String value : entry.getValue()) {
+                queryString.append(URLEncoder.encode(entry.getKey(),REQUEST_ENCODING));
+                queryString.append("=");
+                queryString.append(URLEncoder.encode(value, REQUEST_ENCODING));
+                queryString.append("&");
+            }
+        }
+        if(queryString.length() == 0) {
+            return "";
+        }
+
+        //chop off last ampersand
+        queryString.setLength(queryString.length() - 1);
+
+        return  "?" + queryString.toString();
+    }
 
     public T get(WsSession session, Integer id) throws Exception {
         if(id == null) {

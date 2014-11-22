@@ -1,0 +1,19 @@
+!tape
+name: testRemoveNonexistantFavorite
+interactions:
+- recorded: 2014-11-21T21:49:58.342Z
+  request:
+    method: DELETE
+    uri: https://ws-staging.riverflowsapp.com/destination_facets/0/remove_favorite.json?auth_token=T9HLJkUvA7JwELEeHjsu
+  response:
+    status: 410
+    headers:
+      Cache-Control: no-cache
+      Content-Type: application/json; charset=utf-8
+      Date: Fri, 21 Nov 2014 21:49:58 GMT
+      Server: WEBrick/1.3.1 (Ruby/1.9.3/2013-05-16)
+      Set-Cookie: _ws_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJTlkMWNmNzgwNmNiNjQ4YWE2NDM1MjI4OTI5MWZkMDYyBjsAVEkiGXdhcmRlbi51c2VyLnVzZXIua2V5BjsAVFsHWwZpB0kiIiQyYSQxMCRGdkF0UjZENkZ1dFRNUHh2VjNKWGtlBjsAVA%3D%3D--9552e043d5191b0b1d3b945a58f9d0b354f2a945; path=/; HttpOnly
+      X-Request-Id: bc0e081ec032a49bd286b15293e5ab87
+      X-Runtime: '0.057000'
+      X-Ua-Compatible: IE=Edge
+    body: no favorite exists for this user/destination_facet

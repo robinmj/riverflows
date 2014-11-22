@@ -20,6 +20,7 @@ import android.view.View;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.GoogleAnalytics;
+import com.riverflows.data.UserAccount;
 import com.riverflows.db.CachingHttpClientWrapper;
 import com.riverflows.db.DatasetsDaoImpl;
 import com.riverflows.db.DbMaintenance;
@@ -41,11 +42,14 @@ public class Home extends ActionBarActivity implements ActionBar.TabListener {
 
 	public static final int TAB_FAVORITES = 0;
 	public static final int TAB_SITES = 1;
-	
+
+    //TODO move this into App
 	public static final String TAG = "RiverFlows";
 
+    //TODO move these into App
 	public static final String PREFS_FILE = "com.riverflows.prefs";
 	public static final String PREF_TEMP_UNIT = "tempUnit";
+    public static final String PREF_FACET_TYPES = "currentFacetTypes";
 
 	public static final String ACTION_FAVORITES_CHANGED = "com.riverflows.FAVORITES_CHANGED";
 

@@ -4,6 +4,7 @@ import java.net.SocketException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -13,26 +14,43 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.inject.Inject;
+import com.riverflows.data.DestinationFacet;
+import com.riverflows.data.MapItem;
+import com.riverflows.data.Page;
 import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
 import com.riverflows.wsclient.DataSourceController;
+import com.riverflows.wsclient.DestinationFacets;
+import com.riverflows.wsclient.WsSession;
+import com.riverflows.wsclient.WsSessionManager;
 
-public class RiverSelect extends SiteList {
-	
+import roboguice.RoboGuice;
+
+public class RiverSelect extends MapItemList {
+
+    @Inject
+    private DataSourceController dataSourceController;
+
+    @Inject
+    private DestinationFacets destinationFacets;
+
 	private static final String TAG = Home.TAG;
 	
 	public static final String KEY_STATE = "state";
 
 	private USState state = null;
-	
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		
+        RoboGuice.getInjector(RiverSelect.this).injectMembers(this);
+
 		Bundle extras = getIntent().getExtras();
 		
 		if(extras == null)
 			return;
+
 		state = (USState)extras.get(KEY_STATE);
 		
 		if(state != null) {
@@ -62,7 +80,7 @@ public class RiverSelect extends SiteList {
 		return new LoadSitesTask() {
 			
 			@Override
-			protected List<SiteData> doInBackground(Integer... params) {
+			protected List<MapItem> doInBackground(Integer... params) {
 				boolean hardRefresh = false;
 				
 				if(params.length > 0) {
@@ -71,25 +89,45 @@ public class RiverSelect extends SiteList {
 					}
 				}
 
-				ArrayList<SiteData> sites = null;
+				ArrayList<MapItem> items = null;
 
 				//cache miss or hard refresh
 				//TODO toast notification of each site loaded?
 				try {
-					Map<SiteId,SiteData> siteDataMap = DataSourceController.getSiteData(state, hardRefresh);
+					Map<SiteId,SiteData> siteDataMap = RiverSelect.this.dataSourceController.getSiteData(state, hardRefresh);
 
-					sites = new ArrayList<SiteData>(siteDataMap.values());
+					items = new ArrayList<MapItem>(siteDataMap.size());
+
+                    for(SiteData data : siteDataMap.values()) {
+                        items.add(new MapItem(data, null));
+                    }
+
+                    WsSession session = WsSessionManager.getSession(RiverSelect.this);
+
+                    if(session != null) {
+                        HashMap<String, List<String>> filterParams = new HashMap<String, List<String>>();
+                        filterParams.put("state", Collections.singletonList(RiverSelect.this.state.getAbbrev()));
+                        filterParams.put("facet_types", Collections.singletonList(
+                                Integer.toString(
+                                        ((App)getApplication()).getCurrentFacetTypes(session.userAccount))));
+
+                        Page<DestinationFacet> destinations = RiverSelect.this.destinationFacets.get(session, filterParams, null, null);
+
+                        for(DestinationFacet destination : destinations) {
+                            items.add(new MapItem(destination));
+                        }
+                    }
 
 					long startTime = System.currentTimeMillis();
-					Collections.sort(sites, SiteData.SORT_BY_SITE_NAME);
+					Collections.sort(items, MapItem.SORT_BY_NAME);
 					if(Log.isLoggable(TAG, Log.VERBOSE)) {
 						Log.v(TAG, "sorted in " + (System.currentTimeMillis() - startTime));
 					}
 				} catch (UnknownHostException uhe) {
 					setLoadErrorMsg("no network access");
-					if(sites != null && sites.size() > 0) {
+					if(items != null && items.size() > 0) {
 						//re-use cached site info
-						return sites;
+						return items;
 					}
 					return null;
 				} catch(HttpHostConnectException hhce) {
@@ -109,11 +147,11 @@ public class RiverSelect extends SiteList {
 					return null;
 				}
 
-				if(sites == null) {
+				if(items == null) {
 					setLoadErrorMsg("Failed to load sites for unknown reason");
 				}
 				
-		        return sites;
+		        return items;
 			}
 		};
 	}

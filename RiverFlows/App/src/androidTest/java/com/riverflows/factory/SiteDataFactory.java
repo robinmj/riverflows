@@ -18,6 +18,7 @@ import java.util.TimeZone;
 public final class SiteDataFactory {
 
     private static SiteData clearCreekData = null;
+    private static SiteData fountainCreekData = null;
 
     public static SiteData getClearCreekData() {
 
@@ -86,5 +87,33 @@ public final class SiteDataFactory {
         ht.getReadings().add(r);
 
         return clearCreekData = d;
+    }
+
+    public static SiteData getFountainCreekData() {
+
+        if(fountainCreekData != null) return fountainCreekData;
+
+        SiteData d = new SiteData();
+        d.setSite(SiteFactory.getFountainCreek());
+        Map<Variable.CommonVariable, Series> datasets = d.getDatasets();
+
+        Series cfs = new Series();
+        cfs.setReadings(new ArrayList<Reading>());
+        cfs.setVariable(CODWRDataSource.VTYPE_STREAMFLOW_CFS);
+
+        datasets.put(CODWRDataSource.VTYPE_STREAMFLOW_CFS.getCommonVariable(), cfs);
+
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.set(2011, Calendar.MARCH, 7, 13, 0, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.setTimeZone(TimeZone.getTimeZone("GMT-07:00"));
+
+        Reading r = new Reading();
+        r.setDate(cal.getTime());
+        r.setValue(50.0);
+
+        cfs.getReadings().add(r);
+
+        return fountainCreekData = d;
     }
 }

@@ -1,0 +1,23 @@
+!tape
+name: testUpdateNonexistentDestinationFacet
+interactions:
+- recorded: 2014-11-21T21:49:59.116Z
+  request:
+    method: PUT
+    uri: https://ws-staging.riverflowsapp.com/destination_facets/0.json?auth_token=T9HLJkUvA7JwELEeHjsu
+    headers:
+      Accept: application/json
+      Content-Type: application/json
+    body: '{"destination_facet":{"med":null,"quality_high":null,"low_difficulty":null,"facet_type":0,"high_port_difficulty":null,"quality_med":null,"id":0,"high_plus":null,"med_difficulty":null,"low_port_difficulty":null,"high":null,"variable_id":"FLOW","low":null,"high_difficulty":null,"quality_low":null,"med_port_difficulty":null}}'
+  response:
+    status: 404
+    headers:
+      Cache-Control: no-cache
+      Content-Type: application/json; charset=utf-8
+      Date: Fri, 21 Nov 2014 21:49:59 GMT
+      Server: WEBrick/1.3.1 (Ruby/1.9.3/2013-05-16)
+      Set-Cookie: _ws_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJTY1NWFkMGY3YzUxZjA1MTFlOWZlZmRhMDMyYWQ1MTAxBjsAVEkiGXdhcmRlbi51c2VyLnVzZXIua2V5BjsAVFsHWwZpB0kiIiQyYSQxMCRGdkF0UjZENkZ1dFRNUHh2VjNKWGtlBjsAVA%3D%3D--dab0410caffb9115ec4dadf90964f75cda11da5c; path=/; HttpOnly
+      X-Request-Id: 2226a27b0b7a3f3aeeb66a780a2521dc
+      X-Runtime: '0.048000'
+      X-Ua-Compatible: IE=Edge
+    body: '{"message":"Couldn''t find DestinationFacet with id=0"}'

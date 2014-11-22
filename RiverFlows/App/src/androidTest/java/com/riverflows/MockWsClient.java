@@ -1,6 +1,7 @@
 package com.riverflows;
 
 import com.google.inject.AbstractModule;
+import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.DestinationFacets;
 import com.riverflows.wsclient.Destinations;
 
@@ -11,6 +12,7 @@ import static org.mockito.Mockito.mock;
  */
 public class MockWsClient extends AbstractModule {
 
+    public DataSourceController dsControllerMock = mock(DataSourceController.class);
     public Destinations destinationsMock = mock(Destinations.class);
     public DestinationFacets destinationFacetsMock = mock(DestinationFacets.class);
 
@@ -18,5 +20,6 @@ public class MockWsClient extends AbstractModule {
     protected void configure() {
         bind(Destinations.class).toInstance(destinationsMock);
         bind(DestinationFacets.class).toInstance(destinationFacetsMock);
+        bind(DataSourceController.class).toInstance(dsControllerMock);
     }
 }

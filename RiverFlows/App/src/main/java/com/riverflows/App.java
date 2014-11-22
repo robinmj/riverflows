@@ -1,17 +1,22 @@
 package com.riverflows;
 
+import android.app.Activity;
 import android.app.Application;
+import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.os.Build;
 import android.util.Log;
 
 import com.google.analytics.tracking.android.GoogleAnalytics;
+import com.riverflows.data.UserAccount;
 import com.riverflows.db.CachingHttpClientWrapper;
 import com.riverflows.wsclient.DataSourceController;
 
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import roboguice.RoboGuice;
 
 /**
  * Created by robin on 9/29/14.
@@ -29,6 +34,8 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+
+        RoboGuice.setUseAnnotationDatabases(false);
 
         try {
             DataSourceController.useKeyStore(getResources().getAssets().open("trusted.keystore"));
@@ -54,5 +61,23 @@ public class App extends Application {
         Logger.getLogger("").setLevel(Level.ALL);
 
         Log.d(TAG, "App.onCreate exit");
+    }
+
+    public int getCurrentFacetTypes(UserAccount account) {
+        SharedPreferences settings = getSharedPreferences(Home.PREFS_FILE, Activity.MODE_PRIVATE);
+        int facetTypes = settings.getInt(Home.PREF_FACET_TYPES, -1);
+
+        if(facetTypes == -1) {
+            if(account == null || account.getFacetTypes() == 0) {
+                facetTypes = 2;
+            } else {
+                facetTypes = account.getFacetTypes();
+            }
+
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putInt(Home.PREF_FACET_TYPES, facetTypes);
+        }
+
+        return facetTypes;
     }
 }

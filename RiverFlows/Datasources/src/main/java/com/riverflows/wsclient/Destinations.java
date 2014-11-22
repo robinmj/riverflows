@@ -29,7 +29,6 @@ public class Destinations extends WebModel<Destination> {
 
     //singleton
     public static final Destinations instance = new Destinations();
-    private Destinations(){}
 
     public DestinationFacet saveDestinationWithFacet(WsSession session, DestinationFacet destination) throws Exception {
 		HttpPost postCmd = new HttpPost(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + "/destinations.json?auth_token=" + session.authToken);
