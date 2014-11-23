@@ -13,6 +13,8 @@ import java.util.List;
  */
 public class RemoteFavoritesTest extends TestCase {
 
+    private DestinationFacets destinationFacets = new DestinationFacets();
+
     public void testReorderFavorites() throws Throwable {
         UserAccount account = new UserAccount();
         account.setEmail("robin.m.j@gmail.com");
@@ -31,7 +33,7 @@ public class RemoteFavoritesTest extends TestCase {
             assertEquals(newOrder[a], favorites.get(a).getDestinationFacet().getId().intValue());
         }
 
-        List<DestinationFacet> facets = DestinationFacets.instance.getFavorites(session);
+        List<DestinationFacet> facets = destinationFacets.getFavorites(session);
 
         for(int a = 0; a < newOrder.length; a++) {
             assertEquals(newOrder[a], facets.get(a).getId().intValue());

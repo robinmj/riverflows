@@ -14,6 +14,7 @@ import android.widget.Button;
 import android.widget.TextView;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.inject.Inject;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
 import com.riverflows.db.FavoritesDaoImpl;
@@ -23,13 +24,20 @@ import com.riverflows.wsclient.WsSession;
 
 import java.util.List;
 
+import roboguice.activity.RoboFragmentActivity;
+
+import static roboguice.RoboGuice.getInjector;
+
 /**
  * Created by robin on 10/1/13.
  */
-public class SetupDestinations extends FragmentActivity implements LoaderManager.LoaderCallbacks<Pair<Favorite,List<DestinationFacet>>> {
+public class SetupDestinations extends RoboFragmentActivity implements LoaderManager.LoaderCallbacks<Pair<Favorite,List<DestinationFacet>>> {
 
 	private static final int REQUEST_SIMILAR_DESTINATIONS = 36941;
 	private static final int RECOVERY_REQUEST_SIMILAR_DESTINATIONS = 6392;
+
+    @Inject
+    private DestinationFacets destinationFacets;
 
 	private int currentFavoriteIndex = 0;
 
@@ -92,12 +100,13 @@ public class SetupDestinations extends FragmentActivity implements LoaderManager
 	private class FindSimilarDestinations extends ApiCallTask<Favorite, Integer, List<DestinationFacet>> {
 		private FindSimilarDestinations(int requestCode, int recoveryRequestCode, boolean loginRequired, boolean secondTry) {
 			super(SetupDestinations.this, requestCode, recoveryRequestCode, loginRequired, secondTry);
+            getInjector(SetupDestinations.this).injectMembers(this);
 		}
 
 		@Override
 		protected List<DestinationFacet> doApiCall(WsSession session, Favorite... favorites) throws Exception {
 
-			return DestinationFacets.instance.getSimilarDestinations(session, favorites[0]);
+			return destinationFacets.getSimilarDestinations(session, favorites[0]);
 		}
 
 		public List<DestinationFacet> inline(Favorite favorite) {

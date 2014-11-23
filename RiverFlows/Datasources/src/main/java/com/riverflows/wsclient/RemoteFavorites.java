@@ -26,6 +26,8 @@ import java.util.List;
  */
 public class RemoteFavorites extends WebModel<Favorite> {
 
+    private DestinationFacets destinationFacets = new DestinationFacets();
+
     private static final Log LOG = LogFactory.getLog(RemoteFavorites.class);
 
     //singleton
@@ -50,7 +52,7 @@ public class RemoteFavorites extends WebModel<Favorite> {
         }
 
         if(json.has("destination_facet")) {
-            favorite.setDestinationFacet(DestinationFacets.instance.fromJson(json.getJSONObject("destination_facet")));
+            favorite.setDestinationFacet(destinationFacets.fromJson(json.getJSONObject("destination_facet")));
         } else {
             DestinationFacet placeholderFacet = new DestinationFacet();
             placeholderFacet.setId(json.getInt("destination_facet_id"));

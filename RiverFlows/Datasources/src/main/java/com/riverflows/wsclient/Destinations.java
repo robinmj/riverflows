@@ -3,6 +3,7 @@ package com.riverflows.wsclient;
 import com.google.inject.Singleton;
 import com.riverflows.data.Destination;
 import com.riverflows.data.DestinationFacet;
+import com.riverflows.data.Site;
 import com.riverflows.data.UserAccount;
 
 import org.apache.commons.logging.Log;
@@ -25,10 +26,9 @@ import javax.net.ssl.HttpsURLConnection;
 @Singleton
 public class Destinations extends WebModel<Destination> {
 
-    private static final Log LOG = LogFactory.getLog(Destinations.class);
+    private DestinationFacets destinationFacets = new DestinationFacets();
 
-    //singleton
-    public static final Destinations instance = new Destinations();
+    private static final Log LOG = LogFactory.getLog(Destinations.class);
 
     public DestinationFacet saveDestinationWithFacet(WsSession session, DestinationFacet destination) throws Exception {
 		HttpPost postCmd = new HttpPost(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + "/destinations.json?auth_token=" + session.authToken);
@@ -37,7 +37,7 @@ public class Destinations extends WebModel<Destination> {
 		JSONObject entity = new JSONObject();
 
 		entity.put("destination", destinationAsJson(destination.getDestination()));
-		entity.put("destination_facet", DestinationFacets.instance.toJson(destination));
+		entity.put("destination_facet", destinationFacets.toJson(destination));
 
 		postCmd.setEntity(new StringEntity(entity.toString()));
 
@@ -58,8 +58,10 @@ public class Destinations extends WebModel<Destination> {
 
 		JSONObject destJson = responseObj.getJSONObject("destination");
 
-		DestinationFacet result = DestinationFacets.instance.fromJson(responseObj.getJSONObject("destination_facet"));
+		DestinationFacet result = destinationFacets.fromJson(responseObj.getJSONObject("destination_facet"));
+        Site site = result.getDestination().getSite();
 		result.setDestination(parseDestination(destJson));
+        result.getDestination().setSite(site);
 
 		return result;
     }

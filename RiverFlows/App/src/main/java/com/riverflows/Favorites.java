@@ -31,6 +31,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.inject.Inject;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.FavoriteData;
@@ -55,6 +56,10 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import roboguice.fragment.RoboListFragment;
+
+import static roboguice.RoboGuice.getInjector;
+
 public class Favorites extends ListFragment implements LoaderManager.LoaderCallbacks<List<FavoriteData>> {
 
 	private static final String TAG = Home.TAG;
@@ -76,6 +81,9 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 	public static final int DIALOG_ID_LOADING_ERROR = 2;
 	public static final int DIALOG_ID_SIGNING_IN = 6;
+
+    @Inject
+    private DestinationFacets destinationFacets;
 
 	private SignIn signin;
 
@@ -374,12 +382,16 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 	public static class FavoritesLoader extends ApiCallLoader<List<FavoriteData>> {
 		private static final String PARAM_HARD_REFRESH = "hardRefresh";
 
+        @Inject
+        private DestinationFacets destinationFacets;
+
 		public List<Favorite> favorites = null;
 		private boolean hardRefresh = false;
 		private String tempUnit = null;
 
 		public FavoritesLoader(Activity activity, WsSessionUIHelper helper, String tempUnit, boolean hardRefresh) {
 			super(activity, helper);
+            getInjector(activity).injectMembers(this);
 			this.hardRefresh = hardRefresh;
 			this.tempUnit = tempUnit;
 		}
@@ -397,7 +409,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 			this.favorites = FavoritesDaoImpl.getFavorites(FavoritesLoader.this.getContext(), null, null);
 
-			List<DestinationFacet> destinationFacets = DestinationFacets.instance.getFavorites(session);
+			List<DestinationFacet> destinationFacets = this.destinationFacets.getFavorites(session);
 
 			HashSet<Integer> localDestFacetIds = new HashSet<Integer>(this.favorites.size());
 
@@ -783,7 +795,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
         @Override
         protected FavoriteData doApiCall(WsSession session, FavoriteData... params) throws Exception {
-            DestinationFacets.instance.removeFavorite(session, params[0].getFavorite().getDestinationFacet().getId());
+            destinationFacets.removeFavorite(session, params[0].getFavorite().getDestinationFacet().getId());
 
             FavoritesDaoImpl.deleteFavorite(Favorites.this.getActivity(), params[0].getFavorite().getSite().getSiteId(), params[0].getVariable());
             return params[0];

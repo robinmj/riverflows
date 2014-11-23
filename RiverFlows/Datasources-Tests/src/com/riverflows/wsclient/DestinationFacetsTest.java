@@ -1,5 +1,6 @@
 package com.riverflows.wsclient;
 
+import com.riverflows.WebModelTestCase;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Page;
@@ -27,43 +28,16 @@ import co.freeside.betamax.httpclient.BetamaxHttpClient;
 /**
  * Created by robin on 10/14/14.
  */
-public class DestinationFacetsTest extends TestCase {
+public class DestinationFacetsTest extends WebModelTestCase {
 
     private static final Log LOG = LogFactory.getLog(DestinationFacetsTest.class);
-
-    @Rule
-    public Recorder recorder = new Recorder();
-
-    private WsSession session = null;
-
-    @Override
-    protected void setUp() throws Exception {
-        super.setUp();
-
-        UserAccount account = new UserAccount();
-        account.setEmail("robin.m.j@gmail.com");
-        session = new WsSession("robin.m.j", account, "T9HLJkUvA7JwELEeHjsu", System.currentTimeMillis() + 10 * 60 * 1000);
-
-        DestinationFacets.setHttpClientFactory(new HttpClientFactory() {
-            BetamaxHttpClient client = new BetamaxHttpClient(recorder);
-
-            @Override
-            public HttpClient getHttpClient() {
-                return client;
-            }
-        });
-    }
-
-    @Override
-    protected void tearDown() throws Exception {
-        recorder.ejectTape();
-        super.tearDown();
-    }
+    
+    private DestinationFacets destinationFacets = new DestinationFacets();
 
     public void testGetFavorites() throws Throwable {
         recorder.insertTape("testGetFavorites");
 
-        List<DestinationFacet> favorites = DestinationFacets.instance.getFavorites(session);
+        List<DestinationFacet> favorites = destinationFacets.getFavorites(session);
 
         for(DestinationFacet facet: favorites) {
             LOG.info("destination_facet.id=" + facet.getId());
@@ -75,7 +49,7 @@ public class DestinationFacetsTest extends TestCase {
     public void testGetDestinationFacets() throws Throwable {
         recorder.insertTape("testGetDestinationFacets");
 
-        Page<DestinationFacet> facets = DestinationFacets.instance.get(session,
+        Page<DestinationFacet> facets = destinationFacets.get(session,
                 Collections.singletonMap("state", Collections.singletonList(USState.AZ.getAbbrev())),
                 null,
                 null);
@@ -83,7 +57,7 @@ public class DestinationFacetsTest extends TestCase {
         assertEquals(0, facets.pageElements.size());
         assertNull(facets.totalElementCount);
 
-        facets = DestinationFacets.instance.get(session,
+        facets = destinationFacets.get(session,
                 Collections.singletonMap("state", Collections.singletonList(USState.CA.getAbbrev())),
                 null,
                 null);
@@ -91,7 +65,7 @@ public class DestinationFacetsTest extends TestCase {
         assertEquals(1, facets.pageElements.size());
         assertNull(facets.totalElementCount);
 
-        facets = DestinationFacets.instance.get(session,
+        facets = destinationFacets.get(session,
                 Collections.singletonMap("state", Collections.singletonList(USState.CO.getAbbrev())),
                 null,
                 4);
@@ -99,7 +73,7 @@ public class DestinationFacetsTest extends TestCase {
         assertEquals(4, facets.pageElements.size());
         assertEquals(4, facets.totalElementCount.intValue());
 
-        facets = DestinationFacets.instance.get(session,
+        facets = destinationFacets.get(session,
                 Collections.singletonMap("state", Collections.singletonList(USState.CO.getAbbrev())),
                 2,
                 4);
@@ -107,7 +81,7 @@ public class DestinationFacetsTest extends TestCase {
         assertEquals(4, facets.pageElements.size());
         assertEquals(4, facets.totalElementCount.intValue());
 
-        facets = DestinationFacets.instance.get(session,
+        facets = destinationFacets.get(session,
                 Collections.singletonMap("state", Collections.singletonList(USState.CO.getAbbrev())),
                 null,
                 null);
@@ -119,7 +93,7 @@ public class DestinationFacetsTest extends TestCase {
         params.put("state", Collections.singletonList(USState.CO.getAbbrev()));
         params.put("facet_types", Collections.singletonList("2"));
 
-        facets = DestinationFacets.instance.get(session,
+        facets = destinationFacets.get(session,
                 params,
                 null,
                 null);
@@ -134,7 +108,7 @@ public class DestinationFacetsTest extends TestCase {
     public void testSaveFavorite() throws Throwable {
         recorder.insertTape("testSaveFavorite");
 
-        Favorite result = DestinationFacets.instance.saveFavorite(session, 20);
+        Favorite result = destinationFacets.saveFavorite(session, 20);
 
         assertEquals(20, result.getDestinationFacet().getId().intValue());
     }
@@ -142,14 +116,14 @@ public class DestinationFacetsTest extends TestCase {
     public void testRemoveFavorite() throws Throwable {
         recorder.insertTape("testRemoveFavorite");
 
-        DestinationFacets.instance.removeFavorite(session, 20);
+        destinationFacets.removeFavorite(session, 20);
     }
 
     public void testRemoveNonexistantFavorite() throws Throwable {
         recorder.insertTape("testRemoveNonexistantFavorite");
 
         try {
-            DestinationFacets.instance.removeFavorite(session, 0);
+            destinationFacets.removeFavorite(session, 0);
         } catch(UnexpectedResultException ure) {
             assertEquals(HttpStatus.SC_GONE, ure.getStatusCode());
         }
@@ -158,7 +132,7 @@ public class DestinationFacetsTest extends TestCase {
     public void testGetDestinationFacet() throws Throwable {
         recorder.insertTape("testGetDestinationFacet");
 
-        DestinationFacet testFacet = DestinationFacets.instance.get(session, 20);
+        DestinationFacet testFacet = destinationFacets.get(session, 20);
 
         assertEquals(20, testFacet.getId().intValue());
         assertNull(testFacet.getDescription());
@@ -187,14 +161,14 @@ public class DestinationFacetsTest extends TestCase {
     public void testUpdateDestinationFacet() throws Throwable {
         recorder.insertTape("testUpdateDestinationFacet", Collections.singletonMap("mode", TapeMode.READ_SEQUENTIAL));
 
-        DestinationFacet testFacet = DestinationFacets.instance.get(session, 20);
+        DestinationFacet testFacet = destinationFacets.get(session, 20);
 
         testFacet.setHighPlus(5000.0);
         testFacet.setLowDifficulty(8);
 
-        DestinationFacets.instance.update(session, testFacet);
+        destinationFacets.update(session, testFacet);
 
-        DestinationFacet updatedFacet = DestinationFacets.instance.get(session, 20);
+        DestinationFacet updatedFacet = destinationFacets.get(session, 20);
 
         assertNull(updatedFacet.getDescription());
         assertNull(updatedFacet.getTooLow());
@@ -220,8 +194,8 @@ public class DestinationFacetsTest extends TestCase {
         //revert database
         testFacet.setHighPlus(null);
         testFacet.setLowDifficulty(null);
-        DestinationFacets.instance.update(session, testFacet);
-        updatedFacet = DestinationFacets.instance.get(session, 20);
+        destinationFacets.update(session, testFacet);
+        updatedFacet = destinationFacets.get(session, 20);
         assertNull(updatedFacet.getHighPlus());
         assertNull(updatedFacet.getLowDifficulty());
     }
@@ -234,7 +208,7 @@ public class DestinationFacetsTest extends TestCase {
         testFacet.setVariable(new Variable(null, "FLOW", null));
 
         try {
-            DestinationFacets.instance.update(session, testFacet);
+            destinationFacets.update(session, testFacet);
         } catch(UnexpectedResultException ure) {
             assertEquals(HttpStatus.SC_NOT_FOUND, ure.getStatusCode());
         }
