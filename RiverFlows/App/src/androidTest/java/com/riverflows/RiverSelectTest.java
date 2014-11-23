@@ -1,6 +1,7 @@
 package com.riverflows;
 
 import android.content.Intent;
+import android.widget.EditText;
 
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Page;
@@ -50,6 +51,8 @@ public class RiverSelectTest {
 
     MockWsClient wsClient = new MockWsClient();
 
+    EditText filter_field = null;
+
     @Before
     public void setup() {
         RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient);
@@ -62,6 +65,8 @@ public class RiverSelectTest {
         activityController.withIntent(i).create().start().resume().visible();
 
         RiverSelect activity = activityController.get();
+
+        filter_field = (EditText)activity.findViewById(R.id.site_filter_field);
 
         return activity;
     }
@@ -122,8 +127,13 @@ public class RiverSelectTest {
 
         assertThat(mapItemAdapter.getCount(), equalTo(3));
         assertThat(mapItemAdapter.getItem(0).getSite().getName(), equalTo(clearCreekData.getSite().getName()));
-        assertThat(mapItemAdapter.getItem(1).destinationFacet.getDestination().getName(), equalTo(clearCreekKayak.getDestination().getName()));
-        assertThat(mapItemAdapter.getItem(2).getSite().getName(), equalTo(fountainCreekData.getSite().getName()));
+        assertThat(mapItemAdapter.getItem(1).getSite().getName(), equalTo(fountainCreekData.getSite().getName()));
+        assertThat(mapItemAdapter.getItem(2).destinationFacet.getDestination().getName(), equalTo(clearCreekKayak.getDestination().getName()));
+
+        filter_field.setText("Terrible");
+
+        assertThat(mapItemAdapter.getCount(), equalTo(1));
+        assertThat(mapItemAdapter.getItem(0).destinationFacet.getDestination().getName(), equalTo(clearCreekKayak.getDestination().getName()));
     }
 
     public class MapListMatcher extends BaseMatcher<Map<String,List<String>>> {

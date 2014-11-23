@@ -5,7 +5,6 @@ package com.riverflows;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import android.content.Context;
 import android.util.Log;
@@ -21,8 +20,6 @@ import android.widget.TextView;
 import com.riverflows.data.MapItem;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
-import com.riverflows.data.SiteData;
-import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.Utils;
 
 public class MapItemAdapter extends BaseAdapter implements Filterable {
@@ -180,7 +177,7 @@ public class MapItemAdapter extends BaseAdapter implements Filterable {
 		
 	}
 	
-	private Filter stationListFilter =  new Filter() {
+	private Filter mapItemFilter =  new Filter() {
 		@Override
 		protected FilterResults performFiltering(CharSequence constraint) {
 			FilterResults results = new FilterResults();
@@ -198,19 +195,19 @@ public class MapItemAdapter extends BaseAdapter implements Filterable {
                 final ArrayList<MapItem> newValues = new ArrayList<MapItem>(count);
 
                 for (int i = 0; i < count; i++) {
-                    final MapItem station = values.get(i);
-                    final String valueText = station.getSite().getName().toLowerCase();
+                    final MapItem item = values.get(i);
+                    final String valueText = item.getName().toLowerCase();
 
                     // First match against the whole, non-splitted value
                     if (valueText.startsWith(prefixString)) {
-                        newValues.add(station);
+                        newValues.add(item);
                     } else {
                         final String[] words = valueText.split(" ");
                         final int wordCount = words.length;
 
                         for (int k = 0; k < wordCount; k++) {
                             if (words[k].startsWith(prefixString)) {
-                                newValues.add(station);
+                                newValues.add(item);
                                 break;
                             }
                         }
@@ -238,7 +235,7 @@ public class MapItemAdapter extends BaseAdapter implements Filterable {
 	
 	@Override
 	public Filter getFilter() {
-		return stationListFilter;
+		return mapItemFilter;
 	}
 
     static class ViewHolder {

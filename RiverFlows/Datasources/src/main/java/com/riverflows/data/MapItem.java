@@ -88,7 +88,7 @@ public class MapItem {
             if(object2 == null || object2.getName() == null) {
                 return 1;
             }
-            return object1.getSite().getName().toUpperCase().compareTo(object2.getSite().getName().toUpperCase());
+            return object1.getName().toUpperCase().compareTo(object2.getName().toUpperCase());
         }
     };
 
