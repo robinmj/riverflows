@@ -1,19 +1,5 @@
 package com.riverflows;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.UnknownHostException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
@@ -50,6 +36,7 @@ import android.widget.TextView;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
+import com.google.inject.Inject;
 import com.riverflows.data.CelsiusFahrenheitConverter;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Reading;
@@ -79,12 +66,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import roboguice.activity.RoboActivity;
+
 /**
  * Experimenting with using AChartEngine for displaying the hydrograph
  * @author robin
  *
  */
-public class ViewChart extends Activity {
+public class ViewChart extends RoboActivity {
 	
 	private static final String TAG = Home.TAG;
 	
@@ -94,6 +83,9 @@ public class ViewChart extends Activity {
 	public static final String KEY_VARIABLE = "variable";
 
 	public static final int DIALOG_ID_LOADING_ERROR = 1;
+
+    @Inject
+    private DataSourceController dataSourceController;
 	
 	private Site station;
 	private Boolean zeroYMin = null;
@@ -478,7 +470,7 @@ public class ViewChart extends Activity {
         			}
             	}
         		
-        		return DataSourceController.getSiteData(site, variables, this.hardRefresh);
+        		return this.activity.dataSourceController.getSiteData(site, variables, this.hardRefresh);
             } catch(UnknownHostException uhe) {
             	errorMsg = "Lost network connection.";
             } catch(IOException ioe) {

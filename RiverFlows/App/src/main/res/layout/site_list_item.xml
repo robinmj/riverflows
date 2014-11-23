@@ -8,7 +8,17 @@
       android:layout_alignParentLeft="true"
       android:paddingLeft="6dp"
       android:paddingTop="2dp"
+      android:paddingRight="6dp"
       android:visibility="gone"/>
+  <ImageView android:id="@+id/destinationIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentLeft="true"
+        android:paddingLeft="6dp"
+        android:paddingTop="2dp"
+        android:paddingRight="6dp"
+        android:src="@drawable/ic_destination"
+        android:visibility="gone"/>
 	<TextView android:id="@+id/subtext"
 	    android:layout_width="wrap_content"
 	    android:layout_height="fill_parent"

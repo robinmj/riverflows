@@ -21,6 +21,7 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/java" isTestSource="true" />
       <sourceFolder url="file://$MODULE_DIR$/src/main/resources" type="java-resource" />
+      <sourceFolder url="file://$MODULE_DIR$/resources" type="java-test-resource" />
       <sourceFolder url="file://$MODULE_DIR$/src/test/resources" type="java-test-resource" />
       <excludeFolder url="file://$MODULE_DIR$/.gradle" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
@@ -28,6 +29,21 @@
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="module" module-name="Datasources" exported="" />
+    <orderEntry type="library" exported="" scope="TEST" name="groovy-all-2.2.0" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="betamax-1.2-SNAPSHOT" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="junit-4.8.2" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="snakeyaml-1.10" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="httpcore-4.2.1" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="commons-logging-1.1.1" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="commons-codec-1.6" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="httpclient-4.2.1" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="servlet-api-2.5" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="jetty-continuation-7.3.1.v20110307" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="jetty-util-7.3.1.v20110307" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="jetty-io-7.3.1.v20110307" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="jetty-http-7.3.1.v20110307" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="jetty-server-7.3.1.v20110307" level="project" />
+    <orderEntry type="library" exported="" scope="TEST" name="commons-lang-2.4" level="project" />
     <orderEntry type="library" exported="" scope="TEST" name="junit-3.8.1" level="project" />
   </component>
 </module>

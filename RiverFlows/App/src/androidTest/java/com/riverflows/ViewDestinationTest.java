@@ -70,14 +70,11 @@ public class ViewDestinationTest {
 
     @Test
     public void shouldLoadHydrograph() throws Exception {
-        RESTDataSource codwrMock = mock(RESTDataSource.class);
-
-        DataSourceController.setDataSource("CODWR", codwrMock);
 
         DestinationFacet clearCreekKayak = DestinationFacetFactory.getClearCreekKayak();
         Site clearCreek = clearCreekKayak.getDestination().getSite();
 
-        when(codwrMock.getSiteData(argThat(SiteFactory.matches(clearCreek)),
+        when(wsClient.dsControllerMock.getSiteData(argThat(SiteFactory.matches(clearCreek)),
                 argThat(equalTo(clearCreek.getSupportedVariables())),
                 eq(false)))
                 .thenReturn(SiteDataFactory.getClearCreekData());
@@ -94,9 +91,6 @@ public class ViewDestinationTest {
 
     @Test
     public void shouldSaveFavorite() throws Exception {
-        RESTDataSource codwrMock = mock(RESTDataSource.class);
-
-        DataSourceController.setDataSource("CODWR", codwrMock);
 
         DestinationFacet clearCreekKayak = DestinationFacetFactory.getClearCreekKayak();
         Site clearCreek = clearCreekKayak.getDestination().getSite();
@@ -115,6 +109,9 @@ public class ViewDestinationTest {
 
         clickOn(favoriteBtn);//remove favorite
 
+        verify(wsClient.dsControllerMock).getSiteData(argThat(SiteFactory.matches(clearCreek)),
+                argThat(equalTo(clearCreek.getSupportedVariables())),
+                eq(false));
         verify(wsClient.destinationFacetsMock).saveFavorite(any(WsSession.class), eq(new Integer(23)));
         verify(wsClient.destinationFacetsMock).removeFavorite(any(WsSession.class), eq(new Integer(23)));
     }

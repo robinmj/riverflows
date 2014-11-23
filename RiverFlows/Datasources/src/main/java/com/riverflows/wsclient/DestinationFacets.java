@@ -38,7 +38,6 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 
 	//singleton
 	public static final DestinationFacets instance = new DestinationFacets();
-	private DestinationFacets(){}
 
     @Override
     public String getResourceName() {
@@ -64,7 +63,9 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 
     public Favorite saveFavorite(WsSession session, int destFacetId) throws Exception {
         HttpPost postCmd = new HttpPost(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource()
-                + "/" + destFacetId + "/save_favorite.json?auth_token=" + session.authToken);
+                + "/" + destFacetId + "/save_favorite.json");
+
+        postCmd.setEntity(new UrlEncodedFormEntity(Collections.singletonList(new BasicNameValuePair("auth_token", session.authToken))));
 
         HttpClient client = getHttpClientFactory().getHttpClient();
 

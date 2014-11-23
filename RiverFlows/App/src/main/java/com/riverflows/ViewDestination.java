@@ -37,6 +37,7 @@ import android.widget.TextView;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
+import com.google.inject.Inject;
 import com.riverflows.data.CelsiusFahrenheitConverter;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
@@ -66,12 +67,15 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import roboguice.RoboGuice;
+import roboguice.activity.RoboActivity;
+
 /**
  * Experimenting with using AChartEngine for displaying the hydrograph
  * @author robin
  *
  */
-public class ViewDestination extends Activity {
+public class ViewDestination extends RoboActivity {
 
 	public static final String KEY_DESTINATION_FACET = "destination_facet";
 
@@ -367,6 +371,9 @@ public class ViewDestination extends Activity {
 		private Site site;
 		private boolean hardRefresh = false;
 
+        @Inject
+        private DataSourceController dataSourceController;
+
     	public GenerateDataSetTask(ViewDestination activity, boolean hardRefresh) {
 			super();
     		this.activity = activity;
@@ -374,6 +381,7 @@ public class ViewDestination extends Activity {
     		this.variable = this.activity.getVariable();
     		this.site = this.activity.getSite();
     		this.hardRefresh = hardRefresh;
+            RoboGuice.getInjector(activity).injectMembers(this);
 		}
 
     	public void setActivity(ViewDestination activity) {
@@ -413,7 +421,7 @@ public class ViewDestination extends Activity {
         			}
             	}
 
-        		return DataSourceController.getSiteData(site, variables, this.hardRefresh);
+        		return this.dataSourceController.getSiteData(site, variables, this.hardRefresh);
             } catch(UnknownHostException uhe) {
             	errorMsg = "Lost network connection.";
             } catch(IOException ioe) {

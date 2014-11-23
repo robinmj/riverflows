@@ -10,11 +10,11 @@ import java.util.logging.Logger;
  * This is automatically loaded by Robolectric in place of com.riverflows.App
  * Created by robin on 11/11/14.
  */
-public class TestApp extends Application {
+public class TestApp extends App {
 
     @Override
     public void onCreate() {
-        super.onCreate();
+        //don't call super.onCreate()- instead do any necessary configuration here
 
         Logger.getLogger("").setLevel(Level.ALL);
 
