@@ -78,7 +78,6 @@ public class MapItemAdapter extends BaseAdapter implements Filterable {
             // we want to bind data to.
             holder = new ViewHolder();
             holder.text = (TextView) convertView.findViewById(R.id.list_item_txt);
-            holder.subtext = (TextView) convertView.findViewById(R.id.subtext);
             holder.agencyIcon = (ImageView)convertView.findViewById(R.id.agencyIcon);
             holder.destinationIcon = (ImageView)convertView.findViewById(R.id.destinationIcon);
 
@@ -109,43 +108,6 @@ public class MapItemAdapter extends BaseAdapter implements Filterable {
                 Log.e(TAG, "no icon for agency: " + siteAgency);
                 holder.agencyIcon.setVisibility(View.GONE);
             }
-        }
-        
-        //display the last reading for this site, if present
-
-        Series flowSeries = null;
-        Reading lastReading = null;
-        if(holder.mapItem.siteData != null) {
-            flowSeries = holder.mapItem.getPreferredSeries();
-            lastReading = getLastReadingValue(flowSeries);
-        }
-    	
-        if(lastReading == null) {
-        	holder.subtext.setText("");
-        } else {
-        	if(lastReading.getValue() == null) {
-        		if(lastReading.getQualifiers() == null) {
-        			holder.subtext.setText("unknown");
-        		} else {
-            		holder.subtext.setText(lastReading.getQualifiers());
-        		}
-        	} else {
-
-        		//use this many significant figures for decimal values
-    			int sigfigs = 4;
-    			
-    			String readingStr = Utils.abbreviateNumber(lastReading.getValue(), sigfigs);
-        		
-        		holder.subtext.setText(readingStr + " " + flowSeries.getVariable().getUnit());
-        	}
-        
-        	//TODO come up with a better way of conveying a stale reading
-	        //30 minutes ago
-	        //Date staleReadingDate = new Date(System.currentTimeMillis() - (30 * 60 * 1000));
-	        
-	        //if(lastReading.getDate().before(staleReadingDate)) {
-	        //	holder.subtext.setText("");
-	        //}
         }
 
         return convertView;
@@ -241,7 +203,6 @@ public class MapItemAdapter extends BaseAdapter implements Filterable {
     static class ViewHolder {
     	MapItem mapItem;
         TextView text;
-        TextView subtext;
         ImageView agencyIcon;
         ImageView destinationIcon;
     }
