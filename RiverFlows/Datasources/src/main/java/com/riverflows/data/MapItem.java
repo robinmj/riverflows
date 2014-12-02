@@ -14,7 +14,9 @@ public class MapItem {
 
     private final Variable variable;
 
-    public MapItem(SiteData siteData, Variable variable) {
+    private final boolean favorite;
+
+    public MapItem(SiteData siteData, Variable variable, boolean favorite) {
         assert(siteData != null);
         assert(siteData.getSite().getId() != null);
 
@@ -23,9 +25,11 @@ public class MapItem {
         this.destinationFacet = null;
 
         this.variable = variable;
+
+        this.favorite = favorite;
     }
 
-    public MapItem(DestinationFacet destinationFacet) {
+    public MapItem(DestinationFacet destinationFacet, boolean favorite) {
         assert(destinationFacet != null);
         assert(destinationFacet.getId() != null);
 
@@ -34,6 +38,8 @@ public class MapItem {
         this.destinationFacet = destinationFacet;
 
         this.variable = null;
+
+        this.favorite = favorite;
     }
 
     public Site getSite() {
@@ -70,6 +76,10 @@ public class MapItem {
 
     public boolean isDestination() {
         return destinationFacet != null;
+    }
+
+    public boolean isFavorite() {
+        return favorite;
     }
 
     public String getName() {
