@@ -6,17 +6,17 @@ import android.widget.CheckBox;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Site;
 import com.riverflows.data.UserAccount;
+import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.factory.DestinationFacetFactory;
 import com.riverflows.factory.SiteDataFactory;
 import com.riverflows.factory.SiteFactory;
-import com.riverflows.wsclient.DataSourceController;
-import com.riverflows.wsclient.RESTDataSource;
 import com.riverflows.wsclient.WsSession;
 import com.riverflows.wsclient.WsSessionManager;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.util.ActivityController;
@@ -30,7 +30,7 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.clickOn;
@@ -101,18 +101,26 @@ public class ViewDestinationTest {
 
         ViewDestination activity = createViewDestination(i);
 
+        assertThat("precondition",
+                !FavoritesDaoImpl.isFavorite(Robolectric.application, 23));
+
         assertThat(favoriteBtn.isChecked(), equalTo(false));
 
         clickOn(favoriteBtn);//add favorite
 
+        assertThat("created favorite", FavoritesDaoImpl.isFavorite(Robolectric.application, 23));
         assertThat(favoriteBtn.isChecked(), equalTo(true));
 
         clickOn(favoriteBtn);//remove favorite
+        assertThat("removed favorite", !FavoritesDaoImpl.isFavorite(Robolectric.application, 23));
+
+        InOrder inOrder = inOrder(wsClient.destinationFacetsMock);
 
         verify(wsClient.dsControllerMock).getSiteData(argThat(SiteFactory.matches(clearCreek)),
                 argThat(equalTo(clearCreek.getSupportedVariables())),
                 eq(false));
-        verify(wsClient.destinationFacetsMock).saveFavorite(any(WsSession.class), eq(new Integer(23)));
-        verify(wsClient.destinationFacetsMock).removeFavorite(any(WsSession.class), eq(new Integer(23)));
+
+        inOrder.verify(wsClient.destinationFacetsMock).saveFavorite(any(WsSession.class), eq(new Integer(23)));
+        inOrder.verify(wsClient.destinationFacetsMock).removeFavorite(any(WsSession.class), eq(new Integer(23)));
     }
 }

@@ -19,6 +19,13 @@ public class Favorite implements Serializable, RemoteObject {
 		this.variableId = variableId;
 	}
 
+    public Favorite(DestinationFacet destinationFacet) {
+        super();
+        this.site = destinationFacet.getDestination().getSite();
+        this.variableId = destinationFacet.getVariable().getId();
+        this.destinationFacet = destinationFacet;
+    }
+
 	public Site getSite() {
 		return site;
 	}

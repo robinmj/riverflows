@@ -43,18 +43,18 @@ public class ToggleFavoriteTask extends ApiCallTask<Object, Integer, Favorite> {
 
         boolean isFavorite = FavoritesDaoImpl.isFavorite(this.activity.getApplicationContext(), this.favorite.getSite().getSiteId(), this.favorite.getVariable());
 
-        if(facet != null) {
-            if(isFavorite) {
+        if(isFavorite) {
+            if(facet != null) {
                 this.destinationFacets.removeFavorite(session, facet.getId());
+                FavoritesDaoImpl.deleteFavorite(this.activity.getApplicationContext(), facet.getId());
             } else {
+                FavoritesDaoImpl.deleteFavorite(this.activity.getApplicationContext(), this.favorite.getSite().getSiteId(), this.favorite.getVariable());
+            }
+        } else {
+            if(facet != null) {
                 this.destinationFacets.saveFavorite(session, facet.getId());
             }
-        }
 
-
-        if(isFavorite) {
-            FavoritesDaoImpl.deleteFavorite(this.activity.getApplicationContext(), this.favorite.getSite().getSiteId(), this.favorite.getVariable());
-        } else {
             FavoritesDaoImpl.createFavorite(this.activity.getApplicationContext(), this.favorite);
         }
 
