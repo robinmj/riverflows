@@ -3,6 +3,8 @@ package com.riverflows.wsclient;
 import android.app.Activity;
 import android.support.v4.content.AsyncTaskLoader;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 /**
  * Created by robin on 7/19/14.
  */
@@ -11,6 +13,8 @@ public abstract class ApiCallLoader<Result> extends AsyncTaskLoader<Result> {
 	protected Exception exception = null;
 
 	protected final WsSessionUIHelper uiHelper;
+
+    protected final AtomicBoolean wasAborted = new AtomicBoolean(false);
 
 	protected ApiCallLoader(Activity activity, WsSessionUIHelper uiHelper) {
 		super(activity);
@@ -37,6 +41,7 @@ public abstract class ApiCallLoader<Result> extends AsyncTaskLoader<Result> {
 
 		WsSession session = uiHelper.initSession();
 		if(session == null) {
+            wasAborted.set(true);
 			return null;
 		}
 

@@ -58,7 +58,7 @@ import static org.mockito.Mockito.when;
 /**
  * Created by robin on 11/18/14.
  */
-@RunWith(RobolectricTestRunner.class)
+@RunWith(RobolectricGradleTestRunner.class)
 public class RiverSelectTest {
 
     MockWsClient wsClient = new MockWsClient();

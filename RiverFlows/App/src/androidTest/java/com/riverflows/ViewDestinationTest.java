@@ -1,6 +1,7 @@
 package com.riverflows;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.widget.CheckBox;
 
 import com.riverflows.data.DestinationFacet;
@@ -39,10 +40,12 @@ import static org.robolectric.Robolectric.clickOn;
  * Created by robin on 11/14/14.
  */
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(RobolectricGradleTestRunner.class)
 public class ViewDestinationTest {
 
+    ActivityController<ViewDestination> activityController;
     CheckBox favoriteBtn;
+    DestinationFragment destinationFragment;
     MockWsClient wsClient = new MockWsClient();
 
     @Before
@@ -51,9 +54,9 @@ public class ViewDestinationTest {
     }
 
     public ViewDestination createViewDestination(Intent i) throws Exception {
-        ActivityController<ViewDestination> activityController= Robolectric.buildActivity(ViewDestination.class);
+        this.activityController= Robolectric.buildActivity(ViewDestination.class);
 
-        activityController.withIntent(i).create().start().resume().visible();
+        this.activityController.withIntent(i).create().start().resume().visible();
 
         ViewDestination activity = activityController.get();
 
@@ -63,9 +66,25 @@ public class ViewDestinationTest {
 
         WsSessionManager.setSession(session);
 
-        this.favoriteBtn = (CheckBox)activity.findViewById(R.id.favorite_btn);
+        loadExaminedViews(activity);
 
         return activity;
+    }
+
+    public void loadExaminedViews(ViewDestination activity) {
+
+        assertThat(activity.getSupportFragmentManager().getFragments().size(), equalTo(1));
+
+        this.destinationFragment = (DestinationFragment)activity.getSupportFragmentManager().getFragments().get(0);
+        this.favoriteBtn = (CheckBox)this.destinationFragment.getView().findViewById(R.id.favorite_btn);
+    }
+
+    private ViewDestination simulateConfigurationChange(ViewDestination activity) {
+        Bundle bundle = new Bundle();
+        this.activityController.saveInstanceState(bundle).pause().stop().destroy();
+        this.activityController = Robolectric.buildActivity(ViewDestination.class).withIntent(activity.getIntent());
+        this.activityController.create(bundle).start().restoreInstanceState(bundle).resume().visible();
+        return this.activityController.get();
     }
 
     @Test
@@ -85,8 +104,13 @@ public class ViewDestinationTest {
 
         ViewDestination activity = createViewDestination(i);
 
-        assertThat(activity.data, notNullValue());
-        assertThat(activity.errorMsg, nullValue());
+        assertThat(this.destinationFragment.getData(), notNullValue());
+        assertThat(this.destinationFragment.errorMsg, nullValue());
+
+        activity = simulateConfigurationChange(activity);
+
+        assertThat(this.destinationFragment.getData(), notNullValue());
+        assertThat(this.destinationFragment.errorMsg, nullValue());
     }
 
     @Test
