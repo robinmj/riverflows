@@ -4,7 +4,7 @@ interactions:
 - recorded: 2014-11-23T13:24:22.260Z
   request:
     method: GET
-    uri: https://ws-staging.riverflowsapp.com/destination_facets/20.json?auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: https://riverflows.net/destination_facets/20.json?auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
   response:
@@ -25,7 +25,7 @@ interactions:
 - recorded: 2014-11-23T13:24:22.517Z
   request:
     method: PUT
-    uri: https://ws-staging.riverflowsapp.com/destinations/33.json?auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: https://riverflows.net/destinations/33.json?auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
       Content-Type: application/json
@@ -43,7 +43,7 @@ interactions:
 - recorded: 2014-11-23T13:24:22.606Z
   request:
     method: GET
-    uri: https://ws-staging.riverflowsapp.com/destination_facets/20.json?auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: https://riverflows.net/destination_facets/20.json?auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
   response:
@@ -64,7 +64,7 @@ interactions:
 - recorded: 2014-11-23T13:24:22.691Z
   request:
     method: PUT
-    uri: https://ws-staging.riverflowsapp.com/destinations/33.json?auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: https://riverflows.net/destinations/33.json?auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
       Content-Type: application/json

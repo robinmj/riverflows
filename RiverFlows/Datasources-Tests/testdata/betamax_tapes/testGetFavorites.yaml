@@ -4,7 +4,7 @@ interactions:
 - recorded: 2014-11-21T23:25:50.129Z
   request:
     method: GET
-    uri: https://ws-staging.riverflowsapp.com/destination_facets/favorites.json?auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: https://riverflows.net/destination_facets/favorites.json?auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
   response:

@@ -4,7 +4,7 @@ interactions:
 - recorded: 2014-11-23T17:51:37.030Z
   request:
     method: POST
-    uri: https://ws-staging.riverflowsapp.com/destinations.json?auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: https://riverflows.net/destinations.json?auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
       Content-Type: application/json
@@ -17,7 +17,7 @@ interactions:
       Content-Type: application/json; charset=utf-8
       Date: Sun, 23 Nov 2014 17:51:36 GMT
       Etag: '"4a00716d6da49fa82bc1cc8ea8d3c946"'
-      Location: https://ws-staging.riverflowsapp.com/destinations/44
+      Location: https://riverflows.net/destinations/44
       Server: WEBrick/1.3.1 (Ruby/1.9.3/2013-05-16)
       Set-Cookie: _ws_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJTU4MGYxODljYTNjNTUxYzM5NWFjOTNmZTdmMzg4MGM0BjsAVEkiGXdhcmRlbi51c2VyLnVzZXIua2V5BjsAVFsHWwZpB0kiIiQyYSQxMCRGdkF0UjZENkZ1dFRNUHh2VjNKWGtlBjsAVA%3D%3D--59d56838afcfd21cc30adbf4baa5391dd04b22f7; path=/; HttpOnly
       X-Request-Id: 48d4c7602f7f07dcfc3d67412a689a7d
@@ -28,7 +28,7 @@ interactions:
 - recorded: 2014-11-23T17:51:37.228Z
   request:
     method: GET
-    uri: https://ws-staging.riverflowsapp.com/destination_facets/32.json?auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: https://riverflows.net/destination_facets/32.json?auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
   response:
