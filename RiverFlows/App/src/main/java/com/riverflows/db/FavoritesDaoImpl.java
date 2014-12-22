@@ -276,6 +276,13 @@ public class FavoritesDaoImpl {
 			+ QUALITY_MED + " INTEGER,"
 			+ QUALITY_HIGH + " INTEGER );";
 
+    /**
+     *
+     * @param ctx
+     * @param siteId null if unspecified
+     * @param variableId null if unspecified
+     * @return
+     */
 	public static List<Favorite> getFavorites(Context ctx, SiteId siteId, String variableId) {
 
 		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
@@ -440,6 +447,22 @@ public class FavoritesDaoImpl {
 		c.close();
     	return result;
 	}
+
+    public static boolean isFavorite(Context ctx, int destinationFacetId) {
+        RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
+        SQLiteDatabase db = helper.getReadableDatabase();
+
+        String whereClause = DESTINATION_FACET_ID + " = ?";
+
+        String[] parameters = new String[]{Integer.toString(destinationFacetId)};
+
+        Cursor c = db.query(NAME, new String[]{ SITE_ID }, whereClause, parameters, null, null, null );
+
+        boolean result = !(c == null || c.getCount() == 0);
+
+        c.close();
+        return result;
+    }
 
 	private static final String[] allColumns = new String[]{ID, SITE_ID, AGENCY, VARIABLE, ORDER,
 			SITE_NAME, CREATED_DATE, FAVORITE_NAME, SUPPORTED_VARS, STATE, SUPPORTED_VARS, DEST_NAME, DESCRIPTION,
@@ -664,6 +687,7 @@ public class FavoritesDaoImpl {
         }
         deleteFavorite(ctx, siteId, varId);
     }
+
 	public static void deleteFavorite(Context ctx, SiteId siteId, String varId) {
 		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
 		synchronized(RiverGaugesDb.class) {
@@ -680,4 +704,14 @@ public class FavoritesDaoImpl {
 			}
 		}
 	}
+
+    public static void deleteFavorite(Context ctx, int destFacetId) {
+        RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
+        synchronized(RiverGaugesDb.class) {
+            SQLiteDatabase db = helper.getWritableDatabase();
+
+            db.delete(FavoritesDaoImpl.NAME,  DESTINATION_FACET_ID + " = ?",
+                        new String[]{ Integer.toString(destFacetId) });
+        }
+    }
 }

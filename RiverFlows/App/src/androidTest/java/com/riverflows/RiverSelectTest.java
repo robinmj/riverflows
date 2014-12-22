@@ -1,6 +1,16 @@
 package com.riverflows;
 
+import android.content.ComponentName;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
+import android.support.annotation.NonNull;
+import android.view.ContextMenu;
+import android.view.KeyEvent;
+import android.view.MenuItem;
+import android.view.SubMenu;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.ListView;
 
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Page;
@@ -19,6 +29,7 @@ import org.hamcrest.core.IsEqual;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.util.ActivityController;
@@ -40,15 +51,20 @@ import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
+import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
  * Created by robin on 11/18/14.
  */
-@RunWith(RobolectricTestRunner.class)
+@RunWith(RobolectricGradleTestRunner.class)
 public class RiverSelectTest {
 
     MockWsClient wsClient = new MockWsClient();
+
+    EditText filter_field = null;
+    ListView listView = null;
 
     @Before
     public void setup() {
@@ -62,6 +78,10 @@ public class RiverSelectTest {
         activityController.withIntent(i).create().start().resume().visible();
 
         RiverSelect activity = activityController.get();
+
+        filter_field = (EditText)activity.findViewById(R.id.site_filter_field);
+
+        listView = (ListView)activity.findViewById(android.R.id.list);
 
         return activity;
     }
@@ -122,8 +142,47 @@ public class RiverSelectTest {
 
         assertThat(mapItemAdapter.getCount(), equalTo(3));
         assertThat(mapItemAdapter.getItem(0).getSite().getName(), equalTo(clearCreekData.getSite().getName()));
-        assertThat(mapItemAdapter.getItem(1).destinationFacet.getDestination().getName(), equalTo(clearCreekKayak.getDestination().getName()));
-        assertThat(mapItemAdapter.getItem(2).getSite().getName(), equalTo(fountainCreekData.getSite().getName()));
+        assertThat(mapItemAdapter.getItem(1).getSite().getName(), equalTo(fountainCreekData.getSite().getName()));
+        assertThat(mapItemAdapter.getItem(2).destinationFacet.getDestination().getName(), equalTo(clearCreekKayak.getDestination().getName()));
+
+        filter_field.setText("Terrible");
+
+        assertThat(mapItemAdapter.getCount(), equalTo(1));
+        assertThat(mapItemAdapter.getItem(0).destinationFacet.getDestination().getName(), equalTo(clearCreekKayak.getDestination().getName()));
+    }
+
+    public void shouldAllowFavoriteCreation() throws Throwable {
+
+        WsSessionManager.setSession(WsSessionFactory.getRobinSession());
+
+        Map<SiteId, SiteData> mockData = new HashMap<SiteId, SiteData>();
+        SiteData clearCreekData = SiteDataFactory.getClearCreekData();
+        mockData.put(clearCreekData.getSite().getSiteId(), clearCreekData);
+        SiteData fountainCreekData = SiteDataFactory.getFountainCreekData();
+        mockData.put(fountainCreekData.getSite().getSiteId(), fountainCreekData);
+        when(wsClient.dsControllerMock.getSiteData(USState.CO, false)).thenReturn(mockData);
+
+        ArrayList<DestinationFacet> pageElements = new ArrayList<DestinationFacet>();
+        DestinationFacet clearCreekKayak = DestinationFacetFactory.getClearCreekKayak();
+        pageElements.add(clearCreekKayak);
+        Page<DestinationFacet> mockResults = new Page<DestinationFacet>(pageElements, 1);
+
+        when(wsClient.destinationFacetsMock.get(any(WsSession.class), anyMap(), isNull(Integer.class), isNull(Integer.class))).thenReturn(mockResults);
+
+        Intent i = new Intent(Robolectric.application, RiverSelect.class);
+        i.putExtra(RiverSelect.KEY_STATE, USState.CO);
+
+        RiverSelect activity = createRiverSelect(i);
+
+        View item0 = listView.getChildAt(0);
+        item0.performLongClick();
+
+        //verify context menu created
+
+        RiverSelect spyActivity = Mockito.spy(activity);
+
+        verify(spyActivity).onCreateContextMenu(any(ContextMenu.class), any(View.class), any(ContextMenu.ContextMenuInfo.class));
+
     }
 
     public class MapListMatcher extends BaseMatcher<Map<String,List<String>>> {

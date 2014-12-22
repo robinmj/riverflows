@@ -5,7 +5,6 @@ package com.riverflows;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.NoSuchElementException;
 
 import android.content.Context;
 import android.util.Log;
@@ -21,8 +20,6 @@ import android.widget.TextView;
 import com.riverflows.data.MapItem;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
-import com.riverflows.data.SiteData;
-import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.Utils;
 
 public class MapItemAdapter extends BaseAdapter implements Filterable {
@@ -81,7 +78,6 @@ public class MapItemAdapter extends BaseAdapter implements Filterable {
             // we want to bind data to.
             holder = new ViewHolder();
             holder.text = (TextView) convertView.findViewById(R.id.list_item_txt);
-            holder.subtext = (TextView) convertView.findViewById(R.id.subtext);
             holder.agencyIcon = (ImageView)convertView.findViewById(R.id.agencyIcon);
             holder.destinationIcon = (ImageView)convertView.findViewById(R.id.destinationIcon);
 
@@ -113,43 +109,6 @@ public class MapItemAdapter extends BaseAdapter implements Filterable {
                 holder.agencyIcon.setVisibility(View.GONE);
             }
         }
-        
-        //display the last reading for this site, if present
-
-        Series flowSeries = null;
-        Reading lastReading = null;
-        if(holder.mapItem.siteData != null) {
-            flowSeries = holder.mapItem.getPreferredSeries();
-            lastReading = getLastReadingValue(flowSeries);
-        }
-    	
-        if(lastReading == null) {
-        	holder.subtext.setText("");
-        } else {
-        	if(lastReading.getValue() == null) {
-        		if(lastReading.getQualifiers() == null) {
-        			holder.subtext.setText("unknown");
-        		} else {
-            		holder.subtext.setText(lastReading.getQualifiers());
-        		}
-        	} else {
-
-        		//use this many significant figures for decimal values
-    			int sigfigs = 4;
-    			
-    			String readingStr = Utils.abbreviateNumber(lastReading.getValue(), sigfigs);
-        		
-        		holder.subtext.setText(readingStr + " " + flowSeries.getVariable().getUnit());
-        	}
-        
-        	//TODO come up with a better way of conveying a stale reading
-	        //30 minutes ago
-	        //Date staleReadingDate = new Date(System.currentTimeMillis() - (30 * 60 * 1000));
-	        
-	        //if(lastReading.getDate().before(staleReadingDate)) {
-	        //	holder.subtext.setText("");
-	        //}
-        }
 
         return convertView;
     }
@@ -180,7 +139,7 @@ public class MapItemAdapter extends BaseAdapter implements Filterable {
 		
 	}
 	
-	private Filter stationListFilter =  new Filter() {
+	private Filter mapItemFilter =  new Filter() {
 		@Override
 		protected FilterResults performFiltering(CharSequence constraint) {
 			FilterResults results = new FilterResults();
@@ -198,19 +157,19 @@ public class MapItemAdapter extends BaseAdapter implements Filterable {
                 final ArrayList<MapItem> newValues = new ArrayList<MapItem>(count);
 
                 for (int i = 0; i < count; i++) {
-                    final MapItem station = values.get(i);
-                    final String valueText = station.getSite().getName().toLowerCase();
+                    final MapItem item = values.get(i);
+                    final String valueText = item.getName().toLowerCase();
 
                     // First match against the whole, non-splitted value
                     if (valueText.startsWith(prefixString)) {
-                        newValues.add(station);
+                        newValues.add(item);
                     } else {
                         final String[] words = valueText.split(" ");
                         final int wordCount = words.length;
 
                         for (int k = 0; k < wordCount; k++) {
                             if (words[k].startsWith(prefixString)) {
-                                newValues.add(station);
+                                newValues.add(item);
                                 break;
                             }
                         }
@@ -238,13 +197,12 @@ public class MapItemAdapter extends BaseAdapter implements Filterable {
 	
 	@Override
 	public Filter getFilter() {
-		return stationListFilter;
+		return mapItemFilter;
 	}
 
     static class ViewHolder {
     	MapItem mapItem;
         TextView text;
-        TextView subtext;
         ImageView agencyIcon;
         ImageView destinationIcon;
     }

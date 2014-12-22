@@ -1,22 +1,23 @@
 package com.riverflows;
 
 import android.content.Intent;
+import android.os.Bundle;
 import android.widget.CheckBox;
 
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Site;
 import com.riverflows.data.UserAccount;
+import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.factory.DestinationFacetFactory;
 import com.riverflows.factory.SiteDataFactory;
 import com.riverflows.factory.SiteFactory;
-import com.riverflows.wsclient.DataSourceController;
-import com.riverflows.wsclient.RESTDataSource;
 import com.riverflows.wsclient.WsSession;
 import com.riverflows.wsclient.WsSessionManager;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.InOrder;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.util.ActivityController;
@@ -30,7 +31,7 @@ import static org.hamcrest.core.IsNull.nullValue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.clickOn;
@@ -39,10 +40,12 @@ import static org.robolectric.Robolectric.clickOn;
  * Created by robin on 11/14/14.
  */
 
-@RunWith(RobolectricTestRunner.class)
+@RunWith(RobolectricGradleTestRunner.class)
 public class ViewDestinationTest {
 
+    ActivityController<ViewDestination> activityController;
     CheckBox favoriteBtn;
+    DestinationFragment destinationFragment;
     MockWsClient wsClient = new MockWsClient();
 
     @Before
@@ -51,9 +54,9 @@ public class ViewDestinationTest {
     }
 
     public ViewDestination createViewDestination(Intent i) throws Exception {
-        ActivityController<ViewDestination> activityController= Robolectric.buildActivity(ViewDestination.class);
+        this.activityController= Robolectric.buildActivity(ViewDestination.class);
 
-        activityController.withIntent(i).create().start().resume().visible();
+        this.activityController.withIntent(i).create().start().resume().visible();
 
         ViewDestination activity = activityController.get();
 
@@ -63,9 +66,25 @@ public class ViewDestinationTest {
 
         WsSessionManager.setSession(session);
 
-        this.favoriteBtn = (CheckBox)activity.findViewById(R.id.favorite_btn);
+        loadExaminedViews(activity);
 
         return activity;
+    }
+
+    public void loadExaminedViews(ViewDestination activity) {
+
+        assertThat(activity.getSupportFragmentManager().getFragments().size(), equalTo(1));
+
+        this.destinationFragment = (DestinationFragment)activity.getSupportFragmentManager().getFragments().get(0);
+        this.favoriteBtn = (CheckBox)this.destinationFragment.getView().findViewById(R.id.favorite_btn);
+    }
+
+    private ViewDestination simulateConfigurationChange(ViewDestination activity) {
+        Bundle bundle = new Bundle();
+        this.activityController.saveInstanceState(bundle).pause().stop().destroy();
+        this.activityController = Robolectric.buildActivity(ViewDestination.class).withIntent(activity.getIntent());
+        this.activityController.create(bundle).start().restoreInstanceState(bundle).resume().visible();
+        return this.activityController.get();
     }
 
     @Test
@@ -85,8 +104,13 @@ public class ViewDestinationTest {
 
         ViewDestination activity = createViewDestination(i);
 
-        assertThat(activity.data, notNullValue());
-        assertThat(activity.errorMsg, nullValue());
+        assertThat(this.destinationFragment.getData(), notNullValue());
+        assertThat(this.destinationFragment.errorMsg, nullValue());
+
+        activity = simulateConfigurationChange(activity);
+
+        assertThat(this.destinationFragment.getData(), notNullValue());
+        assertThat(this.destinationFragment.errorMsg, nullValue());
     }
 
     @Test
@@ -101,18 +125,26 @@ public class ViewDestinationTest {
 
         ViewDestination activity = createViewDestination(i);
 
+        assertThat("precondition",
+                !FavoritesDaoImpl.isFavorite(Robolectric.application, 23));
+
         assertThat(favoriteBtn.isChecked(), equalTo(false));
 
         clickOn(favoriteBtn);//add favorite
 
+        assertThat("created favorite", FavoritesDaoImpl.isFavorite(Robolectric.application, 23));
         assertThat(favoriteBtn.isChecked(), equalTo(true));
 
         clickOn(favoriteBtn);//remove favorite
+        assertThat("removed favorite", !FavoritesDaoImpl.isFavorite(Robolectric.application, 23));
+
+        InOrder inOrder = inOrder(wsClient.destinationFacetsMock);
 
         verify(wsClient.dsControllerMock).getSiteData(argThat(SiteFactory.matches(clearCreek)),
                 argThat(equalTo(clearCreek.getSupportedVariables())),
                 eq(false));
-        verify(wsClient.destinationFacetsMock).saveFavorite(any(WsSession.class), eq(new Integer(23)));
-        verify(wsClient.destinationFacetsMock).removeFavorite(any(WsSession.class), eq(new Integer(23)));
+
+        inOrder.verify(wsClient.destinationFacetsMock).saveFavorite(any(WsSession.class), eq(new Integer(23)));
+        inOrder.verify(wsClient.destinationFacetsMock).removeFavorite(any(WsSession.class), eq(new Integer(23)));
     }
 }

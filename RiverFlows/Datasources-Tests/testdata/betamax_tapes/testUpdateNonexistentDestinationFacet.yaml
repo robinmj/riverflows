@@ -4,7 +4,7 @@ interactions:
 - recorded: 2014-11-21T21:49:59.116Z
   request:
     method: PUT
-    uri: https://ws-staging.riverflowsapp.com/destination_facets/0.json?auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: https://riverflows.net/destination_facets/0.json?auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
       Content-Type: application/json

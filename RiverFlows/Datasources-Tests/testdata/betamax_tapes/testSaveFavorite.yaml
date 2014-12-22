@@ -4,7 +4,7 @@ interactions:
 - recorded: 2014-11-21T22:15:55.965Z
   request:
     method: POST
-    uri: https://ws-staging.riverflowsapp.com/destination_facets/20/save_favorite.json
+    uri: https://riverflows.net/destination_facets/20/save_favorite.json
     body: auth_token=T9HLJkUvA7JwELEeHjsu
   response:
     status: 201

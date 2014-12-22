@@ -7,21 +7,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
-import android.content.pm.ApplicationInfo;
 import android.database.sqlite.SQLiteException;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 
 import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.GoogleAnalytics;
-import com.riverflows.data.UserAccount;
-import com.riverflows.db.CachingHttpClientWrapper;
 import com.riverflows.db.DatasetsDaoImpl;
 import com.riverflows.db.DbMaintenance;
 import com.riverflows.db.FavoritesDaoImpl;
@@ -30,15 +24,13 @@ import com.riverflows.wsclient.AHPSXmlDataSource;
 import com.riverflows.wsclient.ApiCallTask;
 import com.riverflows.wsclient.CDECDataSource;
 import com.riverflows.wsclient.CODWRDataSource;
-import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.USACEDataSource;
 import com.riverflows.wsclient.UsgsCsvDataSource;
 import com.riverflows.wsclient.WsSession;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import roboguice.activity.RoboActionBarActivity;
 
-public class Home extends ActionBarActivity implements ActionBar.TabListener {
+public class Home extends RoboActionBarActivity implements ActionBar.TabListener {
 
 	public static final int TAB_FAVORITES = 0;
 	public static final int TAB_SITES = 1;

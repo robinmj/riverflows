@@ -1,23 +1,5 @@
 package com.riverflows.wsclient;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArraySet;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.client.methods.HttpPut;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -27,6 +9,22 @@ import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.riverflows.Home;
 import com.riverflows.data.UserAccount;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArraySet;
 
 /**
  * Utility class for managing login credentials and sessions in the Mobile application
@@ -134,7 +132,7 @@ public class WsSessionManager {
 		Log.d(Home.TAG, "authenticating with Riverflows server...");
 
 		HttpPost postCmd = new HttpPost(AUTH_APP_URL);
-		HttpClient client = new DataSourceController.SSLHttpClient();
+		HttpClient client = WebModel.getHttpClientFactory().getHttpClient();
 		postCmd.getParams().setParameter("http.socket.timeout", new Integer(10000));
 
 		List<NameValuePair> nameValuePairs = new ArrayList<NameValuePair>(2);

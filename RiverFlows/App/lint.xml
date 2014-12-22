@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lint>
+    <!--
+    ../../../../../../../.gradle/caches/modules-2/files-2.1/org.roboguice/roboguice/3.0.1/24e814f35d5cc28eaa7e9f07a50ea69deeb2b544/roboguice-3.0.1.jar:
+     Invalid package reference in library; not included in Android: javax.inject.
+     Referenced from com.google.inject.Scopes.3.
+     -->
+    <issue id="InvalidPackage" severity="ignore"/>
+</lint>

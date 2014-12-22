@@ -4,7 +4,7 @@ interactions:
 - recorded: 2014-11-21T23:52:28.523Z
   request:
     method: GET
-    uri: https://ws-staging.riverflowsapp.com/destination_facets.json?state=AZ&auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: https://riverflows.net/destination_facets.json?state=AZ&auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
   response:
@@ -23,7 +23,7 @@ interactions:
 - recorded: 2014-11-21T23:52:28.721Z
   request:
     method: GET
-    uri: https://ws-staging.riverflowsapp.com/destination_facets.json?state=CA&auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: https://riverflows.net/destination_facets.json?state=CA&auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
   response:
@@ -44,7 +44,7 @@ interactions:
 - recorded: 2014-11-21T23:52:28.902Z
   request:
     method: GET
-    uri: https://ws-staging.riverflowsapp.com/destination_facets.json?count=4&state=CO&auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: https://riverflows.net/destination_facets.json?count=4&state=CO&auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
   response:
@@ -71,7 +71,7 @@ interactions:
 - recorded: 2014-11-21T23:52:29.085Z
   request:
     method: GET
-    uri: https://ws-staging.riverflowsapp.com/destination_facets.json?count=4&state=CO&auth_token=T9HLJkUvA7JwELEeHjsu&first=2
+    uri: https://riverflows.net/destination_facets.json?count=4&state=CO&auth_token=T9HLJkUvA7JwELEeHjsu&first=2
     headers:
       Accept: application/json
   response:
@@ -98,7 +98,7 @@ interactions:
 - recorded: 2014-11-21T23:52:29.366Z
   request:
     method: GET
-    uri: https://ws-staging.riverflowsapp.com/destination_facets.json?state=CO&auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: https://riverflows.net/destination_facets.json?state=CO&auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
   response:
@@ -138,7 +138,7 @@ interactions:
 - recorded: 2014-11-21T23:52:29.552Z
   request:
     method: GET
-    uri: https://ws-staging.riverflowsapp.com/destination_facets.json?facet_types=2&state=CO&auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: https://riverflows.net/destination_facets.json?facet_types=2&state=CO&auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
   response:

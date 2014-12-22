@@ -36,9 +36,6 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 
     private static final Log LOG = LogFactory.getLog(DestinationFacets.class);
 
-	//singleton
-	public static final DestinationFacets instance = new DestinationFacets();
-
     @Override
     public String getResourceName() {
         return "destination_facet";

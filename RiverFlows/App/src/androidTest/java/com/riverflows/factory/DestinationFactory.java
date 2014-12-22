@@ -11,7 +11,7 @@ public final class DestinationFactory {
         Destination clearCreek = new Destination();
         clearCreek.setId(6);
         clearCreek.setUser(new UserAccount());
-        clearCreek.setName("Excellent Destination");
+        clearCreek.setName("Terrible Destination");
 
         clearCreek.setSite(SiteFactory.getClearCreek());
 

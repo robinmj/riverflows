@@ -112,9 +112,9 @@ public class Variable implements Serializable {
 		}
 
 		
-		public static Map<CommonVariable,CommonVariable> temperatureConversionMap(String preferredTempUnit) {
-			
-			Map<CommonVariable,CommonVariable> conversionMap = new HashMap<CommonVariable,CommonVariable>();
+		public static HashMap<CommonVariable,CommonVariable> temperatureConversionMap(String preferredTempUnit) {
+
+            HashMap<CommonVariable,CommonVariable> conversionMap = new HashMap<CommonVariable,CommonVariable>();
 			
 			if(preferredTempUnit == null) {
 				return conversionMap;

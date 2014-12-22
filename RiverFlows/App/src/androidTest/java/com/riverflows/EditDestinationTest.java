@@ -37,7 +37,7 @@ import static org.robolectric.Robolectric.clickOn;
 /**
  * Created by robin on 11/10/14.
  */
-@RunWith(RobolectricTestRunner.class)
+@RunWith(RobolectricGradleTestRunner.class)
 public class EditDestinationTest {
 
     private EditText nameField;

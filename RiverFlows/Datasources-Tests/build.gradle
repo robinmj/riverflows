@@ -25,7 +25,7 @@ sourceSets {
 }
 
 dependencies {
-    testCompile fileTree(dir: 'lib', include: '*.jar')
+    testCompile "junit:junit:4.11"
     testCompile project(':Datasources')
     //betamax 1.2 has issues with groovy 2.3
     testCompile 'org.codehaus.groovy:groovy-all:2.2.0'

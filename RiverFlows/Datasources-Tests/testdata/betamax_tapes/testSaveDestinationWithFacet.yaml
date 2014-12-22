@@ -1,0 +1,48 @@
+!tape
+name: testSaveDestinationWithFacet
+interactions:
+- recorded: 2014-11-23T17:51:37.030Z
+  request:
+    method: POST
+    uri: https://riverflows.net/destinations.json?auth_token=T9HLJkUvA7JwELEeHjsu
+    headers:
+      Accept: application/json
+      Content-Type: application/json
+    body: '{"destination_facet":{"med":600,"quality_high":null,"low_difficulty":null,"facet_type":0,"high_port_difficulty":null,"site_id":20161,"quality_med":null,"high_plus":null,"med_difficulty":null,"low_port_difficulty":null,"high":800,"variable_id":"DISCHRG","low":400,"high_difficulty":null,"quality_low":null,"med_port_difficulty":null},"destination":{"name":"Clear
+      Creek"}}'
+  response:
+    status: 201
+    headers:
+      Cache-Control: max-age=0, private, must-revalidate
+      Content-Type: application/json; charset=utf-8
+      Date: Sun, 23 Nov 2014 17:51:36 GMT
+      Etag: '"4a00716d6da49fa82bc1cc8ea8d3c946"'
+      Location: https://riverflows.net/destinations/44
+      Server: WEBrick/1.3.1 (Ruby/1.9.3/2013-05-16)
+      Set-Cookie: _ws_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJTU4MGYxODljYTNjNTUxYzM5NWFjOTNmZTdmMzg4MGM0BjsAVEkiGXdhcmRlbi51c2VyLnVzZXIua2V5BjsAVFsHWwZpB0kiIiQyYSQxMCRGdkF0UjZENkZ1dFRNUHh2VjNKWGtlBjsAVA%3D%3D--59d56838afcfd21cc30adbf4baa5391dd04b22f7; path=/; HttpOnly
+      X-Request-Id: 48d4c7602f7f07dcfc3d67412a689a7d
+      X-Runtime: '0.160000'
+      X-Ua-Compatible: IE=Edge
+    body: '{"destination":{"created_at":"2014-11-23T17:51:36Z","description":null,"id":44,"name":"Clear Creek","updated_at":"2014-11-23T17:51:36Z","user_id":2,"visual_gauge_latitude":null,"visual_gauge_longitude":null},"destination_facet":{"created_at":"2014-11-23T17:51:36Z","description":null,"destination_id":44,"facet_type":0,"high":800.0,"high_difficulty":null,"high_plus":null,"high_port_difficulty":null,"id":32,"low":400.0,"low_difficulty":null,"low_port_difficulty":null,"med":600.0,"med_difficulty":null,"med_port_difficulty":null,"quality_high":null,"quality_low":null,"quality_med":null,"site_id":20161,"too_low":null,"updated_at":"2014-11-23T17:51:36Z","user_id":2,"variable_id":"DISCHRG","site":{"agency":"CODWR","agency_specific_id":"CCACCRCO","created_at":"2013-02-07T02:12:42Z","id":20161,"latitude":0.0,"longitude":-109.489,"name":"CLEAR
+      CREEK ABOVE CLEAR CREEK RESERVOIR","recent_reading":null,"recent_reading_time":null,"recent_reading_var_id":null,"state":"CO","supported_var_ids":"DISCHRG GAGE_HT","updated_at":"2013-02-07T02:12:42Z"}}}'
+- recorded: 2014-11-23T17:51:37.228Z
+  request:
+    method: GET
+    uri: https://riverflows.net/destination_facets/32.json?auth_token=T9HLJkUvA7JwELEeHjsu
+    headers:
+      Accept: application/json
+  response:
+    status: 200
+    headers:
+      Cache-Control: max-age=0, private, must-revalidate
+      Content-Type: application/json; charset=utf-8
+      Date: Sun, 23 Nov 2014 17:51:37 GMT
+      Etag: '"e2028f82d1d2880fe750743ba68a0c5c"'
+      Server: WEBrick/1.3.1 (Ruby/1.9.3/2013-05-16)
+      Set-Cookie: _ws_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJTc2MDkxM2JjOWUwNzcwZWE5MTU4ZTc0OGYxOTg1ZDA3BjsAVEkiGXdhcmRlbi51c2VyLnVzZXIua2V5BjsAVFsHWwZpB0kiIiQyYSQxMCRGdkF0UjZENkZ1dFRNUHh2VjNKWGtlBjsAVA%3D%3D--f2e8b74889739f00bf8217bfcf956448097bd579; path=/; HttpOnly
+      X-Request-Id: ce09f5ae595672838a6015f4b84eb382
+      X-Runtime: '0.094000'
+      X-Ua-Compatible: IE=Edge
+    body: '{"created_at":"2014-11-23T17:51:36Z","description":null,"destination_id":44,"facet_type":0,"high":800.0,"high_difficulty":null,"high_plus":null,"high_port_difficulty":null,"id":32,"low":400.0,"low_difficulty":null,"low_port_difficulty":null,"med":600.0,"med_difficulty":null,"med_port_difficulty":null,"quality_high":null,"quality_low":null,"quality_med":null,"site_id":20161,"too_low":null,"updated_at":"2014-11-23T17:51:36Z","user_id":2,"variable_id":"DISCHRG","site":{"agency":"CODWR","agency_specific_id":"CCACCRCO","created_at":"2013-02-07T02:12:42Z","id":20161,"latitude":0.0,"longitude":-109.489,"name":"CLEAR
+      CREEK ABOVE CLEAR CREEK RESERVOIR","recent_reading":null,"recent_reading_time":null,"recent_reading_var_id":null,"state":"CO","supported_var_ids":"DISCHRG GAGE_HT","updated_at":"2013-02-07T02:12:42Z"},"destination":{"created_at":"2014-11-23T17:51:36Z","description":null,"id":44,"name":"Clear
+      Creek","updated_at":"2014-11-23T17:51:36Z","user_id":2,"visual_gauge_latitude":null,"visual_gauge_longitude":null}}'

@@ -5,6 +5,7 @@ import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
@@ -16,11 +17,13 @@ import android.util.Log;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.inject.Inject;
 import com.riverflows.data.DestinationFacet;
+import com.riverflows.data.Favorite;
 import com.riverflows.data.MapItem;
 import com.riverflows.data.Page;
 import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
+import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.DestinationFacets;
 import com.riverflows.wsclient.WsSession;
@@ -91,6 +94,21 @@ public class RiverSelect extends MapItemList {
 
 				ArrayList<MapItem> items = null;
 
+                List<Favorite> favorites = FavoritesDaoImpl.getFavorites(RiverSelect.this, null, null);
+
+                //calling FavoritesDaoImpl.isFavorite() for every MapItem is too slow, so check against
+                // HashSets instead
+                HashSet<Integer> favoriteDestinationFacetIds = new HashSet<Integer>(favorites.size());
+                HashSet<SiteId> favoriteSiteIds = new HashSet<SiteId>(favorites.size());
+
+                for(Favorite favorite : favorites) {
+                    if(favorite.getDestinationFacet() == null) {
+                        favoriteSiteIds.add(favorite.getSite().getSiteId());
+                    } else {
+                        favoriteDestinationFacetIds.add(favorite.getDestinationFacet().getId());
+                    }
+                }
+
 				//cache miss or hard refresh
 				//TODO toast notification of each site loaded?
 				try {
@@ -99,7 +117,7 @@ public class RiverSelect extends MapItemList {
 					items = new ArrayList<MapItem>(siteDataMap.size());
 
                     for(SiteData data : siteDataMap.values()) {
-                        items.add(new MapItem(data, null));
+                        items.add(new MapItem(data, null, favoriteSiteIds.contains(data.getSite().getSiteId())));
                     }
 
                     WsSession session = WsSessionManager.getSession(RiverSelect.this);
@@ -114,7 +132,7 @@ public class RiverSelect extends MapItemList {
                         Page<DestinationFacet> destinations = RiverSelect.this.destinationFacets.get(session, filterParams, null, null);
 
                         for(DestinationFacet destination : destinations) {
-                            items.add(new MapItem(destination));
+                            items.add(new MapItem(destination, favoriteDestinationFacetIds.contains(destination.getId())));
                         }
                     }
 

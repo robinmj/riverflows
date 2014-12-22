@@ -36,6 +36,7 @@ import com.riverflows.data.SiteId;
 import com.riverflows.data.Variable;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.wsclient.DataSourceController;
+import com.riverflows.wsclient.ToggleFavoriteTask;
 import com.riverflows.wsclient.WsSessionManager;
 
 import java.net.UnknownHostException;
@@ -389,29 +390,39 @@ public abstract class MapItemList extends RoboListActivity {
 	
 	private class AddToFavoritesListener implements MenuItem.OnMenuItemClickListener{
 
-		private Site selectedStation = null;
-		private Variable selectedVariable = null;
+		private MapItem mapItem = null;
+        private Variable variable = null;
 		
-		public AddToFavoritesListener(Site selectedStation, Variable selectedVariable) {
-			this.selectedStation = selectedStation;
-			this.selectedVariable = selectedVariable;
+		public AddToFavoritesListener(MapItem mapItem, Variable variable) {
+			this.mapItem = mapItem;
+            this.variable = variable;
 		}
 
 		
 		@Override
 		public boolean onMenuItemClick(MenuItem item) {
+
+            Favorite favorite = null;
+            String confirmation = null;
+
+            if(mapItem.isDestination()) {
+                favorite = new Favorite(this.mapItem.destinationFacet);
+                confirmation = MessageFormat.format(getString(R.string.add_favorite_dest_confirmation), variable.getName(), this.mapItem.getSite().getName());
+            } else {
+                favorite = new Favorite(this.mapItem.getSite(), this.variable.getId());
+                confirmation = MessageFormat.format(getString(R.string.add_favorite_confirmation), variable.getName(), this.mapItem.getSite().getName());
+            }
+
+            new ToggleFavoriteTask(MapItemList.this, false, favorite).execute();
 			
 			if(item.isChecked()) {
-				FavoritesDaoImpl.deleteFavorite(getApplicationContext(), selectedStation.getSiteId(), selectedVariable);
 				item.setChecked(false);
 			} else {
-				FavoritesDaoImpl.createFavorite(getApplicationContext(), new Favorite(selectedStation, selectedVariable.getId()));
 				item.setChecked(true);
 			}
 			sendBroadcast(Home.getWidgetUpdateIntent());
 			sendBroadcast(new Intent(Home.ACTION_FAVORITES_CHANGED));
 
-			String confirmation =  MessageFormat.format(getString(R.string.add_favorite_confirmation), selectedVariable.getName(), selectedStation.getName());
 			
 			Toast.makeText(getApplicationContext(), confirmation, Toast.LENGTH_SHORT).show();
 			
@@ -456,25 +467,33 @@ public abstract class MapItemList extends RoboListActivity {
 
 		boolean loggedIn = (WsSessionManager.getSession(this) != null);
 
-		SubMenu submenu = null;
-		if(loggedIn) {
-			submenu = menu.addSubMenu(ContextMenu.NONE, supportedVars.length, supportedVars.length, "Create Destination");
+		if(mapItem.isDestination()) {
+            if(loggedIn && !FavoritesDaoImpl.isFavorite(getApplicationContext(), mapItem.destinationFacet.getId().intValue())) {
+                MenuItem addFavoriteDest = menu.add(ContextMenu.NONE, supportedVars.length, supportedVars.length, "Add To Favorites");
+                addFavoriteDest.setOnMenuItemClickListener(new AddToFavoritesListener(mapItem, null));
+            }
 		} else {
-			submenu = menu.addSubMenu(ContextMenu.NONE, supportedVars.length, supportedVars.length, "Add To Favorites");
-		}
-		
-		for(int a = 0; a < supportedVars.length; a++) {
-			MenuItem viewVariableItem = menu.add(ContextMenu.NONE,a,a,supportedVars[a].getName() + ", " + supportedVars[a].getCommonVariable().getUnit());
-			viewVariableItem.setOnMenuItemClickListener(new ViewVariableListener(mapItem.getSite(), supportedVars[a]));
-			
-			MenuItem addFavoriteItem = submenu.add(ContextMenu.NONE,a,a,supportedVars[a].getName() + ", " + supportedVars[a].getCommonVariable().getUnit());
-			addFavoriteItem.setCheckable(true);
-			addFavoriteItem.setChecked(FavoritesDaoImpl.isFavorite(getApplicationContext(), mapItem.getSite().getSiteId(), supportedVars[a]));
-			addFavoriteItem.setOnMenuItemClickListener(new AddToFavoritesListener(mapItem.getSite(), supportedVars[a]));
+            SubMenu submenu = null;
+            if(loggedIn) {
+                submenu = menu.addSubMenu(ContextMenu.NONE, supportedVars.length, supportedVars.length, "Create Destination");
+            } else {
+                submenu = menu.addSubMenu(ContextMenu.NONE, supportedVars.length, supportedVars.length, "Add To Favorites");
+            }
 
-			if(loggedIn) {
-				addFavoriteItem.setOnMenuItemClickListener(new CreateDestinationListener(mapItem.getSite(), supportedVars[a]));
-			}
+            for(int a = 0; a < supportedVars.length; a++) {
+                MenuItem viewVariableItem = menu.add(ContextMenu.NONE,a,a,supportedVars[a].getName() + ", " + supportedVars[a].getCommonVariable().getUnit());
+                viewVariableItem.setOnMenuItemClickListener(new ViewVariableListener(mapItem.getSite(), supportedVars[a]));
+
+                MenuItem addFavoriteItem = submenu.add(ContextMenu.NONE,a,a,supportedVars[a].getName() + ", " + supportedVars[a].getCommonVariable().getUnit());
+                addFavoriteItem.setCheckable(true);
+                addFavoriteItem.setChecked(FavoritesDaoImpl.isFavorite(getApplicationContext(), mapItem.getSite().getSiteId(), supportedVars[a]));
+
+                if(loggedIn) {
+                    addFavoriteItem.setOnMenuItemClickListener(new CreateDestinationListener(mapItem.getSite(), supportedVars[a]));
+                } else {
+                    addFavoriteItem.setOnMenuItemClickListener(new AddToFavoritesListener(mapItem, supportedVars[a]));
+                }
+            }
 		}
 	}
 	
