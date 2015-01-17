@@ -258,6 +258,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 	@Override
 	public Loader<List<FavoriteData>> onCreateLoader(int i, Bundle bundle) {
+        showProgress();
 		return new FavoritesLoader(getActivity(), getWsSessionUIHelper(), this.tempUnit, bundle.getBoolean(FavoritesLoader.PARAM_HARD_REFRESH));
 	}
 
