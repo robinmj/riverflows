@@ -44,26 +44,26 @@ public class HydroGraph extends View {
 	private boolean hasLegend = false;
 	
 	//space between left side of canvas and y-axis
-	private int yAxisOffset;
+	private final int yAxisOffset;
 	
 	//space between x-axis and bottom of the canvas
-	private int xAxisOffset;
+	private final int xAxisOffset;
 	
 	//label text size, in pixels
-	private float labelTextSize;
+	private final float labelTextSize;
 	
 	//space between top of canvas and graph area
-	private int topPadding;
+	private final int topPadding;
 	
-	//space between left side of canvas and graph area
+	//space between right side of canvas and graph area
 	private static final int rightPadding = 10;
 
-	private static final int LEGEND_WIDTH = 95;
-	private static final int LEGEND_HEIGHT = 50;
-	private static final int LEGEND_TOP_MARGIN = 10;
-	private static final int LEGEND_LEFT_MARGIN = 10;
+	private final int legendWidth;
+	private final int legendHeight;
+	private final int legendTopMargin;
+	private final int legendLeftMargin;
 	
-	private static final int LEGEND_PADDING = 10;
+	private final int legendPadding;
 	
 	/**
 	 * if xPixelsPerMs is below this number, then only include the day of week label for every other day
@@ -175,6 +175,13 @@ public class HydroGraph extends View {
 		yAxisOffset = (int)(2f + labelTextSize + 2f + (2.7f * labelTextSize) + tickSize);
 		//yAxisOffset = (int)(scaledDensity * 30f) + 10;
 		xAxisOffset = (int)(scaledDensity * 22f) + 8;
+
+        legendWidth = (int)(scaledDensity * 95f);
+        legendHeight = (int)(scaledDensity * 50f);
+        legendTopMargin = (int)(scaledDensity * 10f);
+        legendLeftMargin = (int)(scaledDensity * 10f);
+
+        legendPadding = (int)(scaledDensity * 10f);
 	}
 	
 	@Override
@@ -534,10 +541,10 @@ public class HydroGraph extends View {
 	}
 	
 	private void drawLegend(Canvas canvas) {
-		Rect legendOutline = new Rect(yAxisOffset + LEGEND_LEFT_MARGIN,
-				topPadding + LEGEND_TOP_MARGIN,
-				yAxisOffset + LEGEND_LEFT_MARGIN + LEGEND_WIDTH,
-				topPadding + LEGEND_TOP_MARGIN + LEGEND_HEIGHT);
+		Rect legendOutline = new Rect(yAxisOffset + legendLeftMargin,
+				topPadding + legendTopMargin,
+				yAxisOffset + legendLeftMargin + legendWidth,
+				topPadding + legendTopMargin + legendHeight);
 		//draw legend box
 		canvas.drawRect(legendOutline, guideLinePaint);
 		Rect legendFill = new Rect(legendOutline.left + 1, legendOutline.top + 1, legendOutline.right - 1, legendOutline.bottom - 1);
@@ -551,15 +558,16 @@ public class HydroGraph extends View {
 		Paint labelPaint = new Paint(Paint.ANTI_ALIAS_FLAG + Paint.SUBPIXEL_TEXT_FLAG);
 		labelPaint.setColor(Color.BLACK);
 		labelPaint.setTextAlign(Align.LEFT);
+        labelPaint.setTextSize(labelTextSize);
 		
-		canvas.drawLine(legendFill.left + LEGEND_PADDING, legendFill.top + LEGEND_PADDING + 5.0f,
-				legendFill.left + LEGEND_PADDING + 10.0f, legendFill.top + LEGEND_PADDING + 5.0f, plotPaint);
+		canvas.drawLine(legendFill.left + legendPadding, legendFill.top + legendPadding + 0.5f * labelTextSize,
+				legendFill.left + legendPadding + labelTextSize, legendFill.top + legendPadding + 0.5f * labelTextSize, plotPaint);
 
-		canvas.drawText("Observed", legendFill.left + LEGEND_PADDING + 15.0f, legendFill.top + LEGEND_PADDING + 10.0f, labelPaint);
+		canvas.drawText("Observed", legendFill.left + legendPadding + 1.5f * labelTextSize, legendFill.top + legendPadding + labelTextSize, labelPaint);
 		
-		canvas.drawLine(legendFill.left + LEGEND_PADDING, legendFill.top + LEGEND_PADDING + 20.0f,
-				legendFill.left + LEGEND_PADDING + 10.0f, legendFill.top + LEGEND_PADDING + 20.0f, forecastPaint);
+		canvas.drawLine(legendFill.left + legendPadding, legendFill.top + legendPadding + 2f * labelTextSize,
+				legendFill.left + legendPadding + labelTextSize, legendFill.top + legendPadding + 2f * labelTextSize, forecastPaint);
 
-		canvas.drawText("Forecast", legendFill.left + LEGEND_PADDING + 15.0f, legendFill.top + LEGEND_PADDING + 25.0f, labelPaint);
+		canvas.drawText("Forecast", legendFill.left + legendPadding + 1.5f * labelTextSize, legendFill.top + legendPadding + 2.5f * labelTextSize, labelPaint);
 	}
 }
