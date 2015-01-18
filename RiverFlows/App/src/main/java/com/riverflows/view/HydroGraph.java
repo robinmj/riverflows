@@ -53,7 +53,7 @@ public class HydroGraph extends View {
 	private float labelTextSize;
 	
 	//space between top of canvas and graph area
-	private static final int topPadding = 10;
+	private int topPadding;
 	
 	//space between left side of canvas and graph area
 	private static final int rightPadding = 10;
@@ -167,6 +167,9 @@ public class HydroGraph extends View {
 		super(c);
 		float scaledDensity = c.getResources().getDisplayMetrics().scaledDensity;
 		labelTextSize = scaledDensity * 10f;
+
+        topPadding = (int)(scaledDensity * 10f);
+
 		//2 pixels padding before Y axis label, 2 pixels padding after, 4-character
 		// Y tick label will be a little under thrice the size of the label text, leave space for the tick marks
 		yAxisOffset = (int)(2f + labelTextSize + 2f + (2.7f * labelTextSize) + tickSize);
@@ -314,7 +317,6 @@ public class HydroGraph extends View {
 	/**
 	 * Generate a nice round numbers to use as a Y limits without throwing the data out of proportion.
 	 * TODO make this work properly for a labelCount of other than 11
-	 * @param dataYLimit
 	 * @return
 	 */
 	private double[] getFriendlyYLimits() {
