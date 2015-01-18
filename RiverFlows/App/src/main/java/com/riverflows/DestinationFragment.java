@@ -88,7 +88,7 @@ public class DestinationFragment extends RoboFragment implements LoaderManager.L
         this.conversionMap = (Map<Variable.CommonVariable,Variable.CommonVariable>)args.getSerializable(ARG_CONVERSION_MAP);
 
         TextView titleText = (TextView)v.findViewById(R.id.title);
-        titleText.setText(this.destinationFacet.getDestination().getName());
+        titleText.setText(this.destinationFacet.getDestination().getSite().getName());
 
         CheckBox favoriteBtn = (CheckBox)v.findViewById(R.id.favorite_btn);
         favoriteBtn.setVisibility(View.GONE);
