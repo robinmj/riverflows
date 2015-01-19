@@ -66,7 +66,7 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
         final ActionBar ab = getSupportActionBar();
 
         ab.hide();
-	    
+	    /*
 	    SharedPreferences settings = getPreferences(0);
         boolean widgetAdShown = settings.getBoolean("widgetAdShown", false);
         if(!widgetAdShown) {
@@ -74,7 +74,7 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
         	Editor prefsEditor = settings.edit();
         	prefsEditor.putBoolean("widgetAdShown", true);
         	prefsEditor.commit();
-        }
+        }*/
 
 		addTab(ab, TAB_FAVORITES, "Favorites");
 		addTab(ab, TAB_SITES, "Sites");
