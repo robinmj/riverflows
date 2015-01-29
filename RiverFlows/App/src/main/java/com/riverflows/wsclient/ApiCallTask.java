@@ -10,6 +10,7 @@ import android.util.Log;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.AccountPicker;
+import com.riverflows.App;
 import com.riverflows.Home;
 import com.subalpine.DeferredExceptionAsyncTask;
 
@@ -83,6 +84,9 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 	}
 	
 	protected final Result tryInBackground(Params... params) throws Exception {
+
+        Log.v(App.TAG, getClass().getSimpleName() + ".tryInBackground()");
+
 		//save parameters for reExecute method
 		this.params = params;
 		

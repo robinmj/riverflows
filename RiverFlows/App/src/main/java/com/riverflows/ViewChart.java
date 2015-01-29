@@ -114,7 +114,8 @@ public class ViewChart extends RoboActivity {
     			FavoritesDaoImpl.deleteFavorite(getApplicationContext(), ViewChart.this.station.getSiteId(), ViewChart.this.variable);
     		}
 			sendBroadcast(Home.getWidgetUpdateIntent());
-			sendBroadcast(new Intent(Home.ACTION_FAVORITES_CHANGED));
+            Favorites.softReloadNeeded = true;
+			//sendBroadcast(new Intent(Home.ACTION_FAVORITES_CHANGED));
     	}
     }
     

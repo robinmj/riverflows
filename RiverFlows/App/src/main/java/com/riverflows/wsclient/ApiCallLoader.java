@@ -2,6 +2,9 @@ package com.riverflows.wsclient;
 
 import android.app.Activity;
 import android.support.v4.content.AsyncTaskLoader;
+import android.util.Log;
+
+import com.riverflows.App;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -24,6 +27,7 @@ public abstract class ApiCallLoader<Result> extends AsyncTaskLoader<Result> {
 
 	@Override
 	public Result loadInBackground() {
+        Log.v(App.TAG, getClass().getSimpleName() + ".loadInBackground()");
 		try {
 			return tryInBackground();
 		} catch(Exception e) {
@@ -41,6 +45,7 @@ public abstract class ApiCallLoader<Result> extends AsyncTaskLoader<Result> {
 
 		WsSession session = uiHelper.initSession();
 		if(session == null) {
+            Log.i(App.TAG, "tryInBackground() aborted");
             wasAborted.set(true);
 			return null;
 		}

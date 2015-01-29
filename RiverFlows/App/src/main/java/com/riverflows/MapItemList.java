@@ -407,7 +407,7 @@ public abstract class MapItemList extends RoboListActivity {
 
             if(mapItem.isDestination()) {
                 favorite = new Favorite(this.mapItem.destinationFacet);
-                confirmation = MessageFormat.format(getString(R.string.add_favorite_dest_confirmation), variable.getName(), this.mapItem.getSite().getName());
+                confirmation = MessageFormat.format(getString(R.string.add_favorite_dest_confirmation), this.mapItem.getSite().getName());
             } else {
                 favorite = new Favorite(this.mapItem.getSite(), this.variable.getId());
                 confirmation = MessageFormat.format(getString(R.string.add_favorite_confirmation), variable.getName(), this.mapItem.getSite().getName());
@@ -421,7 +421,8 @@ public abstract class MapItemList extends RoboListActivity {
 				item.setChecked(true);
 			}
 			sendBroadcast(Home.getWidgetUpdateIntent());
-			sendBroadcast(new Intent(Home.ACTION_FAVORITES_CHANGED));
+			//sendBroadcast(new Intent(Home.ACTION_FAVORITES_CHANGED));
+            Favorites.softReloadNeeded = true;
 
 			
 			Toast.makeText(getApplicationContext(), confirmation, Toast.LENGTH_SHORT).show();
