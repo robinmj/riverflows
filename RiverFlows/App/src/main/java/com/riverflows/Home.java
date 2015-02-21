@@ -54,7 +54,7 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 
 	private Fragment currentFragment = favorites;
 	private volatile int currentTabId = TAB_FAVORITES;
-	
+
 	private InitSession initSession = new InitSession(this, REQUEST_CHOOSE_ACCOUNT, REQUEST_HANDLE_RECOVERABLE_AUTH_EXC, false, false);
 	
 	public void onCreate(Bundle savedInstanceState) {
@@ -66,7 +66,7 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
         final ActionBar ab = getSupportActionBar();
 
         ab.hide();
-	    
+	    /*
 	    SharedPreferences settings = getPreferences(0);
         boolean widgetAdShown = settings.getBoolean("widgetAdShown", false);
         if(!widgetAdShown) {
@@ -74,12 +74,12 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
         	Editor prefsEditor = settings.edit();
         	prefsEditor.putBoolean("widgetAdShown", true);
         	prefsEditor.commit();
-        }
+        }*/
 
 		addTab(ab, TAB_FAVORITES, "Favorites");
 		addTab(ab, TAB_SITES, "Sites");
 
-		ab.setDisplayShowTitleEnabled(false);
+		ab.setTitle(getResources().getString(R.string.app_name));
 		ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 		if(savedInstanceState != null) {
@@ -120,11 +120,11 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 	static final int REQUEST_HANDLE_RECOVERABLE_AUTH_EXC = 5436;
 
 	private class InitSession extends ApiCallTask<String, Integer, String> {
-		
+
 		public InitSession(Activity activity, int requestCode, int recoveryRequestCode, boolean loginRequired, boolean secondTry) {
 			super(activity, requestCode, recoveryRequestCode, loginRequired, secondTry);
 		}
-		
+
 		public InitSession(InitSession oldTask) {
 			super(oldTask);
 		}
@@ -133,7 +133,7 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 		protected String doApiCall(WsSession session, String... params) {
 			return null;
 		}
-		
+
 		@Override
 		protected void onNoUIRequired(String result) {
 
@@ -143,7 +143,7 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 
 			getSupportActionBar().setSelectedNavigationItem(currentTabId);
 		}
-		
+
 		@Override
 		protected ApiCallTask<String, Integer, String> clone()
 				throws CloneNotSupportedException {
@@ -157,7 +157,7 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 
 	    EasyTracker.getInstance().activityStop(this);
 	}
-	
+
 	protected void onActivityResult(final int requestCode, final int resultCode,
 	         final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);

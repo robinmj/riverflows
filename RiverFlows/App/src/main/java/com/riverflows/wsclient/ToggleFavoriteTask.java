@@ -6,6 +6,7 @@ import android.util.Log;
 
 import com.google.inject.Inject;
 import com.riverflows.App;
+import com.riverflows.Favorites;
 import com.riverflows.Home;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
@@ -69,7 +70,8 @@ public class ToggleFavoriteTask extends ApiCallTask<Object, Integer, Favorite> {
         }
 
         this.activity.sendBroadcast(Home.getWidgetUpdateIntent());
-        this.activity.sendBroadcast(new Intent(Home.ACTION_FAVORITES_CHANGED));
+        //this.activity.sendBroadcast(new Intent(Home.ACTION_FAVORITES_CHANGED));
+        Favorites.softReloadNeeded = true;
     }
 
     @Override

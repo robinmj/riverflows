@@ -468,7 +468,7 @@ public class ViewDestination extends RoboActionBarActivity {
             Intent i = new Intent(ViewDestination.this, ViewChart.class);
 
             i.putExtra(ViewChart.KEY_SITE, getSite());
-            i.putExtra(ViewChart.KEY_VARIABLE, getVariable());
+            i.putExtra(ViewChart.KEY_VARIABLE, var);
             startActivity(i);
 
 			return true;

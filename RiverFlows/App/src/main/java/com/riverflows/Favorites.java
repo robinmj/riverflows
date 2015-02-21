@@ -89,9 +89,9 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 	private String tempUnit = null;
 
-	private Date lastLoadTime = null;
+	private volatile Date lastLoadTime = null;
 
-	private volatile boolean softReloadNeeded = false;
+	public static volatile boolean softReloadNeeded = false;
 
 	private Date v2MigrationDate = null;
 
@@ -123,6 +123,8 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 
+        getInjector(getActivity()).injectMembers(this);
+
 		ListView lv = getListView();
 
 		setHasOptionsMenu(true);
@@ -153,13 +155,16 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		args.putBoolean(FavoritesLoader.PARAM_HARD_REFRESH, false);
 
 		getActivity().getSupportLoaderManager().initLoader(FAVORITES_LOADER_ID, args, this);
+        Log.v(TAG, "initLoader()");
 
-		getActivity().registerReceiver(this.favChangedReceiver, new IntentFilter(Home.ACTION_FAVORITES_CHANGED));
+		//getActivity().registerReceiver(this.favChangedReceiver, new IntentFilter(Home.ACTION_FAVORITES_CHANGED));
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
+
+        Log.v(App.TAG, "Favorites.onResume()");
 
 		Date lastLoadTime = this.lastLoadTime;
 
@@ -189,7 +194,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
     public void onDestroy() {
         super.onDestroy();
 
-        getActivity().unregisterReceiver(this.favChangedReceiver);
+        //getActivity().unregisterReceiver(this.favChangedReceiver);
     }
 
     @Override
@@ -258,6 +263,8 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 	@Override
 	public Loader<List<FavoriteData>> onCreateLoader(int i, Bundle bundle) {
+        Log.v(TAG, "onCreateLoader()");
+        showProgress();
 		return new FavoritesLoader(getActivity(), getWsSessionUIHelper(), this.tempUnit, bundle.getBoolean(FavoritesLoader.PARAM_HARD_REFRESH));
 	}
 
@@ -275,9 +282,12 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 	@Override
 	public void onLoadFinished(Loader<List<FavoriteData>> listLoader, List<FavoriteData> favoriteData) {
 
+        Log.v(TAG, "onLoadFinished()");
 		FavoritesLoader loader = (FavoritesLoader)listLoader;
 
 		hideProgress();
+
+        View v = getView();
 
 		if(loader.getException() != null) {
 			Log.e(Home.TAG, "failed to get remote favorites: " + loader.getException().getMessage(), loader.getException());
@@ -290,11 +300,15 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 				detailMsg = "Could Not Load Favorites: " + detailMsg;
 			}
 
-			showMessage(detailMsg);
+            if(v != null) {
+                showMessage(v, detailMsg);
+            }
 
 			return;
 		} else {
-			hideMessage();
+            if(v != null) {
+                hideMessage(v);
+            }
 		}
 
 		Activity activity = getActivity();
@@ -315,6 +329,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 //
 
 			setListAdapter(new FavoriteAdapter(activity, favoriteData));
+            this.lastLoadTime = new Date();
 
 			/*
 			NOT READY FOR PRIME TIME
@@ -327,6 +342,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		hideProgress();
 		if(favoriteData == null) {
 			Log.e(Home.TAG, "null favorites");
+            this.softReloadNeeded = true;
 		} else if(favoriteData.size() == 0) {
 			showInstructions();
 		}
@@ -337,7 +353,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 	@Override
 	public void onLoaderReset(Loader<List<FavoriteData>> listLoader) {
-
+        Log.v(App.TAG, "Favorites.onLoaderReset()");
 	}
 
 	/**
@@ -369,14 +385,14 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		getListView().getEmptyView().setVisibility(View.INVISIBLE);
 	}
 
-	private void showMessage(String message) {
-		TextView statusMsgView = (TextView)getView().findViewById(R.id.status_message);
+	private void showMessage(View rootView, String message) {
+		TextView statusMsgView = (TextView)rootView.findViewById(R.id.status_message);
 		statusMsgView.setText(message);
 		statusMsgView.setVisibility(View.VISIBLE);
 	}
 
-	private void hideMessage() {
-		getView().findViewById(R.id.status_message).setVisibility(View.GONE);
+	private void hideMessage(View rootView) {
+        rootView.findViewById(R.id.status_message).setVisibility(View.GONE);
 	}
 
 	public static class FavoritesLoader extends ApiCallLoader<List<FavoriteData>> {
@@ -400,12 +416,14 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		protected void onStartLoading() {
 			super.onStartLoading();
 			if(this.favorites == null) {
+                Log.v(TAG, "forceLoad()");
 				forceLoad();
 			}
 		}
 
 		@Override
 		protected List<FavoriteData> doApiCall(WsSession session) throws Exception {
+            Log.v(TAG, "doApiCall()");
 
 			this.favorites = FavoritesDaoImpl.getFavorites(FavoritesLoader.this.getContext(), null, null);
 
@@ -480,6 +498,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 				}
 			}
 
+            Favorites.softReloadNeeded = false;
 			return favoriteData;
 		}
 
@@ -698,13 +717,15 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
                 loadSites(false);
 
+                View v = getView();
+
                 if(data != null) {
                     String msg = data.getStringExtra(ReorderFavorites.EXTRA_SAVE_FAILED_EXCEPTION_DETAIL);
-                    if(msg != null) {
-                        showMessage(msg);
+                    if(msg != null && v != null) {
+                        showMessage(v, msg);
                     }
-                } else {
-                    showMessage("Could not save order of favorites");
+                } else if(v != null) {
+                    showMessage(v, "Could not save order of favorites");
                 }
 			}
 		}
@@ -803,22 +824,33 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
         @Override
         protected void onNetworkError() {
-            Favorites.this.showMessage("Failed to delete favorite: network error");
-            Log.i(App.TAG, "Failed to delete favorite: network error", getException());
+            View v = getView();
+
+            if(v != null) {
+                Favorites.this.showMessage(v, "Failed to delete favorite: network error");
+            }
+            Log.w(App.TAG, "Failed to delete favorite: network error", getException());
         }
 
         @Override
         protected void onNoUIRequired(FavoriteData favoriteData) {
+            View v = getView();
+
             if(getException() != null) {
-                Favorites.this.showMessage("Failed to delete favorite: " + getException().getMessage());
+                if(v != null) {
+                    Favorites.this.showMessage(v, "Failed to delete favorite: " + getException().getMessage());
+                }
                 Log.e(App.TAG, "Failed to delete favorite: network error", getException());
-                EasyTracker.getTracker().sendException(getClass().getSimpleName(),getException(), false);
+                EasyTracker.getTracker().sendException(getClass().getSimpleName(), getException(), false);
 
                 return;
             }
 
-            hideProgress();
-            hideMessage();
+
+            if(v != null) {
+                hideProgress();
+                hideMessage(v);
+            }
             deleteFavoriteFromView(favoriteData);
         }
 

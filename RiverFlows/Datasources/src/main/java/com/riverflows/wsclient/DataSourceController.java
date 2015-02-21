@@ -76,9 +76,12 @@ public class DataSourceController {
 	
 	private static final Map<String,RESTDataSource> dataSources = new HashMap<String,RESTDataSource>();
 
+    private static volatile boolean sslInitialized = false;
+
 	public static class SSLHttpClient extends DefaultHttpClient {
 		@Override
 		protected ClientConnectionManager createClientConnectionManager() {
+
 			try {
 
                 ClientConnectionManager connManager = super.createClientConnectionManager();
@@ -89,9 +92,11 @@ public class DataSourceController {
 
                     SSLSocketFactory sslSocketFactory = new SSLSocketFactory(trustedKeys);
 
-				    Scheme https = new Scheme("https", sslSocketFactory, 443);
+                    Scheme https = new Scheme("https", sslSocketFactory, 443);
 
                     connManager.getSchemeRegistry().register(https);
+                } else if(!sslInitialized) {
+                    throw new RuntimeException(DataSourceController.class.getSimpleName() + " not initialized!");
                 } else {
                     LOG.info("no keystore supplied: using normal https socket");
                 }
@@ -153,25 +158,31 @@ public class DataSourceController {
 	
 	public static void useKeyStore(InputStream keystoreStream) {
 
-		try {
+        if(!RIVERFLOWS_WS_BASEURL.startsWith("https://riverflows.net")) {
+            //add support for self-signed certificates at ws.riverflowsapp.com and
+            // ws-staging.riverflowsapp.com
+            try {
 
-			trustedKeys = KeyStore.getInstance("BKS");
+                trustedKeys = KeyStore.getInstance("BKS");
 
-			try {
-				trustedKeys.load(keystoreStream, new String("password").toCharArray());
-			} finally {
-				keystoreStream.close();
-			}
+                try {
+                    trustedKeys.load(keystoreStream, new String("password").toCharArray());
+                } finally {
+                    keystoreStream.close();
+                }
 
-			TrustManagerFactory tmf =
-					TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-			tmf.init(trustedKeys);
+                TrustManagerFactory tmf =
+                        TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                tmf.init(trustedKeys);
 
-			sslContext = SSLContext.getInstance("TLS");
-			sslContext.init(null, tmf.getTrustManagers(), null);
-		} catch(Exception e) {
-			throw new RuntimeException("Failed to load trusted SSL keys: " + e.getMessage(),e);
-		}
+                sslContext = SSLContext.getInstance("TLS");
+                sslContext.init(null, tmf.getTrustManagers(), null);
+            } catch (Exception e) {
+                throw new RuntimeException("Failed to load trusted SSL keys: " + e.getMessage(), e);
+            }
+        }
+
+        sslInitialized = true;
 
 		Authenticator.setDefault(new java2(m(b)));
 	}
@@ -232,7 +243,7 @@ public class DataSourceController {
             if(conn instanceof HttpsURLConnection) {
                 if(sslContext != null) {
                     ((HttpsURLConnection) conn).setSSLSocketFactory(sslContext.getSocketFactory());
-                } else {
+                } else if(!sslInitialized) {
                     throw new IllegalStateException(DataSourceController.class.getSimpleName() + " not initialized!");
                 }
             }

@@ -491,7 +491,8 @@ public class EditDestination extends RoboActionBarActivity {
                 return;
             } else {
                 sendBroadcast(Home.getWidgetUpdateIntent());
-                sendBroadcast(new Intent(Home.ACTION_FAVORITES_CHANGED));
+                //sendBroadcast(new Intent(Home.ACTION_FAVORITES_CHANGED));
+                Favorites.softReloadNeeded = true;
             }
 
             Intent resultIntent = new Intent();
