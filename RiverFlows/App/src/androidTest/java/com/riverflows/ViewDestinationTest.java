@@ -104,13 +104,17 @@ public class ViewDestinationTest {
 
         ViewDestination activity = createViewDestination(i);
 
+        this.destinationFragment.setZeroYMin(true);
+
         assertThat(this.destinationFragment.getData(), notNullValue());
         assertThat(this.destinationFragment.errorMsg, nullValue());
 
         activity = simulateConfigurationChange(activity);
+        loadExaminedViews(activity);
 
         assertThat(this.destinationFragment.getData(), notNullValue());
         assertThat(this.destinationFragment.errorMsg, nullValue());
+        assertThat(this.destinationFragment.zeroYMin, equalTo(true));
     }
 
     @Test

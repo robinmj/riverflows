@@ -326,6 +326,8 @@ public class DestinationFragment extends RoboFragment implements LoaderManager.L
 
     public void setZeroYMin(boolean zeroYMin) {
         this.zeroYMin = new Boolean(zeroYMin);
+        //persist during orientation changes
+        getArguments().putBoolean(ARG_ZERO_Y_MIN, this.zeroYMin);
         clearData();
         displayData();
     }
