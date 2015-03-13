@@ -1,13 +1,7 @@
 package com.riverflows;
 
-import android.content.ComponentName;
 import android.content.Intent;
-import android.graphics.drawable.Drawable;
-import android.support.annotation.NonNull;
 import android.view.ContextMenu;
-import android.view.KeyEvent;
-import android.view.MenuItem;
-import android.view.SubMenu;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -19,19 +13,15 @@ import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
 import com.riverflows.factory.DestinationFacetFactory;
 import com.riverflows.factory.SiteDataFactory;
-import com.riverflows.factory.WsSessionFactory;
 import com.riverflows.wsclient.WsSession;
-import com.riverflows.wsclient.WsSessionManager;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
-import org.hamcrest.core.IsEqual;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
 import org.robolectric.util.ActivityController;
 
 import java.util.ArrayList;
@@ -44,14 +34,10 @@ import roboguice.RoboGuice;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
-import static org.hamcrest.core.IsNull.nullValue;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyMap;
-import static org.mockito.Matchers.anyMapOf;
 import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.eq;
 import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -66,9 +52,11 @@ public class RiverSelectTest {
     EditText filter_field = null;
     ListView listView = null;
 
+    RobinSession robinSession = new RobinSession();
+
     @Before
     public void setup() {
-        RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient);
+        RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient, robinSession);
     }
 
 
@@ -88,7 +76,7 @@ public class RiverSelectTest {
 
     @Test
     public void shouldLoadSitesIfNotLoggedIn() throws Exception {
-        WsSessionManager.setSession(null);
+        this.robinSession.wsSessionManager.setSession(null);
 
         Map<SiteId, SiteData> mockData = new HashMap<SiteId, SiteData>();
 
@@ -112,8 +100,6 @@ public class RiverSelectTest {
 
     @Test
     public void shouldLoadSitesAndDestinations() throws Exception {
-
-        WsSessionManager.setSession(WsSessionFactory.getRobinSession());
 
         Map<SiteId, SiteData> mockData = new HashMap<SiteId, SiteData>();
         SiteData clearCreekData = SiteDataFactory.getClearCreekData();
@@ -152,8 +138,6 @@ public class RiverSelectTest {
     }
 
     public void shouldAllowFavoriteCreation() throws Throwable {
-
-        WsSessionManager.setSession(WsSessionFactory.getRobinSession());
 
         Map<SiteId, SiteData> mockData = new HashMap<SiteId, SiteData>();
         SiteData clearCreekData = SiteDataFactory.getClearCreekData();

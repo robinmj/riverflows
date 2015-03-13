@@ -55,7 +55,7 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 	private Fragment currentFragment = favorites;
 	private volatile int currentTabId = TAB_FAVORITES;
 
-	private InitSession initSession = new InitSession(this, REQUEST_CHOOSE_ACCOUNT, REQUEST_HANDLE_RECOVERABLE_AUTH_EXC, false, false);
+	private InitSession initSession = null;
 	
 	public void onCreate(Bundle savedInstanceState) {
 
@@ -104,6 +104,8 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 			showDialog(DIALOG_ID_MIGRATION_ERROR);
 			return;
 		}
+
+        initSession = new InitSession(this, REQUEST_CHOOSE_ACCOUNT, REQUEST_HANDLE_RECOVERABLE_AUTH_EXC, false, false);
 
 		//attempt to set up session for accessing web services, but don't display a login screen
 		//initSession.execute();

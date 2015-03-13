@@ -10,11 +10,14 @@ import android.util.Log;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.AccountPicker;
+import com.google.inject.Inject;
 import com.riverflows.App;
 import com.riverflows.Home;
 import com.subalpine.DeferredExceptionAsyncTask;
 
 import java.io.IOException;
+
+import static roboguice.RoboGuice.getInjector;
 
 public abstract class ApiCallTask<Params, Progress, Result> extends
 		DeferredExceptionAsyncTask<Params, Progress, Result> {
@@ -28,8 +31,12 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 	private Params[] params = null;
 	private String accountName = null;
 	private boolean sendToLoginScreen = false;
+
+    @Inject
+    protected WsSessionManager wsSessionManager;
 	
 	public ApiCallTask(Activity activity, int requestCode, int recoveryRequestCode, boolean loginRequired, boolean secondTry) {
+        getInjector(activity).injectMembers(this);
 		this.activity = activity;
 		this.requestCode = requestCode;
 		this.recoveryRequestCode = recoveryRequestCode;
@@ -42,6 +49,7 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 	 * @param oldTask
 	 */
 	public ApiCallTask(ApiCallTask<Params, Progress, Result> oldTask) {
+        getInjector(oldTask.activity).injectMembers(this);
 		this.activity = oldTask.activity;
 		this.requestCode = oldTask.requestCode;
 		this.recoveryRequestCode = oldTask.recoveryRequestCode;
@@ -50,12 +58,12 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 	}
 	
 	private WsSession initSession() throws Exception {
-		WsSession currentSession = WsSessionManager.getSession(this.activity);
+		WsSession currentSession = this.wsSessionManager.getSession(this.activity);
 		
 		if(!(currentSession == null || currentSession.authToken == null ||
 				currentSession.isExpired() || (currentSession.accountName == null && this.loginRequired))) {
 
-            WsSession updatedSession = WsSessionManager.loadUserAccount();
+            WsSession updatedSession = this.wsSessionManager.loadUserAccount();
             if(updatedSession != null) {
                 return updatedSession;
             }
@@ -66,19 +74,19 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 		
 		if(accountName == null) {
 
-			if(this.loginRequired || !WsSessionManager.wasPromptedToLogin()) {
+			if(this.loginRequired || !this.wsSessionManager.wasPromptedToLogin()) {
 				this.sendToLoginScreen = true;
 				return null;
 			}
 
 			//login anonymously
-			currentSession = WsSessionManager.getWsAuthToken("anonymous", null, null);
-			WsSessionManager.setPromptedToLogin();
+			currentSession = this.wsSessionManager.getWsAuthToken("anonymous", null, null);
+			this.wsSessionManager.setPromptedToLogin();
 		} else {
-			currentSession = WsSessionManager.loginWithGoogleOAuth2(this.activity, accountName);
+			currentSession = this.wsSessionManager.loginWithGoogleOAuth2(this.activity, accountName);
 		}
 		
-        WsSessionManager.notifyAccountSessionChange(currentSession, null);
+        this.wsSessionManager.notifyAccountSessionChange(currentSession, null);
 		
 		return currentSession;
 	}

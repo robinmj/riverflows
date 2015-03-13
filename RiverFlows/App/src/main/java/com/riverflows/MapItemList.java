@@ -27,6 +27,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.inject.Inject;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.MapItem;
 import com.riverflows.data.Series;
@@ -66,6 +67,9 @@ public abstract class MapItemList extends RoboListActivity {
 	public static final int DIALOG_ID_MASTER_LOADING = 3;
 	public static final int DIALOG_ID_MASTER_LOADING_ERROR = 4;
 	public static final int DIALOG_ID_UPGRADE_FAVORITES = 5;
+
+    @Inject
+    protected WsSessionManager wsSessionManager;
 	
 	private LoadSitesTask loadTask = null;
 	private String errorMsg = null;
@@ -466,7 +470,7 @@ public abstract class MapItemList extends RoboListActivity {
 		
 		Variable[] supportedVars = mapItem.getSite().getSupportedVariables();
 
-		boolean loggedIn = (WsSessionManager.getSession(this) != null);
+		boolean loggedIn = (this.wsSessionManager.getSession(this) != null);
 
 		if(mapItem.isDestination()) {
             if(loggedIn && !FavoritesDaoImpl.isFavorite(getApplicationContext(), mapItem.destinationFacet.getId().intValue())) {
