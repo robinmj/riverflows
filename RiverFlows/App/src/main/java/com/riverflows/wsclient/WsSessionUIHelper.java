@@ -13,9 +13,12 @@ import android.util.Log;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.AccountPicker;
+import com.google.inject.Inject;
 import com.riverflows.Home;
 
 import java.io.IOException;
+
+import static roboguice.RoboGuice.getInjector;
 
 /**
  * Handles the user flow for obtaining a WsSession object
@@ -34,7 +37,11 @@ public class WsSessionUIHelper {
 	private String accountName = null;
 	private boolean sendToLoginScreen = false;
 
+    @Inject
+    private WsSessionManager wsSessionManager;
+
 	public WsSessionUIHelper(FragmentActivity activity, final int loaderId, LoaderManager.LoaderCallbacks<?> loaderCallbacks, int requestCode, int recoveryRequestCode, boolean secondTry) {
+        getInjector(activity).injectMembers(this);
 		this.activity = activity;
 		this.requestCode = requestCode;
 		this.recoveryRequestCode = recoveryRequestCode;
@@ -44,12 +51,12 @@ public class WsSessionUIHelper {
 	}
 
 	public WsSession initSession() throws Exception {
-		WsSession currentSession = WsSessionManager.getSession(this.activity);
+		WsSession currentSession = this.wsSessionManager.getSession(this.activity);
 
 		if(!(currentSession == null || currentSession.authToken == null ||
 				currentSession.isExpired() || (currentSession.accountName == null && this.loginRequired))) {
 
-            WsSession updatedSession = WsSessionManager.loadUserAccount();
+            WsSession updatedSession = this.wsSessionManager.loadUserAccount();
             if(updatedSession != null) {
                 return updatedSession;
             }
@@ -60,19 +67,19 @@ public class WsSessionUIHelper {
 
 		if(accountName == null) {
 
-			if(this.loginRequired || !WsSessionManager.wasPromptedToLogin()) {
+			if(this.loginRequired || !this.wsSessionManager.wasPromptedToLogin()) {
 				this.sendToLoginScreen = true;
 				return null;
 			}
 
 			//login anonymously
-			currentSession = WsSessionManager.getWsAuthToken("anonymous", null, null);
-			WsSessionManager.setPromptedToLogin();
+			currentSession = this.wsSessionManager.getWsAuthToken("anonymous", null, null);
+			this.wsSessionManager.setPromptedToLogin();
 		} else {
-			currentSession = WsSessionManager.loginWithGoogleOAuth2(this.activity, accountName);
+			currentSession = this.wsSessionManager.loginWithGoogleOAuth2(this.activity, accountName);
 		}
 
-		WsSessionManager.notifyAccountSessionChange(currentSession, null);
+		this.wsSessionManager.notifyAccountSessionChange(currentSession, null);
 
 		return currentSession;
 	}

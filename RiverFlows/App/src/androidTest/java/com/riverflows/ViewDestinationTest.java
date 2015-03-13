@@ -50,7 +50,7 @@ public class ViewDestinationTest {
 
     @Before
     public void setup() {
-        RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient);
+        RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient, new RobinSession());
     }
 
     public ViewDestination createViewDestination(Intent i) throws Exception {
@@ -59,12 +59,6 @@ public class ViewDestinationTest {
         this.activityController.withIntent(i).create().start().resume().visible();
 
         ViewDestination activity = activityController.get();
-
-        UserAccount account = new UserAccount();
-        account.setEmail("robin.m.j@gmail.com");
-        WsSession session = new WsSession("robin.m.j", account, "T9HLJkUvA7JwELEeHjsu", System.currentTimeMillis() + 10 * 60 * 1000);
-
-        WsSessionManager.setSession(session);
 
         loadExaminedViews(activity);
 

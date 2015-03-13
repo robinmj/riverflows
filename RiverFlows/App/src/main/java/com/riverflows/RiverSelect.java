@@ -120,7 +120,7 @@ public class RiverSelect extends MapItemList {
                         items.add(new MapItem(data, null, favoriteSiteIds.contains(data.getSite().getSiteId())));
                     }
 
-                    WsSession session = WsSessionManager.getSession(RiverSelect.this);
+                    WsSession session = RiverSelect.this.wsSessionManager.getSession(RiverSelect.this);
 
                     if(session != null) {
                         HashMap<String, List<String>> filterParams = new HashMap<String, List<String>>();

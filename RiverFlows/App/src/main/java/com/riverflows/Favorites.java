@@ -85,6 +85,9 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
     @Inject
     private DestinationFacets destinationFacets;
 
+    @Inject
+    private WsSessionManager wsSessionManager;
+
 	private SignIn signin;
 
 	private String tempUnit = null;
@@ -254,7 +257,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 			signin.execute();
 			return true;
 		case R.id.mi_sign_out:
-			WsSessionManager.logOut(getActivity());
+			this.wsSessionManager.logOut(getActivity());
 			return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
@@ -534,7 +537,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		MenuItem signin = menu.findItem(R.id.mi_sign_in);
 		MenuItem signout = menu.findItem(R.id.mi_sign_out);
 
-		if(WsSessionManager.getSession(getActivity()) != null) {
+		if(this.wsSessionManager.getSession(getActivity()) != null) {
 			signin.setVisible(false);
 			signout.setVisible(true);
 		} else {
@@ -574,7 +577,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
         boolean allowEdit = true;
 
         if(favoriteData.getFavorite().getDestinationFacet() != null) {
-            WsSession session = WsSessionManager.getSession(getActivity());
+            WsSession session = this.wsSessionManager.getSession(getActivity());
             //there is a slim possibility that we won't have a valid session here- in that case,
             // still show the Edit menu item and allow EditDestination to be responsible for preventing
             // editing if the user doesn't own the destination facet.

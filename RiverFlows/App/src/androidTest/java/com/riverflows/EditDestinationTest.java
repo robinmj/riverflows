@@ -52,7 +52,7 @@ public class EditDestinationTest {
 
     @Before
     public void setup() {
-        RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient);
+        RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient, new RobinSession());
     }
 
     public EditDestination createEditDestination(Intent i) throws Exception {
@@ -61,12 +61,6 @@ public class EditDestinationTest {
         activityController.withIntent(i).create().start().resume().visible();
 
         EditDestination activity = activityController.get();
-
-        UserAccount account = new UserAccount();
-        account.setEmail("robin.m.j@gmail.com");
-        WsSession session = new WsSession("robin.m.j", account, "T9HLJkUvA7JwELEeHjsu", System.currentTimeMillis() + 10 * 60 * 1000);
-
-        WsSessionManager.setSession(session);
 
         nameField = (EditText) activity.findViewById(R.id.fld_dest_name);
 

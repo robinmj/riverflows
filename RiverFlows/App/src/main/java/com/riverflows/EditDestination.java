@@ -52,6 +52,9 @@ public class EditDestination extends RoboActionBarActivity {
 	private EditDestinationFragment editDestination;
 	private SaveDestination saveDestTask = null;
 
+    @Inject
+    private WsSessionManager wsSessionManager;
+
     private View.OnClickListener saveListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -104,7 +107,7 @@ public class EditDestination extends RoboActionBarActivity {
                 destinationFacet.setDestination(destination);
                 destinationFacet.setVariable((Variable) extras.get(KEY_VARIABLE));
             } else {
-                WsSession session = WsSessionManager.getSession(this);
+                WsSession session = this.wsSessionManager.getSession(this);
                 if(session == null || session.userAccount == null) {
                     Log.e(App.TAG, "Could not edit destination- not logged in");
                     setResult(RESULT_NOT_LOGGED_IN);

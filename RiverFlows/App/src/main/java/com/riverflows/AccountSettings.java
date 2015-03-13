@@ -15,19 +15,25 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.inject.Inject;
 import com.riverflows.data.UserAccount;
 import com.riverflows.wsclient.ApiCallTask;
 import com.riverflows.wsclient.UserAccounts;
 import com.riverflows.wsclient.WsSession;
 import com.riverflows.wsclient.WsSessionManager;
 
+import roboguice.activity.RoboActionBarActivity;
+
 /**
  * Created by robin on 6/4/13.
  */
-public class AccountSettings extends ActionBarActivity {
+public class AccountSettings extends RoboActionBarActivity {
 
 	private static final int REQUEST_SAVE = 642048;
 	private static final int REQUEST_LOGIN_FOR_SAVE = 32078;
+
+    @Inject
+    private WsSessionManager wsSessionManager;
 
 	private String[] facetNames;
 	private int[] facetValues;
@@ -42,7 +48,7 @@ public class AccountSettings extends ActionBarActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		currentUser = new UserAccount(WsSessionManager.getSession(this).userAccount);
+		currentUser = new UserAccount(this.wsSessionManager.getSession(this).userAccount);
 
 		setContentView(R.layout.account_settings);
 
@@ -139,7 +145,7 @@ public class AccountSettings extends ActionBarActivity {
 
 			WsSession newSession = new WsSession(session.accountName, params[0], session.authToken, session.accessTokenExpires);
 
-			WsSessionManager.notifyAccountSessionChange(newSession, null);
+			this.wsSessionManager.notifyAccountSessionChange(newSession, null);
 
 			return null;
 		}
