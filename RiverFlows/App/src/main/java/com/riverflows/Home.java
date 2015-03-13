@@ -105,10 +105,11 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 			return;
 		}
 
-        initSession = new InitSession(this, REQUEST_CHOOSE_ACCOUNT, REQUEST_HANDLE_RECOVERABLE_AUTH_EXC, false, false);
+        findViewById(R.id.initial_progress).setVisibility(View.GONE);
 
-		//attempt to set up session for accessing web services, but don't display a login screen
-		//initSession.execute();
+        getSupportActionBar().show();
+
+        getSupportActionBar().setSelectedNavigationItem(currentTabId);
 	}
 
 	@Override
