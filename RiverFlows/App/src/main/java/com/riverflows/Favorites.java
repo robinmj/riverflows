@@ -350,7 +350,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 			showInstructions();
 		}
 
-        WsSession session = WsSessionManager.getSession(activity);
+        WsSession session = this.wsSessionManager.getSession(activity);
 
         if(session == null) {
             return;
