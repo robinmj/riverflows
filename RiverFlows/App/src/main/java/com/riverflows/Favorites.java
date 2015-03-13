@@ -347,6 +347,19 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 			showInstructions();
 		}
 
+        WsSession session = WsSessionManager.getSession(activity);
+
+        if(session == null) {
+            return;
+        }
+
+        UserAccount userAccount = session.userAccount;
+
+        if(userAccount != null && userAccount.getFacetTypes() == 0) {
+            //set up this user's account
+            startActivityForResult(new Intent(Favorites.this.getActivity(), AccountSettings.class), REQUEST_CREATE_ACCOUNT);
+        }
+
 		//needed for Android 3.0+
 		//invalidateOptionsMenu();
 	}

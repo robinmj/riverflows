@@ -106,7 +106,7 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 		}
 
 		//attempt to set up session for accessing web services, but don't display a login screen
-		initSession.execute();
+		//initSession.execute();
 	}
 
 	@Override
