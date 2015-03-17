@@ -11,6 +11,7 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.Window;
+import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
@@ -31,8 +32,9 @@ public class About extends Activity {
         
 		webview.loadUrl("file:///android_asset/about.html");
 	}
-	
+
 	public class VersionProvider {
+        @JavascriptInterface
 		/**
 		 * Callback to request the version number from within about.html
 		 */
