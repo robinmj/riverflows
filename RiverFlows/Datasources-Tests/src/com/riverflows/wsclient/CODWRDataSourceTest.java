@@ -1,14 +1,6 @@
 package com.riverflows.wsclient;
 
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.GregorianCalendar;
-import java.util.List;
-import java.util.TimeZone;
-
-import junit.framework.TestCase;
-
+import com.riverflows.DataSourceTestCase;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.FavoriteData;
 import com.riverflows.data.Reading;
@@ -19,15 +11,27 @@ import com.riverflows.data.USState;
 import com.riverflows.data.Variable;
 import com.riverflows.data.Variable.CommonVariable;
 
-public class CODWRDataSourceTest extends TestCase {
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.GregorianCalendar;
+import java.util.List;
+import java.util.TimeZone;
 
-	private static final CODWRDataSource src = new CODWRDataSource();
-	
-	static {
-		src.setHttpClientWrapper(new MockCoDwrCsvHttpClient("testdata/codwr/"));
-	}
+import co.freeside.betamax.TapeMode;
 
-	public void testGetSites() throws Throwable {
+public class CODWRDataSourceTest extends DataSourceTestCase {
+
+	private final CODWRDataSource src = new CODWRDataSource();
+
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        src.setHttpClientWrapper(httpClientWrapper);
+    }
+
+    public void testGetSites() throws Throwable {
+        recorder.insertTape("codwr_getSites", Collections.singletonMap("mode", TapeMode.READ_SEQUENTIAL));
+
 		Site clearCreek = new Site();
 		clearCreek.setSiteId(new SiteId(CODWRDataSource.AGENCY, "CCACCRCO"));
 		clearCreek.setName("CLEAR CREEK ABOVE CLEAR CREEK RESERVOIR");
@@ -42,44 +46,44 @@ public class CODWRDataSourceTest extends TestCase {
 		assertTrue(result.getDataInfo().contains(clearCreek.getName()));
 
 		GregorianCalendar cal = new GregorianCalendar();
-		cal.set(2011, 2, 7, 13, 0, 0);
+		cal.set(2015, Calendar.MARCH, 23, 0, 0, 0);
 		cal.set(Calendar.MILLISECOND, 0);
-		cal.setTimeZone(TimeZone.getTimeZone("GMT-07:00"));
+		cal.setTimeZone(TimeZone.getTimeZone("GMT-06:00"));
 		
 		Reading r = result.getDatasets().get(CommonVariable.STREAMFLOW_CFS).getReadings().get(0);
 		assertEquals(cal.getTime(), r.getDate());
-		assertNull(r.getValue());
-		assertEquals("B", r.getQualifiers());
+		assertEquals(15.7, r.getValue());
+		assertNull(r.getQualifiers());
 		
 		r = result.getDatasets().get(CommonVariable.GAUGE_HEIGHT_FT).getReadings().get(0);
 		assertEquals(cal.getTime(), r.getDate());
-		assertEquals(-541.18d, r.getValue());
+		assertEquals(2.83d, r.getValue());
 		assertNull(r.getQualifiers());
-		
-		cal.set(2011, 2, 7, 13, 30, 0);
+
+        cal.set(2015, Calendar.MARCH, 23, 0, 15, 0);
 		
 		r = result.getDatasets().get(CommonVariable.STREAMFLOW_CFS).getReadings().get(1);
 		assertEquals(cal.getTime(), r.getDate());
-		assertNull(r.getValue());
-		assertEquals("B", r.getQualifiers());
+		assertEquals(15.7d, r.getValue());
+		assertNull(r.getQualifiers());
 		
 		r = result.getDatasets().get(CommonVariable.GAUGE_HEIGHT_FT).getReadings().get(1);
 		assertEquals(cal.getTime(), r.getDate());
-		assertEquals(-312.08d, r.getValue());
+		assertEquals(2.83d, r.getValue());
+		assertNull(r.getQualifiers());
+
+        cal.set(2015, Calendar.MARCH, 23, 0, 45, 0);
+		
+		r = result.getDatasets().get(CommonVariable.STREAMFLOW_CFS).getReadings().get(3);
+		assertEquals(cal.getTime(), r.getDate());
+        assertEquals(15.0d, r.getValue());
 		assertNull(r.getQualifiers());
 		
-		cal.set(2011, 2, 7, 13, 45, 0);
-		
-		r = result.getDatasets().get(CommonVariable.STREAMFLOW_CFS).getReadings().get(2);
+		r = result.getDatasets().get(CommonVariable.GAUGE_HEIGHT_FT).getReadings().get(3);
 		assertEquals(cal.getTime(), r.getDate());
-		assertNull(r.getValue());
-		assertEquals("E", r.getQualifiers());
-		
-		r = result.getDatasets().get(CommonVariable.GAUGE_HEIGHT_FT).getReadings().get(2);
-		assertEquals(cal.getTime(), r.getDate());
-		assertEquals(1077.06d, r.getValue());
+		assertEquals(2.82d, r.getValue());
 		assertNull(r.getQualifiers());
-		
+
 		//test unsupported variables
 		//nonexistent site
 		//site with no data (PLABAICO)
@@ -87,6 +91,7 @@ public class CODWRDataSourceTest extends TestCase {
 	}
 
     public void testGetFavorites() throws Throwable {
+        recorder.insertTape("codwr_getFavorites", Collections.singletonMap("mode", TapeMode.READ_SEQUENTIAL));
         Site lakeCreek = new Site();
         lakeCreek.setSiteId(new SiteId(CODWRDataSource.AGENCY, "LAKATLCO"));
         lakeCreek.setName("LAKE CREEK ABOVE TWIN LAKES");
@@ -100,12 +105,12 @@ public class CODWRDataSourceTest extends TestCase {
         Reading r = result.get(0).getSeries().getLastObservation();
 
         GregorianCalendar cal = new GregorianCalendar();
-        cal.set(2014, 5, 6, 21, 30, 0);
+        cal.set(2015, Calendar.MARCH, 30, 13, 30, 0);
         cal.set(Calendar.MILLISECOND, 0);
         cal.setTimeZone(TimeZone.getTimeZone("GMT-06:00"));
 
         assertEquals(cal.getTime(), r.getDate());
-        assertEquals(2030.0d, r.getValue());
+        assertEquals(63.1d, r.getValue());
         assertNull(r.getQualifiers());
         assertEquals(favs.get(0), result.get(0).getFavorite());
     }
