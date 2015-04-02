@@ -17,7 +17,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"
-            android:text="It is now possible to store your favorites remotely, as well as share them publically as destinations. By creating ahave access to the shared destinations of others.n account you will also "
+            android:text="@string/destination_instructions"
             android:id="@+id/textView2"
             android:layout_gravity="center"/>
 

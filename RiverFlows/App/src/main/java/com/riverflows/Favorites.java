@@ -17,6 +17,7 @@ import android.support.v4.content.Loader;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -128,13 +129,29 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
         getInjector(getActivity()).injectMembers(this);
 
+        CharSequence introStr = getResources().getText(R.string.destinations_intro_2);
+
+        SpannableString str = new SpannableString(introStr);
+        str.setSpan(new ClickableSpan() {
+            @Override
+            public void onClick(View view) {
+                signin = new SignIn();
+                signin.execute();
+                Log.d(App.TAG, "signin click");
+            }
+        }, 23,introStr.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+
+        TextView destination_intro = (TextView)getView().findViewById(R.id.register_sign_in_instructions);
+        destination_intro.setText(str);
+        destination_intro.setMovementMethod(LinkMovementMethod.getInstance());
+
 		ListView lv = getListView();
 
 		setHasOptionsMenu(true);
 
 		registerForContextMenu(lv);
 
-		hideInstructions();
+        getListView().getEmptyView().setVisibility(View.GONE);
 
 		TextView favoriteSubtext = (TextView)getView().findViewById(R.id.favorite_instructions_subheader);
 
@@ -346,15 +363,18 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		if(favoriteData == null) {
 			Log.e(Home.TAG, "null favorites");
             this.softReloadNeeded = true;
+            getListView().getEmptyView().setVisibility(View.VISIBLE);
 		} else if(favoriteData.size() == 0) {
-			showInstructions();
+            getListView().getEmptyView().setVisibility(View.VISIBLE);
 		}
 
         WsSession session = this.wsSessionManager.getSession(activity);
 
         if(session == null) {
+            getView().findViewById(R.id.register_sign_in_instructions).setVisibility(View.VISIBLE);
             return;
         }
+        getView().findViewById(R.id.register_sign_in_instructions).setVisibility(View.GONE);
 
         UserAccount userAccount = session.userAccount;
 
@@ -385,20 +405,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		args.putBoolean(FavoritesLoader.PARAM_HARD_REFRESH, hardRefresh);
 
 		getActivity().getSupportLoaderManager().restartLoader(FAVORITES_LOADER_ID, args, this);
-	}
-
-	private void showInstructions() {
-		getListView().getEmptyView().setVisibility(View.VISIBLE);
-
-		/*
-		WebView instructions = (WebView)findViewById(R.id.favorite_instructions);
-        instructions.setClickable(false);
-		instructions.loadUrl("file:///android_asset/" + Help.DATA_PATH_PREFIX + "/favorites.html");
-		*/
-	}
-
-	private void hideInstructions() {
-		getListView().getEmptyView().setVisibility(View.INVISIBLE);
 	}
 
 	private void showMessage(View rootView, String message) {

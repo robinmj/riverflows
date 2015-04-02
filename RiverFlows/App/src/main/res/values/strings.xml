@@ -4,7 +4,7 @@
     <string name="variable_context_menu_title">Other Measurements At This Site</string>
     <string name="add_favorite_confirmation">the gauge {0} at {1} has been added to your favorites</string>
     <string name="add_favorite_dest_confirmation">the destination {0} has been added to your favorites</string>
-    <string name="favorite_instructions_title">Welcome to RiverFlows!</string>
+    <string name="favorite_instructions_title">Welcome to RiverFlows.net!</string>
     <string name="favorite_instructions">To select a favorite gauge, browse by state, touch-hold the site you are interested in, and select &quot;Add To Favorites&quot; from the context menu.</string>
     <string name="favorite_instructions_2">Alternatively, a gauge can be flagged as a favorite by touching the star in the upper right-hand corner of the graph screen.</string>
     <string name="reorder_favorites_instructions">drag and drop favorites using the</string>
@@ -13,15 +13,19 @@
 Shared using the <a href=\"http://www.riverflowsapp.com\">RiverFlows</a> mobile app<br/>
 </div>]]></string>
     <string name="destinations_intro">
-        Welcome to RiverFlows 2.0!
+        It is now possible to save Destinations on the Riverflows.net server.
 
-        It is now possible to save "destinations" on the my.riverflowsapp.com server.
+        This makes it possible for you to specify more information about your favorite gages
+        including a custom name, description, and preferred level ranges.
 
-        This makes it possible for you to specify more information about your favorite gages including a custom name, description, and preferred level ranges.
-
-        Also, since destinations are stored remotely, they can be backed up and synchronized across devices.
-
-        To get started please log in using your Google Account
+        Also, since destinations are stored remotely, they can be backed up and synchronized across
+        devices.
+    </string>
+    <string name="destinations_intro_2">To get started, please sign in to Riverflows.net using your Google account</string>
+    <string name="destination_instructions">
+        It is now possible to store your favorites remotely, as well as share them publicly as
+        destinations. By creating an account, you will have access to the shared destinations of
+        others.
     </string>
     <string name="facet_type_intro">
         Welcome to RiverFlows 2.0!

@@ -89,11 +89,7 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 
 			Log.v(TAG, "reopening tab " + currentTabId);
 		} else {
-			if(FavoritesDaoImpl.hasFavorites(getApplicationContext())) {
-				currentTabId = TAB_FAVORITES;
-			} else {
-				currentTabId = TAB_SITES;
-			}
+			currentTabId = TAB_FAVORITES;
 		}
 
 	    try {
