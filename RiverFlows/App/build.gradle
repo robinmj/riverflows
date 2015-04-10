@@ -4,12 +4,12 @@ buildscript {
         jcenter()
     }
     dependencies {
-        classpath "org.robolectric:robolectric-gradle-plugin:0.14.+"
+        classpath "org.robolectric:robolectric-gradle-plugin:1.0.1"
     }
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'robolectric'
+apply plugin: 'org.robolectric'
 
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
@@ -19,19 +19,36 @@ dependencies {
     compile 'org.roboguice:roboguice:3.0.1'
     compile project(':Datasources')
 
-    androidTestCompile "org.mockito:mockito-core:1.9.5"
-    androidTestCompile "junit:junit:4.11"
-    androidTestCompile("org.robolectric:robolectric:2.3") {
-        exclude module: "commons-logging"
-        exclude module: "httpclient"
+    testCompile "org.mockito:mockito-core:1.9.5"
+    testCompile "junit:junit:4.11"
+    testCompile("org.robolectric:robolectric:2.4") {
+        exclude module: 'classworlds'
+        exclude module: 'commons-logging'
+        exclude module: 'httpclient'
+        exclude module: 'maven-artifact'
+        exclude module: 'maven-artifact-manager'
+        exclude module: 'maven-error-diagnostics'
+        exclude module: 'maven-model'
+        exclude module: 'maven-project'
+        exclude module: 'maven-settings'
+        exclude module: 'plexus-container-default'
+        exclude module: 'plexus-interpolation'
+        exclude module: 'plexus-utils'
+        exclude module: 'wagon-file'
+        exclude module: 'wagon-http-lightweight'
+        exclude module: 'wagon-provider-api'
     }
-    androidTestCompile files("testlibs/android-20-stripped.jar")
-    androidTestCompile files("build/intermediates/exploded-aar/RiverFlows/Datasources/unspecified/classes.jar")
+    testCompile files("testlibs/android-20-stripped.jar")
+    testCompile files("build/intermediates/exploded-aar/RiverFlows/Datasources/unspecified/classes.jar")
 }
 
 android {
     compileSdkVersion 20
     buildToolsVersion '21.1.2'
+
+    defaultConfig {
+        applicationId "com.riverflows"
+    }
 
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'
@@ -41,6 +58,12 @@ android {
 
 robolectric {
     include "**/*Test.class"
+}
+
+//prevent the "superClassName is empty" error for classes not annotated as tests
+tasks.withType(Test) {
+    scanForTestClasses = false
+    include "**/*Test.class" // whatever Ant pattern matches your test class files
 }
 
 // tell gradle to include robolectric test classes

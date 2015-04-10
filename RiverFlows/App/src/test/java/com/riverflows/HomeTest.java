@@ -30,7 +30,11 @@ public class HomeTest {
     public Home createHome(Intent i) throws Exception {
         ActivityController<Home> activityController= Robolectric.buildActivity(Home.class);
 
-        activityController.withIntent(i).create().start().resume().visible();
+        ActivityController<Home> c = activityController.withIntent(i);
+
+        System.out.println("activityController-" + c);
+
+        c.create().start().resume().visible();
 
         Home activity = activityController.get();
 
