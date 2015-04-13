@@ -568,9 +568,23 @@ public class DataSourceController {
 			throw new RuntimeException("invalid URL: " + urlStr, use);
 		}
 	}
+
+
+    /**
+     * @param hardRefresh
+     * @param favorites
+     * @return
+     * @throws ClientProtocolException
+     * @throws IOException
+     * @throws NullPointerException if sites or variables is null
+     * @throws IllegalArgumentException if sites and variables are of differing lengths
+     */
+    public List<FavoriteData> getFavoriteData(List<Favorite> favorites, boolean hardRefresh) throws ClientProtocolException, IOException {
+        return DataSourceController.getSiteData(favorites, hardRefresh);
+    }
 	
 	/**
-	 * TODO make this method non-static
+	 * TODO move the implementation into #getFavoriteData()
 	 * @param hardRefresh
 	 * @param favorites
 	 * @return 
@@ -578,6 +592,7 @@ public class DataSourceController {
 	 * @throws IOException
 	 * @throws NullPointerException if sites or variables is null
 	 * @throws IllegalArgumentException if sites and variables are of differing lengths
+     * @deprecated use getFavoriteData instead
 	 */
 	public static List<FavoriteData> getSiteData(List<Favorite> favorites, boolean hardRefresh) throws ClientProtocolException, IOException {
 		

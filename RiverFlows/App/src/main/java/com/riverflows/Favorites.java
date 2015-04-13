@@ -47,6 +47,7 @@ import com.riverflows.wsclient.ApiCallLoader;
 import com.riverflows.wsclient.ApiCallTask;
 import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.DestinationFacets;
+import com.riverflows.wsclient.Utils;
 import com.riverflows.wsclient.WsSession;
 import com.riverflows.wsclient.WsSessionManager;
 import com.riverflows.wsclient.WsSessionUIHelper;
@@ -71,7 +72,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 	public static final int REQUEST_EDIT_FAVORITE = 1;
 	public static final int REQUEST_REORDER_FAVORITES = 2;
-	public static final int REQUEST_CREATE_ACCOUNT = 3247;
 	public static final int REQUEST_GET_FAVORITES = 15319;
 	public static final int REQUEST_GET_FAVORITES_RECOVER = 4193;
     public static final int REQUEST_DELETE_FAVORITE = 394;
@@ -88,8 +88,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
     @Inject
     private WsSessionManager wsSessionManager;
-
-	private SignIn signin;
 
 	private String tempUnit = null;
 
@@ -135,9 +133,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
         str.setSpan(new ClickableSpan() {
             @Override
             public void onClick(View view) {
-                signin = new SignIn();
-                signin.execute();
-                Log.d(App.TAG, "signin click");
+                ((Home)getActivity()).signIn();
             }
         }, 23,introStr.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
@@ -270,8 +266,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 	    	startActivity(i_help);
 	    	return true;
 		case R.id.mi_sign_in:
-			signin = new SignIn();
-			signin.execute();
+            ((Home)getActivity()).signIn();
 			return true;
 		case R.id.mi_sign_out:
 			this.wsSessionManager.logOut(getActivity());
@@ -380,7 +375,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
         if(userAccount != null && userAccount.getFacetTypes() == 0) {
             //set up this user's account
-            startActivityForResult(new Intent(Favorites.this.getActivity(), AccountSettings.class), REQUEST_CREATE_ACCOUNT);
+            startActivityForResult(new Intent(Favorites.this.getActivity(), AccountSettings.class), Home.REQUEST_CREATE_ACCOUNT);
         }
 
 		//needed for Android 3.0+
@@ -422,6 +417,9 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
         @Inject
         private DestinationFacets destinationFacets;
+
+        @Inject
+        private DataSourceController dataSourceController;
 
 		public List<Favorite> favorites = null;
 		private boolean hardRefresh = false;
@@ -507,7 +505,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 				return Collections.emptyList();
 			}
 
-			List<FavoriteData> favoriteData = DataSourceController.getSiteData(this.favorites, this.hardRefresh);
+			List<FavoriteData> favoriteData = dataSourceController.getFavoriteData(this.favorites, this.hardRefresh);
 
 			Map<CommonVariable, CommonVariable> unitConversionMap = CommonVariable.temperatureConversionMap(this.tempUnit);
 
@@ -529,18 +527,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 			loaderParams.putBoolean(PARAM_HARD_REFRESH, this.hardRefresh);
 
 			return loaderParams;
-		}
-	}
-
-	public static class SignInDialogFragment extends DialogFragment {
-
-		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			ProgressDialog signingInDialog = new ProgressDialog(getActivity());
-			signingInDialog.setMessage("Signing In...");
-			signingInDialog.setIndeterminate(true);
-			signingInDialog.setCancelable(true);
-			return signingInDialog;
 		}
 	}
 	
@@ -620,10 +606,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if(requestCode == Home.REQUEST_CHOOSE_ACCOUNT || requestCode == Home.REQUEST_HANDLE_RECOVERABLE_AUTH_EXC) {
-			signin.authorizeCallback(requestCode, resultCode, data);
-			return;
-		}
+        Log.d(App.TAG, "Favorites.onActivityResult(" + requestCode + "," + resultCode);
 
 		if(requestCode == REQUEST_GET_FAVORITES || requestCode == REQUEST_GET_FAVORITES_RECOVER) {
 			WsSessionUIHelper helper = this.wsSessionUIHelper;
@@ -881,58 +864,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
             return new DeleteRemoteFavoriteTask(this);
         }
     }
-
-	private class SignIn extends ApiCallTask<String, Integer, UserAccount> {
-
-		private SignInDialogFragment signInDialog;
-
-		public SignIn(){
-			super(Favorites.this.getActivity(), Home.REQUEST_CHOOSE_ACCOUNT, Home.REQUEST_HANDLE_RECOVERABLE_AUTH_EXC, true, false);
-
-			signInDialog = new SignInDialogFragment();
-			signInDialog.show(Favorites.this.getFragmentManager(), "signin");
-		}
-
-		public SignIn(SignIn oldTask) {
-			super(oldTask);
-			signInDialog = new SignInDialogFragment();
-			signInDialog.show(Favorites.this.getFragmentManager(), "signin");
-		}
-
-		@Override
-		protected UserAccount doApiCall(WsSession session, String... params) {
-			return session.userAccount;
-		}
-
-		@Override
-		protected void onNoUIRequired(UserAccount userAccount) {
-
-			SignInDialogFragment signInDialog = this.signInDialog;
-
-			if(signInDialog != null) {
-				signInDialog.dismiss();
-				this.signInDialog = null;
-			}
-
-			if(exception != null) {
-				Log.e(Home.TAG, "", exception);
-			}
-
-			if(userAccount == null) {
-				return;
-			}
-
-			if(userAccount.getFacetTypes() == 0) {
-				//set up this user's account
-				startActivityForResult(new Intent(Favorites.this.getActivity(), AccountSettings.class), REQUEST_CREATE_ACCOUNT);
-			}
-		}
-
-		@Override
-		protected ApiCallTask<String, Integer, UserAccount> clone() throws CloneNotSupportedException {
-			return new SignIn(this);
-		}
-	}
 
 	private void showProgress() {
 		View v = getView();

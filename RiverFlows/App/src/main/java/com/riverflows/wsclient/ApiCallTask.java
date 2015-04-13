@@ -118,6 +118,8 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 	}
 	
 	protected final void onPostExecute(Result result) {
+        onComplete();
+
 		if(exception != null) {
 			if(exception instanceof UserRecoverableAuthException) {
 				activity.startActivityForResult(((UserRecoverableAuthException)exception).getIntent(), recoveryRequestCode);
@@ -211,6 +213,13 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 	 * @param result
 	 */
 	protected abstract void onNoUIRequired(Result result);
+
+    /**
+     * Called on the UI thread as soon as this task has been completed, regardless of whether an
+     * exception occurred or whether the user is being sent to a login screen. This is a good place
+     * to put code for cleaning up UI changes that indicate a background task is running.
+     */
+    protected void onComplete() {}
 	
 	@Override
 	protected ApiCallTask<Params, Progress, Result> clone() throws CloneNotSupportedException {

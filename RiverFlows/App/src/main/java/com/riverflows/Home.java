@@ -3,12 +3,14 @@ package com.riverflows;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
+import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
@@ -16,6 +18,7 @@ import android.util.Log;
 import android.view.View;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.riverflows.data.UserAccount;
 import com.riverflows.db.DatasetsDaoImpl;
 import com.riverflows.db.DbMaintenance;
 import com.riverflows.db.FavoritesDaoImpl;
@@ -34,6 +37,8 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 
 	public static final int TAB_FAVORITES = 0;
 	public static final int TAB_SITES = 1;
+
+    public static final int REQUEST_CREATE_ACCOUNT = 3247;
 
     //TODO move this into App
 	public static final String TAG = "RiverFlows";
@@ -55,7 +60,7 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 	private Fragment currentFragment = favorites;
 	private volatile int currentTabId = TAB_FAVORITES;
 
-	private InitSession initSession = null;
+    private SignIn signin;
 	
 	public void onCreate(Bundle savedInstanceState) {
 
@@ -101,8 +106,6 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 			return;
 		}
 
-        initSession = new InitSession(this, REQUEST_CHOOSE_ACCOUNT, REQUEST_HANDLE_RECOVERABLE_AUTH_EXC, false, false);
-
         findViewById(R.id.initial_progress).setVisibility(View.GONE);
 
         getSupportActionBar().show();
@@ -120,37 +123,78 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 	static final int REQUEST_CHOOSE_ACCOUNT = 2154;
 	static final int REQUEST_HANDLE_RECOVERABLE_AUTH_EXC = 5436;
 
-	private class InitSession extends ApiCallTask<String, Integer, String> {
+    public void signIn() {
+        signin = new SignIn();
+        signin.execute();
+    }
 
-		public InitSession(Activity activity, int requestCode, int recoveryRequestCode, boolean loginRequired, boolean secondTry) {
-			super(activity, requestCode, recoveryRequestCode, loginRequired, secondTry);
-		}
+    private class SignIn extends ApiCallTask<String, Integer, UserAccount> {
 
-		public InitSession(InitSession oldTask) {
-			super(oldTask);
-		}
+        private SignInDialogFragment signInDialog;
 
-		@Override
-		protected String doApiCall(WsSession session, String... params) {
-			return null;
-		}
+        public SignIn(){
+            super(Home.this, Home.REQUEST_CHOOSE_ACCOUNT, Home.REQUEST_HANDLE_RECOVERABLE_AUTH_EXC, true, false);
 
-		@Override
-		protected void onNoUIRequired(String result) {
+            signInDialog = new SignInDialogFragment();
+            signInDialog.show(Home.this.getSupportFragmentManager(), "signin");
+        }
 
-			findViewById(R.id.initial_progress).setVisibility(View.GONE);
+        public SignIn(SignIn oldTask) {
+            super(oldTask);
+            signInDialog = new SignInDialogFragment();
+            signInDialog.show(Home.this.getSupportFragmentManager(), "signin");
+        }
 
-			getSupportActionBar().show();
+        @Override
+        protected UserAccount doApiCall(WsSession session, String... params) {
+            return session.userAccount;
+        }
 
-			getSupportActionBar().setSelectedNavigationItem(currentTabId);
-		}
+        @Override
+        protected void onComplete() {
+            SignInDialogFragment signInDialog = this.signInDialog;
 
-		@Override
-		protected ApiCallTask<String, Integer, String> clone()
-				throws CloneNotSupportedException {
-			return new InitSession(this);
-		}
-	}
+            if(signInDialog != null) {
+                signInDialog.dismiss();
+                this.signInDialog = null;
+            }
+        }
+
+        @Override
+        protected void onNoUIRequired(UserAccount userAccount) {
+
+            if(exception != null) {
+                Log.e(Home.TAG, "", exception);
+            }
+
+            if(userAccount == null) {
+                return;
+            }
+
+            if(userAccount.getFacetTypes() == 0) {
+                //set up this user's account
+                startActivityForResult(new Intent(Home.this, AccountSettings.class), REQUEST_CREATE_ACCOUNT);
+                return;
+            }
+        }
+
+        @Override
+        protected ApiCallTask<String, Integer, UserAccount> clone() throws CloneNotSupportedException {
+            return new SignIn(this);
+        }
+    }
+
+    public static class SignInDialogFragment extends DialogFragment {
+
+        @Override
+        public Dialog onCreateDialog(Bundle savedInstanceState) {
+            ProgressDialog signingInDialog = new ProgressDialog(getActivity());
+            signingInDialog.setMessage("Signing In...");
+            signingInDialog.setIndeterminate(true);
+            signingInDialog.setCancelable(true);
+            return signingInDialog;
+        }
+    }
 
 	@Override
 	protected void onStop() {
@@ -162,11 +206,12 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 	protected void onActivityResult(final int requestCode, final int resultCode,
 	         final Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+        Log.d(App.TAG, "Home.onActivityResult(" + requestCode + "," + resultCode);
 
         switch(requestCode) {
             case REQUEST_CHOOSE_ACCOUNT:
             case REQUEST_HANDLE_RECOVERABLE_AUTH_EXC:
-                initSession.authorizeCallback(requestCode, resultCode, data);
+                signin.authorizeCallback(requestCode, resultCode, data);
                 return;
         }
 	}
