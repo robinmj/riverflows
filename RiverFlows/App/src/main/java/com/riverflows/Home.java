@@ -1,13 +1,10 @@
 package com.riverflows;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.database.sqlite.SQLiteException;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -21,7 +18,6 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.riverflows.data.UserAccount;
 import com.riverflows.db.DatasetsDaoImpl;
 import com.riverflows.db.DbMaintenance;
-import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.db.RiverGaugesDb;
 import com.riverflows.wsclient.AHPSXmlDataSource;
 import com.riverflows.wsclient.ApiCallTask;
@@ -175,6 +171,15 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
                 //set up this user's account
                 startActivityForResult(new Intent(Home.this, AccountSettings.class), REQUEST_CREATE_ACCOUNT);
                 return;
+            }
+
+            try {
+                Favorites favoritesFrag = (Favorites) Home.this.currentFragment;
+                if(favoritesFrag != null) {
+                    favoritesFrag.loadSites(false);
+                }
+            } catch(ClassCastException cce) {
+                //not viewing favorites
             }
         }
 
