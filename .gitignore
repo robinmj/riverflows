@@ -7,3 +7,5 @@
 build/
 *.swp
 *.iml
+local.properties
+gradle-app.setting 
