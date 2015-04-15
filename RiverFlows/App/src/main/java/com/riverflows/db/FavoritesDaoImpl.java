@@ -445,6 +445,7 @@ public class FavoritesDaoImpl {
     	boolean result = !(c == null || c.getCount() == 0);
 
 		c.close();
+        db.close();
     	return result;
 	}
 
