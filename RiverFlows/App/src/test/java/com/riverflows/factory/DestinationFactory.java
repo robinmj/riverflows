@@ -17,4 +17,14 @@ public final class DestinationFactory {
 
         return clearCreek;
     }
+
+    public static Destination getFountainCreek() {
+        Destination newDestination = new Destination();
+        newDestination.setId(9);
+        newDestination.setUser(new UserAccount());
+        newDestination.setName("Excellent Destination");
+        newDestination.setSite(SiteFactory.getFountainCreek());
+
+        return newDestination;
+    }
 }
