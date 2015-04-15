@@ -12,6 +12,7 @@ import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
 import com.riverflows.data.UserAccount;
 import com.riverflows.data.Variable;
+import com.riverflows.factory.DestinationFacetFactory;
 import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.WsSession;
 import com.riverflows.wsclient.WsSessionManager;
@@ -130,30 +131,16 @@ public class EditDestinationTest {
         doThrow(new RuntimeException()).when(wsClient.destinationsMock).update(any(WsSession.class), any(Destination.class));
         doThrow(new RuntimeException()).when(wsClient.destinationFacetsMock).update(any(WsSession.class), any(DestinationFacet.class));
 
-        Destination newDestination = new Destination();
-        newDestination.setId(6);
-        newDestination.setUser(new UserAccount());
-        newDestination.setName("Excellent Destination");
-        newDestination.setSite(clearCreek);
+        DestinationFacet clearCreek = DestinationFacetFactory.getClearCreekKayak();
 
-        DestinationFacet newFacet = new DestinationFacet();
-        newFacet.setId(23);
-        newFacet.setHigh(800.0);
-        newFacet.setMed(600.0);
-        newFacet.setLow(400.0);
-        newFacet.setDestination(newDestination);
-
-        Favorite newFavorite= new Favorite(clearCreek, CODWRDataSource.VTYPE_GAUGE_HEIGHT_FT.getId());
-        newFavorite.setDestinationFacet(newFacet);
-
-        when(wsClient.destinationsMock.saveDestinationWithFacet(any(WsSession.class), any(DestinationFacet.class))).thenReturn(newFacet);
-        when(wsClient.destinationFacetsMock.saveFavorite(any(WsSession.class), anyInt())).thenReturn(newFavorite);
+        when(wsClient.destinationsMock.saveDestinationWithFacet(any(WsSession.class), any(DestinationFacet.class))).thenReturn(clearCreek);
+        when(wsClient.destinationFacetsMock.saveFavorite(any(WsSession.class), anyInt())).thenReturn(new Favorite(clearCreek));
 
         EditDestination activity = editNewDestination();
 
-        highField.setText("800");
-        medField.setText("600");
-        lowField.setText("400.0");
+        highField.setText("" + clearCreek.getHigh().intValue());
+        medField.setText("" + clearCreek.getMed().intValue());
+        lowField.setText("" + clearCreek.getLow().intValue());
 
         clickOn(activity.getSupportActionBar().getCustomView().findViewById(R.id.actionbar_done));
     }
