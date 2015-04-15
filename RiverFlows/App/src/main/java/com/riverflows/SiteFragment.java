@@ -63,7 +63,7 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
     private HydroGraph chartView;
     private Map<Variable.CommonVariable, Variable.CommonVariable> conversionMap = new HashMap<Variable.CommonVariable, Variable.CommonVariable>();
     private SiteData data;
-    private String errorMsg;
+    String errorMsg;
 
     private CompoundButton.OnCheckedChangeListener favoriteButtonListener = new CompoundButton.OnCheckedChangeListener() {
 
@@ -105,7 +105,7 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
-        return inflater.inflate(R.layout.view_chart, container, false);
+        return inflater.inflate(R.layout.view_destination, container, false);
     }
 
     public SiteData getData() {
