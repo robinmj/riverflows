@@ -114,35 +114,35 @@ public class ViewDestinationTest {
     @Test
     public void shouldSaveFavorite() throws Exception {
 
-        DestinationFacet clearCreekKayak = DestinationFacetFactory.getClearCreekKayak();
-        Site clearCreek = clearCreekKayak.getDestination().getSite();
+        DestinationFacet fountainCreekKayak = DestinationFacetFactory.getFountainCreekKayak();
+        Site fountainCreek = fountainCreekKayak.getDestination().getSite();
 
         Intent i = new Intent(Robolectric.application, ViewDestination.class);
 
-        i.putExtra(ViewDestination.KEY_DESTINATION_FACET, clearCreekKayak);
+        i.putExtra(ViewDestination.KEY_DESTINATION_FACET, fountainCreekKayak);
 
         ViewDestination activity = createViewDestination(i);
 
         assertThat("precondition",
-                !FavoritesDaoImpl.isFavorite(Robolectric.application, 23));
+                !FavoritesDaoImpl.isFavorite(Robolectric.application, fountainCreekKayak.getId()));
 
         assertThat(favoriteBtn.isChecked(), equalTo(false));
 
         clickOn(favoriteBtn);//add favorite
 
-        assertThat("created favorite", FavoritesDaoImpl.isFavorite(Robolectric.application, 23));
+        assertThat("created favorite", FavoritesDaoImpl.isFavorite(Robolectric.application, fountainCreekKayak.getId()));
         assertThat(favoriteBtn.isChecked(), equalTo(true));
 
         clickOn(favoriteBtn);//remove favorite
-        assertThat("removed favorite", !FavoritesDaoImpl.isFavorite(Robolectric.application, 23));
+        assertThat("removed favorite", !FavoritesDaoImpl.isFavorite(Robolectric.application, fountainCreekKayak.getId()));
 
         InOrder inOrder = inOrder(wsClient.destinationFacetsMock);
 
-        verify(wsClient.dsControllerMock).getSiteData(argThat(SiteFactory.matches(clearCreek)),
-                argThat(equalTo(clearCreek.getSupportedVariables())),
+        verify(wsClient.dsControllerMock).getSiteData(argThat(SiteFactory.matches(fountainCreek)),
+                argThat(equalTo(fountainCreek.getSupportedVariables())),
                 eq(false));
 
-        inOrder.verify(wsClient.destinationFacetsMock).saveFavorite(any(WsSession.class), eq(new Integer(23)));
-        inOrder.verify(wsClient.destinationFacetsMock).removeFavorite(any(WsSession.class), eq(new Integer(23)));
+        inOrder.verify(wsClient.destinationFacetsMock).saveFavorite(any(WsSession.class), eq(fountainCreekKayak.getId()));
+        inOrder.verify(wsClient.destinationFacetsMock).removeFavorite(any(WsSession.class), eq(fountainCreekKayak.getId()));
     }
 }
