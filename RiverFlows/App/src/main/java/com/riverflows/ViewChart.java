@@ -149,8 +149,13 @@ public class ViewChart extends RoboActionBarActivity {
         tracker.setCustomDimension(1, "" + site.getState());
         tracker.setCustomDimension(2, site.getAgency());
         tracker.setCustomDimension(3, site.getId());
-        tracker.setCustomDimension(4, this.getVariable().getId());
-        tracker.setCustomDimension(5, this.getVariable().getCommonVariable().name());
+        if(this.getVariable() == null) {
+            tracker.setCustomDimension(4, null);
+            tracker.setCustomDimension(5, null);
+        } else {
+            tracker.setCustomDimension(4, this.getVariable().getId());
+            tracker.setCustomDimension(5, this.getVariable().getCommonVariable().name());
+        }
     }
 
     public Site getSite() {
@@ -471,6 +476,10 @@ public class ViewChart extends RoboActionBarActivity {
 	
 	private boolean populateUnitsSubmenu(SubMenu unitsMenu) {
         unitsMenu.setHeaderTitle("Units");
+
+        if(this.getVariable() == null) {
+            return false;
+        }
         
         CommonVariable displayedVariable = conversionMap.get(this.getVariable().getCommonVariable());
         
@@ -500,11 +509,7 @@ public class ViewChart extends RoboActionBarActivity {
 
         @Override
         public boolean onMenuItemClick(MenuItem item) {
-            Intent i = new Intent(ViewChart.this, ViewChart.class);
-
-            i.putExtra(ViewChart.KEY_SITE, getSite());
-            i.putExtra(ViewChart.KEY_VARIABLE, var);
-            startActivity(i);
+            ViewChart.this.siteFragment.setVariable(var);
 
             return true;
         }

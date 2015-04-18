@@ -90,8 +90,11 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
         this.zeroYMin = args.getBoolean(ARG_ZERO_Y_MIN);
         this.conversionMap = (Map<Variable.CommonVariable, Variable.CommonVariable>) args.getSerializable(ARG_CONVERSION_MAP);
 
-        TextView titleText = (TextView) v.findViewById(R.id.title);
-        titleText.setText(this.getVariable().getName());
+        Variable var = this.getVariable();
+
+        if(var != null) {
+            ((TextView) v.findViewById(R.id.title)).setText(var.getName());
+        }
 
         CheckBox favoriteBtn = (CheckBox) v.findViewById(R.id.favorite_btn);
         favoriteBtn.setVisibility(View.GONE);
@@ -198,7 +201,9 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
 
         Series displayedSeries = null;
 
-        displayedSeries = this.data.getDatasets().get(getVariable().getCommonVariable());
+        if(this.variable != null) {
+            displayedSeries = this.data.getDatasets().get(this.variable.getCommonVariable());
+        }
 
         if (displayedSeries == null) {
             displayedSeries = DataSourceController.getPreferredSeries(this.data);
@@ -224,6 +229,12 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
 
             favoriteBtn.setVisibility(View.VISIBLE);
             return;
+        }
+
+        if(this.variable == null) {
+            this.variable = displayedSeries.getVariable();
+            ((TextView) v.findViewById(R.id.title)).setText(this.getVariable().getName());
+            Log.d(Home.TAG, "displayed series unit " + this.variable.getUnit());
         }
 
         boolean converted = ValueConverter.convertIfNecessary(this.conversionMap, displayedSeries);
@@ -325,6 +336,11 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
 
     public Variable getVariable() {
         return this.variable;
+    }
+
+    public void setVariable(Variable  variable) {
+        this.variable = variable;
+        reload();
     }
 
     private boolean isFavorite() {

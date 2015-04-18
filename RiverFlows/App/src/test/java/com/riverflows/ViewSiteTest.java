@@ -3,6 +3,7 @@ package com.riverflows;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.CheckBox;
+import android.widget.TextView;
 
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Site;
@@ -94,6 +95,41 @@ public class ViewSiteTest {
         Intent i = new Intent(Robolectric.application, ViewDestination.class);
 
         i.putExtra(ViewChart.KEY_SITE, clearCreek);
+
+        ViewChart activity = createViewChart(i);
+
+        this.siteFragment.setZeroYMin(true);
+
+        assertThat(this.siteFragment.getData(), notNullValue());
+        assertThat(this.siteFragment.errorMsg, nullValue());
+
+        activity = simulateConfigurationChange(activity);
+        loadExaminedViews(activity);
+
+        assertThat(this.siteFragment.getData(), notNullValue());
+        assertThat(this.siteFragment.errorMsg, nullValue());
+        assertThat(this.siteFragment.zeroYMin, equalTo(true));
+
+        assertThat(((TextView) activity.findViewById(R.id.title)).getText().toString(),
+                equalTo(clearCreek.getSupportedVariables()[1].getName()));
+
+        assertThat(this.siteFragment.getVariable(), equalTo(clearCreek.getSupportedVariables()[1]));
+    }
+
+    @Test
+    public void shouldLoadHydrographWithVariable() throws Exception {
+
+        DestinationFacet clearCreekKayak = DestinationFacetFactory.getClearCreekKayak();
+        Site clearCreek = clearCreekKayak.getDestination().getSite();
+
+        when(wsClient.dsControllerMock.getSiteData(argThat(SiteFactory.matches(clearCreek)),
+                argThat(equalTo(clearCreek.getSupportedVariables())),
+                eq(false)))
+                .thenReturn(SiteDataFactory.getClearCreekData());
+
+        Intent i = new Intent(Robolectric.application, ViewDestination.class);
+
+        i.putExtra(ViewChart.KEY_SITE, clearCreek);
         i.putExtra(ViewChart.KEY_VARIABLE, clearCreek.getSupportedVariables()[0]);
 
         ViewChart activity = createViewChart(i);
@@ -109,6 +145,9 @@ public class ViewSiteTest {
         assertThat(this.siteFragment.getData(), notNullValue());
         assertThat(this.siteFragment.errorMsg, nullValue());
         assertThat(this.siteFragment.zeroYMin, equalTo(true));
+
+        assertThat(((TextView) activity.findViewById(R.id.title)).getText().toString(),
+                equalTo(clearCreek.getSupportedVariables()[0].getName()));
     }
 
     @Test
