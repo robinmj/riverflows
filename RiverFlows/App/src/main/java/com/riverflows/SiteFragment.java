@@ -340,7 +340,9 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
 
     public void setVariable(Variable  variable) {
         this.variable = variable;
-        reload();
+        getArguments().putSerializable(ARG_VARIABLE, this.variable);
+        clearData();
+        displayData();
     }
 
     private boolean isFavorite() {
