@@ -51,7 +51,7 @@ import roboguice.activity.RoboActionBarActivity;
  * @author robin
  *
  */
-public class ViewChart extends RoboActionBarActivity {
+public class ViewSite extends RoboActionBarActivity {
 	
 	private static final String TAG = Home.TAG;
 	
@@ -179,7 +179,7 @@ public class ViewChart extends RoboActionBarActivity {
         
         MenuItem otherVarsItem = menu.findItem(R.id.mi_other_variables);
         otherVarsItem.setVisible(true);
-		otherVarsItem.setEnabled(ViewChart.this.getSite().getSupportedVariables().length > 1);
+		otherVarsItem.setEnabled(ViewSite.this.getSite().getSupportedVariables().length > 1);
         
         MenuItem unitsItem = menu.findItem(R.id.mi_change_units);
         unitsItem.setVisible(true);
@@ -253,11 +253,11 @@ public class ViewChart extends RoboActionBarActivity {
 		
 		private String graphUrl = null;
 		private File savedFile = null;
-		private ViewChart activity = null;
+		private ViewSite activity = null;
         private Site site = null;
         private Variable variable = null;
 		
-		public FetchHydrographTask(ViewChart activity) {
+		public FetchHydrographTask(ViewSite activity) {
             this.site = activity.siteFragment.getSite();
             this.variable = activity.siteFragment.getVariable();
 
@@ -270,7 +270,7 @@ public class ViewChart extends RoboActionBarActivity {
 			activity.runningShareTask = this;
 		}
     	
-    	public void setActivity(ViewChart activity) {
+    	public void setActivity(ViewSite activity) {
     		this.activity = activity;
     	}
 		
@@ -509,7 +509,7 @@ public class ViewChart extends RoboActionBarActivity {
 
         @Override
         public boolean onMenuItemClick(MenuItem item) {
-            ViewChart.this.siteFragment.setVariable(var);
+            ViewSite.this.siteFragment.setVariable(var);
 
             return true;
         }
@@ -524,7 +524,7 @@ public class ViewChart extends RoboActionBarActivity {
 
         @Override
         public boolean onMenuItemClick(MenuItem item) {
-            return ViewChart.this.siteFragment.setTempUnit(unit);
+            return ViewSite.this.siteFragment.setTempUnit(unit);
         }
     }
 

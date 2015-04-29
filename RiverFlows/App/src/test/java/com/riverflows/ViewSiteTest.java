@@ -13,12 +13,10 @@ import com.riverflows.factory.DestinationFacetFactory;
 import com.riverflows.factory.SiteDataFactory;
 import com.riverflows.factory.SiteFactory;
 import com.riverflows.wsclient.UsgsCsvDataSource;
-import com.riverflows.wsclient.WsSession;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.InOrder;
 import org.robolectric.Robolectric;
 import org.robolectric.util.ActivityController;
 
@@ -28,10 +26,8 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
-import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Robolectric.clickOn;
@@ -43,7 +39,7 @@ import static org.robolectric.Robolectric.clickOn;
 @RunWith(RobolectricGradleTestRunner.class)
 public class ViewSiteTest {
 
-    ActivityController<ViewChart> activityController;
+    ActivityController<ViewSite> activityController;
     CheckBox favoriteBtn;
     SiteFragment siteFragment;
     MockWsClient wsClient = new MockWsClient();
@@ -53,19 +49,19 @@ public class ViewSiteTest {
         RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient, new RobinSession());
     }
 
-    public ViewChart createViewChart(Intent i) throws Exception {
-        this.activityController= Robolectric.buildActivity(ViewChart.class);
+    public ViewSite createViewSite(Intent i) throws Exception {
+        this.activityController= Robolectric.buildActivity(ViewSite.class);
 
         this.activityController.withIntent(i).create().start().resume().visible();
 
-        ViewChart activity = activityController.get();
+        ViewSite activity = activityController.get();
 
         loadExaminedViews(activity);
 
         return activity;
     }
 
-    public void loadExaminedViews(ViewChart activity) {
+    public void loadExaminedViews(ViewSite activity) {
 
         assertThat(activity.getSupportFragmentManager().getFragments().size(), equalTo(1));
 
@@ -73,10 +69,10 @@ public class ViewSiteTest {
         this.favoriteBtn = (CheckBox)this.siteFragment.getView().findViewById(R.id.favorite_btn);
     }
 
-    private ViewChart simulateConfigurationChange(ViewChart activity) {
+    private ViewSite simulateConfigurationChange(ViewSite activity) {
         Bundle bundle = new Bundle();
         this.activityController.saveInstanceState(bundle).pause().stop().destroy();
-        this.activityController = Robolectric.buildActivity(ViewChart.class).withIntent(activity.getIntent());
+        this.activityController = Robolectric.buildActivity(ViewSite.class).withIntent(activity.getIntent());
         this.activityController.create(bundle).start().restoreInstanceState(bundle).resume().visible();
         return this.activityController.get();
     }
@@ -94,9 +90,9 @@ public class ViewSiteTest {
 
         Intent i = new Intent(Robolectric.application, ViewDestination.class);
 
-        i.putExtra(ViewChart.KEY_SITE, clearCreek);
+        i.putExtra(ViewSite.KEY_SITE, clearCreek);
 
-        ViewChart activity = createViewChart(i);
+        ViewSite activity = createViewSite(i);
 
         this.siteFragment.setZeroYMin(true);
 
@@ -129,10 +125,10 @@ public class ViewSiteTest {
 
         Intent i = new Intent(Robolectric.application, ViewDestination.class);
 
-        i.putExtra(ViewChart.KEY_SITE, clearCreek);
-        i.putExtra(ViewChart.KEY_VARIABLE, clearCreek.getSupportedVariables()[0]);
+        i.putExtra(ViewSite.KEY_SITE, clearCreek);
+        i.putExtra(ViewSite.KEY_VARIABLE, clearCreek.getSupportedVariables()[0]);
 
-        ViewChart activity = createViewChart(i);
+        ViewSite activity = createViewSite(i);
 
         this.siteFragment.setZeroYMin(true);
 
@@ -158,10 +154,10 @@ public class ViewSiteTest {
 
         Intent i = new Intent(Robolectric.application, ViewDestination.class);
 
-        i.putExtra(ViewChart.KEY_SITE, fountainCreek);
-        i.putExtra(ViewChart.KEY_VARIABLE, var);
+        i.putExtra(ViewSite.KEY_SITE, fountainCreek);
+        i.putExtra(ViewSite.KEY_VARIABLE, var);
 
-        ViewChart activity = createViewChart(i);
+        ViewSite activity = createViewSite(i);
 
         assertThat("precondition",
                 !FavoritesDaoImpl.isFavorite(Robolectric.application, fountainCreek.getSiteId(), var.getId()));
