@@ -54,7 +54,7 @@
       <activity android:name="DataSrcInfo"
                 android:launchMode="singleTask"/>
                   
-    	<activity android:name="ViewChart">
+    	<activity android:name=".ViewSite">
     		<intent-filter>
 	    		<action android:name="android.intent.action.VIEW"/>
 	    		<category android:name="android.intent.category.DEFAULT"/>

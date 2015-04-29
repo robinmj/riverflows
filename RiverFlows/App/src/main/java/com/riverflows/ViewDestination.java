@@ -41,7 +41,6 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.Map;
 
 import roboguice.activity.RoboActionBarActivity;
 
@@ -465,10 +464,10 @@ public class ViewDestination extends RoboActionBarActivity {
 		
 		@Override
 		public boolean onMenuItemClick(MenuItem item) {
-            Intent i = new Intent(ViewDestination.this, ViewChart.class);
+            Intent i = new Intent(ViewDestination.this, ViewSite.class);
 
-            i.putExtra(ViewChart.KEY_SITE, getSite());
-            i.putExtra(ViewChart.KEY_VARIABLE, var);
+            i.putExtra(ViewSite.KEY_SITE, getSite());
+            i.putExtra(ViewSite.KEY_VARIABLE, var);
             startActivity(i);
 
 			return true;

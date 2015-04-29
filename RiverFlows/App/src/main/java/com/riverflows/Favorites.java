@@ -1,16 +1,12 @@
 package com.riverflows;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -47,7 +43,6 @@ import com.riverflows.wsclient.ApiCallLoader;
 import com.riverflows.wsclient.ApiCallTask;
 import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.DestinationFacets;
-import com.riverflows.wsclient.Utils;
 import com.riverflows.wsclient.WsSession;
 import com.riverflows.wsclient.WsSessionManager;
 import com.riverflows.wsclient.WsSessionUIHelper;
@@ -57,8 +52,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-
-import roboguice.fragment.RoboListFragment;
 
 import static roboguice.RoboGuice.getInjector;
 
@@ -239,10 +232,10 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
             return;
         }
 
-        Intent i = new Intent(getActivity(), ViewChart.class);
+        Intent i = new Intent(getActivity(), ViewSite.class);
 		
-        i.putExtra(ViewChart.KEY_SITE, selectedFavorite.getFavorite().getSite());
-        i.putExtra(ViewChart.KEY_VARIABLE, selectedFavorite.getVariable());
+        i.putExtra(ViewSite.KEY_SITE, selectedFavorite.getFavorite().getSite());
+        i.putExtra(ViewSite.KEY_VARIABLE, selectedFavorite.getVariable());
         startActivity(i);
 	}
 
@@ -749,9 +742,9 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 		@Override
 		public boolean onMenuItemClick(android.view.MenuItem item) {
-			Intent i = new Intent(Favorites.this.getActivity(), ViewChart.class);
-	        i.putExtra(ViewChart.KEY_SITE, site);
-	        i.putExtra(ViewChart.KEY_VARIABLE, variable);
+			Intent i = new Intent(Favorites.this.getActivity(), ViewSite.class);
+	        i.putExtra(ViewSite.KEY_SITE, site);
+	        i.putExtra(ViewSite.KEY_VARIABLE, variable);
 	        startActivity(i);
 			return true;
 		}

@@ -73,7 +73,7 @@ import roboguice.activity.RoboActivity;
  * @author robin
  *
  */
-public class ViewChart extends RoboActivity {
+public class ViewSite extends RoboActivity {
 	
 	private static final String TAG = Home.TAG;
 	
@@ -108,10 +108,10 @@ public class ViewChart extends RoboActivity {
     	public void onCheckedChanged(CompoundButton buttonView,
     			boolean isChecked) {
     		if(isChecked) {
-    			Favorite f = new Favorite(ViewChart.this.station, ViewChart.this.variable.getId());
+    			Favorite f = new Favorite(ViewSite.this.station, ViewSite.this.variable.getId());
     			FavoritesDaoImpl.createFavorite(getApplicationContext(), f);
     		} else {
-    			FavoritesDaoImpl.deleteFavorite(getApplicationContext(), ViewChart.this.station.getSiteId(), ViewChart.this.variable);
+    			FavoritesDaoImpl.deleteFavorite(getApplicationContext(), ViewSite.this.station.getSiteId(), ViewSite.this.variable);
     		}
 			sendBroadcast(Home.getWidgetUpdateIntent());
             Favorites.softReloadNeeded = true;
@@ -122,8 +122,8 @@ public class ViewChart extends RoboActivity {
     private class DataSrcInfoButtonListener implements OnClickListener {
     	@Override
     	public void onClick(View v) {
-			Intent viewOriginalData = new Intent(ViewChart.this, DataSrcInfo.class);
-			viewOriginalData.putExtra(DataSrcInfo.KEY_INFO, ViewChart.this.data.getDataInfo());
+			Intent viewOriginalData = new Intent(ViewSite.this, DataSrcInfo.class);
+			viewOriginalData.putExtra(DataSrcInfo.KEY_INFO, ViewSite.this.data.getDataInfo());
 			startActivity(viewOriginalData);
 	        return;
     	}
@@ -280,7 +280,7 @@ public class ViewChart extends RoboActivity {
 		
 		ImageView dataSrcInfoButton = (ImageView)findViewById(R.id.dataSrcInfoB);
 		
-		if(ViewChart.this.data.getDataInfo() != null) {
+		if(ViewSite.this.data.getDataInfo() != null) {
 			dataSrcInfoButton.setVisibility(View.VISIBLE);
 			dataSrcInfoButton.setOnClickListener(new DataSrcInfoButtonListener());
 			
@@ -329,7 +329,7 @@ public class ViewChart extends RoboActivity {
     		Log.d(Home.TAG, "displayed series unit " + this.variable.getUnit());
     	}
     	
-    	boolean converted = ValueConverter.convertIfNecessary(ViewChart.this.conversionMap, displayedSeries);
+    	boolean converted = ValueConverter.convertIfNecessary(ViewSite.this.conversionMap, displayedSeries);
 
         Reading mostRecentReading = displayedSeries.getLastObservation();
         
@@ -366,10 +366,10 @@ public class ViewChart extends RoboActivity {
         	}
         }
         
-        TextView lastReading = (TextView)ViewChart.this.findViewById(R.id.lastReading);
+        TextView lastReading = (TextView)ViewSite.this.findViewById(R.id.lastReading);
         lastReading.setText("Last Reading: " + mostRecentReadingStr + unit + ", on " + lastReadingDateFmt.format(mostRecentReadingTime));
         
-        chartView = new HydroGraph(ViewChart.this);
+        chartView = new HydroGraph(ViewSite.this);
 		
 		if(zeroYMin == null) {
 			//automatically determine the y-axis ranging mode using the variable
@@ -420,12 +420,12 @@ public class ViewChart extends RoboActivity {
     private static class GenerateDataSetTask extends AsyncTask<Site, Integer, SiteData> {
     	
 		private String errorMsg = null;
-		private ViewChart activity;
+		private ViewSite activity;
 		private Variable variable;
 		private Site site;
 		private boolean hardRefresh = false;
     	
-    	public GenerateDataSetTask(ViewChart activity, boolean hardRefresh) {
+    	public GenerateDataSetTask(ViewSite activity, boolean hardRefresh) {
 			super();
     		this.activity = activity;
     		this.activity.runningTask = this;
@@ -434,7 +434,7 @@ public class ViewChart extends RoboActivity {
     		this.hardRefresh = hardRefresh;
 		}
     	
-    	public void setActivity(ViewChart activity) {
+    	public void setActivity(ViewSite activity) {
     		this.activity = activity;
     	}
 
@@ -521,7 +521,7 @@ public class ViewChart extends RoboActivity {
         
         MenuItem otherVarsItem = menu.findItem(R.id.mi_other_variables);
         otherVarsItem.setVisible(true);
-		otherVarsItem.setEnabled(ViewChart.this.station.getSupportedVariables().length > 1);
+		otherVarsItem.setEnabled(ViewSite.this.station.getSupportedVariables().length > 1);
         
         MenuItem unitsItem = menu.findItem(R.id.mi_change_units);
         unitsItem.setVisible(true);
@@ -612,9 +612,9 @@ public class ViewChart extends RoboActivity {
 		
 		private String graphUrl = null;
 		private File savedFile = null;
-		private ViewChart activity = null;
+		private ViewSite activity = null;
 		
-		public FetchHydrographTask(ViewChart activity) {
+		public FetchHydrographTask(ViewSite activity) {
 			EasyTracker.getTracker().sendSocial("ACTION_SEND", "start", activity.station.getAgency() + ":" + activity.station.getId());
 			
 			if(activity.variable != null) {
@@ -624,7 +624,7 @@ public class ViewChart extends RoboActivity {
 			activity.runningShareTask = this;
 		}
     	
-    	public void setActivity(ViewChart activity) {
+    	public void setActivity(ViewSite activity) {
     		this.activity = activity;
     	}
 		
@@ -773,7 +773,7 @@ public class ViewChart extends RoboActivity {
 			zeroYMinItem.setVisible(true);
 		}
 		
-        if(ViewChart.this.station.getSupportedVariables().length > 1) {
+        if(ViewSite.this.station.getSupportedVariables().length > 1) {
             MenuItem otherVarsMenuItem = menu.findItem(R.id.sm_other_variables);
             otherVarsMenuItem.setVisible(true);
             populateOtherVariablesSubmenu(otherVarsMenuItem.getSubMenu());
@@ -791,7 +791,7 @@ public class ViewChart extends RoboActivity {
 	private boolean populateOtherVariablesSubmenu(SubMenu otherVariablesMenu) {
         otherVariablesMenu.setHeaderTitle(R.string.variable_context_menu_title);
         
-		Variable[] otherVariables = ViewChart.this.station.getSupportedVariables();
+		Variable[] otherVariables = ViewSite.this.station.getSupportedVariables();
 		
 		if(otherVariables.length <= 1) {
 			return false;
@@ -821,7 +821,7 @@ public class ViewChart extends RoboActivity {
 			}
         } catch(NullPointerException npe) {
         	//TODO remove this once we find the source of the NPE
-        	throw new RuntimeException("data: " + ViewChart.this.station.getSiteId() + " vars: " + otherVariables,npe);
+        	throw new RuntimeException("data: " + ViewSite.this.station.getSiteId() + " vars: " + otherVariables,npe);
         }
         return true;
 	}
@@ -859,13 +859,13 @@ public class ViewChart extends RoboActivity {
 		public boolean onMenuItemClick(MenuItem item) {
 			
 			try {
-				ViewChart.this.variable = var;
+				ViewSite.this.variable = var;
 			} catch(ArrayIndexOutOfBoundsException aioobe) {
 				Log.w(TAG,"no variable at index " + item.getItemId());
 				return false;
 			}
 			
-			if(ViewChart.this.data == null || ViewChart.this.data.getDatasets().get(ViewChart.this.variable.getCommonVariable()) == null) {
+			if(ViewSite.this.data == null || ViewSite.this.data.getDatasets().get(ViewSite.this.variable.getCommonVariable()) == null) {
 				reloadData();
 			} else {
 				clearData();
@@ -885,7 +885,7 @@ public class ViewChart extends RoboActivity {
 		@Override
 		public boolean onMenuItemClick(MenuItem item) {
 			
-			Variable fromVar = ViewChart.this.variable;
+			Variable fromVar = ViewSite.this.variable;
 			
 			if(fromVar == null) {
 				return false;
@@ -908,7 +908,7 @@ public class ViewChart extends RoboActivity {
         	
 			conversionMap = CommonVariable.temperatureConversionMap(unit);
 			
-			if(ViewChart.this.data == null || ViewChart.this.data.getDatasets().get(fromVar.getCommonVariable()) == null) {
+			if(ViewSite.this.data == null || ViewSite.this.data.getDatasets().get(fromVar.getCommonVariable()) == null) {
 				reloadData();
 			} else {
 				clearData();
