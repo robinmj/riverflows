@@ -175,7 +175,7 @@ public class ViewSite extends RoboActionBarActivity {
     
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.standard_menu, menu);
+        inflater.inflate(R.menu.graph_options_menu, menu);
         
         MenuItem otherVarsItem = menu.findItem(R.id.mi_other_variables);
         otherVarsItem.setVisible(true);
@@ -187,10 +187,6 @@ public class ViewSite extends RoboActionBarActivity {
         if(this.getVariable() != null && conversionMap.containsKey(this.getVariable().getCommonVariable())) {
         	unitsItem.setEnabled(true);
         }
-		
-        MenuItem shareItem = menu.findItem(R.id.mi_share);
-        shareItem.setVisible(true);
-        shareItem.setEnabled(true);
         
         return true;
     }
@@ -236,6 +232,14 @@ public class ViewSite extends RoboActionBarActivity {
 	    case R.id.mi_reload:
 	    	this.siteFragment.reload();
 	    	return true;
+        case R.id.mi_create_destination:
+            Intent createDestIntent = new Intent(this, EditDestination.class);
+            createDestIntent.putExtra(EditDestination.KEY_SITE, getSite());
+            createDestIntent.putExtra(EditDestination.KEY_VARIABLE, getVariable());
+            createDestIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            startActivity(createDestIntent);
+            return true;
 	    case R.id.mi_other_variables:
 	    case R.id.mi_change_units:
 	    	if(this.siteFragment != null) {
