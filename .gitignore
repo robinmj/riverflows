@@ -7,5 +7,6 @@
 build/
 *.swp
 *.iml
+*.apk
 local.properties
 gradle-app.setting 
