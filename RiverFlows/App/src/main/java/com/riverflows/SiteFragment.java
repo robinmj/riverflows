@@ -345,6 +345,10 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
         displayData();
     }
 
+    public Map<Variable.CommonVariable, Variable.CommonVariable> getConversionMap() {
+        return this.conversionMap;
+    }
+
     private boolean isFavorite() {
 
         if (!FavoritesDaoImpl.isFavorite(getActivity(), getSite().getSiteId(), getVariable())) {
