@@ -219,6 +219,7 @@ public class ViewDestination extends RoboActionBarActivity {
 		private String graphUrl = null;
 		private File savedFile = null;
 		private ViewDestination activity = null;
+        private DestinationFacet destinationFacet = null;
         private Site site = null;
         private Variable variable = null;
 
@@ -226,6 +227,7 @@ public class ViewDestination extends RoboActionBarActivity {
             DestinationFragment fragment = activity.destinationFragment;
 
             this.site = fragment.getDestinationFacet().getDestination().getSite();
+            this.destinationFacet = fragment.getDestinationFacet();
             this.variable = fragment.getDestinationFacet().getVariable();
 
 			EasyTracker.getTracker().sendSocial("ACTION_SEND", "start", this.site.getAgency() + ":" + this.site.getId());
@@ -300,7 +302,7 @@ public class ViewDestination extends RoboActionBarActivity {
 
 			varName = this.variable.getCommonVariable().getName() + " at ";
 
-			intent.putExtra(Intent.EXTRA_SUBJECT, varName + this.site.getName());
+			intent.putExtra(Intent.EXTRA_SUBJECT, this.destinationFacet.getDestination().getName());
 
 			if(result != null) {
 				//share with embedded image
