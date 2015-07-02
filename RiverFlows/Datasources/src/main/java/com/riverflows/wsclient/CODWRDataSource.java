@@ -159,11 +159,14 @@ public class CODWRDataSource implements RESTDataSource {
 			variableTypes = trimmedVarTypes;
 		}
 		
-		return getSiteData(site, variableTypes, 1, startDate.getTime(), new Date(), hardRefresh);
-	}
-	
+		SiteData siteData = getSiteData(site, variableTypes, 1, startDate.getTime(), new Date(), hardRefresh);
 
-	public SiteData getSiteData(Site site, Variable[] variableTypes, int interval, Date startDate, Date endDate, boolean hardRefresh) throws ClientProtocolException, IOException {
+        siteData.setComplete(site.getSupportedVariables().length == variableTypes.length);
+
+        return siteData;
+	}
+
+	private SiteData getSiteData(Site site, Variable[] variableTypes, int interval, Date startDate, Date endDate, boolean hardRefresh) throws ClientProtocolException, IOException {
 
 		String[] variableIds = new String[variableTypes.length];
 		for(int a = 0; a < variableIds.length; a++) {

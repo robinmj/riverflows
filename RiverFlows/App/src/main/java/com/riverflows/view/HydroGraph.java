@@ -512,7 +512,7 @@ public class HydroGraph extends View {
 		
 		//limit to 3 significant figures
 		double magnitude = Math.pow(10, Math.floor(Math.log10(Math.abs(value))) - 2);
-		value = Math.floor(value / magnitude);
+		value = Math.round(value / magnitude);
 		
 		//downcast to float to chop off any dangling digits
 		float valueF = (float)(value * magnitude);

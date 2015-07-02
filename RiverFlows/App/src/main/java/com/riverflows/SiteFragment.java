@@ -208,6 +208,11 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
         if (displayedSeries == null) {
             displayedSeries = DataSourceController.getPreferredSeries(this.data);
             Log.d(Home.TAG, "No series found for " + getVariable());
+            if(!this.data.isComplete()) {
+                //DataSetLoader will reload data specifically requesting the current variable
+                reload();
+                return;
+            }
         }
 
         if (displayedSeries == null || displayedSeries.getReadings().size() == 0) {
@@ -343,6 +348,10 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
         getArguments().putSerializable(ARG_VARIABLE, this.variable);
         clearData();
         displayData();
+    }
+
+    public Map<Variable.CommonVariable, Variable.CommonVariable> getConversionMap() {
+        return this.conversionMap;
     }
 
     private boolean isFavorite() {
