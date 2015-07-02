@@ -68,7 +68,6 @@ public class ViewSite extends RoboActionBarActivity {
 	private SiteFragment siteFragment;
 
 	private FetchHydrographTask runningShareTask = null;
-	private HashMap<CommonVariable, CommonVariable> conversionMap = new HashMap<CommonVariable, CommonVariable>();
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -117,7 +116,7 @@ public class ViewSite extends RoboActionBarActivity {
     	String tempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
     	
     	//Log.d(Home.TAG, "saved unit: " + tempUnit);
-    	conversionMap = CommonVariable.temperatureConversionMap(tempUnit);
+        HashMap<CommonVariable, CommonVariable> conversionMap = CommonVariable.temperatureConversionMap(tempUnit);
 
         this.siteFragment = (SiteFragment)manager.findFragmentByTag("site");
 
@@ -127,7 +126,7 @@ public class ViewSite extends RoboActionBarActivity {
             arguments.putBoolean(SiteFragment.ARG_ZERO_Y_MIN, false);
             arguments.putSerializable(SiteFragment.ARG_SITE, site);
             arguments.putSerializable(SiteFragment.ARG_VARIABLE, variable);
-            arguments.putSerializable(SiteFragment.ARG_CONVERSION_MAP, this.conversionMap);
+            arguments.putSerializable(SiteFragment.ARG_CONVERSION_MAP, conversionMap);
             this.siteFragment.setArguments(arguments);
 
             FragmentTransaction transaction = manager.beginTransaction();
@@ -183,8 +182,13 @@ public class ViewSite extends RoboActionBarActivity {
         
         MenuItem unitsItem = menu.findItem(R.id.mi_change_units);
         unitsItem.setVisible(true);
-        
-        if(this.getVariable() != null && conversionMap.containsKey(this.getVariable().getCommonVariable())) {
+
+        if(this.siteFragment == null) {
+            return false;
+        }
+
+        if(this.getVariable() != null &&
+                this.siteFragment.getConversionMap().containsKey(this.getVariable().getCommonVariable())) {
         	unitsItem.setEnabled(true);
         }
         
@@ -484,8 +488,12 @@ public class ViewSite extends RoboActionBarActivity {
         if(this.getVariable() == null) {
             return false;
         }
+
+        if(this.siteFragment == null) {
+            return false;
+        }
         
-        CommonVariable displayedVariable = conversionMap.get(this.getVariable().getCommonVariable());
+        CommonVariable displayedVariable = this.siteFragment.getConversionMap().get(this.getVariable().getCommonVariable());
         
         if(displayedVariable == null) {
         	displayedVariable = this.getVariable().getCommonVariable();
