@@ -242,6 +242,8 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
             Log.d(Home.TAG, "displayed series unit " + this.variable.getUnit());
         }
 
+        ((TextView) v.findViewById(R.id.title)).setText(displayedSeries.getVariable().getName());
+
         boolean converted = ValueConverter.convertIfNecessary(this.conversionMap, displayedSeries);
 
         Reading mostRecentReading = displayedSeries.getLastObservation();
@@ -296,7 +298,7 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
         chartLayout.addView(chartView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,
                 ViewGroup.LayoutParams.FILL_PARENT));
 
-        //this can't be called until ViewChart.this.chartView and ViewChart.this.variable have been initialized
+        //this can't be called until SiteFragment.this.chartView and SiteFragment.this.variable have been initialized
         registerForContextMenu(chartView);
 
         favoriteBtn.setVisibility(View.VISIBLE);
