@@ -3,6 +3,7 @@ package com.riverflows;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
@@ -19,6 +20,8 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.riverflows.data.Category;
+import com.riverflows.data.DecoratedCategory;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Reading;
@@ -107,6 +110,52 @@ public class DestinationFragment extends RoboFragment implements LoaderManager.L
 
     public DestinationFacet getDestinationFacet() {
         return destinationFacet;
+    }
+
+    public DecoratedCategory[] getCategories() {
+        Category[] categories = getDestinationFacet().getCategories();
+
+        DecoratedCategory[] decoratedCategories = new DecoratedCategory[categories.length];
+
+        int a = 0;
+
+        for(Category category : categories) {
+            DecoratedCategory decoratedCategory = new DecoratedCategory();
+
+            decoratedCategory.category = category;
+
+            if(category.getName().equals("tooHigh")) {
+                decoratedCategory.displayName = "Too High";
+                decoratedCategory.textColor = getResources().getColor(R.color.txt_level_too_high);
+                decoratedCategory.bgColor = getResources().getColor(R.color.bg_level_too_high);
+            } else if(category.getName().equals("high")) {
+                decoratedCategory.displayName = "High";
+                decoratedCategory.textColor = getResources().getColor(R.color.txt_level_high);
+                decoratedCategory.bgColor = getResources().getColor(R.color.bg_level_high);
+            } else if(category.getName().equals("med")) {
+                decoratedCategory.displayName = "Medium";
+                decoratedCategory.textColor = getResources().getColor(R.color.txt_level_medium);
+                decoratedCategory.bgColor = getResources().getColor(R.color.bg_level_medium);
+            } else if(category.getName().equals("low")) {
+                decoratedCategory.displayName = "Low";
+                decoratedCategory.textColor = getResources().getColor(R.color.txt_level_low);
+                decoratedCategory.bgColor = getResources().getColor(R.color.bg_level_low);
+            } else if(category.getName().equals("tooLow")) {
+                decoratedCategory.displayName = "Too Low";
+                decoratedCategory.textColor = getResources().getColor(R.color.txt_level_too_low);
+                decoratedCategory.bgColor = getResources().getColor(R.color.txt_level_too_low);
+            }
+
+            decoratedCategory.bgColor = addAlpha(decoratedCategory.bgColor, 90);
+
+            decoratedCategories[a++] = decoratedCategory;
+        }
+
+        return decoratedCategories;
+    }
+
+    public static int addAlpha(int color, int alpha) {
+        return Color.argb(alpha, Color.red(color), Color.green(color), Color.blue(color));
     }
 
     public void setDestinationFacet(DestinationFacet destinationFacet) {
@@ -276,11 +325,12 @@ public class DestinationFragment extends RoboFragment implements LoaderManager.L
 
         if(zeroYMin == null) {
             //automatically determine the y-axis ranging mode using the variable
-            chartView.setSeries(displayedSeries, getVariable().getCommonVariable().isGraphAgainstZeroMinimum());
+            chartView.setSeries(displayedSeries, getCategories(),
+                    getVariable().getCommonVariable().isGraphAgainstZeroMinimum());
         } else if(zeroYMin) {
-            chartView.setSeries(displayedSeries, true);
+            chartView.setSeries(displayedSeries, getCategories(), true);
         } else {
-            chartView.setSeries(displayedSeries, false);
+            chartView.setSeries(displayedSeries, getCategories(), false);
         }
 
         chartLayout.addView(chartView, new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT,

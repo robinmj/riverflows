@@ -19,6 +19,8 @@ import android.util.Log;
 import android.view.View;
 
 import com.riverflows.Home;
+import com.riverflows.data.Category;
+import com.riverflows.data.DecoratedCategory;
 import com.riverflows.data.Forecast;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
@@ -98,13 +100,19 @@ public class HydroGraph extends View {
 	}
 	
 	private Series series;
+    private DecoratedCategory[] categories;
 	
 	public Series getSeries() {
 		return series;
 	}
 
-	public void setSeries(Series series, boolean zeroMinimum) {
+    public void setSeries(Series series, boolean zeroMinimum) {
+        this.setSeries(series, new DecoratedCategory[0], zeroMinimum);
+    }
+
+	public void setSeries(Series series, DecoratedCategory[] categories, boolean zeroMinimum) {
 		this.series = series;
+        this.categories = categories;
 		
 		this.zeroMinimum = zeroMinimum;
         
@@ -205,6 +213,8 @@ public class HydroGraph extends View {
 		
 		Paint axisPaint = new Paint();
 		axisPaint.setColor(Color.BLACK);
+
+        drawCategories(canvas);
 		
 		//x-axis
 		canvas.drawLine(yAxisOffset, getHeight() - xAxisOffset, getWidth() - rightPadding, getHeight() - xAxisOffset, axisPaint);
@@ -345,6 +355,18 @@ public class HydroGraph extends View {
 				minValue = point.getValue();
 			}
 		}
+
+        //show all categories, if specified
+        if(zeroMinimum) {
+            for (DecoratedCategory decoratedCategory : categories) {
+
+                Double categoryMax = decoratedCategory.category.getMax();
+
+                if (categoryMax != null && categoryMax > maxValue) {
+                    maxValue = categoryMax;
+                }
+            }
+        }
 			
 	
 	    if(Log.isLoggable(TAG, Log.DEBUG)) {
@@ -570,4 +592,45 @@ public class HydroGraph extends View {
 
 		canvas.drawText("Forecast", legendFill.left + legendPadding + 1.5f * labelTextSize, legendFill.top + legendPadding + 2.5f * labelTextSize, labelPaint);
 	}
+
+    private void drawCategories(Canvas canvas) {
+        for(DecoratedCategory decoratedCategory:categories) {
+
+            if(decoratedCategory.category.getMax() != null
+                    && decoratedCategory.category.getMax() < yMin) {
+                //category is below graph range, so don't draw it
+                continue;
+            }
+            if(decoratedCategory.category.getMin() != null
+                    && decoratedCategory.category.getMin() < yMax) {
+                //category is above graph range, so don't draw it
+                continue;
+            }
+
+            float rectTop = topPadding;
+
+            if(decoratedCategory.category.getMax() != null) {
+                rectTop = convertYValue(decoratedCategory.category.getMax());
+            }
+
+            float rectBottom = getHeight() - xAxisOffset;
+
+            if(decoratedCategory.category.getMin() != null) {
+                rectBottom = convertYValue(decoratedCategory.category.getMin());
+            }
+
+            Paint bgPaint = new Paint();
+            bgPaint.setColor(decoratedCategory.bgColor);
+
+            canvas.drawRect((float)yAxisOffset, rectTop, (float)(getWidth() - rightPadding), rectBottom, bgPaint);
+
+            Paint textPaint = new Paint();
+            textPaint.setColor(decoratedCategory.textColor);
+
+            float xCenter = (float)((getWidth() - rightPadding) - yAxisOffset) / 2.0f;
+            float yCenter = (rectBottom - rectTop) / 2.0f;
+
+            canvas.drawText(decoratedCategory.displayName, xCenter, yCenter, textPaint);
+        }
+    }
 }

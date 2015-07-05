@@ -216,4 +216,21 @@ public class DestinationFacet implements Serializable, RemoteObject {
 	public void setModificationDate(Date modificationDate) {
 		this.modificationDate = modificationDate;
 	}
+
+    public Category[] getCategories() {
+        Category[] result = null;
+        if(highPlus == null) {
+            result = new Category[4];
+        } else {
+            result = new Category[5];
+            result[4] = new Category("highPlus", null, highPlus);
+        }
+
+        result[3] = new Category("high", highPlus, high);
+        result[2] = new Category("med", high, med);
+        result[1] = new Category("low", med, low);
+        result[0] = new Category("tooLow", low, null);
+
+        return result;
+    }
 }
