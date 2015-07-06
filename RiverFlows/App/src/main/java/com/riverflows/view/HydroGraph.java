@@ -598,11 +598,11 @@ public class HydroGraph extends View {
             Double catMax = decoratedCategory.category.getMax();
             Double catMin = decoratedCategory.category.getMin();
 
-            if(catMax != null && catMax < yMin) {
+            if(catMax != null && catMax <= yMin) {
                 //category is below graph range, so don't draw it
                 continue;
             }
-            if(catMin != null && catMin > yMax) {
+            if(catMin != null && catMin >= yMax) {
                 //category is above graph range, so don't draw it
                 continue;
             }
@@ -630,10 +630,11 @@ public class HydroGraph extends View {
             textPaint.setTextAlign(Align.CENTER);
             textPaint.setTextSize(labelTextSize * 2.0f);
 
-            float xCenter = yAxisOffset + ((float)(getWidth() - rightPadding - yAxisOffset) / 2.0f);
-            float yCenter = rectTop + ((rectBottom - rectTop) / 2.0f);
-
             if(decoratedCategory.displayName != null) {
+
+                float xCenter = yAxisOffset + ((float)(getWidth() - rightPadding - yAxisOffset) / 2.0f);
+                float yCenter = rectTop + ((rectBottom - rectTop) / 2.0f);
+
                 canvas.drawText(decoratedCategory.displayName, xCenter, yCenter, textPaint);
             }
         }
