@@ -626,11 +626,16 @@ public class HydroGraph extends View {
 
             Paint textPaint = new Paint();
             textPaint.setColor(decoratedCategory.textColor);
+            textPaint.setTypeface(Typeface.DEFAULT_BOLD);
+            textPaint.setTextAlign(Align.CENTER);
+            textPaint.setTextSize(labelTextSize * 2.0f);
 
-            float xCenter = (float)((getWidth() - rightPadding) - yAxisOffset) / 2.0f;
-            float yCenter = (rectBottom - rectTop) / 2.0f;
+            float xCenter = yAxisOffset + ((float)(getWidth() - rightPadding - yAxisOffset) / 2.0f);
+            float yCenter = rectTop + ((rectBottom - rectTop) / 2.0f);
 
-            canvas.drawText(decoratedCategory.displayName, xCenter, yCenter, textPaint);
+            if(decoratedCategory.displayName != null) {
+                canvas.drawText(decoratedCategory.displayName, xCenter, yCenter, textPaint);
+            }
         }
     }
 }
