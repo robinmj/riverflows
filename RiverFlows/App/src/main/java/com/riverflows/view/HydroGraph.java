@@ -602,7 +602,7 @@ public class HydroGraph extends View {
                 continue;
             }
             if(decoratedCategory.category.getMin() != null
-                    && decoratedCategory.category.getMin() < yMax) {
+                    && decoratedCategory.category.getMin() > yMax) {
                 //category is above graph range, so don't draw it
                 continue;
             }
