@@ -86,6 +86,8 @@ public class HydroGraph extends View {
 	
 	private static final Paint plotPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
+    private static final Paint plotBgPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
+
 	private static final Paint noDataPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
 
 	private static final Paint forecastPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -93,10 +95,10 @@ public class HydroGraph extends View {
 	static {
 		tickPaint.setColor(Color.BLACK);
 		guideLinePaint.setColor(Color.LTGRAY);
-		plotPaint.setColor(Color.BLUE);
+		plotPaint.setColor(Color.BLACK);
+        plotBgPaint.setColor(Color.LTGRAY);
 		noDataPaint.setColor(Color.LTGRAY);
 		forecastPaint.setColor(Color.CYAN);
-		forecastPaint.setStrokeWidth(4.0f);
 	}
 	
 	private Series series;
@@ -190,6 +192,10 @@ public class HydroGraph extends View {
         legendLeftMargin = (int)(scaledDensity * 10f);
 
         legendPadding = (int)(scaledDensity * 10f);
+
+        plotPaint.setStrokeWidth(scaledDensity * 1.0f);
+        plotBgPaint.setStrokeWidth(scaledDensity * 2.0f);
+        forecastPaint.setStrokeWidth(scaledDensity * 2.0f);
 	}
 	
 	@Override
@@ -308,6 +314,7 @@ public class HydroGraph extends View {
 			
 			nextX = convertXValue(r.getDate());
 			nextY = convertYValue(r.getValue());
+            canvas.drawLine(prevX, prevY, nextX, nextY, plotBgPaint);
 			canvas.drawLine(prevX, prevY, nextX, nextY, paint);
 			paint = plotPaint;
 			prevX = nextX;
