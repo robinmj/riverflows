@@ -595,28 +595,28 @@ public class HydroGraph extends View {
 
     private void drawCategories(Canvas canvas) {
         for(DecoratedCategory decoratedCategory:categories) {
+            Double catMax = decoratedCategory.category.getMax();
+            Double catMin = decoratedCategory.category.getMin();
 
-            if(decoratedCategory.category.getMax() != null
-                    && decoratedCategory.category.getMax() < yMin) {
+            if(catMax != null && catMax < yMin) {
                 //category is below graph range, so don't draw it
                 continue;
             }
-            if(decoratedCategory.category.getMin() != null
-                    && decoratedCategory.category.getMin() > yMax) {
+            if(catMin != null && catMin > yMax) {
                 //category is above graph range, so don't draw it
                 continue;
             }
 
             float rectTop = topPadding;
 
-            if(decoratedCategory.category.getMax() != null) {
-                rectTop = convertYValue(decoratedCategory.category.getMax());
+            if(catMax != null) {
+                rectTop = convertYValue(catMax);
             }
 
             float rectBottom = getHeight() - xAxisOffset;
 
-            if(decoratedCategory.category.getMin() != null) {
-                rectBottom = convertYValue(decoratedCategory.category.getMin());
+            if(catMin != null) {
+                rectBottom = convertYValue(catMin);
             }
 
             Paint bgPaint = new Paint();
