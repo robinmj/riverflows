@@ -599,23 +599,25 @@ public class HydroGraph extends View {
             Double catMin = decoratedCategory.category.getMin();
 
             if(catMax != null && catMax <= yMin) {
-                //category is below graph range, so don't draw it
+                //category is below graph y range, so don't draw it
                 continue;
             }
             if(catMin != null && catMin >= yMax) {
-                //category is above graph range, so don't draw it
+                //category is above graph y range, so don't draw it
                 continue;
             }
 
             float rectTop = topPadding;
 
-            if(catMax != null) {
+            if(catMax != null && catMax < yMax) {
+                //top of category is within y range of graph
                 rectTop = convertYValue(catMax);
             }
 
             float rectBottom = getHeight() - xAxisOffset;
 
-            if(catMin != null) {
+            if(catMin != null && catMin > yMin) {
+                //bottom of category is within y range of graph
                 rectBottom = convertYValue(catMin);
             }
 
