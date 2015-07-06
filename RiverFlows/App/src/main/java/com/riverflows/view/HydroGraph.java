@@ -632,10 +632,12 @@ public class HydroGraph extends View {
             textPaint.setTextAlign(Align.CENTER);
             textPaint.setTextSize(labelTextSize * 2.0f);
 
-            if(decoratedCategory.displayName != null) {
+            float rectHeight = rectBottom - rectTop;
+
+            if(decoratedCategory.displayName != null && rectHeight > textPaint.getTextSize()) {
 
                 float xCenter = yAxisOffset + ((float)(getWidth() - rightPadding - yAxisOffset) / 2.0f);
-                float yCenter = rectTop + ((rectBottom - rectTop) / 2.0f);
+                float yCenter = rectTop + ((rectHeight + textPaint.getTextSize()) / 2.0f);
 
                 canvas.drawText(decoratedCategory.displayName, xCenter, yCenter, textPaint);
             }
