@@ -124,29 +124,30 @@ public class DestinationFragment extends RoboFragment implements LoaderManager.L
 
             decoratedCategory.category = category;
 
-            if(category.getName().equals("tooHigh")) {
+            if(category.getName().equals(DestinationFacet.CN_HIGH_PLUS)) {
                 decoratedCategory.displayName = "Too High";
                 decoratedCategory.textColor = getResources().getColor(R.color.txt_level_too_high);
                 decoratedCategory.bgColor = getResources().getColor(R.color.bg_level_too_high);
-            } else if(category.getName().equals("high")) {
+            } else if(category.getName().equals(DestinationFacet.CN_HIGH)) {
                 decoratedCategory.displayName = "High";
                 decoratedCategory.textColor = getResources().getColor(R.color.txt_level_high);
                 decoratedCategory.bgColor = getResources().getColor(R.color.bg_level_high);
-            } else if(category.getName().equals("med")) {
+            } else if(category.getName().equals(DestinationFacet.CN_MED)) {
                 decoratedCategory.displayName = "Medium";
                 decoratedCategory.textColor = getResources().getColor(R.color.txt_level_medium);
                 decoratedCategory.bgColor = getResources().getColor(R.color.bg_level_medium);
-            } else if(category.getName().equals("low")) {
+            } else if(category.getName().equals(DestinationFacet.CN_LOW)) {
                 decoratedCategory.displayName = "Low";
                 decoratedCategory.textColor = getResources().getColor(R.color.txt_level_low);
                 decoratedCategory.bgColor = getResources().getColor(R.color.bg_level_low);
-            } else if(category.getName().equals("tooLow")) {
+            } else if(category.getName().equals(DestinationFacet.CN_TOO_LOW)) {
                 decoratedCategory.displayName = "Too Low";
                 decoratedCategory.textColor = getResources().getColor(R.color.txt_level_too_low);
-                decoratedCategory.bgColor = getResources().getColor(R.color.txt_level_too_low);
+                decoratedCategory.bgColor = getResources().getColor(R.color.bg_level_too_low);
             }
 
-            decoratedCategory.bgColor = addAlpha(decoratedCategory.bgColor, 90);
+            decoratedCategory.bgColor = addAlpha(decoratedCategory.bgColor, 128);
+            decoratedCategory.textColor = addAlpha(decoratedCategory.textColor, 128);
 
             decoratedCategories[a++] = decoratedCategory;
         }
