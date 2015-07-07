@@ -5,7 +5,7 @@
     </style>
 
     <color name="txt_level_too_high">#fff</color>
-    <color name="bg_level_too_high">#000</color>
+    <color name="bg_level_too_high">#d00</color>
     <color name="txt_level_high">#fff</color>
     <color name="bg_level_high">#006</color>
     <color name="txt_level_medium">#fff</color>
