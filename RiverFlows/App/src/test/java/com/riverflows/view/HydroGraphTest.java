@@ -2,8 +2,11 @@ package com.riverflows.view;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
+import android.view.View;
 
 import com.riverflows.RobolectricGradleTestRunner;
+import com.riverflows.data.Category;
+import com.riverflows.data.DecoratedCategory;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
@@ -288,5 +291,52 @@ public class HydroGraphTest {
         verify(mockCanvas).drawText(eq("16K"), anyFloat(), anyFloat(), any(Paint.class));
         verify(mockCanvas).drawText(eq("18K"), anyFloat(), anyFloat(), any(Paint.class));
         verify(mockCanvas).drawText(eq("20K"), anyFloat(), anyFloat(), any(Paint.class));
+    }
+
+    @Test
+    public void testCategories() throws Throwable {
+
+        File responseFile = new File("testdata/vallecito.csv");
+
+        HttpResponse response = new BasicHttpResponse(new BasicStatusLine(
+                new ProtocolVersion("HTTP", 1, 1), 200, ""));
+        response.setStatusCode(200);
+
+        response.setEntity(new InputStreamEntity(new FileInputStream(responseFile), responseFile.length()));
+
+        Robolectric.addPendingHttpResponse(response);
+
+        Site vallecito = SiteFactory.getVallecitoCreek();
+        Variable[] vars = vallecito.getSupportedVariables();
+
+        SiteData data = src.getSiteData(vallecito,vars,true);
+
+        DecoratedCategory[] categories = new DecoratedCategory[5];
+        for(int a = 0; a < categories.length; a++) {
+            categories[a] = new DecoratedCategory();
+        }
+
+        categories[4].category = new Category("highPlus", null, 800d);
+        categories[4].displayName = "High Plus";
+        categories[3].category = new Category("high", 800d, 600d);
+        categories[3].displayName = "High";
+        categories[2].category = new Category("med", 600d, 400d);
+        categories[2].displayName = "Medium";
+        categories[1].category = new Category("low", 400d, 200d);
+        categories[1].displayName = "Low";
+        categories[0].category = new Category("tooLow", 200d, null);
+        categories[0].displayName = "Too Low";
+
+        mockCanvas = mock(Canvas.class);
+
+        graph.setSeries(data.getDatasets().get(vars[0].getCommonVariable()), categories, true);
+
+        graph.onDraw(mockCanvas);
+
+        verify(mockCanvas).drawText(eq("High Plus"), anyFloat(), anyFloat(), any(Paint.class));
+        verify(mockCanvas).drawText(eq("High"), anyFloat(), anyFloat(), any(Paint.class));
+        verify(mockCanvas).drawText(eq("Medium"), anyFloat(), anyFloat(), any(Paint.class));
+        verify(mockCanvas).drawText(eq("Low"), anyFloat(), anyFloat(), any(Paint.class));
+        verify(mockCanvas).drawText(eq("Too Low"), anyFloat(), anyFloat(), any(Paint.class));
     }
 }
