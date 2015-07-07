@@ -223,45 +223,6 @@ public class Favorites extends ContentProvider {
 		
 		return result;
 	}
-	
-	//TODO need a datatype that contains both the Favorite and SiteData so this is no longer necessary
-	// this code is cut-n-pasted from the Favorites activity to the Favorites content provider
-	private List<SiteData> expandDatasets(List<Favorite> favorites, Map<SiteId,SiteData> siteDataMap) {
-		ArrayList<SiteData> expandedDatasets = new ArrayList<SiteData>(favorites.size());
-		
-		//build a list of SiteData objects corresponding to the list of favorites
-		for(Favorite favorite: favorites) {
-			SiteData current = siteDataMap.get(favorite.getSite().getSiteId());
-			
-			if(current == null) {
-				continue;
-			}
-			
-			Variable favoriteVar = DataSourceController.getVariable(favorite.getSite().getAgency(), favorite.getVariable());
-			
-			if(favoriteVar == null) {
-				throw new NullPointerException("could not find variable: " + favorite.getSite().getAgency() + " " + favorite.getVariable());
-			}
-
-			//use custom name if one is defined
-			if(favorite.getName() != null) {
-				current.getSite().setName(favorite.getName());
-			}
-			
-			if(current.getDatasets().size() <= 1) {
-				expandedDatasets.add(current);
-				continue;
-			}
-			
-			//use the dataset for this favorite's variable
-			Series dataset = current.getDatasets().get(favoriteVar.getCommonVariable());
-			SiteData expandedDataset = new SiteData();
-			expandedDataset.setSite(current.getSite());
-			expandedDataset.getDatasets().put(favoriteVar.getCommonVariable(), dataset);
-			expandedDatasets.add(expandedDataset);
-		}
-		return expandedDatasets;
-	}
 
 	@Override
 	public int update(Uri uri, ContentValues values, String selection,
