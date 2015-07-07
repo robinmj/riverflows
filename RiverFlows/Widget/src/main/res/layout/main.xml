@@ -63,84 +63,10 @@
 			android:layout_centerHorizontal="true"
 	    	android:layout_below="@id/empty_message"/>
     </RelativeLayout>
-	<RelativeLayout
-		android:id="@+id/favorite_0"
-		style="@style/Favorite">
-		<ImageView android:id="@+id/agency_icon_0"
-		  style="@style/AgencyIcon"/>
-		<TextView android:id="@+id/subtext_0"
-		  style="@style/LastReading">
-		</TextView>
-		<TextView android:id="@+id/timestamp_0"
-		  style="@style/Timestamp">
-		</TextView>
-		<TextView android:id="@+id/favorite_name_0"
-		  style="@style/FavoriteName"
-		  android:layout_toLeftOf="@id/subtext_0">
-		</TextView>
-	</RelativeLayout>
-	<RelativeLayout
-		android:id="@+id/favorite_1"
-		style="@style/Favorite">
-		<ImageView android:id="@+id/agency_icon_1"
-		  style="@style/AgencyIcon"/>
-		<TextView android:id="@+id/subtext_1"
-		  style="@style/LastReading">
-		</TextView>
-		<TextView android:id="@+id/timestamp_1"
-		  style="@style/Timestamp">
-		</TextView>
-		<TextView android:id="@+id/favorite_name_1"
-		  style="@style/FavoriteName"
-		  android:layout_toLeftOf="@id/subtext_1">
-		</TextView>
-	</RelativeLayout>
-	<RelativeLayout
-		android:id="@+id/favorite_2"
-		style="@style/Favorite">
-		<ImageView android:id="@+id/agency_icon_2"
-		  style="@style/AgencyIcon"/>
-		<TextView android:id="@+id/subtext_2"
-		  style="@style/LastReading">
-		</TextView>
-		<TextView android:id="@+id/timestamp_2"
-		  style="@style/Timestamp">
-		</TextView>
-		<TextView android:id="@+id/favorite_name_2"
-		  style="@style/FavoriteName"
-		  android:layout_toLeftOf="@id/subtext_2">
-		</TextView>
-	</RelativeLayout>
-	<RelativeLayout
-		android:id="@+id/favorite_3"
-		style="@style/Favorite">
-		<ImageView android:id="@+id/agency_icon_3"
-		  style="@style/AgencyIcon"/>
-		<TextView android:id="@+id/subtext_3"
-		  style="@style/LastReading">
-		</TextView>
-		<TextView android:id="@+id/timestamp_3"
-		  style="@style/Timestamp">
-		</TextView>
-		<TextView android:id="@+id/favorite_name_3"
-		  style="@style/FavoriteName"
-		  android:layout_toLeftOf="@id/subtext_3">
-		</TextView>
-	</RelativeLayout>
-	<RelativeLayout
-		android:id="@+id/favorite_4"
-		style="@style/Favorite">
-		<ImageView android:id="@+id/agency_icon_4"
-		  style="@style/AgencyIcon"/>
-		<TextView android:id="@+id/subtext_4"
-		  style="@style/LastReading">
-		</TextView>
-		<TextView android:id="@+id/timestamp_4"
-		  style="@style/Timestamp">
-		</TextView>
-		<TextView android:id="@+id/favorite_name_4"
-		  style="@style/FavoriteName"
-		  android:layout_toLeftOf="@id/subtext_4">
-		</TextView>
-	</RelativeLayout>
+    <ListView android:id="@android:id/list"
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:visibility="gone">
+    </ListView>
 </LinearLayout>
