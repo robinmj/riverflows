@@ -37,11 +37,11 @@ import java.util.List;
 public class Service extends RemoteViewsService {
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
-        return new RemoteViewsFactory(this.getApplicationContext(), intent);
+        return new WidgetViewsFactory(this.getApplicationContext(), intent);
     }
 }
 
-class RemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
+class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     public static final String TAG = "RiverFlows-Widget";
 
@@ -49,12 +49,11 @@ class RemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private static int favoriteCount = 5;
 
-    private static final int mCount = 10;
     private List<SiteData> mWidgetItems = new ArrayList<SiteData>();
     private Context mContext;
     private int mAppWidgetId;
 
-    public RemoteViewsFactory(Context context, Intent intent) {
+    public WidgetViewsFactory(Context context, Intent intent) {
         mContext = context;
         mAppWidgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID,
                 AppWidgetManager.INVALID_APPWIDGET_ID);
@@ -64,18 +63,6 @@ class RemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         // In onCreate() you setup any connections / cursors to your data source. Heavy lifting,
         // for example downloading or creating content etc, should be deferred to onDataSetChanged()
         // or getViewAt(). Taking more than 20 seconds in this call will result in an ANR.
-        for (int i = 0; i < mCount; i++) {
-            mWidgetItems.add(new SiteData(i + "!"));
-        }
-
-        // We sleep for 3 seconds here to show how the empty view appears in the interim.
-        // The empty view is set in the StackWidgetProvider and should be a sibling of the
-        // collection view.
-        try {
-            Thread.sleep(3000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
     }
 
     public void onDestroy() {
@@ -85,7 +72,7 @@ class RemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     }
 
     public int getCount() {
-        return mCount;
+        return favoriteCount;
     }
 
     public RemoteViews getViewAt(int position) {
@@ -93,16 +80,9 @@ class RemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
         // We construct a remote views item based on our widget item xml file, and set the
         // text based on the position.
-        RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_item);
-        rv.setTextViewText(R.id.widget_item, mWidgetItems.get(position).toString());
+        RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_list_item);
 
-        // Next, we set a fill-intent which will be used to fill-in the pending intent template
-        // which is set on the collection view in StackWidgetProvider.
-        Bundle extras = new Bundle();
-        extras.putInt("EXTRA_ITEM", position);
-        Intent fillInIntent = new Intent();
-        fillInIntent.putExtras(extras);
-        rv.setOnClickFillInIntent(R.id.widget_item, fillInIntent);
+        updateFavoriteViews(mContext, rv, position);
 
         // You can do heaving lifting in here, synchronously. For example, if you need to
         // process an image, fetch something from the network, etc., it is ok to do it here,
@@ -146,31 +126,6 @@ class RemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         // locking up the widget.
     }
 
-    private void updateRemoteViews(Context context, AppWidgetManager appWidgetManager, boolean forcedReload) {
-        ComponentName thisWidget = new ComponentName(context, getClass());
-
-        RemoteViews views = buildRemoteViews(context);
-
-        if(forcedReload) {
-            //display spinner while the favorites are loading
-            appWidgetManager.updateAppWidget(thisWidget, views);
-        }
-
-        try {
-
-            if(updateFavoriteViews(context, views) == null) {
-                throw new UpdateAbortedException();
-            }
-        } catch(UpdateAbortedException lae) {
-            Log.d(Provider.TAG, "update aborted");
-            //show the reload button again
-            views.setViewVisibility(R.id.spinner, View.GONE);
-            showReloadButton(context, views);
-        }
-
-        appWidgetManager.updateAppWidget(thisWidget, views);
-    }
-
     @SuppressWarnings("serial")
     private static class LoadFailedException extends Exception {
 
@@ -202,10 +157,9 @@ class RemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         return views;
     }
 
-    private RemoteViews updateFavoriteViews(Context context, RemoteViews views) {
-        List<SiteData> favorites = null;
+    private RemoteViews updateFavoriteViews(Context context, RemoteViews views, int favPosition) {
         try {
-            favorites = getFavorites(context);
+            mWidgetItems = getFavorites(context);
         } catch(LoadFailedException lfe) {
             switch(lfe.getErrorCode()) {
                 case -2:
@@ -220,13 +174,11 @@ class RemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
         views.setViewVisibility(R.id.spinner, View.GONE);
 
-        if(favorites == null) {
+        if(mWidgetItems == null) {
             Log.w(TAG,"RiverFlows not installed");
             Intent appDetailsIntent = new Intent(Intent.ACTION_VIEW,
                     Uri.parse("market://details?id=com.riverflows"));
-        	/*Intent appDetailsIntent = new Intent(Intent.ACTION_VIEW,
-        			Uri.parse("https://market.android.com/details?id=com.riverflows"));*/
-            PendingIntent appDetailsPendingIntent = PendingIntent.getActivity(context, 0, appDetailsIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+            PendingIntent appDetailsPendingIntent = PendingIntent.getActivity(context, 0, appDetailsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             showErrorMessage(context, views,
                     "The RiverFlows app must be installed in order to use this widget",
@@ -237,74 +189,74 @@ class RemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
         showReloadButton(context, views);
 
-        if(favorites.size() == 0) {
-            Log.w(TAG,"no favorites defined");
+        if(mWidgetItems.size() == 0) {
+            Log.w(TAG,"no mWidgetItems defined");
 
 //Would prefer to do it this way, but the link doesn't work for some reason
 //	    		SpannableString instructions = new SpannableString("If you select your favorite gauge sites, they will appear here.");
-//	    		instructions.setSpan(new URLSpan("riverflows://help/favorites.html"), 7, 39, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
+//	    		instructions.setSpan(new URLSpan("riverflows://help/mWidgetItems.html"), 7, 39, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
 
 //	        	views.setViewVisibility(R.id.empty_message_button, View.GONE);
 //	        	views.setTextViewText(R.id.empty_message, instructions);
 
-            Intent favoritesHelpIntent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("riverflows://help/favorites.html"));
-            PendingIntent favoritesHelpPendingIntent = PendingIntent.getActivity(context, 0, favoritesHelpIntent, 0);
+            Intent mWidgetItemsHelpIntent = new Intent(Intent.ACTION_VIEW,
+                    Uri.parse("riverflows://help/mWidgetItems.html"));
+            PendingIntent mWidgetItemsHelpPendingIntent = PendingIntent.getActivity(context, 0, mWidgetItemsHelpIntent, 0);
 
             showErrorMessage(context, views,
                     "Your first 5 favorite sites from the RiverFlows app will appear here.",
                     "Instructions For Selecting Favorites",
-                    favoritesHelpPendingIntent);
+                    mWidgetItemsHelpPendingIntent);
 
             return views;
         }
 
-        for(int a = 0; a < this.favoriteCount; a++) {
-            if(a >= favorites.size()) {
-                views.setViewVisibility(getFavoriteViewId(a), View.INVISIBLE);
-                continue;
-            }
-
-            Log.d(TAG, "drawing favorite " + favorites.get(a).getSite().getName());
-
-            //com.riverflows.ViewChart.GAUGE_SCHEME
-            Intent intent = new Intent(Intent.ACTION_VIEW,Uri.fromParts("gauge",
-                    favorites.get(a).getSite().getSiteId().toString(),
-                    favorites.get(a).getDatasets().values().iterator().next().getVariable().getId()));
-            //intent.putExtra(ViewChart.KEY_SITE, favorites.get(a).getSite());
-            //intent.putExtra(ViewChart.KEY_VARIABLE, favorites.get(a).getDatasets().values().iterator().next().getVariable());
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, intent, 0);
-
-            views.setOnClickPendingIntent(getFavoriteViewId(a), pendingIntent);
-
-            views.setTextViewText(getTextViewId(a), favorites.get(a).getSite().getName());
-
-            //display the last reading for this site, if present
-            Series flowSeries = DataSourceController.getPreferredSeries(favorites.get(a));
-            Reading lastReading = getLastReading(flowSeries);
-
-            Log.d(TAG, "last reading time: " + (lastReading == null ? "null" : lastReading.getDate()));
-
-            //only show the reading if it is less than 6 hours old
-            if(lastReading != null && lastReading.getValue() != null &&
-                    (lastReading.getDate().getTime() + (6 * 60 * 60 * 1000)) > System.currentTimeMillis()) {
-
-                views.setTextViewText(getSubtextViewId(a), getLastReadingText(lastReading, flowSeries.getVariable().getUnit()));
-
-                views.setTextViewText(getTimestampViewId(a), getLastReadingTimestamp(lastReading));
-            }
-
-            String siteAgency = favorites.get(a).getSite().getAgency();
-            Integer agencyIconResId = getAgencyIconResId(siteAgency);
-            if(agencyIconResId != null) {
-                views.setImageViewResource(getAgencyIconViewId(a), agencyIconResId);
-            } else {
-                Log.e(TAG, "no icon for agency: " + siteAgency);
-                views.setViewVisibility(getAgencyIconViewId(a), View.GONE);
-            }
-
-            views.setViewVisibility(getFavoriteViewId(a), View.VISIBLE);
+        if(favPosition >= mWidgetItems.size()) {
+            views.setViewVisibility(getFavoriteViewId(favPosition), View.INVISIBLE);
+            return views;
         }
+
+        Log.d(TAG, "drawing favorite " + mWidgetItems.get(favPosition).getSite().getName());
+
+
+
+        // Next, we set a fill-intent which will be used to fill-in the pending intent template
+        // which is set on the collection view in StackWidgetProvider.
+        Bundle extras = new Bundle();
+        extras.putInt("EXTRA_ITEM", favPosition);
+        Intent fillInIntent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("gauge",
+                mWidgetItems.get(favPosition).getSite().getSiteId().toString(),
+                mWidgetItems.get(favPosition).getDatasets().values().iterator().next().getVariable().getId()));
+        fillInIntent.putExtras(extras);
+        views.setOnClickFillInIntent(getFavoriteViewId(favPosition), fillInIntent);
+
+        views.setTextViewText(getTextViewId(favPosition), mWidgetItems.get(favPosition).getSite().getName());
+
+        //display the last reading for this site, if present
+        Series flowSeries = DataSourceController.getPreferredSeries(mWidgetItems.get(favPosition));
+        Reading lastReading = getLastReading(flowSeries);
+
+        Log.d(TAG, "last reading time: " + (lastReading == null ? "null" : lastReading.getDate()));
+
+        //only show the reading if it is less than 6 hours old
+        if(lastReading != null && lastReading.getValue() != null &&
+                (lastReading.getDate().getTime() + (6 * 60 * 60 * 1000)) > System.currentTimeMillis()) {
+
+            views.setTextViewText(getSubtextViewId(favPosition), getLastReadingText(lastReading, flowSeries.getVariable().getUnit()));
+
+            views.setTextViewText(getTimestampViewId(favPosition), getLastReadingTimestamp(lastReading));
+        }
+
+        String siteAgency = mWidgetItems.get(favPosition).getSite().getAgency();
+        Integer agencyIconResId = getAgencyIconResId(siteAgency);
+        if(agencyIconResId != null) {
+            views.setImageViewResource(getAgencyIconViewId(favPosition), agencyIconResId);
+        } else {
+            Log.e(TAG, "no icon for agency: " + siteAgency);
+            views.setViewVisibility(getAgencyIconViewId(favPosition), View.GONE);
+        }
+
+        views.setViewVisibility(getFavoriteViewId(favPosition), View.VISIBLE);
 
         return views;
     }
@@ -313,7 +265,7 @@ class RemoteViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         Log.w(TAG,"riverFlows out of date");
         Intent appDetailsIntent = new Intent(Intent.ACTION_VIEW,
                 Uri.parse("market://details?id=com.riverflows"));
-        PendingIntent appDetailsPendingIntent = PendingIntent.getActivity(context, 0, appDetailsIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+        PendingIntent appDetailsPendingIntent = PendingIntent.getActivity(context, 0, appDetailsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
         showErrorMessage(context, views,
                 "The RiverFlows app is out-of-date for this version of the widget.",
