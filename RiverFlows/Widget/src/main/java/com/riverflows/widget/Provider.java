@@ -65,13 +65,11 @@ public class Provider extends AppWidgetProvider {
             // cannot setup their own pending intents, instead, the collection as a whole can
             // setup a pending intent template, and the individual items can set a fillInIntent
             // to create unique before on an item to item basis.
-            Intent toastIntent = new Intent(context, Provider.class);
-            toastIntent.setAction(StackWidgetProvider.TOAST_ACTION);
-            toastIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
+            Intent viewIntent = new Intent(Intent.ACTION_VIEW);
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
-            PendingIntent toastPendingIntent = PendingIntent.getBroadcast(context, 0, toastIntent,
+            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, viewIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
-            rv.setPendingIntentTemplate(R.id.stack_view, toastPendingIntent);
+            rv.setPendingIntentTemplate(android.R.id.list, pendingIntent);
 
             appWidgetManager.updateAppWidget(appWidgetIds[i], rv);
         }
