@@ -43,7 +43,7 @@ public class Provider extends AppWidgetProvider {
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
 			int[] appWidgetIds) {
-        Log.d(Provider.TAG, "onUpdate");
+        Log.d(Provider.TAG, "onUpdate " + appWidgetIds.length);
 
         // update each of the widgets with the remote adapter
         for (int i = 0; i < appWidgetIds.length; ++i) {
@@ -66,32 +66,52 @@ public class Provider extends AppWidgetProvider {
             // setup a pending intent template, and the individual items can set a fillInIntent
             // to create unique before on an item to item basis.
             Intent viewIntent = new Intent(Intent.ACTION_VIEW);
-            intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+            viewIntent.setData(Uri.parse(viewIntent.toUri(Intent.URI_INTENT_SCHEME)));
             PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, viewIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
             rv.setPendingIntentTemplate(android.R.id.list, pendingIntent);
 
+            showReloadButton(context,rv);
+
             appWidgetManager.updateAppWidget(appWidgetIds[i], rv);
         }
+        super.onUpdate(context, appWidgetManager, appWidgetIds);
 	}
 
-		
+
 	static Intent getUpdateIntent(Context ctx) {
 		Intent updateIntent = new Intent(ctx,Provider.class);
 		updateIntent.setAction(ACTION_UPDATE_WIDGET);
 		return updateIntent;
 	}
-		
+
 	@Override
 	public void onReceive(Context context, Intent intent) {
 
 		if(ACTION_UPDATE_WIDGET.equals(intent.getAction())) {
-			
+
 			Log.d(TAG,"received update intent");
 	        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             appWidgetManager.notifyAppWidgetViewDataChanged(new int[0], R.id.favorites);
 		}
 
         super.onReceive(context, intent);
+    }
+
+	private void showErrorMessage(Context context, RemoteViews views, String message, String buttonText, PendingIntent buttonIntent) {
+
+        views.setViewVisibility(R.id.spinner, View.GONE);
+		views.setTextViewText(R.id.empty_message, message);
+    	views.setCharSequence(R.id.empty_message_button, "setText",buttonText);
+    	views.setOnClickPendingIntent(R.id.empty_message_button, buttonIntent);
+    	views.setViewVisibility(R.id.empty_message_button, View.VISIBLE);
+    	views.setViewVisibility(R.id.empty_message_area, View.VISIBLE);
+	}
+
+	private void showReloadButton(Context context, RemoteViews views) {
+        PendingIntent reloadPendingIntent = PendingIntent.getBroadcast(context, 0, Provider.getUpdateIntent(context), 0);
+
+        views.setOnClickPendingIntent(R.id.reload_button, reloadPendingIntent);
+        views.setViewVisibility(R.id.reload_button, View.VISIBLE);
 	}
 }

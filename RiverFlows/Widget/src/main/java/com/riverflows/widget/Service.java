@@ -37,6 +37,7 @@ import java.util.List;
 public class Service extends RemoteViewsService {
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
+        Log.d(Provider.TAG, "onGetViewFactory");
         return new WidgetViewsFactory(this.getApplicationContext(), intent);
     }
 }
@@ -82,18 +83,9 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         // text based on the position.
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_list_item);
 
-        updateFavoriteViews(mContext, rv, position);
+        System.out.println("Loading view " + position);
 
-        // You can do heaving lifting in here, synchronously. For example, if you need to
-        // process an image, fetch something from the network, etc., it is ok to do it here,
-        // synchronously. A loading view will show up in lieu of the actual contents in the
-        // interim.
-        try {
-            System.out.println("Loading view " + position);
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+        updateFavoriteViews(mContext, rv, position);
 
         // Return the remote views object.
         return rv;
@@ -147,16 +139,6 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         public UpdateAbortedException() {}
     }
 
-    private RemoteViews buildRemoteViews(Context context) {
-
-        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.main);
-
-        views.setViewVisibility(R.id.spinner, View.VISIBLE);
-        views.setViewVisibility(R.id.reload_button, View.GONE);
-        views.setViewVisibility(R.id.empty_message_area, View.GONE);
-        return views;
-    }
-
     private RemoteViews updateFavoriteViews(Context context, RemoteViews views, int favPosition) {
         try {
             mWidgetItems = getFavorites(context);
@@ -180,14 +162,14 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
                     Uri.parse("market://details?id=com.riverflows"));
             PendingIntent appDetailsPendingIntent = PendingIntent.getActivity(context, 0, appDetailsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-            showErrorMessage(context, views,
-                    "The RiverFlows app must be installed in order to use this widget",
-                    "Install RiverFlows",
-                    appDetailsPendingIntent);
+//            showErrorMessage(context, views,
+//                    "The RiverFlows app must be installed in order to use this widget",
+//                    "Install RiverFlows",
+//                    appDetailsPendingIntent);
             return views;
         }
 
-        showReloadButton(context, views);
+//        showReloadButton(context, views);
 
         if(mWidgetItems.size() == 0) {
             Log.w(TAG,"no mWidgetItems defined");
@@ -203,16 +185,16 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
                     Uri.parse("riverflows://help/mWidgetItems.html"));
             PendingIntent mWidgetItemsHelpPendingIntent = PendingIntent.getActivity(context, 0, mWidgetItemsHelpIntent, 0);
 
-            showErrorMessage(context, views,
-                    "Your first 5 favorite sites from the RiverFlows app will appear here.",
-                    "Instructions For Selecting Favorites",
-                    mWidgetItemsHelpPendingIntent);
+//            showErrorMessage(context, views,
+//                    "Your first 5 favorite sites from the RiverFlows app will appear here.",
+//                    "Instructions For Selecting Favorites",
+//                    mWidgetItemsHelpPendingIntent);
 
             return views;
         }
 
         if(favPosition >= mWidgetItems.size()) {
-            views.setViewVisibility(getFavoriteViewId(favPosition), View.INVISIBLE);
+            views.setViewVisibility(R.id.favorite, View.INVISIBLE);
             return views;
         }
 
@@ -228,9 +210,9 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
                 mWidgetItems.get(favPosition).getSite().getSiteId().toString(),
                 mWidgetItems.get(favPosition).getDatasets().values().iterator().next().getVariable().getId()));
         fillInIntent.putExtras(extras);
-        views.setOnClickFillInIntent(getFavoriteViewId(favPosition), fillInIntent);
+        views.setOnClickFillInIntent(R.id.favorite, fillInIntent);
 
-        views.setTextViewText(getTextViewId(favPosition), mWidgetItems.get(favPosition).getSite().getName());
+        views.setTextViewText(R.id.favorite_name, mWidgetItems.get(favPosition).getSite().getName());
 
         //display the last reading for this site, if present
         Series flowSeries = DataSourceController.getPreferredSeries(mWidgetItems.get(favPosition));
@@ -242,21 +224,21 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         if(lastReading != null && lastReading.getValue() != null &&
                 (lastReading.getDate().getTime() + (6 * 60 * 60 * 1000)) > System.currentTimeMillis()) {
 
-            views.setTextViewText(getSubtextViewId(favPosition), getLastReadingText(lastReading, flowSeries.getVariable().getUnit()));
+            views.setTextViewText(R.id.subtext, getLastReadingText(lastReading, flowSeries.getVariable().getUnit()));
 
-            views.setTextViewText(getTimestampViewId(favPosition), getLastReadingTimestamp(lastReading));
+            views.setTextViewText(R.id.timestamp, getLastReadingTimestamp(lastReading));
         }
 
         String siteAgency = mWidgetItems.get(favPosition).getSite().getAgency();
         Integer agencyIconResId = getAgencyIconResId(siteAgency);
         if(agencyIconResId != null) {
-            views.setImageViewResource(getAgencyIconViewId(favPosition), agencyIconResId);
+            views.setImageViewResource(R.id.agency_icon, agencyIconResId);
         } else {
             Log.e(TAG, "no icon for agency: " + siteAgency);
-            views.setViewVisibility(getAgencyIconViewId(favPosition), View.GONE);
+            views.setViewVisibility(R.id.agency_icon, View.GONE);
         }
 
-        views.setViewVisibility(getFavoriteViewId(favPosition), View.VISIBLE);
+        views.setViewVisibility(R.id.favorite, View.VISIBLE);
 
         return views;
     }
@@ -267,10 +249,10 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
                 Uri.parse("market://details?id=com.riverflows"));
         PendingIntent appDetailsPendingIntent = PendingIntent.getActivity(context, 0, appDetailsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
-        showErrorMessage(context, views,
-                "The RiverFlows app is out-of-date for this version of the widget.",
-                "Update RiverFlows",
-                appDetailsPendingIntent);
+//        showErrorMessage(context, views,
+//                "The RiverFlows app is out-of-date for this version of the widget.",
+//                "Update RiverFlows",
+//                appDetailsPendingIntent);
 
         return views;
     }
@@ -327,86 +309,6 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
             return null;
         }
 
-    }
-
-    private int getFavoriteViewId(int index) {
-        switch(index) {
-            case 0:
-                return R.id.favorite_0;
-            case 1:
-                return R.id.favorite_1;
-            case 2:
-                return R.id.favorite_2;
-            case 3:
-                return R.id.favorite_3;
-            case 4:
-                return R.id.favorite_4;
-        }
-        throw new IllegalArgumentException();
-    }
-
-    private int getTextViewId(int index) {
-        switch(index) {
-            case 0:
-                return R.id.favorite_name_0;
-            case 1:
-                return R.id.favorite_name_1;
-            case 2:
-                return R.id.favorite_name_2;
-            case 3:
-                return R.id.favorite_name_3;
-            case 4:
-                return R.id.favorite_name_4;
-        }
-        throw new IllegalArgumentException();
-    }
-
-    private int getSubtextViewId(int index) {
-        switch(index) {
-            case 0:
-                return R.id.subtext_0;
-            case 1:
-                return R.id.subtext_1;
-            case 2:
-                return R.id.subtext_2;
-            case 3:
-                return R.id.subtext_3;
-            case 4:
-                return R.id.subtext_4;
-        }
-        throw new IllegalArgumentException();
-    }
-
-    private int getTimestampViewId(int index) {
-        switch(index) {
-            case 0:
-                return R.id.timestamp_0;
-            case 1:
-                return R.id.timestamp_1;
-            case 2:
-                return R.id.timestamp_2;
-            case 3:
-                return R.id.timestamp_3;
-            case 4:
-                return R.id.timestamp_4;
-        }
-        throw new IllegalArgumentException();
-    }
-
-    private int getAgencyIconViewId(int index) {
-        switch(index) {
-            case 0:
-                return R.id.agency_icon_0;
-            case 1:
-                return R.id.agency_icon_1;
-            case 2:
-                return R.id.agency_icon_2;
-            case 3:
-                return R.id.agency_icon_3;
-            case 4:
-                return R.id.agency_icon_4;
-        }
-        throw new IllegalArgumentException();
     }
 
     public static Integer getAgencyIconResId(String siteAgency) {
@@ -526,25 +428,5 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         favoritesC.close();
 
         return favorites;
-    }
-
-    private void showErrorMessage(Context context, RemoteViews views, String message, String buttonText, PendingIntent buttonIntent) {
-        for(int a = 0; a < favoriteCount; a++) {
-            views.setViewVisibility(getFavoriteViewId(a), View.GONE);
-        }
-
-        views.setViewVisibility(R.id.spinner, View.GONE);
-        views.setTextViewText(R.id.empty_message, message);
-        views.setCharSequence(R.id.empty_message_button, "setText",buttonText);
-        views.setOnClickPendingIntent(R.id.empty_message_button, buttonIntent);
-        views.setViewVisibility(R.id.empty_message_button, View.VISIBLE);
-        views.setViewVisibility(R.id.empty_message_area, View.VISIBLE);
-    }
-
-    private void showReloadButton(Context context, RemoteViews views) {
-        PendingIntent reloadPendingIntent = PendingIntent.getBroadcast(context, 0, Provider.getUpdateIntent(context), 0);
-
-        views.setOnClickPendingIntent(R.id.reload_button, reloadPendingIntent);
-        views.setViewVisibility(R.id.reload_button, View.VISIBLE);
     }
 }
