@@ -56,6 +56,7 @@ public class Provider extends AppWidgetProvider {
             // into the data so that the extras will not be ignored.
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
             RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.main);
+            rv.setRemoteAdapter(android.R.id.list, intent);
 
             // The empty view is displayed when the collection has no items. It should be a sibling
             // of the collection view.
