@@ -2,7 +2,6 @@ package com.riverflows.widget;
 
 import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
-import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
@@ -33,18 +32,34 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Service extends RemoteViewsService {
+
     @Override
     public RemoteViewsFactory onGetViewFactory(Intent intent) {
         Log.d(Provider.TAG, "onGetViewFactory");
         return new WidgetViewsFactory(this.getApplicationContext(), intent);
+    }
+
+    public static int[] getWidgetIds() {
+        Object[] ids = WidgetViewsFactory.mAppWidgetIds.toArray();
+
+        int[] result = new int[ids.length];
+        for(int a = 0; a < result.length; a++) {
+            Log.d(Provider.TAG, "widget ID " + ids[a]);
+            result[a] = ((Integer)ids[a]).intValue();
+        }
+
+        return result;
     }
 }
 
 class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     public static final String TAG = "RiverFlows-Widget";
+
+    public static final CopyOnWriteArrayList<Integer> mAppWidgetIds = new CopyOnWriteArrayList<Integer>();
 
     private static final SimpleDateFormat lastReadingDateFmt = new SimpleDateFormat("h:mm aa");
 
@@ -64,12 +79,14 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         // In onCreate() you setup any connections / cursors to your data source. Heavy lifting,
         // for example downloading or creating content etc, should be deferred to onDataSetChanged()
         // or getViewAt(). Taking more than 20 seconds in this call will result in an ANR.
+        mAppWidgetIds.add(new Integer(mAppWidgetId));
     }
 
     public void onDestroy() {
         // In onDestroy() you should tear down anything that was setup for your data source,
         // eg. cursors, connections, etc.
         mWidgetItems.clear();
+        mAppWidgetIds.remove(new Integer(mAppWidgetId));
     }
 
     public int getCount() {

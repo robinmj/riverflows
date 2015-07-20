@@ -93,7 +93,7 @@ public class Provider extends AppWidgetProvider {
 
 			Log.d(TAG,"received update intent");
 	        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            appWidgetManager.notifyAppWidgetViewDataChanged(new int[0], R.id.favorites);
+            appWidgetManager.notifyAppWidgetViewDataChanged(Service.getWidgetIds(), android.R.id.list);
 		}
 
         super.onReceive(context, intent);
