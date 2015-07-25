@@ -1,17 +1,12 @@
 package com.riverflows.view;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-
 import android.content.Context;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Paint.Align;
 import android.graphics.Path;
+import android.graphics.PointF;
 import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.text.TextUtils;
@@ -19,12 +14,18 @@ import android.util.Log;
 import android.view.View;
 
 import com.riverflows.Home;
-import com.riverflows.data.Category;
 import com.riverflows.data.DecoratedCategory;
 import com.riverflows.data.Forecast;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.Variable;
+
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
+import java.util.GregorianCalendar;
 
 public class HydroGraph extends View {
 	
@@ -288,39 +289,65 @@ public class HydroGraph extends View {
 		}
 
 		//draw everything else
-		
-		float prevX = convertXValue(startingPoint.getDate());
-		float prevY = (startingPoint.getValue() != null) ? convertYValue(startingPoint.getValue()) : 0.0f;
-		
-		float nextX;
-		float nextY;
-		Paint paint = plotPaint;
+
 		Reading lastObserved = null;
+
+        ArrayList<PointF> plotCoords = new ArrayList<PointF>(series.getReadings().size());
+        ArrayList<PointF> forecastCoords = new ArrayList<PointF>(series.getReadings().size());
+
 		for(;index < series.getReadings().size(); index++) {
 			Reading r = series.getReadings().get(index);
 			if(r.getValue() == null) {
-				paint = noDataPaint;
-				continue;
+                //tell drawLineGraph to use noDataPaint until next non-null value
+				plotCoords.add(null);
 			}
 			if(r instanceof Forecast) {
 				if(lastObserved != null && r.getDate().before(lastObserved.getDate())) {
 					//don't show forecasts that come before the observed data
 					continue;
 				}
-				paint = forecastPaint;
+				forecastCoords.add(new PointF(convertXValue(r.getDate()), convertYValue(r.getValue())));
 			} else {
 				lastObserved = r;
+                plotCoords.add(new PointF(convertXValue(r.getDate()), convertYValue(r.getValue())));
 			}
-			
-			nextX = convertXValue(r.getDate());
-			nextY = convertYValue(r.getValue());
-            canvas.drawLine(prevX, prevY, nextX, nextY, plotBgPaint);
-			canvas.drawLine(prevX, prevY, nextX, nextY, paint);
-			paint = plotPaint;
-			prevX = nextX;
-			prevY = nextY;
 		}
+
+        drawLineGraph(startingPoint, plotCoords, canvas, plotBgPaint);
+        drawLineGraph(startingPoint, forecastCoords, canvas, plotBgPaint);
+        drawLineGraph(startingPoint, plotCoords, canvas, plotPaint);
+        drawLineGraph(startingPoint, forecastCoords, canvas, forecastPaint);
 	}
+
+    private void drawLineGraph(Reading startingPoint, ArrayList<PointF> coords, Canvas canvas, Paint paint) {
+        if(coords.size() <= 1) {
+            Log.e(TAG, "can\'t plot a line- only 1 or fewer points!");
+            return;
+        }
+
+        PointF lastValidCoord = null;
+
+        for (int a = 1; a < coords.size(); a++) {
+            PointF prevCoord = coords.get(a - 1);
+            PointF currentCoord = coords.get(a);
+
+            if(currentCoord == null) {
+                continue;
+            }
+
+            lastValidCoord = currentCoord;
+
+            if(prevCoord == null) {
+                if(lastValidCoord != null) {
+                    prevCoord = lastValidCoord;
+                } else {
+                    prevCoord = new PointF(convertXValue(startingPoint.getDate()),
+                            (startingPoint.getValue() != null) ? convertYValue(startingPoint.getValue()) : 0.0f);
+                }
+            }
+            canvas.drawLine(prevCoord.x, prevCoord.y, currentCoord.x, currentCoord.y, paint);
+        }
+    }
 	
 	private float convertXValue(Date d) {
 		float result = (float)(yAxisOffset + ((double)(d.getTime() - this.xMin) * this.xPixelsPerMs));
