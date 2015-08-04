@@ -65,7 +65,8 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private static int favoriteCount = 5;
 
-    private List<SiteData> mWidgetItems = new ArrayList<SiteData>();
+    private long lastUpdated = 0;
+    private List<SiteData> mWidgetItems = null;
     private Context mContext;
     private int mAppWidgetId;
 
@@ -85,7 +86,10 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     public void onDestroy() {
         // In onDestroy() you should tear down anything that was setup for your data source,
         // eg. cursors, connections, etc.
-        mWidgetItems.clear();
+        List<SiteData> tmpWidgetItems = mWidgetItems;
+        if(tmpWidgetItems != null) {
+            tmpWidgetItems.clear();
+        }
         mAppWidgetIds.remove(new Integer(mAppWidgetId));
     }
 
@@ -157,18 +161,22 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     }
 
     private RemoteViews updateFavoriteViews(Context context, RemoteViews views, int favPosition) {
-        try {
-            mWidgetItems = getFavorites(context);
-        } catch(LoadFailedException lfe) {
-            switch(lfe.getErrorCode()) {
-                case -2:
-                    return showUnsupportedProtocolError(context, views);
+
+        if(System.currentTimeMillis() - lastUpdated > 60000) {
+            try {
+                mWidgetItems = getFavorites(context);
+                lastUpdated = System.currentTimeMillis();
+            } catch (LoadFailedException lfe) {
+                switch (lfe.getErrorCode()) {
+                    case -2:
+                        return showUnsupportedProtocolError(context, views);
+                }
+                Log.w(TAG, "load failed. errorCode: " + lfe.getErrorCode());
+                return null;
+            } catch (Exception e) {
+                Log.e(TAG, "load failed", e);
+                return null;
             }
-            Log.w(TAG,"load failed. errorCode: " + lfe.getErrorCode());
-            return null;
-        } catch(Exception e) {
-            Log.e(TAG, "load failed", e);
-            return null;
         }
 
         views.setViewVisibility(R.id.spinner, View.GONE);
@@ -222,10 +230,9 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         // Next, we set a fill-intent which will be used to fill-in the pending intent template
         // which is set on the collection view in StackWidgetProvider.
         Bundle extras = new Bundle();
-        extras.putInt("EXTRA_ITEM", favPosition);
-        Intent fillInIntent = new Intent(Intent.ACTION_VIEW, Uri.fromParts("gauge",
-                mWidgetItems.get(favPosition).getSite().getSiteId().toString(),
-                mWidgetItems.get(favPosition).getDatasets().values().iterator().next().getVariable().getId()));
+        extras.putString(Provider.EN_SITE_ID, mWidgetItems.get(favPosition).getSite().getSiteId().toString());
+        extras.putString(Provider.EN_VARIABLE_ID, mWidgetItems.get(favPosition).getDatasets().values().iterator().next().getVariable().getId());
+        Intent fillInIntent = new Intent();
         fillInIntent.putExtras(extras);
         views.setOnClickFillInIntent(R.id.favorite, fillInIntent);
 

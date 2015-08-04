@@ -39,6 +39,11 @@ public class Provider extends AppWidgetProvider {
 	public static final String TAG = "RiverFlows-Widget";
 	
 	public static final String ACTION_UPDATE_WIDGET = "com.riverflows.widget.UPDATE";
+
+    public static final String ACTION_VIEW_FAVORITE = "com.riverflows.widget.VIEW_FAVORITE";
+
+    public static final String EN_SITE_ID = "site_id";
+    public static final String EN_VARIABLE_ID = "variable_id";
 	
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
@@ -66,9 +71,11 @@ public class Provider extends AppWidgetProvider {
             // cannot setup their own pending intents, instead, the collection as a whole can
             // setup a pending intent template, and the individual items can set a fillInIntent
             // to create unique before on an item to item basis.
-            Intent viewIntent = new Intent(Intent.ACTION_VIEW);
-            viewIntent.setData(Uri.parse(viewIntent.toUri(Intent.URI_INTENT_SCHEME)));
-            PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, viewIntent,
+            Intent viewIntent = new Intent(context, Provider.class);
+            viewIntent.setAction(ACTION_VIEW_FAVORITE);
+            viewIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
+            viewIntent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+            PendingIntent pendingIntent = PendingIntent.getBroadcast(context, 0, viewIntent,
                     PendingIntent.FLAG_UPDATE_CURRENT);
             rv.setPendingIntentTemplate(android.R.id.list, pendingIntent);
 
@@ -94,7 +101,16 @@ public class Provider extends AppWidgetProvider {
 			Log.d(TAG,"received update intent");
 	        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
             appWidgetManager.notifyAppWidgetViewDataChanged(Service.getWidgetIds(), android.R.id.list);
-		}
+		} else if(ACTION_VIEW_FAVORITE.equals(intent.getAction())) {
+            Log.d(TAG,"received view intent");
+
+            Intent viewIntent = new Intent(Intent.ACTION_VIEW,
+                    Uri.fromParts("gauge",intent.getStringExtra(EN_SITE_ID),
+                            intent.getStringExtra(EN_VARIABLE_ID)));
+            viewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+
+            context.startActivity(viewIntent);
+        }
 
         super.onReceive(context, intent);
     }
