@@ -124,6 +124,35 @@ public class HydroGraphTest {
     }
 
     @Test
+    public void testNullReadings() throws Throwable {
+
+        File responseFile = new File("testdata/eqp_failure.csv");
+
+        HttpResponse response = new BasicHttpResponse(new BasicStatusLine(
+                new ProtocolVersion("HTTP", 1, 1), 200, ""));
+        response.setStatusCode(200);
+
+        response.setEntity(new InputStreamEntity(new FileInputStream(responseFile), responseFile.length()));
+
+        Robolectric.addPendingHttpResponse(response);
+
+        Site vallecito = SiteFactory.getVallecitoCreek();
+        Variable[] vars = vallecito.getSupportedVariables();
+
+        SiteData data = src.getSiteData(vallecito,vars,true);
+
+        mockCanvas = mock(Canvas.class);
+
+        graph.setSeries(data.getDatasets().get(vars[1].getCommonVariable()), false);
+
+        graph.onDraw(mockCanvas);
+
+        String[] yLabels = {"0.8","0.9","1","1.1","1.2","1.3","1.4","1.5","1.6","1.7"};
+
+        verify(mockCanvas, atLeast(10)).drawText(argThat(new YAxisLabelMatcher(yLabels)), anyFloat(), anyFloat(), any(Paint.class));
+    }
+
+    @Test
     public void testSmallYAxisLabelsWithZeroMin() throws Throwable {
 
         File responseFile = new File("testdata/vallecito.csv");
