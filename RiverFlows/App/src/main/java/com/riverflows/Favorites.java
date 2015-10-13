@@ -254,10 +254,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 	    	Intent i_reorder = new Intent(getActivity(), ReorderFavorites.class);
 	    	startActivityForResult(i_reorder, REQUEST_REORDER_FAVORITES);
 	    	return true;
-	    case R.id.mi_help:
-	    	Intent i_help = new Intent(Intent.ACTION_VIEW, Uri.parse(Help.BASE_URI + "favorites.html"));
-	    	startActivity(i_help);
-	    	return true;
 		case R.id.mi_sign_in:
             ((Home)getActivity()).signIn();
 			return true;
