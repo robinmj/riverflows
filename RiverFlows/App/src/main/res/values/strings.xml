@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">RiverFlows</string>
+    <string name="app_name">RiverFlows.net</string>
     <string name="variable_context_menu_title">Other Measurements At This Site</string>
     <string name="add_favorite_confirmation">the gauge {0} at {1} has been added to your favorites</string>
     <string name="add_favorite_dest_confirmation">the destination {0} has been added to your favorites</string>
