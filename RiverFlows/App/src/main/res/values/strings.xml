@@ -13,23 +13,21 @@
 Shared using the <a href=\"http://www.riverflowsapp.com\">RiverFlows</a> mobile app<br/>
 </div>]]></string>
     <string name="destinations_intro">
-        It is now possible to save Destinations on the Riverflows.net server.
-
-        This makes it possible for you to specify more information about your favorite gages
+        The new RiverFlows.net feature of Destinations makes it possible for you to specify more information about your favorite gages
         including a custom name, description, and preferred level ranges.
 
         Also, since destinations are stored remotely, they can be backed up and synchronized across
         devices.
     </string>
-    <string name="destinations_intro_2">To get started, please sign in to Riverflows.net using your Google account</string>
+    <string name="destinations_intro_2">To get started with Destinations, please sign in to RiverFlows.net using your Google account</string>
     <string name="destination_instructions">
         It is now possible to store your favorites remotely, as well as share them publicly as
         destinations. By creating an account, you will have access to the shared destinations of
         others.
     </string>
     <string name="facet_type_intro">
-        Welcome to RiverFlows 2.0!
+        Welcome to RiverFlows.net!
 
-        Please select the following activities that you use Riverflows for
+        Please select the activitie(s) for which you wish to have custom river information
     </string>
 </resources>

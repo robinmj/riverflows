@@ -120,20 +120,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
         getInjector(getActivity()).injectMembers(this);
 
-        CharSequence introStr = getResources().getText(R.string.destinations_intro_2);
-
-        SpannableString str = new SpannableString(introStr);
-        str.setSpan(new ClickableSpan() {
-            @Override
-            public void onClick(View view) {
-                ((Home)getActivity()).signIn();
-            }
-        }, 23,introStr.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        TextView destination_intro = (TextView)getView().findViewById(R.id.register_sign_in_instructions);
-        destination_intro.setText(str);
-        destination_intro.setMovementMethod(LinkMovementMethod.getInstance());
-
 		ListView lv = getListView();
 
 		setHasOptionsMenu(true);
@@ -144,12 +130,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 		TextView favoriteSubtext = (TextView)getView().findViewById(R.id.favorite_instructions_subheader);
 
-		SpannableString subtext = new SpannableString("If you select your favorite gauge sites, they will appear here.");
-
-		subtext.setSpan(new URLSpan("riverflows://help/favorites.html"), 7, 39, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-		favoriteSubtext.setText(subtext);
-		favoriteSubtext.setMovementMethod(LinkMovementMethod.getInstance());
+		favoriteSubtext.setText("Favorite destinations and gage sites will appear here.");
 
 		SharedPreferences settings = getActivity().getSharedPreferences(Home.PREFS_FILE, Activity.MODE_PRIVATE);
     	tempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
