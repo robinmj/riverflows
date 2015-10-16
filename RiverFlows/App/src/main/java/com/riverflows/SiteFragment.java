@@ -40,6 +40,9 @@ import java.util.Locale;
 import java.util.Map;
 
 import roboguice.fragment.RoboFragment;
+import tourguide.tourguide.Overlay;
+import tourguide.tourguide.ToolTip;
+import tourguide.tourguide.TourGuide;
 
 /**
  * Fragment for viewing site or favorite site
@@ -64,6 +67,7 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
     private Map<Variable.CommonVariable, Variable.CommonVariable> conversionMap = new HashMap<Variable.CommonVariable, Variable.CommonVariable>();
     private SiteData data;
     String errorMsg;
+    private TourGuide mTourGuideHandler;
 
     private CompoundButton.OnCheckedChangeListener favoriteButtonListener = new CompoundButton.OnCheckedChangeListener() {
 
@@ -127,6 +131,15 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
     @Override
     public void onLoaderReset(Loader<SiteData> siteDataLoader) {
 
+    }
+
+    @Override
+    public void onDestroy() {
+        if(this.mTourGuideHandler != null) {
+            this.mTourGuideHandler.cleanUp();
+        }
+
+        super.onDestroy();
     }
 
     @Override
@@ -305,6 +318,38 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
         favoriteBtn.setChecked(isFavorite());
         favoriteBtn.setOnCheckedChangeListener(this.favoriteButtonListener);
         progressBar.setVisibility(View.GONE);
+
+        SharedPreferences settings = getActivity().getSharedPreferences(Home.PREFS_FILE, Context.MODE_PRIVATE);
+        String tempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
+        boolean favoriteIntroShown = settings.getBoolean(Home.PREF_FAVORITE_INTRO, false);
+
+        if(!favoriteIntroShown) {
+            if(!isFavorite()) {
+                ToolTip toolTip = new ToolTip().setDescription("Hint: touch the star to save this site as a favorite").setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        SiteFragment.this.mTourGuideHandler.cleanUp();
+                    }
+                });
+
+                Overlay overlay = new Overlay().disableClick(false).setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        SiteFragment.this.mTourGuideHandler.cleanUp();
+                    }
+                });
+
+                this.mTourGuideHandler = TourGuide.init(getActivity()).with(TourGuide.Technique.Click)
+                        .setPointer(null)
+                        .setToolTip(toolTip)
+                        .setOverlay(overlay)
+                        .playOn(favoriteBtn);
+            }
+
+            SharedPreferences.Editor editor = settings.edit();
+            editor.putBoolean(Home.PREF_FAVORITE_INTRO, true);
+            editor.commit();
+        }
     }
 
     /**

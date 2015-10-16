@@ -43,6 +43,7 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 	public static final String PREFS_FILE = "com.riverflows.prefs";
 	public static final String PREF_TEMP_UNIT = "tempUnit";
     public static final String PREF_FACET_TYPES = "currentFacetTypes";
+    public static final String PREF_FAVORITE_INTRO = "favoriteIntro";
 
 	public static final String ACTION_FAVORITES_CHANGED = "com.riverflows.FAVORITES_CHANGED";
 
@@ -272,7 +273,7 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 		switch(id) {
 		case DIALOG_ID_MIGRATION_ERROR:
 			AlertDialog alert = new AlertDialog.Builder(this).create();
-			alert.setMessage("Sorry- An error occurred while updating your favorites database. You will have to uninstall and reinstall RiverFlows to fix this.");
+			alert.setMessage("Sorry- An error occurred while updating your favorites database. You will have to uninstall and reinstall RiverFlows.net to fix this.");
 			return alert;
 		}
 		return null;
