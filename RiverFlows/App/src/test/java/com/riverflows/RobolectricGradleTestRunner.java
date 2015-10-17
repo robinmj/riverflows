@@ -23,7 +23,7 @@ public class RobolectricGradleTestRunner extends RobolectricTestRunner {
                 intermediatesPath + "/manifests/full/"
                         + buildVariant + "/AndroidManifest.xml");
         System.setProperty("android.resources",
-                intermediatesPath + "/res/" + buildVariant);
+                intermediatesPath + "/res/merged/" + buildVariant);
         System.setProperty("android.assets",
                 intermediatesPath + "/assets/" + buildVariant);
     }
