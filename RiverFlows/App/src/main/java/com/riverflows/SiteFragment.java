@@ -135,7 +135,9 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
 
     @Override
     public void onDestroy() {
-        if(this.mTourGuideHandler != null) {
+        // need to check if overlay is null because Robolectric destroys the fragment before
+        //  the overlay is constructed, causing an NPE
+        if(this.mTourGuideHandler != null && this.mTourGuideHandler.getOverlay() != null) {
             this.mTourGuideHandler.cleanUp();
         }
 
