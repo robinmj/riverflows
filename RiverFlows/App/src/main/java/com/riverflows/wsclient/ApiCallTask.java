@@ -154,7 +154,7 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 							null,
 							new String[] {GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE},
 							false,
-							null,
+                            "In order to use the Destinations feature, please sign into RiverFlows.net using a Google account",
 							null,
 							null,
 							null);
