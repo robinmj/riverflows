@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.google.inject.Inject;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
@@ -32,6 +33,8 @@ import com.riverflows.view.HydroGraph;
 import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.ToggleFavoriteTask;
 import com.riverflows.wsclient.Utils;
+import com.riverflows.wsclient.WsSession;
+import com.riverflows.wsclient.WsSessionManager;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -69,14 +72,33 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
     String errorMsg;
     private TourGuide mTourGuideHandler;
 
+    @Inject
+    private WsSessionManager wsSessionManager;
+
     private CompoundButton.OnCheckedChangeListener favoriteButtonListener = new CompoundButton.OnCheckedChangeListener() {
 
         @Override
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+            WsSession session = SiteFragment.this.wsSessionManager.getSession(getActivity());
+
             Favorite f = new Favorite(SiteFragment.this.getSite(),
                     SiteFragment.this.getVariable().getId());
 
-            new ToggleFavoriteTask(getActivity(), false, f).execute();
+            if(session == null) {
+                boolean isFavorite = FavoritesDaoImpl.isFavorite(getActivity().getApplicationContext(), f.getSite().getSiteId(), f.getVariable());
+
+                if(isFavorite) {
+                    FavoritesDaoImpl.deleteFavorite(getActivity().getApplicationContext(), f.getSite().getSiteId(), f.getVariable());
+                } else {
+                    FavoritesDaoImpl.createFavorite(getActivity().getApplicationContext(), f);
+                }
+
+                getActivity().sendBroadcast(Home.getWidgetUpdateIntent());
+                Favorites.softReloadNeeded = true;
+            } else {
+                new ToggleFavoriteTask(getActivity(), false, f).execute();
+            }
         }
     };
 
