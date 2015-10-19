@@ -3,6 +3,11 @@
 /RiverFlows/.idea/gradle.xml
 /RiverFlows/.idea/workspace.xml
 /RiverFlows/.idea/libraries/
+/RiverFlows/.idea/misc.xml
 /RiverFlows/logarithmicnumberpicker
 build/
 *.swp
+*.iml
+*.apk
+local.properties
+gradle-app.setting 
