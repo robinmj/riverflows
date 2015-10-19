@@ -243,12 +243,13 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
         }
 
         if (displayedSeries == null) {
-            displayedSeries = DataSourceController.getPreferredSeries(this.data);
             Log.d(Home.TAG, "No series found for " + getVariable());
-            if(!this.data.isComplete()) {
+            if(!this.data.isComplete() && getVariable() != null) {
                 //DataSetLoader will reload data specifically requesting the current variable
                 reload();
                 return;
+            } else {
+                displayedSeries = DataSourceController.getPreferredSeries(this.data);
             }
         }
 
