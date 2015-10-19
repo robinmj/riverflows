@@ -1,7 +1,5 @@
 package com.riverflows;
 
-import android.app.AlertDialog;
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Bitmap;
@@ -27,11 +25,14 @@ import android.widget.ProgressBar;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
+import com.google.inject.Inject;
 import com.riverflows.data.CelsiusFahrenheitConverter;
-import com.riverflows.data.DestinationFacet;
+import com.riverflows.data.Favorite;
 import com.riverflows.data.Site;
+import com.riverflows.data.SiteId;
 import com.riverflows.data.Variable;
 import com.riverflows.data.Variable.CommonVariable;
+import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.wsclient.DataSourceController;
 
 import java.io.File;
@@ -41,6 +42,7 @@ import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
+import java.util.List;
 
 import roboguice.activity.RoboActionBarActivity;
 
@@ -49,139 +51,172 @@ import roboguice.activity.RoboActionBarActivity;
  * @author robin
  *
  */
-public class ViewDestination extends RoboActionBarActivity {
+public class ViewSite extends RoboActionBarActivity {
+	
+	private static final String TAG = Home.TAG;
+	
+	public static final String GAUGE_SCHEME = "gauge";
+	
+	public static final String KEY_SITE = "site";
+	public static final String KEY_VARIABLE = "variable";
 
-	public static final String KEY_DESTINATION_FACET = "destination_facet";
+	public static final int DIALOG_ID_LOADING_ERROR = 1;
 
-    private DestinationFragment destinationFragment;
+    @Inject
+    private DataSourceController dataSourceController;
+	
+	private SiteFragment siteFragment;
 
-    HashMap<CommonVariable, CommonVariable> conversionMap = new HashMap<CommonVariable, CommonVariable>();
-    FetchHydrographTask runningShareTask = null;
+	private FetchHydrographTask runningShareTask = null;
 
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
 
-        Bundle extras = getIntent().getExtras();
+        String title = null;
 
-        DestinationFacet destinationFacet = (DestinationFacet)extras.get(KEY_DESTINATION_FACET);
+        Site site = null;
+        Variable variable = null;
+        
+        if(getIntent().getData() == null) {
+			
+			Bundle extras = getIntent().getExtras();
+	        
+	        site = (Site)extras.get(KEY_SITE);
+	        variable = (Variable)extras.get(KEY_VARIABLE);
+
+            if(variable != null) {
+                List<Favorite> favorites = FavoritesDaoImpl.getFavorites(getApplicationContext(), site.getSiteId(), variable.getId());
+
+                if(favorites.size() > 0) {
+                    title = favorites.get(0).getName();
+                }
+            }
+
+        } else {
+        	SiteId siteId = new SiteId(getIntent().getData().getSchemeSpecificPart());
+			List<Favorite> favorites = FavoritesDaoImpl.getFavorites(getApplicationContext(), siteId, getIntent().getData().getFragment());
+
+        	site = favorites.get(0).getSite();
+
+            title = favorites.get(0).getName();
+
+        	variable = DataSourceController.getVariable(site.getAgency(), getIntent().getData().getFragment());
+        }
+
+        if(TextUtils.isEmpty(title)) {
+            title = site.getName();
+        }
 
         FragmentManager manager = getSupportFragmentManager();
 
-        getSupportActionBar().setTitle(destinationFacet.getDestination().getName());
-
+        getSupportActionBar().setTitle(title);
+		
 		SharedPreferences settings = getSharedPreferences(Home.PREFS_FILE, MODE_PRIVATE);
     	String tempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
-
+    	
     	//Log.d(Home.TAG, "saved unit: " + tempUnit);
-    	this.conversionMap = CommonVariable.temperatureConversionMap(tempUnit);
+        HashMap<CommonVariable, CommonVariable> conversionMap = CommonVariable.temperatureConversionMap(tempUnit);
 
-        this.destinationFragment = (DestinationFragment)manager.findFragmentByTag("destination");
+        this.siteFragment = (SiteFragment)manager.findFragmentByTag("site");
 
-        if(this.destinationFragment == null) {
-
-            this.destinationFragment = new DestinationFragment();
+        if(this.siteFragment == null) {
+            this.siteFragment = new SiteFragment();
             Bundle arguments = new Bundle();
-            arguments.putBoolean(DestinationFragment.ARG_ZERO_Y_MIN, false);
-            arguments.putSerializable(DestinationFragment.ARG_DESTINATION_FACET, destinationFacet);
-            arguments.putSerializable(DestinationFragment.ARG_CONVERSION_MAP, this.conversionMap);
-            this.destinationFragment.setArguments(arguments);
+            arguments.putBoolean(SiteFragment.ARG_ZERO_Y_MIN, false);
+            arguments.putSerializable(SiteFragment.ARG_SITE, site);
+            arguments.putSerializable(SiteFragment.ARG_VARIABLE, variable);
+            arguments.putSerializable(SiteFragment.ARG_CONVERSION_MAP, conversionMap);
+            this.siteFragment.setArguments(arguments);
 
             FragmentTransaction transaction = manager.beginTransaction();
-            transaction.add(android.R.id.content, this.destinationFragment, "destination");
+            transaction.add(android.R.id.content, this.siteFragment, "site");
             transaction.commit();
         }
     }
-
+    
     @Override
     protected void onStart() {
     	super.onStart();
-
+    	
     	EasyTracker.getInstance().activityStart(this);
 
     	Tracker tracker =  EasyTracker.getTracker();
 
         Site site = this.getSite();
 
-		tracker.setCustomDimension(1, "" + site.getState());
-    	tracker.setCustomDimension(2, site.getAgency());
-    	tracker.setCustomDimension(3, site.getId());
-    	tracker.setCustomDimension(4, this.getVariable().getId());
-    	tracker.setCustomDimension(5, this.getVariable().getCommonVariable().name());
+        tracker.setCustomDimension(1, "" + site.getState());
+        tracker.setCustomDimension(2, site.getAgency());
+        tracker.setCustomDimension(3, site.getId());
+        if(this.getVariable() == null) {
+            tracker.setCustomDimension(4, null);
+            tracker.setCustomDimension(5, null);
+        } else {
+            tracker.setCustomDimension(4, this.getVariable().getId());
+            tracker.setCustomDimension(5, this.getVariable().getCommonVariable().name());
+        }
     }
 
     public Site getSite() {
-        return this.destinationFragment.getDestinationFacet().getDestination().getSite();
+        return this.siteFragment.getSite();
     }
 
     public Variable getVariable() {
-        return this.destinationFragment.getDestinationFacet().getVariable();
+        return this.siteFragment.getVariable();
     }
-
+    
     @Override
     protected void onStop() {
     	super.onStop();
-
+    	
     	EasyTracker.getInstance().activityStop(this);
     }
-
+    
     public boolean onCreateOptionsMenu(Menu menu) {
-        DestinationFragment fragment = this.destinationFragment;
-
-        if(fragment == null) {
-            return false;
-        }
-
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.standard_menu, menu);
-
+        inflater.inflate(R.menu.graph_options_menu, menu);
+        
         MenuItem otherVarsItem = menu.findItem(R.id.mi_other_variables);
         otherVarsItem.setVisible(true);
-		otherVarsItem.setEnabled(getSite().getSupportedVariables().length > 1);
-
+		otherVarsItem.setEnabled(ViewSite.this.getSite().getSupportedVariables().length > 1);
+        
         MenuItem unitsItem = menu.findItem(R.id.mi_change_units);
         unitsItem.setVisible(true);
 
-        if(fragment.conversionMap.containsKey(getVariable().getCommonVariable())) {
-        	unitsItem.setEnabled(true);
+        if(this.siteFragment == null) {
+            return false;
         }
 
-        MenuItem shareItem = menu.findItem(R.id.mi_share);
-        shareItem.setVisible(true);
-        shareItem.setEnabled(true);
-
+        if(this.getVariable() != null &&
+                this.siteFragment.getConversionMap().containsKey(this.getVariable().getCommonVariable())) {
+        	unitsItem.setEnabled(true);
+        }
+        
         return true;
     }
-
+    
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
-
+    	
     	MenuItem otherVariablesItem = menu.findItem(R.id.mi_other_variables);
-
+    	
     	SubMenu otherVarsMenu = otherVariablesItem.getSubMenu();
     	otherVarsMenu.clear();
         boolean hasOtherVariables = populateOtherVariablesSubmenu(otherVarsMenu);
     	otherVariablesItem.setVisible(hasOtherVariables);
     	otherVariablesItem.setEnabled(hasOtherVariables);
-
+        
     	MenuItem changeUnitsItem = menu.findItem(R.id.mi_change_units);
-
+    	
         SubMenu unitsMenu = changeUnitsItem.getSubMenu();
         unitsMenu.clear();
         boolean unitConversionsAvailable = populateUnitsSubmenu(unitsMenu);
         changeUnitsItem.setVisible(unitConversionsAvailable);
         changeUnitsItem.setEnabled(unitConversionsAvailable);
-
+        
     	return super.onPrepareOptionsMenu(menu);
     }
-
-	private class ErrorMsgDialog extends AlertDialog {
-		public ErrorMsgDialog(Context context, String msg) {
-			super(context);
-			setMessage(msg);
-		}
-	}
-
+	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
@@ -199,11 +234,19 @@ public class ViewDestination extends RoboActionBarActivity {
 			startActivity(i);
 	        return true;
 	    case R.id.mi_reload:
-	    	this.destinationFragment.reload();
+	    	this.siteFragment.reload();
 	    	return true;
+        case R.id.mi_create_destination:
+            Intent createDestIntent = new Intent(this, EditDestination.class);
+            createDestIntent.putExtra(EditDestination.KEY_SITE, getSite());
+            createDestIntent.putExtra(EditDestination.KEY_VARIABLE, getVariable());
+            createDestIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+            startActivity(createDestIntent);
+            return true;
 	    case R.id.mi_other_variables:
 	    case R.id.mi_change_units:
-	    	if(this.destinationFragment != null) {
+	    	if(this.siteFragment != null) {
 		    	return true;
 	    	}
 	    	return false;
@@ -211,65 +254,63 @@ public class ViewDestination extends RoboActionBarActivity {
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
-
+	
 	private static final int REQUEST_SHARE = 61294;
 
 	private static class FetchHydrographTask extends AsyncTask<String, Integer, File> {
-
+		
 		private String graphUrl = null;
 		private File savedFile = null;
-		private ViewDestination activity = null;
-        private DestinationFacet destinationFacet = null;
+		private ViewSite activity = null;
         private Site site = null;
         private Variable variable = null;
-
-		public FetchHydrographTask(ViewDestination activity) {
-            DestinationFragment fragment = activity.destinationFragment;
-
-            this.site = fragment.getDestinationFacet().getDestination().getSite();
-            this.destinationFacet = fragment.getDestinationFacet();
-            this.variable = fragment.getDestinationFacet().getVariable();
+		
+		public FetchHydrographTask(ViewSite activity) {
+            this.site = activity.siteFragment.getSite();
+            this.variable = activity.siteFragment.getVariable();
 
 			EasyTracker.getTracker().sendSocial("ACTION_SEND", "start", this.site.getAgency() + ":" + this.site.getId());
-
-			graphUrl = DataSourceController.getDataSource(this.site.getAgency()).getExternalGraphUrl(this.site.getId(), this.variable.getId());
+			
+			if(this.variable != null) {
+				graphUrl = DataSourceController.getDataSource(this.site.getAgency()).getExternalGraphUrl(activity.getSite().getId(), this.variable.getId());
+			}
 			this.activity = activity;
 			activity.runningShareTask = this;
 		}
-
-    	public void setActivity(ViewDestination activity) {
+    	
+    	public void setActivity(ViewSite activity) {
     		this.activity = activity;
     	}
-
+		
 	    @Override
 	    protected File doInBackground(String... arg0) {
 	    	if(graphUrl == null) {
 	    		return null;
 	    	}
-
+	    	
 	    	Bitmap b = null;
 	    	try {
 				b = BitmapFactory.decodeStream((InputStream) new URL(graphUrl).getContent());
-
+				
 				String file_name = "share_hydrograph.png";
 
 		        //use this instead once minSdkVersion is set to 8 or above
 		        //File png = new File(activity.getExternalCacheDir(), file_name);
 		        File png = new File(new File(Environment.getExternalStorageDirectory(), "Pictures"), file_name);
-
+	            
 	            Log.i(Home.TAG, "saving to " + png);
-
+	            
 		        FileOutputStream out = null;
 		        try {
 		            out = new FileOutputStream(png);
 		            b.compress(Bitmap.CompressFormat.PNG, 100, out);
-
+		            
 		            out.flush();
 		        } catch (Exception e) {
 		            Log.e(Home.TAG,"", e);
-
+		            
 					EasyTracker.getTracker().sendException("saving " + graphUrl, e, false);
-
+					
 		            return null;
 		        } finally {
 		            try {
@@ -282,39 +323,41 @@ public class ViewDestination extends RoboActionBarActivity {
 				Log.e(Home.TAG, graphUrl,e);
 			} catch (IOException e) {
 				Log.w(Home.TAG, graphUrl,e);
-
+				
 				EasyTracker.getTracker().sendException("downloading " + graphUrl, e, false);
-			}
+			} 
 	        return null;
 	    }
-
+	    
 	    @Override
 	    protected void onPostExecute(File result) {
 	    	this.savedFile = result;
-
+	    	
 	        ProgressBar progressBar = (ProgressBar)activity.findViewById(R.id.progressBar);
 	        progressBar.setVisibility(View.GONE);
-
-			Intent intent=new Intent(Intent.ACTION_SEND);
+			
+			Intent intent=new Intent(android.content.Intent.ACTION_SEND);
 			intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
-
+			
 			String varName = "";
-
-			varName = this.variable.getCommonVariable().getName() + " at ";
-
-			intent.putExtra(Intent.EXTRA_SUBJECT, this.destinationFacet.getDestination().getName());
-
+			
+			if(this.variable != null) {
+				varName = this.variable.getCommonVariable().getName() + " at ";
+			}
+			
+			intent.putExtra(Intent.EXTRA_SUBJECT, varName + this.site.getName());
+			
 			if(result != null) {
 				//share with embedded image
-
+		    	
 		    	Uri graphUri = Uri.fromFile(result);
-
+		    	
 		    	Log.i(Home.TAG, "file URI: " + graphUri);
-
+				
 				intent.setType("image/png");
-				intent.putExtra(Intent.EXTRA_TEXT,
+				intent.putExtra(android.content.Intent.EXTRA_TEXT,
 				        "Shared using the RiverFlows mobile app");
-				intent.putExtra(Intent.EXTRA_STREAM, graphUri);
+				intent.putExtra(android.content.Intent.EXTRA_STREAM, graphUri);
 				activity.startActivityForResult(Intent.createChooser(intent, "Share Hydrograph"), REQUEST_SHARE);
 
 				EasyTracker.getTracker().sendSocial("ACTION_SEND", "image", this.site.getAgency() + ":" + this.site.getId());
@@ -369,15 +412,15 @@ public class ViewDestination extends RoboActionBarActivity {
 			}
 		}
 	}
-
+	
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
 		super.onCreateContextMenu(menu, v, menuInfo);
-
+		
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.graph_menu, menu);
 
-        Boolean zeroYMin = this.destinationFragment.zeroYMin;
-
+        Boolean zeroYMin = this.siteFragment.zeroYMin;
+		
 		if((zeroYMin == null && this.getVariable().getCommonVariable().isGraphAgainstZeroMinimum()) || (zeroYMin != null && zeroYMin)) {
 			MenuItem fitYAxisItem = menu.findItem(R.id.mi_fit_y_axis);
 			fitYAxisItem.setVisible(true);
@@ -385,37 +428,41 @@ public class ViewDestination extends RoboActionBarActivity {
 			MenuItem zeroYMinItem = menu.findItem(R.id.mi_zero_y_minimum);
 			zeroYMinItem.setVisible(true);
 		}
-
+		
         if(this.getSite().getSupportedVariables().length > 1) {
             MenuItem otherVarsMenuItem = menu.findItem(R.id.sm_other_variables);
             otherVarsMenuItem.setVisible(true);
             populateOtherVariablesSubmenu(otherVarsMenuItem.getSubMenu());
         }
-
+        
         String[] toUnit = new CelsiusFahrenheitConverter().convertsTo(this.getVariable().getUnit());
-
+        
         if(toUnit.length > 0) {
 	        MenuItem unitsMenuItem = menu.findItem(R.id.sm_change_units);
 	        unitsMenuItem.setVisible(true);
 	        populateUnitsSubmenu(unitsMenuItem.getSubMenu());
         }
 	}
-
+	
 	private boolean populateOtherVariablesSubmenu(SubMenu otherVariablesMenu) {
         otherVariablesMenu.setHeaderTitle(R.string.variable_context_menu_title);
-
+        
 		Variable[] otherVariables = this.getSite().getSupportedVariables();
-
+		
 		if(otherVariables.length <= 1) {
 			return false;
 		}
 
+		if(this.getVariable() == null) {
+			return false;
+		}
+		
         try {
 			for(int a = 0; a < otherVariables.length; a++) {
 				if(otherVariables[a] == null) {
 					throw new NullPointerException("otherVariables[" + a + "]");
 				}
-
+				
 				//hide currently displayed variable
 				if(this.getVariable().equals(otherVariables[a])) {
 					continue;
@@ -430,77 +477,81 @@ public class ViewDestination extends RoboActionBarActivity {
 			}
         } catch(NullPointerException npe) {
         	//TODO remove this once we find the source of the NPE
-        	throw new RuntimeException("data: " + getSite().getSiteId() + " vars: " + otherVariables,npe);
+        	throw new RuntimeException("data: " + this.getSite().getSiteId() + " vars: " + otherVariables,npe);
         }
         return true;
 	}
-
+	
 	private boolean populateUnitsSubmenu(SubMenu unitsMenu) {
         unitsMenu.setHeaderTitle("Units");
 
-        CommonVariable displayedVariable = conversionMap.get(getVariable().getCommonVariable());
-
-        if(displayedVariable == null) {
-        	displayedVariable = getVariable().getCommonVariable();
+        if(this.getVariable() == null) {
+            return false;
         }
 
+        if(this.siteFragment == null) {
+            return false;
+        }
+        
+        CommonVariable displayedVariable = this.siteFragment.getConversionMap().get(this.getVariable().getCommonVariable());
+        
+        if(displayedVariable == null) {
+        	displayedVariable = this.getVariable().getCommonVariable();
+        }
+        
         String[] toUnit = new CelsiusFahrenheitConverter().convertsTo(displayedVariable.getUnit());
-
+        
         if(toUnit.length == 0) {
         	return false;
         }
-
+		
 		for(int a = 0; a < toUnit.length; a++) {
 			unitsMenu.add(toUnit[a])
 					.setOnMenuItemClickListener(new UnitClickListener(toUnit[a]));
 		}
 		return true;
 	}
-	
-	private class OtherVariableClickListener implements OnMenuItemClickListener {
-		private final Variable var;
-		
-		public OtherVariableClickListener(Variable var) {
-			this.var = var;
-		}
-		
-		@Override
-		public boolean onMenuItemClick(MenuItem item) {
-            Intent i = new Intent(ViewDestination.this, ViewSite.class);
 
-            i.putExtra(ViewSite.KEY_SITE, getSite());
-            i.putExtra(ViewSite.KEY_VARIABLE, var);
-            startActivity(i);
+    private class OtherVariableClickListener implements OnMenuItemClickListener {
+        private final Variable var;
 
-			return true;
-		}
-	}
-	
-	private class UnitClickListener implements OnMenuItemClickListener {
-		private final String unit;
-		
-		public UnitClickListener(String unit) {
-			this.unit = unit;
-		}
-		
-		@Override
-		public boolean onMenuItemClick(MenuItem item) {
-			return ViewDestination.this.destinationFragment.setTempUnit(unit);
-		}
-	}
+        public OtherVariableClickListener(Variable var) {
+            this.var = var;
+        }
 
-	@Override
-	public boolean onContextItemSelected(MenuItem item) {
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            ViewSite.this.siteFragment.setVariable(var);
 
-		switch(item.getItemId()) {
-		case R.id.mi_zero_y_minimum:
-			this.destinationFragment.setZeroYMin(true);
-			return true;
-		case R.id.mi_fit_y_axis:
-            this.destinationFragment.setZeroYMin(false);
-			return true;
-		}
+            return true;
+        }
+    }
+
+    private class UnitClickListener implements OnMenuItemClickListener {
+        private final String unit;
+
+        public UnitClickListener(String unit) {
+            this.unit = unit;
+        }
+
+        @Override
+        public boolean onMenuItemClick(MenuItem item) {
+            return ViewSite.this.siteFragment.setTempUnit(unit);
+        }
+    }
+
+    @Override
+    public boolean onContextItemSelected(MenuItem item) {
+
+        switch(item.getItemId()) {
+            case R.id.mi_zero_y_minimum:
+                this.siteFragment.setZeroYMin(true);
+                return true;
+            case R.id.mi_fit_y_axis:
+                this.siteFragment.setZeroYMin(false);
+                return true;
+        }
 
         return true;
-	}
+    }
 }

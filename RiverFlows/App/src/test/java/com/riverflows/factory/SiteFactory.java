@@ -5,6 +5,7 @@ import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
 import com.riverflows.data.Variable;
 import com.riverflows.wsclient.CODWRDataSource;
+import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.UsgsCsvDataSource;
 
 import org.hamcrest.BaseMatcher;
@@ -49,6 +50,19 @@ public class SiteFactory {
         });
 
         return fountainCreek;
+    }
+
+    public static Site getVallecitoCreek() {
+
+        Variable[] vars = { UsgsCsvDataSource.VTYPE_STREAMFLOW_CFS, UsgsCsvDataSource.VTYPE_GAUGE_HEIGHT_FT };
+        return new Site(new SiteId("USGS", "09352900"), "Vallecito Creek Near Bayfield, CO", USState.CO,
+                vars);
+
+    }
+
+    public static Site getSouthPlatteAtNorthPlatte() {
+        Variable[] vars = { UsgsCsvDataSource.VTYPE_STREAMFLOW_CFS, UsgsCsvDataSource.VTYPE_GAUGE_HEIGHT_FT };
+        return new Site(new SiteId("USGS", "06765500"), "South Platte River at North Platte, NE", USState.NE, vars);
     }
 
     public static Matcher<Site> matches(final Site s) {

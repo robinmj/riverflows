@@ -25,6 +25,8 @@ public class SiteData {
 	private Map<CommonVariable,Series> datasets = new HashMap<CommonVariable, Series>();
 	private String dataInfo;
 
+    private boolean complete = true;
+
 	/**
 	 * return datasets variable type -> series mappings
 	 */
@@ -55,4 +57,15 @@ public class SiteData {
 	public void setDataInfo(String dataInfo) {
 		this.dataInfo = dataInfo;
 	}
+
+    /**
+     * @return true if this includes all available datasets at this site
+     */
+    public boolean isComplete() {
+        return complete;
+    }
+
+    public void setComplete(boolean complete) {
+        this.complete = complete;
+    }
 }

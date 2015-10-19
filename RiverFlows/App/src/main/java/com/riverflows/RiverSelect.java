@@ -57,7 +57,7 @@ public class RiverSelect extends MapItemList {
 		state = (USState)extras.get(KEY_STATE);
 		
 		if(state != null) {
-			setTitle(state.getText() + " Gauge Sites");
+            getActionBar().setTitle(state.getText() + " Gauge Sites");
 		}
 		
 		super.onCreate(savedInstanceState);
@@ -120,7 +120,7 @@ public class RiverSelect extends MapItemList {
                         items.add(new MapItem(data, null, favoriteSiteIds.contains(data.getSite().getSiteId())));
                     }
 
-                    WsSession session = WsSessionManager.getSession(RiverSelect.this);
+                    WsSession session = RiverSelect.this.wsSessionManager.getSession(RiverSelect.this);
 
                     if(session != null) {
                         HashMap<String, List<String>> filterParams = new HashMap<String, List<String>>();

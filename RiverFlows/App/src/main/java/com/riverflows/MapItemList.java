@@ -2,7 +2,6 @@ package com.riverflows;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
@@ -26,24 +25,18 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.google.analytics.tracking.android.EasyTracker;
+import com.google.inject.Inject;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.MapItem;
-import com.riverflows.data.Series;
 import com.riverflows.data.Site;
-import com.riverflows.data.SiteData;
-import com.riverflows.data.SiteId;
 import com.riverflows.data.Variable;
 import com.riverflows.db.FavoritesDaoImpl;
-import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.ToggleFavoriteTask;
 import com.riverflows.wsclient.WsSessionManager;
 
-import java.net.UnknownHostException;
 import java.text.MessageFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 import roboguice.activity.RoboListActivity;
 
@@ -66,6 +59,9 @@ public abstract class MapItemList extends RoboListActivity {
 	public static final int DIALOG_ID_MASTER_LOADING = 3;
 	public static final int DIALOG_ID_MASTER_LOADING_ERROR = 4;
 	public static final int DIALOG_ID_UPGRADE_FAVORITES = 5;
+
+    @Inject
+    protected WsSessionManager wsSessionManager;
 	
 	private LoadSitesTask loadTask = null;
 	private String errorMsg = null;
@@ -122,9 +118,9 @@ public abstract class MapItemList extends RoboListActivity {
             return;
         }
 
-        Intent i = new Intent(this, ViewChart.class);
-        i.putExtra(ViewChart.KEY_SITE, selectedItem.getSite());
-        i.putExtra(ViewChart.KEY_VARIABLE, selectedItem.getVariable());
+        Intent i = new Intent(this, ViewSite.class);
+        i.putExtra(ViewSite.KEY_SITE, selectedItem.getSite());
+        i.putExtra(ViewSite.KEY_VARIABLE, selectedItem.getVariable());
         startActivity(i);
 	}
 	
@@ -379,10 +375,10 @@ public abstract class MapItemList extends RoboListActivity {
 		@Override
 		public boolean onMenuItemClick(MenuItem item) {
 			
-			Intent i = new Intent(getBaseContext(), ViewChart.class);
+			Intent i = new Intent(getBaseContext(), ViewSite.class);
 			
-	        i.putExtra(ViewChart.KEY_SITE, selectedStation);
-	        i.putExtra(ViewChart.KEY_VARIABLE, selectedVariable);
+	        i.putExtra(ViewSite.KEY_SITE, selectedStation);
+	        i.putExtra(ViewSite.KEY_VARIABLE, selectedVariable);
 	        startActivity(i);
 	        return true;
 		}
@@ -466,7 +462,7 @@ public abstract class MapItemList extends RoboListActivity {
 		
 		Variable[] supportedVars = mapItem.getSite().getSupportedVariables();
 
-		boolean loggedIn = (WsSessionManager.getSession(this) != null);
+		boolean loggedIn = (this.wsSessionManager.getSession(this) != null);
 
 		if(mapItem.isDestination()) {
             if(loggedIn && !FavoritesDaoImpl.isFavorite(getApplicationContext(), mapItem.destinationFacet.getId().intValue())) {

@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.GoogleAuthUtil;
+import com.google.inject.Singleton;
 import com.riverflows.Home;
 import com.riverflows.data.UserAccount;
 
@@ -31,6 +32,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
  * @author robin
  *
  */
+@Singleton
 public class WsSessionManager {
 
 	public static final String AUTH_APP_URL = DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + "/application/check_mobile_login";
@@ -42,36 +44,36 @@ public class WsSessionManager {
     public static final String PREF_ACCESS_TOKEN_EXPIRES = "refresh_token_expires";
 	public static final String PREF_ACCOUNT_NAME = "account_name";
 
-	private static CopyOnWriteArraySet<SessionChangeListener> sessionListeners = new CopyOnWriteArraySet<WsSessionManager.SessionChangeListener>();
+	private CopyOnWriteArraySet<SessionChangeListener> sessionListeners = new CopyOnWriteArraySet<WsSessionManager.SessionChangeListener>();
 	
-	private static volatile boolean promptedToLogin = false;
+	private volatile boolean promptedToLogin = false;
 
-	private static volatile boolean promptedToRegister = false;
-	private static volatile WsSession session = null;
+	private volatile boolean promptedToRegister = false;
+	private volatile WsSession session = null;
 	
 	public static interface SessionChangeListener {
 		public void onSessionChange(WsSession newSession, String error);
 	}
 	
-	public static boolean addListener(SessionChangeListener listener) {
+	public boolean addListener(SessionChangeListener listener) {
 		return sessionListeners.add(listener);
 	}
 	
-	public static boolean removeListener(SessionChangeListener listener) {
+	public boolean removeListener(SessionChangeListener listener) {
 		return sessionListeners.remove(listener);
 	}
 
-	public static void notifyAccountSessionChange(WsSession newSession, String error) {
-		WsSessionManager.session = newSession;
+	public void notifyAccountSessionChange(WsSession newSession, String error) {
+		this.session = newSession;
 		
-		Iterator<SessionChangeListener> notifyListeners = WsSessionManager.sessionListeners.iterator();
+		Iterator<SessionChangeListener> notifyListeners = this.sessionListeners.iterator();
 		
 		while(notifyListeners.hasNext()) {
 			notifyListeners.next().onSessionChange(newSession, error);
 		}
 	}
 	
-	public static WsSession getSession(Context ctx) {
+	public WsSession getSession(Context ctx) {
 		if(session != null) {
 			return session;
 		}
@@ -106,29 +108,29 @@ public class WsSessionManager {
      * TODO make WsSessionManager into an injectable singleton so this isn't necessary
      * @param session
      */
-    public static void setSession(WsSession session) {
-        WsSessionManager.session = session;
+    public void setSession(WsSession session) {
+        this.session = session;
     }
 
-	private static void discardSavedSession(SharedPreferences settings) {
+	private void discardSavedSession(SharedPreferences settings) {
 		SharedPreferences.Editor editor = settings.edit();
 		editor.remove(PREF_ACCESS_TOKEN);
 		editor.remove(PREF_ACCESS_TOKEN_EXPIRES);
 		editor.commit();
 	}
 
-	private static void discardSavedAccountName(SharedPreferences settings) {
+	private void discardSavedAccountName(SharedPreferences settings) {
 		SharedPreferences.Editor editor = settings.edit();
 		editor.remove(PREF_ACCOUNT_NAME);
 		editor.commit();
 	}
 	
-	public static String getAccessToken() {
-		WsSession tmp = WsSessionManager.session;
+	public String getAccessToken() {
+		WsSession tmp = this.session;
 		return (tmp == null) ? null : tmp.authToken;
 	}
 	
-	public static WsSession getWsAuthToken(String scheme, String username, String password) throws IOException, UnexpectedResultException, JSONException {
+	public WsSession getWsAuthToken(String scheme, String username, String password) throws IOException, UnexpectedResultException, JSONException {
 		Log.d(Home.TAG, "authenticating with Riverflows server...");
 
 		HttpPost postCmd = new HttpPost(AUTH_APP_URL);
@@ -179,7 +181,7 @@ public class WsSessionManager {
 		return newSession;
 	}
 
-    public static WsSession loadUserAccount() throws Exception {
+    public WsSession loadUserAccount() throws Exception {
         WsSession sessionSnapshot = session;
 
         if(sessionSnapshot.userAccount != null) {
@@ -199,7 +201,7 @@ public class WsSessionManager {
         return newSession;
     }
 	
-	public static void logOut(Context ctx) {
+	public void logOut(Context ctx) {
 		WsSession currentSession = session;
 		if(currentSession == null) {
 			return;
@@ -211,19 +213,19 @@ public class WsSessionManager {
 		discardSavedAccountName(sharedPreferences);
 
 		GoogleAuthUtil.invalidateToken(ctx.getApplicationContext(), currentSession.authToken);
-		WsSessionManager.session = null;
+		this.session = null;
 		
 		notifyAccountSessionChange(null, null);
 	}
-	public static boolean wasPromptedToLogin() {
+	public boolean wasPromptedToLogin() {
 		return promptedToLogin;
 	}
 	
-	public static void setPromptedToLogin() {
-		WsSessionManager.promptedToLogin = true;
+	public void setPromptedToLogin() {
+		this.promptedToLogin = true;
 	}
 
-	public static boolean wasPromptedToRegister() {
+	public boolean wasPromptedToRegister() {
 		return promptedToRegister;
 	}
 	
@@ -255,7 +257,7 @@ public class WsSessionManager {
 		}
 	}
 	
-	public static WsSession loginWithGoogleOAuth2(Activity activity, String accountName) throws IOException, GoogleAuthException, InterruptedException, JSONException {
+	public WsSession loginWithGoogleOAuth2(Activity activity, String accountName) throws IOException, GoogleAuthException, InterruptedException, JSONException {
 
    		String gToken = null;
    		
@@ -287,7 +289,7 @@ public class WsSessionManager {
 			return null;
 		}
 
-		WsSession newSession = WsSessionManager.getWsAuthToken("google", accountName, gToken);
+		WsSession newSession = this.getWsAuthToken("google", accountName, gToken);
 
 		SharedPreferences settings = activity.getSharedPreferences(PREFS_FILE_NAME, Context.MODE_PRIVATE);
 		SharedPreferences.Editor editor = settings.edit();

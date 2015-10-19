@@ -22,9 +22,10 @@
 	    android:visible="false">
 		<menu></menu>
 	</item>
+    <item android:id="@+id/mi_create_destination"
+        android:title="Create Destination">
+    </item>
 	<item android:id="@+id/mi_share"
 	    android:title="Share"
-	    android:icon="@drawable/ic_menu_email"
-	    android:visible="false"
-	    android:enabled="false"/>
+	    android:icon="@drawable/ic_menu_email"/>
 </menu>

@@ -1,22 +1,19 @@
 package com.riverflows;
 
 import android.app.Activity;
-import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.method.LinkMovementMethod;
+import android.text.style.ClickableSpan;
 import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.ContextMenu;
@@ -56,8 +53,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
-import roboguice.fragment.RoboListFragment;
-
 import static roboguice.RoboGuice.getInjector;
 
 public class Favorites extends ListFragment implements LoaderManager.LoaderCallbacks<List<FavoriteData>> {
@@ -70,7 +65,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 	public static final int REQUEST_EDIT_FAVORITE = 1;
 	public static final int REQUEST_REORDER_FAVORITES = 2;
-	public static final int REQUEST_CREATE_ACCOUNT = 3247;
 	public static final int REQUEST_GET_FAVORITES = 15319;
 	public static final int REQUEST_GET_FAVORITES_RECOVER = 4193;
     public static final int REQUEST_DELETE_FAVORITE = 394;
@@ -85,7 +79,8 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
     @Inject
     private DestinationFacets destinationFacets;
 
-	private SignIn signin;
+    @Inject
+    private WsSessionManager wsSessionManager;
 
 	private String tempUnit = null;
 
@@ -131,16 +126,11 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 		registerForContextMenu(lv);
 
-		hideInstructions();
+        getListView().getEmptyView().setVisibility(View.GONE);
 
 		TextView favoriteSubtext = (TextView)getView().findViewById(R.id.favorite_instructions_subheader);
 
-		SpannableString subtext = new SpannableString("If you select your favorite gauge sites, they will appear here.");
-
-		subtext.setSpan(new URLSpan("riverflows://help/favorites.html"), 7, 39, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-		favoriteSubtext.setText(subtext);
-		favoriteSubtext.setMovementMethod(LinkMovementMethod.getInstance());
+		favoriteSubtext.setText("Favorite destinations and gage sites will appear here.");
 
 		SharedPreferences settings = getActivity().getSharedPreferences(Home.PREFS_FILE, Activity.MODE_PRIVATE);
     	tempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
@@ -223,10 +213,10 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
             return;
         }
 
-        Intent i = new Intent(getActivity(), ViewChart.class);
+        Intent i = new Intent(getActivity(), ViewSite.class);
 		
-        i.putExtra(ViewChart.KEY_SITE, selectedFavorite.getFavorite().getSite());
-        i.putExtra(ViewChart.KEY_VARIABLE, selectedFavorite.getVariable());
+        i.putExtra(ViewSite.KEY_SITE, selectedFavorite.getFavorite().getSite());
+        i.putExtra(ViewSite.KEY_VARIABLE, selectedFavorite.getVariable());
         startActivity(i);
 	}
 
@@ -245,16 +235,11 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 	    	Intent i_reorder = new Intent(getActivity(), ReorderFavorites.class);
 	    	startActivityForResult(i_reorder, REQUEST_REORDER_FAVORITES);
 	    	return true;
-	    case R.id.mi_help:
-	    	Intent i_help = new Intent(Intent.ACTION_VIEW, Uri.parse(Help.BASE_URI + "favorites.html"));
-	    	startActivity(i_help);
-	    	return true;
 		case R.id.mi_sign_in:
-			signin = new SignIn();
-			signin.execute();
+            ((Home)getActivity()).signIn();
 			return true;
 		case R.id.mi_sign_out:
-			WsSessionManager.logOut(getActivity());
+			this.wsSessionManager.logOut(getActivity());
 			return true;
 	    default:
 	        return super.onOptionsItemSelected(item);
@@ -343,9 +328,25 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		if(favoriteData == null) {
 			Log.e(Home.TAG, "null favorites");
             this.softReloadNeeded = true;
+            getListView().getEmptyView().setVisibility(View.VISIBLE);
 		} else if(favoriteData.size() == 0) {
-			showInstructions();
+            getListView().getEmptyView().setVisibility(View.VISIBLE);
 		}
+
+        WsSession session = this.wsSessionManager.getSession(activity);
+
+        if(session == null) {
+            getView().findViewById(R.id.register_sign_in_instructions).setVisibility(View.VISIBLE);
+            return;
+        }
+        getView().findViewById(R.id.register_sign_in_instructions).setVisibility(View.GONE);
+
+        UserAccount userAccount = session.userAccount;
+
+        if(userAccount != null && userAccount.getFacetTypes() == 0) {
+            //set up this user's account
+            startActivityForResult(new Intent(Favorites.this.getActivity(), AccountSettings.class), Home.REQUEST_CREATE_ACCOUNT);
+        }
 
 		//needed for Android 3.0+
 		//invalidateOptionsMenu();
@@ -371,20 +372,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		getActivity().getSupportLoaderManager().restartLoader(FAVORITES_LOADER_ID, args, this);
 	}
 
-	private void showInstructions() {
-		getListView().getEmptyView().setVisibility(View.VISIBLE);
-
-		/*
-		WebView instructions = (WebView)findViewById(R.id.favorite_instructions);
-        instructions.setClickable(false);
-		instructions.loadUrl("file:///android_asset/" + Help.DATA_PATH_PREFIX + "/favorites.html");
-		*/
-	}
-
-	private void hideInstructions() {
-		getListView().getEmptyView().setVisibility(View.INVISIBLE);
-	}
-
 	private void showMessage(View rootView, String message) {
 		TextView statusMsgView = (TextView)rootView.findViewById(R.id.status_message);
 		statusMsgView.setText(message);
@@ -400,6 +387,9 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
         @Inject
         private DestinationFacets destinationFacets;
+
+        @Inject
+        private DataSourceController dataSourceController;
 
 		public List<Favorite> favorites = null;
 		private boolean hardRefresh = false;
@@ -427,7 +417,13 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 			this.favorites = FavoritesDaoImpl.getFavorites(FavoritesLoader.this.getContext(), null, null);
 
-			List<DestinationFacet> destinationFacets = this.destinationFacets.getFavorites(session);
+			List<DestinationFacet> destinationFacets = null;
+
+            if(session == null) {
+                destinationFacets = Collections.emptyList();
+            } else {
+                destinationFacets = this.destinationFacets.getFavorites(session);
+            }
 
 			HashSet<Integer> localDestFacetIds = new HashSet<Integer>(this.favorites.size());
 
@@ -485,7 +481,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 				return Collections.emptyList();
 			}
 
-			List<FavoriteData> favoriteData = DataSourceController.getSiteData(this.favorites, this.hardRefresh);
+			List<FavoriteData> favoriteData = dataSourceController.getFavoriteData(this.favorites, this.hardRefresh);
 
 			Map<CommonVariable, CommonVariable> unitConversionMap = CommonVariable.temperatureConversionMap(this.tempUnit);
 
@@ -509,18 +505,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 			return loaderParams;
 		}
 	}
-
-	public static class SignInDialogFragment extends DialogFragment {
-
-		@Override
-		public Dialog onCreateDialog(Bundle savedInstanceState) {
-			ProgressDialog signingInDialog = new ProgressDialog(getActivity());
-			signingInDialog.setMessage("Signing In...");
-			signingInDialog.setIndeterminate(true);
-			signingInDialog.setCancelable(true);
-			return signingInDialog;
-		}
-	}
 	
 	@Override
 	public void onPrepareOptionsMenu(Menu menu) {
@@ -534,7 +518,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		MenuItem signin = menu.findItem(R.id.mi_sign_in);
 		MenuItem signout = menu.findItem(R.id.mi_sign_out);
 
-		if(WsSessionManager.getSession(getActivity()) != null) {
+		if(this.wsSessionManager.getSession(getActivity()) != null) {
 			signin.setVisible(false);
 			signout.setVisible(true);
 		} else {
@@ -574,7 +558,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
         boolean allowEdit = true;
 
         if(favoriteData.getFavorite().getDestinationFacet() != null) {
-            WsSession session = WsSessionManager.getSession(getActivity());
+            WsSession session = this.wsSessionManager.getSession(getActivity());
             //there is a slim possibility that we won't have a valid session here- in that case,
             // still show the Edit menu item and allow EditDestination to be responsible for preventing
             // editing if the user doesn't own the destination facet.
@@ -598,10 +582,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-		if(requestCode == Home.REQUEST_CHOOSE_ACCOUNT || requestCode == Home.REQUEST_HANDLE_RECOVERABLE_AUTH_EXC) {
-			signin.authorizeCallback(requestCode, resultCode, data);
-			return;
-		}
+        Log.d(App.TAG, "Favorites.onActivityResult(" + requestCode + "," + resultCode);
 
 		if(requestCode == REQUEST_GET_FAVORITES || requestCode == REQUEST_GET_FAVORITES_RECOVER) {
 			WsSessionUIHelper helper = this.wsSessionUIHelper;
@@ -744,9 +725,9 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 		@Override
 		public boolean onMenuItemClick(android.view.MenuItem item) {
-			Intent i = new Intent(Favorites.this.getActivity(), ViewChart.class);
-	        i.putExtra(ViewChart.KEY_SITE, site);
-	        i.putExtra(ViewChart.KEY_VARIABLE, variable);
+			Intent i = new Intent(Favorites.this.getActivity(), ViewSite.class);
+	        i.putExtra(ViewSite.KEY_SITE, site);
+	        i.putExtra(ViewSite.KEY_VARIABLE, variable);
 	        startActivity(i);
 			return true;
 		}
@@ -859,58 +840,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
             return new DeleteRemoteFavoriteTask(this);
         }
     }
-
-	private class SignIn extends ApiCallTask<String, Integer, UserAccount> {
-
-		private SignInDialogFragment signInDialog;
-
-		public SignIn(){
-			super(Favorites.this.getActivity(), Home.REQUEST_CHOOSE_ACCOUNT, Home.REQUEST_HANDLE_RECOVERABLE_AUTH_EXC, true, false);
-
-			signInDialog = new SignInDialogFragment();
-			signInDialog.show(Favorites.this.getFragmentManager(), "signin");
-		}
-
-		public SignIn(SignIn oldTask) {
-			super(oldTask);
-			signInDialog = new SignInDialogFragment();
-			signInDialog.show(Favorites.this.getFragmentManager(), "signin");
-		}
-
-		@Override
-		protected UserAccount doApiCall(WsSession session, String... params) {
-			return session.userAccount;
-		}
-
-		@Override
-		protected void onNoUIRequired(UserAccount userAccount) {
-
-			SignInDialogFragment signInDialog = this.signInDialog;
-
-			if(signInDialog != null) {
-				signInDialog.dismiss();
-				this.signInDialog = null;
-			}
-
-			if(exception != null) {
-				Log.e(Home.TAG, "", exception);
-			}
-
-			if(userAccount == null) {
-				return;
-			}
-
-			if(userAccount.getFacetTypes() == 0) {
-				//set up this user's account
-				startActivityForResult(new Intent(Favorites.this.getActivity(), AccountSettings.class), REQUEST_CREATE_ACCOUNT);
-			}
-		}
-
-		@Override
-		protected ApiCallTask<String, Integer, UserAccount> clone() throws CloneNotSupportedException {
-			return new SignIn(this);
-		}
-	}
 
 	private void showProgress() {
 		View v = getView();

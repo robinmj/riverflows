@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
       package="com.riverflows"
-      android:versionCode="22"
-      android:versionName="1.6.6">
+      android:versionCode="25"
+      android:versionName="1.6.9">
     
-    <uses-sdk android:minSdkVersion="8" android:targetSdkVersion="17"/>
+    <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="17"/>
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.USE_CREDENTIALS"/>
 
     <supports-screens
             android:anyDensity="true"
@@ -31,7 +32,9 @@
 		</activity>
 	              
 	    <activity android:name="RiverSelect"
-	              android:windowSoftInputMode="stateVisible"/>
+	              android:windowSoftInputMode="stateVisible"
+                  android:theme="@android:style/Theme.Holo"
+            />
 	              
         <activity android:name="About"
                 android:launchMode="singleTask"/>
@@ -53,7 +56,7 @@
       <activity android:name="DataSrcInfo"
                 android:launchMode="singleTask"/>
                   
-    	<activity android:name="ViewChart">
+    	<activity android:name=".ViewSite">
     		<intent-filter>
 	    		<action android:name="android.intent.action.VIEW"/>
 	    		<category android:name="android.intent.category.DEFAULT"/>

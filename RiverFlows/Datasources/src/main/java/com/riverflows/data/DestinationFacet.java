@@ -8,6 +8,12 @@ import java.util.Date;
  */
 public class DestinationFacet implements Serializable, RemoteObject {
 
+    public static final String CN_HIGH_PLUS = "highPlus";
+    public static final String CN_HIGH = "high";
+    public static final String CN_MED = "med";
+    public static final String CN_LOW = "low";
+    public static final String CN_TOO_LOW = "tooLow";
+
 	private boolean placeholderObj = false;
     private Integer id;
 	private UserAccount user;
@@ -216,4 +222,21 @@ public class DestinationFacet implements Serializable, RemoteObject {
 	public void setModificationDate(Date modificationDate) {
 		this.modificationDate = modificationDate;
 	}
+
+    public Category[] getCategories() {
+        Category[] result = null;
+        if(highPlus == null) {
+            result = new Category[4];
+        } else {
+            result = new Category[5];
+            result[4] = new Category(CN_HIGH_PLUS, null, highPlus);
+        }
+
+        result[3] = new Category(CN_HIGH, highPlus, high);
+        result[2] = new Category(CN_MED, high, med);
+        result[1] = new Category(CN_LOW, med, low);
+        result[0] = new Category(CN_TOO_LOW, low, null);
+
+        return result;
+    }
 }
