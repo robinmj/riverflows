@@ -44,17 +44,17 @@ public abstract class ApiCallLoader<Result> extends AsyncTaskLoader<Result> {
 		//save parameters for reExecute method
 
 		WsSession session = uiHelper.initSession();
-		if(session == null) {
-            Log.i(App.TAG, "tryInBackground() aborted");
-            wasAborted.set(true);
-			return null;
-		}
+//		if(session == null) {
+//            Log.i(App.TAG, "tryInBackground() aborted");
+//            wasAborted.set(true);
+//			return null;
+//		}
 
 		return doApiCall(session);
 	};
 
 	/**
-	 * @param session will never be null, nor will session.accessToken and session.accessTokenExpires
+	 * @param session may be null, but session.accessToken and session.accessTokenExpires will not be
 	 * @return
 	 */
 	protected abstract Result doApiCall(WsSession session) throws Exception;

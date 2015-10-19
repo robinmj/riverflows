@@ -417,7 +417,13 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 			this.favorites = FavoritesDaoImpl.getFavorites(FavoritesLoader.this.getContext(), null, null);
 
-			List<DestinationFacet> destinationFacets = this.destinationFacets.getFavorites(session);
+			List<DestinationFacet> destinationFacets = null;
+
+            if(session == null) {
+                destinationFacets = Collections.emptyList();
+            } else {
+                destinationFacets = this.destinationFacets.getFavorites(session);
+            }
 
 			HashSet<Integer> localDestFacetIds = new HashSet<Integer>(this.favorites.size());
 
