@@ -17,6 +17,8 @@ import android.webkit.WebView;
 
 public class About extends Activity {
 	private WebView webview;
+
+    private Handler handler;
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -27,7 +29,9 @@ public class About extends Activity {
 		setContentView(webview);
         WebSettings webSettings = webview.getSettings();
         webSettings.setJavaScriptEnabled(true);
-        
+
+        this.handler = new Handler();
+
         webview.addJavascriptInterface(new VersionProvider(), "versionProvider");
         
 		webview.loadUrl("file:///android_asset/about.html");
@@ -39,7 +43,7 @@ public class About extends Activity {
 		 * Callback to request the version number from within about.html
 		 */
 		public void initializeVersion() {
-	        new Handler().post(new Runnable(){
+	        About.this.handler.post(new Runnable(){
 	        	public void run() {
 	        		try {
 	        			PackageInfo info = About.this.getPackageManager().getPackageInfo(getPackageName(), 0);
