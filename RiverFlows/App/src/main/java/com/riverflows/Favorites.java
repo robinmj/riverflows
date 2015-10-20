@@ -435,7 +435,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 				if(currentFav.getDestinationFacet() == null) {
 					//TODO send favorite to remote server
 
-					EasyTracker.getTracker().sendException("favorite is not synced", new Exception(), false);
+					//EasyTracker.getTracker().sendException("favorite is not synced", new Exception(), false);
 					Log.e(getClass().getName(), "favorite is not synced: " + currentFav.getId());
 				} else {
 					localDestFacetIds.add(currentFav.getDestinationFacet().getId());
