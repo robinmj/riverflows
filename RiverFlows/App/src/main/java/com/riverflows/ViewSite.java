@@ -27,6 +27,7 @@ import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
 import com.google.inject.Inject;
 import com.riverflows.data.CelsiusFahrenheitConverter;
+import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteId;
@@ -61,6 +62,8 @@ public class ViewSite extends RoboActionBarActivity {
 	public static final String KEY_VARIABLE = "variable";
 
 	public static final int DIALOG_ID_LOADING_ERROR = 1;
+
+    private static final int REQUEST_CREATE_DESTINATION = 3964;
 
     @Inject
     private DataSourceController dataSourceController;
@@ -242,7 +245,7 @@ public class ViewSite extends RoboActionBarActivity {
             createDestIntent.putExtra(EditDestination.KEY_VARIABLE, getVariable());
             createDestIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
-            startActivity(createDestIntent);
+            startActivityForResult(createDestIntent, REQUEST_CREATE_DESTINATION);
             return true;
 	    case R.id.mi_other_variables:
 	    case R.id.mi_change_units:
@@ -410,7 +413,16 @@ public class ViewSite extends RoboActionBarActivity {
 			if(savedFile == null || !savedFile.delete()) {
 				Log.e(Home.TAG, "couldn't delete file: " + savedFile);
 			}
-		}
+		} else if(requestCode == REQUEST_CREATE_DESTINATION) {
+            if(resultCode == RESULT_OK) {
+                DestinationFacet facet = (DestinationFacet) data.getSerializableExtra(EditDestination.KEY_DESTINATION_FACET);
+                Intent i = new Intent(this, ViewDestination.class);
+                i.putExtra(ViewDestination.KEY_DESTINATION_FACET, facet);
+                finish();
+                startActivity(i);
+                return;
+            }
+        }
 	}
 	
 	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenuInfo menuInfo) {
