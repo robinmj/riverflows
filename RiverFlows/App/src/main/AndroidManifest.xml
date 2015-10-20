@@ -69,7 +69,8 @@
     		</intent-filter> -->
     	</activity>
 	    
-	    <activity android:name="ReorderFavorites"/>
+	    <activity android:name="ReorderFavorites"
+            android:theme="@android:style/Theme.Holo"/>
 	    		
 	    <activity android:name="EditFavorite"/>
         <activity android:name=".AccountSettings"/>
