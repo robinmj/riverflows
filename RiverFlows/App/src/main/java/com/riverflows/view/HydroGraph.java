@@ -678,4 +678,12 @@ public class HydroGraph extends View {
             }
         }
     }
+
+    double getYMax() {
+        return this.yMax;
+    }
+
+    double getYMin() {
+        return this.yMin;
+    }
 }
