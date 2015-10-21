@@ -2,10 +2,10 @@ package com.riverflows;
 
 import java.util.List;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.text.TextUtils;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -19,7 +19,7 @@ import com.riverflows.data.SiteId;
 import com.riverflows.data.Variable;
 import com.riverflows.db.FavoritesDaoImpl;
 
-public class EditFavorite extends Activity {
+public class EditFavorite extends ActionBarActivity {
 
 	public static final String KEY_SITE_ID = "siteId";
 	public static final String KEY_VARIABLE_ID = "variableId";
@@ -54,6 +54,8 @@ public class EditFavorite extends Activity {
         
         for(int a = 0; a < vars.length; a++) {
         	RadioButton varButton = new RadioButton(this);
+
+            varButton.setId(2101 + a);
         	
         	if(TextUtils.isEmpty(vars[a].getCommonVariable().getUnit())) {
         		varButton.setText(vars[a].getName());
@@ -68,6 +70,8 @@ public class EditFavorite extends Activity {
         		varButton.setChecked(true);
         	}
         }
+
+        getSupportActionBar().setTitle("Reorder Favorites");
     	
     	findViewById(R.id.saveButton).setOnClickListener(saveListener);
     	findViewById(R.id.cancelButton).setOnClickListener(cancelListener);
@@ -111,6 +115,9 @@ public class EditFavorite extends Activity {
 				FavoritesDaoImpl.updateFavorite(EditFavorite.this, favorite);
 				setResult(RESULT_OK, new Intent(Intent.ACTION_EDIT, Uri.fromParts("riverflows",
 						Favorites.FAVORITES_PATH + favorite.getId(), "")));
+
+                sendBroadcast(Home.getWidgetUpdateIntent());
+                Favorites.softReloadNeeded = true;
 			} else {
 				setResult(RESULT_OK, null);
 			}
