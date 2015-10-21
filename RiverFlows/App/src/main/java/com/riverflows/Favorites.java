@@ -452,6 +452,8 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
                                 //update local favorite
 
                                 currentFav.setDestinationFacet(destinationFacets.get(b));
+                                currentFav.setSite(destinationFacets.get(b).getDestination().getSite());
+                                currentFav.setVariable(destinationFacets.get(b).getVariable().getId());
 
                                 FavoritesDaoImpl.updateFavorite(FavoritesLoader.this.getContext(), currentFav);
                                 break;
