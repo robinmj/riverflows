@@ -65,6 +65,11 @@ public class SiteFactory {
         return new Site(new SiteId("USGS", "06765500"), "South Platte River at North Platte, NE", USState.NE, vars);
     }
 
+    public static Site getVerde() {
+        Variable[] vars = { UsgsCsvDataSource.VTYPE_STREAMFLOW_CFS, UsgsCsvDataSource.VTYPE_GAUGE_HEIGHT_FT };
+        return new Site(new SiteId("USGS", "09510000"), "VERDE RIVER BELOW BARTLETT DAM, AZ", USState.AZ, vars);
+    }
+
     public static Matcher<Site> matches(final Site s) {
         return new BaseMatcher<Site>() {
             @Override

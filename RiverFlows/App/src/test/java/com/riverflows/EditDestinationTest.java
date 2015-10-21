@@ -12,6 +12,7 @@ import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
 import com.riverflows.data.UserAccount;
 import com.riverflows.data.Variable;
+import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.factory.DestinationFacetFactory;
 import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.WsSession;
@@ -23,6 +24,8 @@ import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.util.ActivityController;
+
+import java.util.Date;
 
 import roboguice.RoboGuice;
 
@@ -134,7 +137,16 @@ public class EditDestinationTest {
         DestinationFacet clearCreek = DestinationFacetFactory.getClearCreekKayak();
 
         when(wsClient.destinationsMock.saveDestinationWithFacet(any(WsSession.class), any(DestinationFacet.class))).thenReturn(clearCreek);
-        when(wsClient.destinationFacetsMock.saveFavorite(any(WsSession.class), anyInt())).thenReturn(new Favorite(clearCreek));
+
+        Favorite responseFavorite = new Favorite(null, null);
+        responseFavorite.setId(674);
+        DestinationFacet placeholderFacet = new DestinationFacet();
+        placeholderFacet.setId(clearCreek.getId());
+        placeholderFacet.setPlaceholderObj(true);
+        responseFavorite.setDestinationFacet(placeholderFacet);
+        responseFavorite.setCreationDate(new Date());
+
+        when(wsClient.destinationFacetsMock.saveFavorite(any(WsSession.class), anyInt())).thenReturn(responseFavorite);
 
         EditDestination activity = editNewDestination();
 
@@ -142,6 +154,10 @@ public class EditDestinationTest {
         medField.setText("" + clearCreek.getMed().intValue());
         lowField.setText("" + clearCreek.getLow().intValue());
 
+        assertThat(!FavoritesDaoImpl.hasFavorites(activity), equalTo(true));
+
         clickOn(activity.getSupportActionBar().getCustomView().findViewById(R.id.actionbar_done));
+
+        assertThat(FavoritesDaoImpl.hasFavorites(activity), equalTo(true));
     }
 }
