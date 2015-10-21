@@ -6,6 +6,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,7 +16,7 @@ import android.webkit.JavascriptInterface;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-public class About extends Activity {
+public class About extends ActionBarActivity {
 	private WebView webview;
 
     private Handler handler;
@@ -23,8 +24,9 @@ public class About extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-	    requestWindowFeature(Window.FEATURE_NO_TITLE);
-		
+
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
 		webview = new WebView(this);
 		setContentView(webview);
         WebSettings webSettings = webview.getSettings();
@@ -55,23 +57,13 @@ public class About extends Activity {
 	        });
 		}
 	}
-    
-    public boolean onCreateOptionsMenu(Menu menu) {
-        MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.standard_menu, menu);
-        
-        //disable irrelevant menu items
-        menu.findItem(R.id.mi_about).setVisible(false);
-        menu.findItem(R.id.mi_reload).setVisible(false);
-        return true;
-    }
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
-	    case R.id.mi_home:
-	    	startActivityIfNeeded(new Intent(this, Home.class), -1);
+	    case android.R.id.home:
+	    	finish();
 	    	return true;
 	    default:
 	        return super.onOptionsItemSelected(item);

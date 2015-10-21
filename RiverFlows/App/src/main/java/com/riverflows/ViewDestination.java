@@ -69,6 +69,7 @@ public class ViewDestination extends RoboActionBarActivity {
         FragmentManager manager = getSupportFragmentManager();
 
         getSupportActionBar().setTitle(destinationFacet.getDestination().getName());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		SharedPreferences settings = getSharedPreferences(Home.PREFS_FILE, MODE_PRIVATE);
     	String tempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
@@ -133,7 +134,7 @@ public class ViewDestination extends RoboActionBarActivity {
         }
 
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.standard_menu, menu);
+        inflater.inflate(R.menu.graph_options_menu, menu);
 
         MenuItem otherVarsItem = menu.findItem(R.id.mi_other_variables);
         otherVarsItem.setVisible(true);
@@ -186,8 +187,8 @@ public class ViewDestination extends RoboActionBarActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
-	    case R.id.mi_home:
-	    	startActivityIfNeeded(new Intent(this, Home.class), -1);
+	    case android.R.id.home:
+	    	finish();
 	    	return true;
 	    case R.id.mi_share:
 	        ProgressBar progressBar = (ProgressBar)findViewById(R.id.progressBar);
@@ -375,6 +376,8 @@ public class ViewDestination extends RoboActionBarActivity {
 
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.graph_menu, menu);
+
+        menu.findItem(R.id.mi_create_destination).setVisible(false);
 
         Boolean zeroYMin = this.destinationFragment.zeroYMin;
 

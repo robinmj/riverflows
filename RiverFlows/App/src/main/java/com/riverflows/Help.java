@@ -58,7 +58,7 @@ public class Help extends Activity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
-	    case R.id.mi_home:
+	    case android.R.id.home:
 	    	startActivityIfNeeded(new Intent(this, Home.class), -1);
 	    	return true;
 	    default:

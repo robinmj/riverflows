@@ -130,7 +130,7 @@ public abstract class MapItemList extends RoboListActivity {
     	hideSoftKeyboard();
 	    // Handle item selection
 	    switch (item.getItemId()) {
-	    case R.id.mi_home:
+	    case android.R.id.home:
 	    	startActivityIfNeeded(new Intent(this, Home.class), -1);
 	    	return true;
 	    case R.id.mi_about:

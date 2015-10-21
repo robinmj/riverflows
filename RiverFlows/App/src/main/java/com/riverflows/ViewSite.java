@@ -114,6 +114,7 @@ public class ViewSite extends RoboActionBarActivity {
         FragmentManager manager = getSupportFragmentManager();
 
         getSupportActionBar().setTitle(title);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
 		SharedPreferences settings = getSharedPreferences(Home.PREFS_FILE, MODE_PRIVATE);
     	String tempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
@@ -224,8 +225,8 @@ public class ViewSite extends RoboActionBarActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
-	    case R.id.mi_home:
-	    	startActivityIfNeeded(new Intent(this, Home.class), -1);
+	    case android.R.id.home:
+	    	finish();
 	    	return true;
 	    case R.id.mi_share:
 	        ProgressBar progressBar = (ProgressBar)findViewById(R.id.progressBar);

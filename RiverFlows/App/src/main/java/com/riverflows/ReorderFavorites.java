@@ -80,7 +80,8 @@ public class ReorderFavorites extends RoboListActivity {
 			loadSites();
 		}
 		
-		setTitle("Reorder Favorites");
+		getActionBar().setTitle("Reorder Favorites");
+        getActionBar().setDisplayHomeAsUpEnabled(true);
 	}
 	
 	@Override
@@ -111,7 +112,7 @@ public class ReorderFavorites extends RoboListActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
-	    case R.id.mi_home:
+	    case android.R.id.home:
 	    	startActivityIfNeeded(new Intent(this, Home.class), -1);
 	    	return true;
 	    case R.id.mi_about:
