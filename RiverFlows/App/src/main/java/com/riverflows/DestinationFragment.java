@@ -51,6 +51,8 @@ public class DestinationFragment extends RoboFragment implements LoaderManager.L
 
     public static final int LOADER_ID_DESTINATION = 5942;
 
+    public static final int REQUEST_EDIT_DESTINATION = 837;
+
     public static final String ARG_ZERO_Y_MIN = "zeroYMin";
     public static final String ARG_DESTINATION_FACET = "destinationFacet";
     public static final String ARG_CONVERSION_MAP = "conversionMap";
@@ -421,5 +423,16 @@ public class DestinationFragment extends RoboFragment implements LoaderManager.L
 
     public void reload() {
         getActivity().getSupportLoaderManager().restartLoader(LOADER_ID_DESTINATION, new Bundle(), this);
+    }
+
+    /**
+     * WARNING: check user permissions before calling this!
+     */
+    public void editDestination() {
+
+        Intent i = new Intent(getActivity(), EditDestination.class);
+        i.putExtra(EditDestination.KEY_DESTINATION_FACET, getDestinationFacet());
+
+        startActivityForResult(i, REQUEST_EDIT_DESTINATION);
     }
 }

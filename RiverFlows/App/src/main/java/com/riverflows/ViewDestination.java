@@ -27,12 +27,15 @@ import android.widget.ProgressBar;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
+import com.google.inject.Inject;
 import com.riverflows.data.CelsiusFahrenheitConverter;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Site;
 import com.riverflows.data.Variable;
 import com.riverflows.data.Variable.CommonVariable;
 import com.riverflows.wsclient.DataSourceController;
+import com.riverflows.wsclient.WsSession;
+import com.riverflows.wsclient.WsSessionManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -57,6 +60,9 @@ public class ViewDestination extends RoboActionBarActivity {
 
     HashMap<CommonVariable, CommonVariable> conversionMap = new HashMap<CommonVariable, CommonVariable>();
     FetchHydrographTask runningShareTask = null;
+
+	@Inject
+	private WsSessionManager wsSessionManager;
 
     @Override
     public void onCreate(Bundle icicle) {
@@ -136,6 +142,20 @@ public class ViewDestination extends RoboActionBarActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.graph_options_menu, menu);
 
+		menu.findItem(R.id.mi_edit_favorite).setVisible(false);
+
+		WsSession session = this.wsSessionManager.getSession(this);
+
+		MenuItem editItem = menu.findItem(R.id.mi_edit_destination);
+
+		//in the off chance that session or user account is null, don't worry about it-
+		// EditDestination will prevent user from saving their changes
+		if(session != null && session.userAccount != null) {
+			if(!session.userAccount.getId().equals(fragment.getDestinationFacet().getUser().getId())) {
+				editItem.setVisible(false);
+			}
+		}
+
         MenuItem otherVarsItem = menu.findItem(R.id.mi_other_variables);
         otherVarsItem.setVisible(true);
 		otherVarsItem.setEnabled(getSite().getSupportedVariables().length > 1);
@@ -202,6 +222,9 @@ public class ViewDestination extends RoboActionBarActivity {
 	    case R.id.mi_reload:
 	    	this.destinationFragment.reload();
 	    	return true;
+		case R.id.mi_edit_destination:
+			ViewDestination.this.destinationFragment.editDestination();
+			return true;
 	    case R.id.mi_other_variables:
 	    case R.id.mi_change_units:
 	    	if(this.destinationFragment != null) {

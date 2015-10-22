@@ -64,6 +64,7 @@ public class ViewSite extends RoboActionBarActivity {
 	public static final int DIALOG_ID_LOADING_ERROR = 1;
 
     private static final int REQUEST_CREATE_DESTINATION = 3964;
+	private static final int REQUEST_EDIT_FAVORITE = 7485;
 
     @Inject
     private DataSourceController dataSourceController;
@@ -78,6 +79,7 @@ public class ViewSite extends RoboActionBarActivity {
 
         String title = null;
 
+		Favorite favorite = null;
         Site site = null;
         Variable variable = null;
         
@@ -92,6 +94,7 @@ public class ViewSite extends RoboActionBarActivity {
                 List<Favorite> favorites = FavoritesDaoImpl.getFavorites(getApplicationContext(), site.getSiteId(), variable.getId());
 
                 if(favorites.size() > 0) {
+					favorite = favorites.get(0);
                     title = favorites.get(0).getName();
                 }
             }
@@ -100,12 +103,17 @@ public class ViewSite extends RoboActionBarActivity {
         	SiteId siteId = new SiteId(getIntent().getData().getSchemeSpecificPart());
 			List<Favorite> favorites = FavoritesDaoImpl.getFavorites(getApplicationContext(), siteId, getIntent().getData().getFragment());
 
-        	site = favorites.get(0).getSite();
+			favorite = favorites.get(0);
+        	site = favorite.getSite();
 
-            title = favorites.get(0).getName();
+            title = favorite.getName();
 
         	variable = DataSourceController.getVariable(site.getAgency(), getIntent().getData().getFragment());
         }
+
+		if(favorite != null) {
+			FavoritesDaoImpl.updateLastViewedTime(this, site.getSiteId());
+		}
 
         if(TextUtils.isEmpty(title)) {
             title = site.getName();
@@ -131,6 +139,7 @@ public class ViewSite extends RoboActionBarActivity {
             arguments.putSerializable(SiteFragment.ARG_SITE, site);
             arguments.putSerializable(SiteFragment.ARG_VARIABLE, variable);
             arguments.putSerializable(SiteFragment.ARG_CONVERSION_MAP, conversionMap);
+			arguments.putSerializable(SiteFragment.ARG_FAVORITE, favorite);
             this.siteFragment.setArguments(arguments);
 
             FragmentTransaction transaction = manager.beginTransaction();
@@ -187,6 +196,8 @@ public class ViewSite extends RoboActionBarActivity {
         MenuItem unitsItem = menu.findItem(R.id.mi_change_units);
         unitsItem.setVisible(true);
 
+		menu.findItem(R.id.mi_edit_destination).setVisible(false);
+
         if(this.siteFragment == null) {
             return false;
         }
@@ -201,6 +212,14 @@ public class ViewSite extends RoboActionBarActivity {
     
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
+
+		MenuItem editItem = menu.findItem(R.id.mi_edit_favorite);
+
+		SiteFragment fragment = this.siteFragment;
+
+		if(fragment != null) {
+			editItem.setVisible(fragment.getFavorite() != null);
+		}
     	
     	MenuItem otherVariablesItem = menu.findItem(R.id.mi_other_variables);
     	
@@ -234,8 +253,7 @@ public class ViewSite extends RoboActionBarActivity {
 	    	new FetchHydrographTask(this).execute();
 	    	return true;
 	    case R.id.mi_about:
-			Intent i = new Intent(this, About.class);
-			startActivity(i);
+			startActivity(new Intent(this, About.class));
 	        return true;
 	    case R.id.mi_reload:
 	    	this.siteFragment.reload();
@@ -248,6 +266,15 @@ public class ViewSite extends RoboActionBarActivity {
 
             startActivityForResult(createDestIntent, REQUEST_CREATE_DESTINATION);
             return true;
+		case R.id.mi_edit_favorite:
+			Intent i = new Intent(this, EditFavorite.class);
+
+			Favorite favorite = this.siteFragment.getFavorite();
+
+			i.putExtra(EditFavorite.KEY_SITE_ID, favorite.getSite().getSiteId());
+			i.putExtra(EditFavorite.KEY_VARIABLE_ID, favorite.getVariable());
+			startActivityForResult(i, REQUEST_EDIT_FAVORITE);
+			return true;
 	    case R.id.mi_other_variables:
 	    case R.id.mi_change_units:
 	    	if(this.siteFragment != null) {

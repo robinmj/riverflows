@@ -22,6 +22,12 @@
     <item android:id="@+id/mi_create_destination"
         android:title="Create Destination">
     </item>
+	<item android:id="@+id/mi_edit_destination"
+		android:title="Edit Destination">
+	</item>
+	<item android:id="@+id/mi_edit_favorite"
+		android:title="Edit Favorite">
+	</item>
 	<item android:id="@+id/mi_share"
 	    android:title="Share"
 	    android:icon="@drawable/ic_menu_email"/>

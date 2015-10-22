@@ -47,10 +47,11 @@ public class ViewDestinationTest {
     CheckBox favoriteBtn;
     DestinationFragment destinationFragment;
     MockWsClient wsClient = new MockWsClient();
+    RobinSession testSession = new RobinSession();
 
     @Before
     public void setup() {
-        RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient, new RobinSession());
+        RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient, testSession);
     }
 
     public ViewDestination createViewDestination(Intent i) throws Exception {
@@ -144,5 +145,32 @@ public class ViewDestinationTest {
 
         inOrder.verify(wsClient.destinationFacetsMock).saveFavorite(any(WsSession.class), eq(fountainCreekKayak.getId()));
         inOrder.verify(wsClient.destinationFacetsMock).removeFavorite(any(WsSession.class), eq(fountainCreekKayak.getId()));
+    }
+
+    @Test
+    public void shouldNotAllowEditWhenNotFacetOwner() throws Exception {
+        DestinationFacet fountainCreekKayak = DestinationFacetFactory.getFountainCreekKayak();
+        Site fountainCreek = fountainCreekKayak.getDestination().getSite();
+
+        Intent i = new Intent(Robolectric.application, ViewDestination.class);
+
+        i.putExtra(ViewDestination.KEY_DESTINATION_FACET, fountainCreekKayak);
+
+        ViewDestination activity = createViewDestination(i);
+
+    }
+
+    @Test
+    public void shouldAllowEditWhenFacetOwner() throws Exception {
+        DestinationFacet fountainCreekKayak = DestinationFacetFactory.getFountainCreekKayak();
+        Site fountainCreek = fountainCreekKayak.getDestination().getSite();
+
+        fountainCreekKayak.setUser(testSession.wsSessionManager.getSession(null).userAccount);
+
+        Intent i = new Intent(Robolectric.application, ViewDestination.class);
+
+        i.putExtra(ViewDestination.KEY_DESTINATION_FACET, fountainCreekKayak);
+
+        ViewDestination activity = createViewDestination(i);
     }
 }
