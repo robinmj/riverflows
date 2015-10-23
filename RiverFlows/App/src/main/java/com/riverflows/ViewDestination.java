@@ -147,6 +147,8 @@ public class ViewDestination extends RoboActionBarActivity {
 
 		WsSession session = this.wsSessionManager.getSession(this);
 
+        menu.findItem(R.id.mi_create_destination).setVisible(false);
+
 		MenuItem editItem = menu.findItem(R.id.mi_edit_destination);
 
 		//in the off chance that session or user account is null, don't worry about it-
