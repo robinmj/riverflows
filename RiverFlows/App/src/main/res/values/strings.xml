@@ -3,6 +3,7 @@
     <string name="app_name">riverflows.net</string>
     <string name="variable_context_menu_title">Other Measurements At This Site</string>
     <string name="add_favorite_confirmation">the gauge {0} at {1} has been added to your favorites</string>
+    <string name="remove_favorite_confirmation">the gauge {0} at {1} has been removed from your favorites</string>
     <string name="add_favorite_dest_confirmation">the destination {0} has been added to your favorites</string>
     <string name="favorite_instructions_title">Welcome to Riverflows.net!</string>
     <string name="favorite_instructions">To select a favorite gauge, browse by state, touch-hold the site you are interested in, and select &quot;Add To Favorites&quot; from the context menu.</string>
