@@ -2,6 +2,7 @@ package com.riverflows;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.widget.CheckBox;
 
 import com.riverflows.data.DestinationFacet;
@@ -34,12 +35,14 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 /**
  * Created by robin on 11/14/14.
  */
 
 @RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21)
 public class ViewDestinationTest {
 
     ActivityController<ViewDestination> activityController;
@@ -56,7 +59,7 @@ public class ViewDestinationTest {
     public ViewDestination createViewDestination(Intent i) throws Exception {
         this.activityController= Robolectric.buildActivity(ViewDestination.class);
 
-        this.activityController.withIntent(i).create().start().resume().visible();
+        this.activityController.withIntent(i).setup();
 
         ViewDestination activity = activityController.get();
 
@@ -157,6 +160,11 @@ public class ViewDestinationTest {
 
         ViewDestination activity = createViewDestination(i);
 
+        Menu menu = shadowOf(activity).getOptionsMenu();
+
+        assertThat("edit function accessible", !menu.findItem(R.id.mi_edit_destination).isVisible());
+        assertThat("edit favorite function accessible", !menu.findItem(R.id.mi_edit_favorite).isVisible());
+
     }
 
     @Test
@@ -171,6 +179,11 @@ public class ViewDestinationTest {
         i.putExtra(ViewDestination.KEY_DESTINATION_FACET, fountainCreekKayak);
 
         ViewDestination activity = createViewDestination(i);
+
+        Menu menu = shadowOf(activity).getOptionsMenu();
+
+        assertThat("edit function not accessible", menu.findItem(R.id.mi_edit_destination).isVisible());
+        assertThat("edit favorite function accessible", !menu.findItem(R.id.mi_edit_favorite).isVisible());
     }
 
     @After

@@ -132,6 +132,7 @@ public class ViewDestination extends RoboActionBarActivity {
     	EasyTracker.getInstance().activityStop(this);
     }
 
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         DestinationFragment fragment = this.destinationFragment;
 
@@ -171,7 +172,7 @@ public class ViewDestination extends RoboActionBarActivity {
         shareItem.setVisible(true);
         shareItem.setEnabled(true);
 
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
