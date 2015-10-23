@@ -9,6 +9,8 @@ apply plugin: 'com.android.application'
 
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
+    //TODO find a better way to do this
+    compile fileTree(dir: '../Datasources/libs', exclude: 'commons-logging*')
     compile 'com.android.support:support-v4:22.0.+'
     compile 'com.android.support:appcompat-v7:22.0.+'
     compile 'com.google.android.gms:play-services:3.2.+'
