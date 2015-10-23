@@ -1,7 +1,10 @@
 package com.riverflows;
 
-import android.app.Application;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.util.Log;
+
+import com.google.analytics.tracking.android.GoogleAnalytics;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -18,7 +21,16 @@ public class TestApp extends App {
 
         Logger.getLogger("").setLevel(Level.ALL);
 
+        GoogleAnalytics myInstance = GoogleAnalytics.getInstance(this);
+        myInstance.setAppOptOut(true);
+
         Log.d(App.TAG, "TestApp.onCreate exit");
+    }
+
+    @Override
+    public boolean bindService(Intent service, ServiceConnection conn, int flags) {
+        //prevent GoogleAnalyticsService from binding
+        return false;
     }
 
 }

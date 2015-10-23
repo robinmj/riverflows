@@ -17,11 +17,13 @@ import com.riverflows.wsclient.WsSession;
 
 import org.hamcrest.BaseMatcher;
 import org.hamcrest.Description;
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.util.ActivityController;
 
 import java.util.ArrayList;
@@ -56,7 +58,7 @@ public class RiverSelectTest {
 
     @Before
     public void setup() {
-        RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient, robinSession);
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, robinSession);
     }
 
 
@@ -90,7 +92,7 @@ public class RiverSelectTest {
 
         when(wsClient.dsControllerMock.getSiteData(USState.CO, false)).thenReturn(mockData);
 
-        Intent i = new Intent(Robolectric.application, RiverSelect.class);
+        Intent i = new Intent(RuntimeEnvironment.application, RiverSelect.class);
         i.putExtra(RiverSelect.KEY_STATE, USState.CO);
 
         RiverSelect activity = createRiverSelect(i);
@@ -119,7 +121,7 @@ public class RiverSelectTest {
 
         when(wsClient.destinationFacetsMock.get(any(WsSession.class), argThat(new MapListMatcher(filterParams)), isNull(Integer.class), isNull(Integer.class))).thenReturn(mockResults);
 
-        Intent i = new Intent(Robolectric.application, RiverSelect.class);
+        Intent i = new Intent(RuntimeEnvironment.application, RiverSelect.class);
         i.putExtra(RiverSelect.KEY_STATE, USState.CO);
 
         RiverSelect activity = createRiverSelect(i);
@@ -153,7 +155,7 @@ public class RiverSelectTest {
 
         when(wsClient.destinationFacetsMock.get(any(WsSession.class), anyMap(), isNull(Integer.class), isNull(Integer.class))).thenReturn(mockResults);
 
-        Intent i = new Intent(Robolectric.application, RiverSelect.class);
+        Intent i = new Intent(RuntimeEnvironment.application, RiverSelect.class);
         i.putExtra(RiverSelect.KEY_STATE, USState.CO);
 
         RiverSelect activity = createRiverSelect(i);
@@ -204,5 +206,10 @@ public class RiverSelectTest {
         @Override
         public void describeTo(Description description) {
         }
+    }
+
+    @After
+    public void cleanup() {
+        RobolectricGradleTestRunner.resetDbSingleton();
     }
 }
