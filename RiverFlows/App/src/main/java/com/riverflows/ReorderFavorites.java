@@ -313,6 +313,15 @@ public class ReorderFavorites extends RoboListActivity {
             super(ReorderFavorites.this, requestCode, recoveryRequestCode, loginRequired, secondTry);
         }
 
+        public SaveOrderCall(SaveOrderCall saveOrderCall) {
+            super(saveOrderCall);
+        }
+
+        @Override
+        public SaveOrderCall clone() {
+            return new SaveOrderCall(this);
+        }
+
         @Override
         protected List<Favorite> doApiCall(WsSession session, Favorite... params) throws Exception {
             int[] destFacetIds = new int[params.length];
