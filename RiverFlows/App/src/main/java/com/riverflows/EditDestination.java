@@ -18,11 +18,14 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.google.inject.Inject;
 import com.riverflows.data.Destination;
 import com.riverflows.data.DestinationFacet;
+import com.riverflows.data.Favorite;
 import com.riverflows.data.Site;
 import com.riverflows.data.Variable;
+import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.wsclient.ApiCallTask;
 import com.riverflows.wsclient.DestinationFacets;
 import com.riverflows.wsclient.Destinations;
@@ -141,7 +144,21 @@ public class EditDestination extends RoboActionBarActivity {
 		}
 	}
 
-	private void showEditBar() {
+    @Override
+    protected void onStart() {
+        super.onStart();
+
+        EasyTracker.getInstance().activityStart(this);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        EasyTracker.getInstance().activityStop(this);
+    }
+
+    private void showEditBar() {
 
 		// BEGIN_INCLUDE (inflate_set_custom_view)
 		// Inflate a "Done/Cancel" custom action bar view.
@@ -450,7 +467,14 @@ public class EditDestination extends RoboActionBarActivity {
                 facet = destinations.saveDestinationWithFacet(session, facet);
 
                 try {
-                    destinationFacets.saveFavorite(session, facet.getId());
+                    Favorite newFav = destinationFacets.saveFavorite(session, facet.getId());
+
+                    newFav.setDestinationFacet(facet);
+                    newFav.setSite(facet.getDestination().getSite());
+                    newFav.setVariable(facet.getVariable().getId());
+
+                    //save new favorite locally
+                    FavoritesDaoImpl.createFavorite(EditDestination.this, newFav);
                 } catch (Exception e) {
                     //non-fatal exception
                     this.exception = e;
@@ -486,7 +510,10 @@ public class EditDestination extends RoboActionBarActivity {
 			setProgressBarIndeterminate(false);
 
 			if(exception != null) {
-				Toast.makeText(EditDestination.this, exception.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                if(exception.getLocalizedMessage() != null) {
+                    Toast.makeText(EditDestination.this, exception.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                }
+                EasyTracker.getTracker().sendException("SaveDestination", exception, false);
 				Log.e(Home.TAG,"", exception);
 			}
 

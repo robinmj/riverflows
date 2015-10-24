@@ -120,20 +120,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
         getInjector(getActivity()).injectMembers(this);
 
-        CharSequence introStr = getResources().getText(R.string.destinations_intro_2);
-
-        SpannableString str = new SpannableString(introStr);
-        str.setSpan(new ClickableSpan() {
-            @Override
-            public void onClick(View view) {
-                ((Home)getActivity()).signIn();
-            }
-        }, 23,introStr.length(), Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-        TextView destination_intro = (TextView)getView().findViewById(R.id.register_sign_in_instructions);
-        destination_intro.setText(str);
-        destination_intro.setMovementMethod(LinkMovementMethod.getInstance());
-
 		ListView lv = getListView();
 
 		setHasOptionsMenu(true);
@@ -144,12 +130,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 		TextView favoriteSubtext = (TextView)getView().findViewById(R.id.favorite_instructions_subheader);
 
-		SpannableString subtext = new SpannableString("If you select your favorite gauge sites, they will appear here.");
-
-		subtext.setSpan(new URLSpan("riverflows://help/favorites.html"), 7, 39, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-		favoriteSubtext.setText(subtext);
-		favoriteSubtext.setMovementMethod(LinkMovementMethod.getInstance());
+		favoriteSubtext.setText("Favorite destinations and gage sites will appear here.");
 
 		SharedPreferences settings = getActivity().getSharedPreferences(Home.PREFS_FILE, Activity.MODE_PRIVATE);
     	tempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
@@ -253,10 +234,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 	    case R.id.mi_reorder:
 	    	Intent i_reorder = new Intent(getActivity(), ReorderFavorites.class);
 	    	startActivityForResult(i_reorder, REQUEST_REORDER_FAVORITES);
-	    	return true;
-	    case R.id.mi_help:
-	    	Intent i_help = new Intent(Intent.ACTION_VIEW, Uri.parse(Help.BASE_URI + "favorites.html"));
-	    	startActivity(i_help);
 	    	return true;
 		case R.id.mi_sign_in:
             ((Home)getActivity()).signIn();
@@ -440,7 +417,13 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 			this.favorites = FavoritesDaoImpl.getFavorites(FavoritesLoader.this.getContext(), null, null);
 
-			List<DestinationFacet> destinationFacets = this.destinationFacets.getFavorites(session);
+			List<DestinationFacet> destinationFacets = null;
+
+            if(session == null) {
+                destinationFacets = Collections.emptyList();
+            } else {
+                destinationFacets = this.destinationFacets.getFavorites(session);
+            }
 
 			HashSet<Integer> localDestFacetIds = new HashSet<Integer>(this.favorites.size());
 
@@ -452,7 +435,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 				if(currentFav.getDestinationFacet() == null) {
 					//TODO send favorite to remote server
 
-					EasyTracker.getTracker().sendException("favorite is not synced", new Exception(), false);
+					//EasyTracker.getTracker().sendException("favorite is not synced", new Exception(), false);
 					Log.e(getClass().getName(), "favorite is not synced: " + currentFav.getId());
 				} else {
 					localDestFacetIds.add(currentFav.getDestinationFacet().getId());
@@ -469,6 +452,8 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
                                 //update local favorite
 
                                 currentFav.setDestinationFacet(destinationFacets.get(b));
+                                currentFav.setSite(destinationFacets.get(b).getDestination().getSite());
+                                currentFav.setVariable(destinationFacets.get(b).getVariable().getId());
 
                                 FavoritesDaoImpl.updateFavorite(FavoritesLoader.this.getContext(), currentFav);
                                 break;

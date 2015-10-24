@@ -26,6 +26,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.google.inject.Inject;
+import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.MapItem;
 import com.riverflows.data.Site;
@@ -500,6 +501,19 @@ public abstract class MapItemList extends RoboListActivity {
 		EditText stateFilterField = (EditText)findViewById(R.id.site_filter_field);
 		imm.hideSoftInputFromWindow(stateFilterField.getWindowToken(), 0);
 	}
-	
-	protected abstract LoadSitesTask createLoadStationsTask();
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if(requestCode == REQUEST_CREATE_DESTINATION) {
+            if(resultCode == RESULT_OK) {
+                DestinationFacet facet = (DestinationFacet) data.getSerializableExtra(EditDestination.KEY_DESTINATION_FACET);
+                Intent i = new Intent(this, ViewDestination.class);
+                i.putExtra(ViewDestination.KEY_DESTINATION_FACET, facet);
+                startActivity(i);
+                return;
+            }
+        }
+    }
+
+    protected abstract LoadSitesTask createLoadStationsTask();
 }

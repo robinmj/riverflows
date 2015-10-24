@@ -6,11 +6,13 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteException;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 
@@ -43,6 +45,7 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 	public static final String PREFS_FILE = "com.riverflows.prefs";
 	public static final String PREF_TEMP_UNIT = "tempUnit";
     public static final String PREF_FACET_TYPES = "currentFacetTypes";
+    public static final String PREF_FAVORITE_INTRO = "favoriteIntro";
 
 	public static final String ACTION_FAVORITES_CHANGED = "com.riverflows.FAVORITES_CHANGED";
 
@@ -81,6 +84,11 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 		addTab(ab, TAB_SITES, "Sites");
 
 		ab.setTitle(getResources().getString(R.string.app_name));
+        ab.setDisplayShowHomeEnabled(true);
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.ICE_CREAM_SANDWICH_MR1) {
+            ab.setIcon(getResources().getDrawableForDensity(R.drawable.launcher, Math.round(getResources().getDisplayMetrics().scaledDensity * DisplayMetrics.DENSITY_LOW)));
+        }
 		ab.setNavigationMode(ActionBar.NAVIGATION_MODE_TABS);
 
 		if(savedInstanceState != null) {
@@ -272,7 +280,7 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 		switch(id) {
 		case DIALOG_ID_MIGRATION_ERROR:
 			AlertDialog alert = new AlertDialog.Builder(this).create();
-			alert.setMessage("Sorry- An error occurred while updating your favorites database. You will have to uninstall and reinstall RiverFlows to fix this.");
+			alert.setMessage("Sorry- An error occurred while updating your favorites database. You will have to uninstall and reinstall riverflows.net to fix this.");
 			return alert;
 		}
 		return null;

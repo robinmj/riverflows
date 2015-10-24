@@ -100,4 +100,12 @@ public class UsgsCsvDataSourceTest extends TestCase {
 		assertEquals(4.58d, r.getValue());
 		assertNull(r.getQualifiers());
 	}
+
+    public void testGetBeaverDam() throws Throwable {
+        Variable[] beaverDamVars = DataSourceController.getVariablesFromStrings("USGS", new String[]{"00060","00065"});
+        Site beaverDam = new Site(new SiteId("USGS", "09414900"), "BEAVER DAM WASH AT BEAVER DAM, AZ", USState.AZ,
+                beaverDamVars);
+
+        SiteData result = src.getSiteData(beaverDam,  beaverDamVars, true);
+    }
 }

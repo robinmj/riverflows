@@ -30,6 +30,8 @@ import org.robolectric.Robolectric;
 import java.io.File;
 import java.io.FileInputStream;
 
+import static org.hamcrest.core.IsEqual.equalTo;
+import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyFloat;
 import static org.mockito.Matchers.argThat;
@@ -94,6 +96,11 @@ public class HydroGraphTest {
         graph = new HydroGraph(Robolectric.application);
     }
 
+    private void initGraphLayout() {
+        graph.measure(1073742904,1073743282);
+        graph.layout(0,0,1080,1458);
+    }
+
     @Test
     public void testSmallYAxisLabels() throws Throwable {
 
@@ -115,12 +122,43 @@ public class HydroGraphTest {
         mockCanvas = mock(Canvas.class);
 
         graph.setSeries(data.getDatasets().get(vars[1].getCommonVariable()), false);
+        initGraphLayout();
 
         graph.onDraw(mockCanvas);
 
         String[] yLabels = {"1.8","1.85","1.9","1.95","2","2.05","2.1","2.15","2.2","2.25","2.3"};
 
         verify(mockCanvas, atLeast(11)).drawText(argThat(new YAxisLabelMatcher(yLabels)), anyFloat(), anyFloat(), any(Paint.class));
+    }
+
+    @Test
+    public void testNullReadings() throws Throwable {
+
+        File responseFile = new File("testdata/eqp_failure.csv");
+
+        HttpResponse response = new BasicHttpResponse(new BasicStatusLine(
+                new ProtocolVersion("HTTP", 1, 1), 200, ""));
+        response.setStatusCode(200);
+
+        response.setEntity(new InputStreamEntity(new FileInputStream(responseFile), responseFile.length()));
+
+        Robolectric.addPendingHttpResponse(response);
+
+        Site vallecito = SiteFactory.getVallecitoCreek();
+        Variable[] vars = vallecito.getSupportedVariables();
+
+        SiteData data = src.getSiteData(vallecito,vars,true);
+
+        mockCanvas = mock(Canvas.class);
+
+        graph.setSeries(data.getDatasets().get(vars[1].getCommonVariable()), false);
+        initGraphLayout();
+
+        graph.onDraw(mockCanvas);
+
+        String[] yLabels = {"0.8","0.9","1","1.1","1.2","1.3","1.4","1.5","1.6","1.7"};
+
+        verify(mockCanvas, atLeast(10)).drawText(argThat(new YAxisLabelMatcher(yLabels)), anyFloat(), anyFloat(), any(Paint.class));
     }
 
     @Test
@@ -144,6 +182,7 @@ public class HydroGraphTest {
         mockCanvas = mock(Canvas.class);
 
         graph.setSeries(data.getDatasets().get(vars[1].getCommonVariable()), true);
+        initGraphLayout();
 
         graph.onDraw(mockCanvas);
 
@@ -173,6 +212,7 @@ public class HydroGraphTest {
         mockCanvas = mock(Canvas.class);
 
         graph.setSeries(data.getDatasets().get(vars[0].getCommonVariable()), false);
+        initGraphLayout();
 
         graph.onDraw(mockCanvas);
 
@@ -203,6 +243,7 @@ public class HydroGraphTest {
         mockCanvas = mock(Canvas.class);
 
         graph.setSeries(data.getDatasets().get(vars[0].getCommonVariable()), true);
+        initGraphLayout();
 
         graph.onDraw(mockCanvas);
 
@@ -239,6 +280,7 @@ public class HydroGraphTest {
         mockCanvas = mock(Canvas.class);
 
         graph.setSeries(data.getDatasets().get(vars[0].getCommonVariable()), false);
+        initGraphLayout();
 
         graph.onDraw(mockCanvas);
 
@@ -277,6 +319,7 @@ public class HydroGraphTest {
         mockCanvas = mock(Canvas.class);
 
         graph.setSeries(data.getDatasets().get(vars[0].getCommonVariable()), true);
+        initGraphLayout();
 
         graph.onDraw(mockCanvas);
 
@@ -291,6 +334,36 @@ public class HydroGraphTest {
         verify(mockCanvas).drawText(eq("16K"), anyFloat(), anyFloat(), any(Paint.class));
         verify(mockCanvas).drawText(eq("18K"), anyFloat(), anyFloat(), any(Paint.class));
         verify(mockCanvas).drawText(eq("20K"), anyFloat(), anyFloat(), any(Paint.class));
+    }
+
+
+    @Test
+    public void testYOutOfBounds() throws Throwable {
+
+        File responseFile = new File("testdata/verde.csv");
+
+        HttpResponse response = new BasicHttpResponse(new BasicStatusLine(
+                new ProtocolVersion("HTTP", 1, 1), 200, ""));
+        response.setStatusCode(200);
+
+        response.setEntity(new InputStreamEntity(new FileInputStream(responseFile), responseFile.length()));
+
+        Robolectric.addPendingHttpResponse(response);
+
+        Site verde = SiteFactory.getVerde();
+        Variable[] vars = verde.getSupportedVariables();
+
+        SiteData data = src.getSiteData(verde,vars,true);
+
+        mockCanvas = mock(Canvas.class);
+
+        graph.setSeries(data.getDatasets().get(vars[0].getCommonVariable()), false);
+        initGraphLayout();
+
+        graph.onDraw(mockCanvas);
+
+        assertThat(graph.getYMin(), equalTo(100.0d));
+        assertThat(graph.getYMax(), equalTo(1100.0d));
     }
 
     @Test
@@ -330,6 +403,7 @@ public class HydroGraphTest {
         mockCanvas = mock(Canvas.class);
 
         graph.setSeries(data.getDatasets().get(vars[0].getCommonVariable()), categories, true);
+        initGraphLayout();
 
         graph.onDraw(mockCanvas);
 

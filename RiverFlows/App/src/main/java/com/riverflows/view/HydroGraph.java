@@ -300,6 +300,7 @@ public class HydroGraph extends View {
 			if(r.getValue() == null) {
                 //tell drawLineGraph to use noDataPaint until next non-null value
 				plotCoords.add(null);
+                continue;
 			}
 			if(r instanceof Forecast) {
 				if(lastObserved != null && r.getDate().before(lastObserved.getDate())) {
@@ -676,5 +677,13 @@ public class HydroGraph extends View {
                 canvas.drawText(decoratedCategory.displayName, xCenter, yCenter, textPaint);
             }
         }
+    }
+
+    double getYMax() {
+        return this.yMax;
+    }
+
+    double getYMin() {
+        return this.yMin;
     }
 }

@@ -57,7 +57,7 @@ public class RiverSelect extends MapItemList {
 		state = (USState)extras.get(KEY_STATE);
 		
 		if(state != null) {
-			setTitle(state.getText() + " Gauge Sites");
+            getActionBar().setTitle(state.getText() + " Gauge Sites");
 		}
 		
 		super.onCreate(savedInstanceState);

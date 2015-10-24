@@ -92,9 +92,7 @@ public class HomeTest {
 
         Home h = createHome(i);
 
-        TextView signInInstView = (TextView)h.findViewById(R.id.register_sign_in_instructions);
-        ClickableSpan[] links = ((SpannableString)signInInstView.getText()).getSpans(0, 50, ClickableSpan.class);
-        links[0].onClick(signInInstView);
+        h.signIn();
 
         assertThat(shadowOf(h).getNextStartedActivity().getAction(), equalTo("com.google.android.gms.common.account.CHOOSE_ACCOUNT"));
 
@@ -119,9 +117,7 @@ public class HomeTest {
         editor.putString(WsSessionManager.PREF_ACCOUNT_NAME, "robin.m.j");
         editor.commit();
 
-        TextView signInInstView = (TextView)h.findViewById(R.id.register_sign_in_instructions);
-        ClickableSpan[] links = ((SpannableString)signInInstView.getText()).getSpans(0, 50, ClickableSpan.class);
-        links[0].onClick(signInInstView);
+        h.signIn();
 
         Intent expectedIntent = new Intent(h, AccountSettings.class);
         assertThat(shadowOf(h).getNextStartedActivity(), equalTo(expectedIntent));

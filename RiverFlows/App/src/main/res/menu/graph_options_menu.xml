@@ -25,10 +25,6 @@
     <item android:id="@+id/mi_create_destination"
         android:title="Create Destination">
     </item>
-	<item android:id="@+id/mi_help"
-    android:title="Help"
-    android:icon="@drawable/ic_menu_help"
-    android:visible="false"/>
 	<item android:id="@+id/mi_share"
 	    android:title="Share"
 	    android:icon="@drawable/ic_menu_email"/>

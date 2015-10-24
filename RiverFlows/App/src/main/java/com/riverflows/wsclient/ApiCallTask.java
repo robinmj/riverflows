@@ -2,7 +2,10 @@ package com.riverflows.wsclient;
 
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.util.Log;
@@ -10,6 +13,8 @@ import android.util.Log;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.AccountPicker;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GooglePlayServicesUtil;
 import com.google.inject.Inject;
 import com.riverflows.App;
 import com.riverflows.Home;
@@ -21,6 +26,8 @@ import static roboguice.RoboGuice.getInjector;
 
 public abstract class ApiCallTask<Params, Progress, Result> extends
 		DeferredExceptionAsyncTask<Params, Progress, Result> {
+
+	public static final int REQUEST_PLAY_SERVICES_RECOVERY = 19125;
 
 	protected final Activity activity;
 	protected final int requestCode;
@@ -137,9 +144,6 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 //			Intent loginIntent = new Intent(activity, Login.class);
 //			
 //			activity.startActivityForResult(loginIntent, requestCode);
-			
-
-			//TODO make sure google play services is available
 
 
 			if(accountName == null) {
@@ -150,18 +154,23 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 
 				if(accountName == null) {
 
-					Intent launchChooser = AccountPicker.newChooseAccountIntent(null,
-							null,
-							new String[] {GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE},
-							false,
-							null,
-							null,
-							null,
-							null);
+					if(checkPlayServices()) {
 
-					this.activity.startActivityForResult(launchChooser, requestCode);
+						Intent launchChooser = AccountPicker.newChooseAccountIntent(null,
+								null,
+								new String[]{GoogleAuthUtil.GOOGLE_ACCOUNT_TYPE},
+								false,
+								"In order to use the Destinations feature, please sign into RiverFlows.net using a Google account",
+								null,
+								null,
+								null);
 
-					return;
+						this.activity.startActivityForResult(launchChooser, requestCode);
+
+						return;
+					} else {
+						this.exception = new Exception("Google Play Services is required to sign in.");
+					}
 				} else {
 
 					Log.d(Home.TAG, "found username stored in prefs: " + accountName);
@@ -171,6 +180,23 @@ public abstract class ApiCallTask<Params, Progress, Result> extends
 		}
 		onNoUIRequired(result);
 	};
+
+	protected boolean checkPlayServices() {
+		final int resultCode = GooglePlayServicesUtil.isGooglePlayServicesAvailable(this.activity);
+		if (resultCode != ConnectionResult.SUCCESS) {
+			if (GooglePlayServicesUtil.isUserRecoverableError(resultCode)) {
+				Dialog dialog = GooglePlayServicesUtil.getErrorDialog(resultCode, this.activity,
+						REQUEST_PLAY_SERVICES_RECOVERY);
+				if (dialog != null) {
+					dialog.show();
+					return false;
+				}
+			}
+
+			return false;
+		}
+		return true;
+	}
 	
 	public void authorizeCallback(final int requestCode, final int resultCode,
 	         final Intent data) {
