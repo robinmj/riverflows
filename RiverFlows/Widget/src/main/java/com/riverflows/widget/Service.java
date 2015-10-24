@@ -41,25 +41,11 @@ public class Service extends RemoteViewsService {
         Log.d(Provider.TAG, "onGetViewFactory");
         return new WidgetViewsFactory(this.getApplicationContext(), intent);
     }
-
-    public static int[] getWidgetIds() {
-        Object[] ids = WidgetViewsFactory.mAppWidgetIds.toArray();
-
-        int[] result = new int[ids.length];
-        for(int a = 0; a < result.length; a++) {
-            Log.d(Provider.TAG, "widget ID " + ids[a]);
-            result[a] = ((Integer)ids[a]).intValue();
-        }
-
-        return result;
-    }
 }
 
 class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     public static final String TAG = "RiverFlows-Widget";
-
-    public static final CopyOnWriteArrayList<Integer> mAppWidgetIds = new CopyOnWriteArrayList<Integer>();
 
     private static final SimpleDateFormat lastReadingDateFmt = new SimpleDateFormat("h:mm aa");
 
@@ -81,7 +67,6 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         // In onCreate() you setup any connections / cursors to your data source. Heavy lifting,
         // for example downloading or creating content etc, should be deferred to onDataSetChanged()
         // or getViewAt(). Taking more than 20 seconds in this call will result in an ANR.
-        mAppWidgetIds.add(new Integer(mAppWidgetId));
     }
 
     public void onDestroy() {
@@ -91,7 +76,6 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         if(tmpWidgetItems != null) {
             tmpWidgetItems.clear();
         }
-        mAppWidgetIds.remove(new Integer(mAppWidgetId));
     }
 
     public int getCount() {

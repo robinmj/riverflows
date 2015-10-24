@@ -79,18 +79,18 @@ public class Provider extends AppWidgetProvider {
                     PendingIntent.FLAG_UPDATE_CURRENT);
             rv.setPendingIntentTemplate(android.R.id.list, pendingIntent);
 
-            showReloadButton(context,rv);
+            Intent reloadIntent = new Intent(context, Provider.class);
+            reloadIntent.setAction(ACTION_UPDATE_WIDGET);
+            reloadIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
+            reloadIntent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+            PendingIntent reloadPendingIntent = PendingIntent.getBroadcast(context, 0, reloadIntent, 0);
+
+            rv.setOnClickPendingIntent(R.id.reload_button, reloadPendingIntent);
+            rv.setViewVisibility(R.id.reload_button, View.VISIBLE);
 
             appWidgetManager.updateAppWidget(appWidgetIds[i], rv);
         }
         super.onUpdate(context, appWidgetManager, appWidgetIds);
-	}
-
-
-	static Intent getUpdateIntent(Context ctx) {
-		Intent updateIntent = new Intent(ctx,Provider.class);
-		updateIntent.setAction(ACTION_UPDATE_WIDGET);
-		return updateIntent;
 	}
 
 	@Override
@@ -100,7 +100,17 @@ public class Provider extends AppWidgetProvider {
 
 			Log.d(TAG,"received update intent");
 	        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
-            appWidgetManager.notifyAppWidgetViewDataChanged(Service.getWidgetIds(), android.R.id.list);
+
+            int widgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
+
+            if(widgetId == -1) {
+                Log.d(TAG, "missing widget id");
+                return;
+            }
+
+            Log.d(TAG, "updating widget id " + widgetId);
+
+            appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, android.R.id.list);
 		} else if(ACTION_VIEW_FAVORITE.equals(intent.getAction())) {
             Log.d(TAG,"received view intent");
 
@@ -123,12 +133,5 @@ public class Provider extends AppWidgetProvider {
     	views.setOnClickPendingIntent(R.id.empty_message_button, buttonIntent);
     	views.setViewVisibility(R.id.empty_message_button, View.VISIBLE);
     	views.setViewVisibility(R.id.empty_message_area, View.VISIBLE);
-	}
-
-	private void showReloadButton(Context context, RemoteViews views) {
-        PendingIntent reloadPendingIntent = PendingIntent.getBroadcast(context, 0, Provider.getUpdateIntent(context), 0);
-
-        views.setOnClickPendingIntent(R.id.reload_button, reloadPendingIntent);
-        views.setViewVisibility(R.id.reload_button, View.VISIBLE);
 	}
 }
