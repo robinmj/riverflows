@@ -117,7 +117,7 @@ public class Provider extends AppWidgetProvider {
 
 	private void showErrorMessage(Context context, RemoteViews views, String message, String buttonText, PendingIntent buttonIntent) {
 
-        views.setViewVisibility(R.id.spinner, View.GONE);
+        //views.setViewVisibility(R.id.spinner, View.GONE);
 		views.setTextViewText(R.id.empty_message, message);
     	views.setCharSequence(R.id.empty_message_button, "setText",buttonText);
     	views.setOnClickPendingIntent(R.id.empty_message_button, buttonIntent);

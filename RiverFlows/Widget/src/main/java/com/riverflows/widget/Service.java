@@ -69,6 +69,7 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     private List<SiteData> mWidgetItems = null;
     private Context mContext;
     private int mAppWidgetId;
+    private Exception mException = null;
 
     public WidgetViewsFactory(Context context, Intent intent) {
         mContext = context;
@@ -131,12 +132,22 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     }
 
     public void onDataSetChanged() {
+        Log.d(TAG, "onDataSetChanged");
+
         // This is triggered when you call AppWidgetManager notifyAppWidgetViewDataChanged
         // on the collection view corresponding to this factory. You can do heaving lifting in
         // here, synchronously. For example, if you need to process an image, fetch something
         // from the network, etc., it is ok to do it here, synchronously. The widget will remain
         // in its current state while work is being done here, so you don't need to worry about
         // locking up the widget.
+        try {
+            mWidgetItems = getFavorites(mContext);
+            lastUpdated = System.currentTimeMillis();
+            mException = null;
+        } catch (Exception e) {
+            Log.e(TAG, "load failed", e);
+            mException = e;
+        }
     }
 
     @SuppressWarnings("serial")
@@ -163,23 +174,24 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     private RemoteViews updateFavoriteViews(Context context, RemoteViews views, int favPosition) {
 
         if(System.currentTimeMillis() - lastUpdated > 60000) {
-            try {
-                mWidgetItems = getFavorites(context);
-                lastUpdated = System.currentTimeMillis();
-            } catch (LoadFailedException lfe) {
-                switch (lfe.getErrorCode()) {
-                    case -2:
-                        return showUnsupportedProtocolError(context, views);
+            if(mException != null) {
+                if(mException instanceof LoadFailedException) {
+                    LoadFailedException lfe = (LoadFailedException)mException;
+
+                    switch (lfe.getErrorCode()) {
+                        case -2:
+                            return showUnsupportedProtocolError(context, views);
+                    }
+                    Log.w(TAG, "load failed. errorCode: " + lfe.getErrorCode());
+                    return null;
+                } else {
+                    Log.e(TAG, "load failed", mException);
+                    return null;
                 }
-                Log.w(TAG, "load failed. errorCode: " + lfe.getErrorCode());
-                return null;
-            } catch (Exception e) {
-                Log.e(TAG, "load failed", e);
-                return null;
             }
         }
 
-        views.setViewVisibility(R.id.spinner, View.GONE);
+        //views.setViewVisibility(R.id.spinner, View.GONE);
 
         if(mWidgetItems == null) {
             Log.w(TAG,"RiverFlows not installed");
@@ -368,6 +380,7 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 //	        Cursor favoritesC = cr.query(Uri.parse("content://com.riverflows.content.favorites/USGS/09119000/00060?version=1"), null, null, null, null);
 
         if(favoritesC == null) {
+            Log.d(TAG, "null cursor!");
             return null;
         }
 
