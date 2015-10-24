@@ -103,6 +103,16 @@ public class SetupDestinations extends RoboFragmentActivity implements LoaderMan
             getInjector(SetupDestinations.this).injectMembers(this);
 		}
 
+        private FindSimilarDestinations(FindSimilarDestinations findSimilarDestinations) {
+            super(findSimilarDestinations);
+            getInjector(SetupDestinations.this).injectMembers(this);
+        }
+
+        @Override
+        public FindSimilarDestinations clone() {
+            return new FindSimilarDestinations(this);
+        }
+
 		@Override
 		protected List<DestinationFacet> doApiCall(WsSession session, Favorite... favorites) throws Exception {
 

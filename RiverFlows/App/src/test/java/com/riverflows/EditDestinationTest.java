@@ -10,19 +10,17 @@ import com.riverflows.data.Favorite;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
-import com.riverflows.data.UserAccount;
 import com.riverflows.data.Variable;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.factory.DestinationFacetFactory;
 import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.WsSession;
-import com.riverflows.wsclient.WsSessionManager;
 
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.util.ActivityController;
 
 import java.util.Date;
@@ -36,7 +34,6 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
 import static org.mockito.Mockito.doThrow;
 import static org.mockito.Mockito.when;
-import static org.robolectric.Robolectric.clickOn;
 
 /**
  * Created by robin on 11/10/14.
@@ -56,7 +53,8 @@ public class EditDestinationTest {
 
     @Before
     public void setup() {
-        RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient, new RobinSession());
+
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, new RobinSession());
     }
 
     public EditDestination createEditDestination(Intent i) throws Exception {
@@ -77,7 +75,7 @@ public class EditDestinationTest {
     }
 
     public EditDestination editNewDestination() throws Exception {
-        Intent i = new Intent(Robolectric.application, EditFavorite.class);
+        Intent i = new Intent(RuntimeEnvironment.application, EditFavorite.class);
 
         clearCreek = new Site();
         clearCreek.setSiteId(new SiteId(CODWRDataSource.AGENCY, "CCACCRCO"));
@@ -121,10 +119,10 @@ public class EditDestinationTest {
 
         EditDestination activity = editNewDestination();
 
-        clickOn(activity.getSupportActionBar().getCustomView().findViewById(R.id.actionbar_done));
+        activity.getSupportActionBar().getCustomView().findViewById(R.id.actionbar_done).performClick();
 
         //high field should be in error
-        assertThat(highField.getTextColors().getDefaultColor(), equalTo(Robolectric.application.getResources().getColor(R.color.validation_error_color)));
+        assertThat(highField.getTextColors().getDefaultColor(), equalTo(RuntimeEnvironment.application.getResources().getColor(R.color.validation_error_color)));
     }
 
     @Test
@@ -156,7 +154,7 @@ public class EditDestinationTest {
 
         assertThat(!FavoritesDaoImpl.hasFavorites(activity), equalTo(true));
 
-        clickOn(activity.getSupportActionBar().getCustomView().findViewById(R.id.actionbar_done));
+        activity.getSupportActionBar().getCustomView().findViewById(R.id.actionbar_done).performClick();
 
         assertThat(FavoritesDaoImpl.hasFavorites(activity), equalTo(true));
     }

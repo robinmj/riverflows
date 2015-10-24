@@ -456,6 +456,16 @@ public class EditDestination extends RoboActionBarActivity {
             RoboGuice.getInjector(EditDestination.this).injectMembers(this);
 		}
 
+        private SaveDestination(SaveDestination saveDestination) {
+            super(saveDestination);
+            RoboGuice.getInjector(EditDestination.this).injectMembers(this);
+        }
+
+        @Override
+        public SaveDestination clone() {
+            return new SaveDestination(this);
+        }
+
         @Override
         protected DestinationFacet doApiCall(WsSession session, DestinationFacet... params) throws Exception {
 			DestinationFacet facet = params[0];

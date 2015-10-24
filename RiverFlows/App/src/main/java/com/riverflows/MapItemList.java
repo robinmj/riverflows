@@ -33,6 +33,7 @@ import com.riverflows.data.Site;
 import com.riverflows.data.Variable;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.wsclient.ToggleFavoriteTask;
+import com.riverflows.wsclient.WsSession;
 import com.riverflows.wsclient.WsSessionManager;
 
 import java.text.MessageFormat;
@@ -130,7 +131,7 @@ public abstract class MapItemList extends RoboListActivity {
     	hideSoftKeyboard();
 	    // Handle item selection
 	    switch (item.getItemId()) {
-	    case R.id.mi_home:
+	    case android.R.id.home:
 	    	startActivityIfNeeded(new Intent(this, Home.class), -1);
 	    	return true;
 	    case R.id.mi_about:
@@ -405,12 +406,26 @@ public abstract class MapItemList extends RoboListActivity {
             if(mapItem.isDestination()) {
                 favorite = new Favorite(this.mapItem.destinationFacet);
                 confirmation = MessageFormat.format(getString(R.string.add_favorite_dest_confirmation), this.mapItem.getSite().getName());
+
+                new ToggleFavoriteTask(MapItemList.this, false, favorite).execute();
             } else {
                 favorite = new Favorite(this.mapItem.getSite(), this.variable.getId());
-                confirmation = MessageFormat.format(getString(R.string.add_favorite_confirmation), variable.getName(), this.mapItem.getSite().getName());
-            }
 
-            new ToggleFavoriteTask(MapItemList.this, false, favorite).execute();
+                WsSession session = MapItemList.this.wsSessionManager.getSession(MapItemList.this);
+
+                boolean isFavorite = FavoritesDaoImpl.isFavorite(getApplicationContext(), favorite.getSite().getSiteId(), favorite.getVariable());
+
+                if(isFavorite) {
+                    FavoritesDaoImpl.deleteFavorite(getApplicationContext(), favorite.getSite().getSiteId(), favorite.getVariable());
+                    confirmation = MessageFormat.format(getString(R.string.remove_favorite_confirmation), variable.getName(), this.mapItem.getSite().getName());
+                } else {
+                    FavoritesDaoImpl.createFavorite(getApplicationContext(), favorite);
+                    confirmation = MessageFormat.format(getString(R.string.add_favorite_confirmation), variable.getName(), this.mapItem.getSite().getName());
+                }
+
+                sendBroadcast(Home.getWidgetUpdateIntent());
+                Favorites.softReloadNeeded = true;
+            }
 			
 			if(item.isChecked()) {
 				item.setChecked(false);

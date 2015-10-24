@@ -51,7 +51,7 @@ public class App extends Application {
 
         //disable Google Analytics when in debug mode
         GoogleAnalytics myInstance = GoogleAnalytics.getInstance(this);
-        myInstance.setAppOptOut((getApplicationContext().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != ApplicationInfo.FLAG_DEBUGGABLE);
+        myInstance.setAppOptOut((getApplicationContext().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) == ApplicationInfo.FLAG_DEBUGGABLE);
 
         // Work around pre-Froyo bugs in HTTP connection reuse.
         if (Integer.parseInt(Build.VERSION.SDK) < Build.VERSION_CODES.FROYO) {

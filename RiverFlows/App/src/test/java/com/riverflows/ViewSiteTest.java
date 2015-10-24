@@ -13,12 +13,12 @@ import com.riverflows.factory.DestinationFacetFactory;
 import com.riverflows.factory.SiteDataFactory;
 import com.riverflows.factory.SiteFactory;
 import com.riverflows.wsclient.UsgsCsvDataSource;
-import com.riverflows.wsclient.WsSession;
 
-import org.junit.Before;
+import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
 import org.robolectric.util.ActivityController;
 
 import roboguice.RoboGuice;
@@ -27,13 +27,10 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.hamcrest.core.IsNull.notNullValue;
 import static org.hamcrest.core.IsNull.nullValue;
-import static org.mockito.Matchers.any;
-import static org.mockito.Matchers.anyInt;
 import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.robolectric.Robolectric.clickOn;
 
 /**
  * Created by robin on 11/14/14.
@@ -77,7 +74,7 @@ public class ViewSiteTest {
 
     @Test
     public void shouldLoadHydrograph() throws Exception {
-        RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient, new RobinSession());
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, new RobinSession());
 
         DestinationFacet clearCreekKayak = DestinationFacetFactory.getClearCreekKayak();
         Site clearCreek = clearCreekKayak.getDestination().getSite();
@@ -87,7 +84,7 @@ public class ViewSiteTest {
                 eq(false)))
                 .thenReturn(SiteDataFactory.getClearCreekData());
 
-        Intent i = new Intent(Robolectric.application, ViewDestination.class);
+        Intent i = new Intent(RuntimeEnvironment.application, ViewDestination.class);
 
         i.putExtra(ViewSite.KEY_SITE, clearCreek);
 
@@ -113,7 +110,7 @@ public class ViewSiteTest {
 
     @Test
     public void shouldLoadHydrographWithVariable() throws Exception {
-        RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient, new RobinSession());
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, new RobinSession());
 
         DestinationFacet clearCreekKayak = DestinationFacetFactory.getClearCreekKayak();
         Site clearCreek = clearCreekKayak.getDestination().getSite();
@@ -123,7 +120,7 @@ public class ViewSiteTest {
                 eq(false)))
                 .thenReturn(SiteDataFactory.getClearCreekData());
 
-        Intent i = new Intent(Robolectric.application, ViewDestination.class);
+        Intent i = new Intent(RuntimeEnvironment.application, ViewDestination.class);
 
         i.putExtra(ViewSite.KEY_SITE, clearCreek);
         i.putExtra(ViewSite.KEY_VARIABLE, clearCreek.getSupportedVariables()[0]);
@@ -148,12 +145,12 @@ public class ViewSiteTest {
 
     @Test
     public void shouldSaveFavorite() throws Exception {
-        RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient, new RobinSession());
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, new RobinSession());
 
         Site fountainCreek = SiteFactory.getFountainCreek();
         Variable var = UsgsCsvDataSource.VTYPE_STREAMFLOW_CFS;
 
-        Intent i = new Intent(Robolectric.application, ViewDestination.class);
+        Intent i = new Intent(RuntimeEnvironment.application, ViewDestination.class);
 
         i.putExtra(ViewSite.KEY_SITE, fountainCreek);
         i.putExtra(ViewSite.KEY_VARIABLE, var);
@@ -161,17 +158,17 @@ public class ViewSiteTest {
         ViewSite activity = createViewSite(i);
 
         assertThat("precondition",
-                !FavoritesDaoImpl.isFavorite(Robolectric.application, fountainCreek.getSiteId(), var.getId()));
+                !FavoritesDaoImpl.isFavorite(RuntimeEnvironment.application, fountainCreek.getSiteId(), var.getId()));
 
         assertThat(favoriteBtn.isChecked(), equalTo(false));
 
-        clickOn(favoriteBtn);//add favorite
+        favoriteBtn.performClick();//add favorite
 
-        assertThat("created favorite", FavoritesDaoImpl.isFavorite(Robolectric.application, fountainCreek.getSiteId(), var.getId()));
+        assertThat("created favorite", FavoritesDaoImpl.isFavorite(RuntimeEnvironment.application, fountainCreek.getSiteId(), var.getId()));
         assertThat(favoriteBtn.isChecked(), equalTo(true));
 
-        clickOn(favoriteBtn);//remove favorite
-        assertThat("removed favorite", !FavoritesDaoImpl.isFavorite(Robolectric.application, fountainCreek.getSiteId(), var.getId()));
+        favoriteBtn.performClick();//remove favorite
+        assertThat("removed favorite", !FavoritesDaoImpl.isFavorite(RuntimeEnvironment.application, fountainCreek.getSiteId(), var.getId()));
 
         verify(wsClient.dsControllerMock).getSiteData(argThat(SiteFactory.matches(fountainCreek)),
                 argThat(equalTo(fountainCreek.getSupportedVariables())),
@@ -180,12 +177,12 @@ public class ViewSiteTest {
 
     @Test
     public void shouldSaveFavoriteWhenNotLoggedIn() throws Exception {
-        RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient);
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient);
 
         Site fountainCreek = SiteFactory.getFountainCreek();
         Variable var = UsgsCsvDataSource.VTYPE_STREAMFLOW_CFS;
 
-        Intent i = new Intent(Robolectric.application, ViewDestination.class);
+        Intent i = new Intent(RuntimeEnvironment.application, ViewDestination.class);
 
         i.putExtra(ViewSite.KEY_SITE, fountainCreek);
         i.putExtra(ViewSite.KEY_VARIABLE, var);
@@ -193,20 +190,25 @@ public class ViewSiteTest {
         ViewSite activity = createViewSite(i);
 
         assertThat("precondition",
-                !FavoritesDaoImpl.isFavorite(Robolectric.application, fountainCreek.getSiteId(), var.getId()));
+                !FavoritesDaoImpl.isFavorite(RuntimeEnvironment.application, fountainCreek.getSiteId(), var.getId()));
 
         assertThat(favoriteBtn.isChecked(), equalTo(false));
 
-        clickOn(favoriteBtn);//add favorite
+        favoriteBtn.performClick();//add favorite
 
-        assertThat("created favorite", FavoritesDaoImpl.isFavorite(Robolectric.application, fountainCreek.getSiteId(), var.getId()));
+        assertThat("created favorite", FavoritesDaoImpl.isFavorite(RuntimeEnvironment.application, fountainCreek.getSiteId(), var.getId()));
         assertThat(favoriteBtn.isChecked(), equalTo(true));
 
-        clickOn(favoriteBtn);//remove favorite
-        assertThat("removed favorite", !FavoritesDaoImpl.isFavorite(Robolectric.application, fountainCreek.getSiteId(), var.getId()));
+        favoriteBtn.performClick();//remove favorite
+        assertThat("removed favorite", !FavoritesDaoImpl.isFavorite(RuntimeEnvironment.application, fountainCreek.getSiteId(), var.getId()));
 
         verify(wsClient.dsControllerMock).getSiteData(argThat(SiteFactory.matches(fountainCreek)),
                 argThat(equalTo(fountainCreek.getSupportedVariables())),
                 eq(false));
+    }
+
+    @After
+    public void cleanup() {
+        RobolectricGradleTestRunner.resetDbSingleton();
     }
 }

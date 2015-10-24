@@ -100,8 +100,7 @@ public class StateSelect extends ListFragment {
 	@Override
 	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
 	    inflater.inflate(R.menu.standard_menu, menu);
-	    
-	    menu.findItem(R.id.mi_home).setVisible(false);
+
 	    menu.findItem(R.id.mi_reload).setVisible(false);
 	}
 

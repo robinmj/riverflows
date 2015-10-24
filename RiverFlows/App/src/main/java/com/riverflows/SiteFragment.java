@@ -59,6 +59,7 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
     public static final String ARG_SITE = "site";
     public static final String ARG_VARIABLE = "variable";
     public static final String ARG_CONVERSION_MAP = "conversionMap";
+    public static final String ARG_FAVORITE = "favorite";
 
     Boolean zeroYMin = null;
 
@@ -71,6 +72,7 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
     private SiteData data;
     String errorMsg;
     private TourGuide mTourGuideHandler;
+    private Favorite favorite;
 
     @Inject
     private WsSessionManager wsSessionManager;
@@ -90,8 +92,10 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
 
                 if(isFavorite) {
                     FavoritesDaoImpl.deleteFavorite(getActivity().getApplicationContext(), f.getSite().getSiteId(), f.getVariable());
+                    setFavorite(null);
                 } else {
                     FavoritesDaoImpl.createFavorite(getActivity().getApplicationContext(), f);
+                    setFavorite(f);
                 }
 
                 getActivity().sendBroadcast(Home.getWidgetUpdateIntent());
@@ -115,6 +119,7 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
         this.variable = (Variable) args.getSerializable(ARG_VARIABLE);
         this.zeroYMin = args.getBoolean(ARG_ZERO_Y_MIN);
         this.conversionMap = (Map<Variable.CommonVariable, Variable.CommonVariable>) args.getSerializable(ARG_CONVERSION_MAP);
+        this.favorite = (Favorite) args.getSerializable(ARG_FAVORITE);
 
         Variable var = this.getVariable();
 
@@ -135,6 +140,15 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         return inflater.inflate(R.layout.view_destination, container, false);
+    }
+
+    public Favorite getFavorite() {
+        return favorite;
+    }
+
+    public void setFavorite(Favorite favorite) {
+        this.favorite = favorite;
+        getArguments().putSerializable(ARG_FAVORITE, favorite);
     }
 
     public SiteData getData() {
@@ -340,7 +354,7 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
         registerForContextMenu(chartView);
 
         favoriteBtn.setVisibility(View.VISIBLE);
-        favoriteBtn.setChecked(isFavorite());
+        favoriteBtn.setChecked(this.favorite != null);
         favoriteBtn.setOnCheckedChangeListener(this.favoriteButtonListener);
         progressBar.setVisibility(View.GONE);
 
@@ -349,7 +363,7 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
         boolean favoriteIntroShown = settings.getBoolean(Home.PREF_FAVORITE_INTRO, false);
 
         if(!favoriteIntroShown) {
-            if(!isFavorite()) {
+            if(this.favorite != null) {
                 ToolTip toolTip = new ToolTip().setDescription("Hint: touch the star to save this site as a favorite").setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -424,17 +438,6 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
 
     public Map<Variable.CommonVariable, Variable.CommonVariable> getConversionMap() {
         return this.conversionMap;
-    }
-
-    private boolean isFavorite() {
-
-        if (!FavoritesDaoImpl.isFavorite(getActivity(), getSite().getSiteId(), getVariable())) {
-            return false;
-        }
-
-        FavoritesDaoImpl.updateLastViewedTime(getActivity(), getSite().getSiteId());
-
-        return true;
     }
 
     public void setZeroYMin(boolean zeroYMin) {
