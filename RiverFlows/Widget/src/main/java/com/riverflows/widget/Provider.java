@@ -181,4 +181,21 @@ public class Provider extends AppWidgetProvider {
 
         AppWidgetManager.getInstance(context).partiallyUpdateAppWidget(widgetId,views);
 	}
+
+    public Intent getLaunchAppIntent() {
+//      Create an intent with action=MAIN and category=LAUNCHER
+
+//      Get the PackageManager from the current context using context.getPackageManager
+
+//      packageManager.queryIntentActivity(<intent>, 0) where intent has category=LAUNCHER, action=MAIN or packageManager.resolveActivity(<intent>, 0) to get the first activity with main/launcher
+
+//      Get theActivityInfo you're interested in
+
+//      From the ActivityInfo, get the packageName and name
+
+//      Finally, create another intent with with category=LAUNCHER, action=MAIN, componentName = new ComponentName(packageName, name) and setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
+
+//      Finally, context.startActivity(newIntent)
+        return null;
+    }
 }
