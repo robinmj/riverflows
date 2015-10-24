@@ -141,8 +141,8 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
                             Log.w(TAG,"riverFlows out of date");
 
-                            reportCompletion("The RiverFlows app is out-of-date for this version of the widget.",
-                                    "Update RiverFlows",
+                            reportCompletion("The Riverflows.net app is out-of-date for this version of the widget.",
+                                    "Update Riverflows.net",
                                     Intent.ACTION_VIEW,
                                     "market://details?id=com.riverflows");
 
@@ -158,9 +158,9 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
         if(mWidgetItems == null) {
             favoriteCount = 0;
-            Log.w(TAG,"RiverFlows not installed");
-            reportCompletion("The RiverFlows app must be installed in order to use this widget",
-                    "Install RiverFlows",
+            Log.w(TAG,"Riverflows.net not installed");
+            reportCompletion("The Riverflows.net app must be installed in order to use this widget",
+                    "Install Riverflows.net",
                     Intent.ACTION_VIEW,
                     "market://details?id=com.riverflows");
 
@@ -172,7 +172,7 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         if(favoriteCount == 0) {
             Log.w(TAG,"no mWidgetItems defined");
 
-            reportCompletion("Your first 5 favorite sites from the RiverFlows app will appear here.");
+            reportCompletion("Your first 5 favorite sites from the Riverflows.net app will appear here.");
 
             return;
         }
