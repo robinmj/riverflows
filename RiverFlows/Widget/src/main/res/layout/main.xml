@@ -25,18 +25,19 @@
 		 android:layout_alignParentRight="true"
 		 android:background="@drawable/ic_btn_refresh"
 		 android:visibility="gone"/>
-		<!--<FrameLayout -->
-    		<!--android:id="@+id/spinner"-->
-			    <!--android:layout_width="24dp"-->
-			    <!--android:layout_height="fill_parent"-->
-			 	<!--android:layout_alignParentRight="true"-->
-			 	<!--android:layout_marginRight="12dp">-->
-	    	<!--<ProgressBar-->
-			    <!--android:layout_width="wrap_content"-->
-			    <!--android:layout_height="fill_parent"-->
-	    		<!--android:indeterminate="true"-->
-	    		<!--android:layout_gravity="fill"/>-->
-		 <!--</FrameLayout>-->
+		<FrameLayout
+    		android:id="@+id/spinner"
+			android:layout_width="24dp"
+			android:layout_height="fill_parent"
+			android:layout_alignParentRight="true"
+			android:layout_marginRight="12dp"
+            android:visibility="gone">
+	    	<ProgressBar
+			    android:layout_width="wrap_content"
+			    android:layout_height="fill_parent"
+	    		android:indeterminate="true"
+	    		android:layout_gravity="fill"/>
+		 </FrameLayout>
 	</RelativeLayout>
     <RelativeLayout
     	android:id="@+id/empty_message_area"
@@ -45,8 +46,7 @@
 	    android:layout_margin="20dp"
 	    android:layout_gravity="center"
 		android:layout_centerVertical="true"
-		android:layout_centerHorizontal="true"
-		android:visibility="gone">
+		android:layout_centerHorizontal="true">
 	    <TextView 
 	    	android:layout_width="wrap_content"
 	    	android:layout_height="wrap_content"
@@ -55,13 +55,14 @@
 			android:layout_alignParentTop="true"
 			android:layout_centerHorizontal="true"
 			android:layout_margin="5dp"/>
-	    <Button 
+	    <Button
 	    	android:layout_width="wrap_content"
 	    	android:layout_height="wrap_content"
 	    	android:id="@+id/empty_message_button"
 			android:textSize="15sp"
 			android:layout_centerHorizontal="true"
-	    	android:layout_below="@id/empty_message"/>
+	    	android:layout_below="@id/empty_message"
+            android:visibility="gone"/>
     </RelativeLayout>
     <ListView android:id="@android:id/list"
         android:layout_width="fill_parent"

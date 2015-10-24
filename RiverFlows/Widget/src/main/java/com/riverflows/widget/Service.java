@@ -49,7 +49,7 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private static final SimpleDateFormat lastReadingDateFmt = new SimpleDateFormat("h:mm aa");
 
-    private static int favoriteCount = 5;
+    private int favoriteCount = 0;
 
     private long lastUpdated = 0;
     private List<SiteData> mWidgetItems = null;
@@ -129,9 +129,75 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
             lastUpdated = System.currentTimeMillis();
             mException = null;
         } catch (Exception e) {
+            favoriteCount = 0;
             Log.e(TAG, "load failed", e);
             mException = e;
+            if(System.currentTimeMillis() - lastUpdated > 60000) {
+                if(mException instanceof LoadFailedException) {
+                    LoadFailedException lfe = (LoadFailedException)mException;
+
+                    switch (lfe.getErrorCode()) {
+                        case -2:
+
+                            Log.w(TAG,"riverFlows out of date");
+
+                            reportCompletion("The RiverFlows app is out-of-date for this version of the widget.",
+                                    "Update RiverFlows",
+                                    Intent.ACTION_VIEW,
+                                    "market://details?id=com.riverflows");
+
+                            return;
+                    }
+                    Log.w(TAG, "load failed. errorCode: " + lfe.getErrorCode());
+                } else {
+                    Log.e(TAG, "load failed", mException);
+                }
+                return;
+            }
         }
+
+        if(mWidgetItems == null) {
+            favoriteCount = 0;
+            Log.w(TAG,"RiverFlows not installed");
+            reportCompletion("The RiverFlows app must be installed in order to use this widget",
+                    "Install RiverFlows",
+                    Intent.ACTION_VIEW,
+                    "market://details?id=com.riverflows");
+
+            return;
+        }
+
+        favoriteCount = mWidgetItems.size();
+
+        if(favoriteCount == 0) {
+            Log.w(TAG,"no mWidgetItems defined");
+
+            reportCompletion("Your first 5 favorite sites from the RiverFlows app will appear here.");
+
+            return;
+        }
+
+        reportCompletion();
+    }
+
+    private void reportCompletion() {
+        reportCompletion(null);
+    }
+
+    private void reportCompletion(String message) {
+        reportCompletion(message, null, null, null);
+    }
+
+    private void reportCompletion(String message, String buttonText, String intentAction, String intentUri) {
+        Intent completionIntent = new Intent(mContext, Provider.class);
+        completionIntent.setAction(Provider.ACTION_UPDATE_COMPLETE);
+        completionIntent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, mAppWidgetId);
+        completionIntent.putExtra(Provider.EN_ERROR_MESSAGE, message);
+        completionIntent.putExtra(Provider.EN_ERROR_BUTTON_TEXT, buttonText);
+        completionIntent.putExtra(Provider.EN_ERROR_BUTTON_INTENT_ACTION, intentAction);
+        completionIntent.putExtra(Provider.EN_ERROR_BUTTON_INTENT_URI, intentUri);
+
+        mContext.sendBroadcast(completionIntent);
     }
 
     @SuppressWarnings("serial")
@@ -157,71 +223,12 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
 
     private RemoteViews updateFavoriteViews(Context context, RemoteViews views, int favPosition) {
 
-        if(System.currentTimeMillis() - lastUpdated > 60000) {
-            if(mException != null) {
-                if(mException instanceof LoadFailedException) {
-                    LoadFailedException lfe = (LoadFailedException)mException;
-
-                    switch (lfe.getErrorCode()) {
-                        case -2:
-                            return showUnsupportedProtocolError(context, views);
-                    }
-                    Log.w(TAG, "load failed. errorCode: " + lfe.getErrorCode());
-                    return null;
-                } else {
-                    Log.e(TAG, "load failed", mException);
-                    return null;
-                }
-            }
-        }
-
-        //views.setViewVisibility(R.id.spinner, View.GONE);
-
-        if(mWidgetItems == null) {
-            Log.w(TAG,"RiverFlows not installed");
-            Intent appDetailsIntent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("market://details?id=com.riverflows"));
-            PendingIntent appDetailsPendingIntent = PendingIntent.getActivity(context, 0, appDetailsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-//            showErrorMessage(context, views,
-//                    "The RiverFlows app must be installed in order to use this widget",
-//                    "Install RiverFlows",
-//                    appDetailsPendingIntent);
-            return views;
-        }
-
-//        showReloadButton(context, views);
-
-        if(mWidgetItems.size() == 0) {
-            Log.w(TAG,"no mWidgetItems defined");
-
-//Would prefer to do it this way, but the link doesn't work for some reason
-//	    		SpannableString instructions = new SpannableString("If you select your favorite gauge sites, they will appear here.");
-//	    		instructions.setSpan(new URLSpan("riverflows://help/mWidgetItems.html"), 7, 39, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE);
-
-//	        	views.setViewVisibility(R.id.empty_message_button, View.GONE);
-//	        	views.setTextViewText(R.id.empty_message, instructions);
-
-            Intent mWidgetItemsHelpIntent = new Intent(Intent.ACTION_VIEW,
-                    Uri.parse("riverflows://help/mWidgetItems.html"));
-            PendingIntent mWidgetItemsHelpPendingIntent = PendingIntent.getActivity(context, 0, mWidgetItemsHelpIntent, 0);
-
-//            showErrorMessage(context, views,
-//                    "Your first 5 favorite sites from the RiverFlows app will appear here.",
-//                    "Instructions For Selecting Favorites",
-//                    mWidgetItemsHelpPendingIntent);
-
-            return views;
-        }
-
         if(favPosition >= mWidgetItems.size()) {
             views.setViewVisibility(R.id.favorite, View.INVISIBLE);
             return views;
         }
 
         Log.d(TAG, "drawing favorite " + mWidgetItems.get(favPosition).getSite().getName());
-
-
 
         // Next, we set a fill-intent which will be used to fill-in the pending intent template
         // which is set on the collection view in StackWidgetProvider.
@@ -259,20 +266,6 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         }
 
         views.setViewVisibility(R.id.favorite, View.VISIBLE);
-
-        return views;
-    }
-
-    private RemoteViews showUnsupportedProtocolError(Context context, RemoteViews views) {
-        Log.w(TAG,"riverFlows out of date");
-        Intent appDetailsIntent = new Intent(Intent.ACTION_VIEW,
-                Uri.parse("market://details?id=com.riverflows"));
-        PendingIntent appDetailsPendingIntent = PendingIntent.getActivity(context, 0, appDetailsIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-//        showErrorMessage(context, views,
-//                "The RiverFlows app is out-of-date for this version of the widget.",
-//                "Update RiverFlows",
-//                appDetailsPendingIntent);
 
         return views;
     }

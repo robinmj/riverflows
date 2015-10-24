@@ -41,9 +41,14 @@ public class Provider extends AppWidgetProvider {
 	public static final String ACTION_UPDATE_WIDGET = "com.riverflows.widget.UPDATE";
 
     public static final String ACTION_VIEW_FAVORITE = "com.riverflows.widget.VIEW_FAVORITE";
+    public static final String ACTION_UPDATE_COMPLETE = "com.riverflows.widget.ACTION_UPDATE_COMPLETE";
 
     public static final String EN_SITE_ID = "site_id";
     public static final String EN_VARIABLE_ID = "variable_id";
+    public static final String EN_ERROR_MESSAGE = "error_message";
+    public static final String EN_ERROR_BUTTON_TEXT = "error_button_text";
+    public static final String EN_ERROR_BUTTON_INTENT_ACTION = "error_button_intent_action";
+    public static final String EN_ERROR_BUTTON_INTENT_URI = "error_button_intent_uri";
 	
 	@Override
 	public void onUpdate(Context context, AppWidgetManager appWidgetManager,
@@ -101,14 +106,20 @@ public class Provider extends AppWidgetProvider {
 			Log.d(TAG,"received update intent");
 	        AppWidgetManager appWidgetManager = AppWidgetManager.getInstance(context);
 
-            int widgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, -1);
+            int widgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
 
-            if(widgetId == -1) {
+            if(widgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
                 Log.d(TAG, "missing widget id");
                 return;
             }
 
             Log.d(TAG, "updating widget id " + widgetId);
+
+
+            RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.main);
+            views.setViewVisibility(R.id.reload_button, View.GONE);
+            views.setViewVisibility(R.id.spinner, View.VISIBLE);
+            appWidgetManager.partiallyUpdateAppWidget(widgetId,views);
 
             appWidgetManager.notifyAppWidgetViewDataChanged(widgetId, android.R.id.list);
 		} else if(ACTION_VIEW_FAVORITE.equals(intent.getAction())) {
@@ -120,18 +131,54 @@ public class Provider extends AppWidgetProvider {
             viewIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
 
             context.startActivity(viewIntent);
+        } else if(ACTION_UPDATE_COMPLETE.equals(intent.getAction())) {
+            Log.d(TAG,"received completion intent");
+            handleCompletionIntent(context, intent);
         }
 
         super.onReceive(context, intent);
     }
 
-	private void showErrorMessage(Context context, RemoteViews views, String message, String buttonText, PendingIntent buttonIntent) {
+	private void handleCompletionIntent(Context context, Intent intent) {
 
-        //views.setViewVisibility(R.id.spinner, View.GONE);
-		views.setTextViewText(R.id.empty_message, message);
-    	views.setCharSequence(R.id.empty_message_button, "setText",buttonText);
-    	views.setOnClickPendingIntent(R.id.empty_message_button, buttonIntent);
-    	views.setViewVisibility(R.id.empty_message_button, View.VISIBLE);
-    	views.setViewVisibility(R.id.empty_message_area, View.VISIBLE);
+        int widgetId = intent.getIntExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, AppWidgetManager.INVALID_APPWIDGET_ID);
+
+        if(widgetId == AppWidgetManager.INVALID_APPWIDGET_ID) {
+            Log.d(TAG, "missing widget id");
+            return;
+        }
+
+        String message = intent.getStringExtra(EN_ERROR_MESSAGE);
+
+        RemoteViews views = new RemoteViews(context.getPackageName(), R.layout.main);
+        views.setViewVisibility(R.id.spinner, View.GONE);
+        views.setViewVisibility(R.id.reload_button, View.VISIBLE);
+
+        if(message == null) {
+            //success
+            views.setTextViewText(R.id.empty_message, "");
+        } else {
+            //show message
+
+            views.setTextViewText(R.id.empty_message, message);
+
+            String buttonText = intent.getStringExtra(EN_ERROR_BUTTON_TEXT);
+
+            if(buttonText == null) {
+                //hide button
+                views.setViewVisibility(R.id.empty_message_button, View.GONE);
+            } else {
+                //show button
+                Intent buttonIntent = new Intent(intent.getStringExtra(EN_ERROR_BUTTON_INTENT_ACTION),
+                        Uri.parse(intent.getStringExtra(EN_ERROR_BUTTON_INTENT_URI)));
+
+                PendingIntent buttonPendingIntent = PendingIntent.getActivity(context, 0, buttonIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                views.setCharSequence(R.id.empty_message_button, "setText", buttonText);
+                views.setOnClickPendingIntent(R.id.empty_message_button, buttonPendingIntent);
+                views.setViewVisibility(R.id.empty_message_button, View.VISIBLE);
+            }
+        }
+
+        AppWidgetManager.getInstance(context).partiallyUpdateAppWidget(widgetId,views);
 	}
 }
