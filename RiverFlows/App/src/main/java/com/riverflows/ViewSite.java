@@ -245,7 +245,11 @@ public class ViewSite extends RoboActionBarActivity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case android.R.id.home:
-	    	finish();
+			if(isTaskRoot()) {
+				startActivityIfNeeded(new Intent(this, Home.class), -1);
+			} else {
+				finish();
+			}
 	    	return true;
 	    case R.id.mi_share:
 	        ProgressBar progressBar = (ProgressBar)findViewById(R.id.progressBar);
