@@ -13,6 +13,8 @@ import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.content.pm.ResolveInfo;
 import android.database.Cursor;
 import android.net.Uri;
 import android.util.Log;
@@ -58,14 +60,15 @@ public class Provider extends AppWidgetProvider {
         // update each of the widgets with the remote adapter
         for (int i = 0; i < appWidgetIds.length; ++i) {
 
-            // Here we setup the intent which points to the StackViewService which will
-            // provide the views for this collection.
             Intent intent = new Intent(context, Service.class);
             intent.putExtra(AppWidgetManager.EXTRA_APPWIDGET_ID, appWidgetIds[i]);
             // When intents are compared, the extras are ignored, so we need to embed the extras
             // into the data so that the extras will not be ignored.
             intent.setData(Uri.parse(intent.toUri(Intent.URI_INTENT_SCHEME)));
+
+            //header button
             RemoteViews rv = new RemoteViews(context.getPackageName(), R.layout.main);
+            rv.setOnClickPendingIntent(R.id.title, getLaunchAppPendingIntent(context));
             rv.setRemoteAdapter(android.R.id.list, intent);
 
             // The empty view is displayed when the collection has no items. It should be a sibling
@@ -179,23 +182,28 @@ public class Provider extends AppWidgetProvider {
             }
         }
 
-        AppWidgetManager.getInstance(context).partiallyUpdateAppWidget(widgetId,views);
+        AppWidgetManager.getInstance(context).partiallyUpdateAppWidget(widgetId, views);
 	}
 
-    public Intent getLaunchAppIntent() {
-//      Create an intent with action=MAIN and category=LAUNCHER
+    public static PendingIntent getLaunchAppPendingIntent(Context context) {
+        Intent queryIntent = new Intent(Intent.ACTION_MAIN);
+        queryIntent.setPackage("com.riverflows");
+        queryIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
-//      Get the PackageManager from the current context using context.getPackageManager
+        PackageManager packageManager = context.getPackageManager();
 
-//      packageManager.queryIntentActivity(<intent>, 0) where intent has category=LAUNCHER, action=MAIN or packageManager.resolveActivity(<intent>, 0) to get the first activity with main/launcher
+        ResolveInfo info = packageManager.resolveActivity(queryIntent, 0);
 
-//      Get theActivityInfo you're interested in
+        if(info == null) {
+            return null;
+        }
 
-//      From the ActivityInfo, get the packageName and name
+        Intent launchIntent = new Intent(Intent.ACTION_MAIN);
+        launchIntent.setComponent(new ComponentName(info.activityInfo.packageName, info.activityInfo.name));
+        launchIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        queryIntent.addCategory(Intent.CATEGORY_LAUNCHER);
 
-//      Finally, create another intent with with category=LAUNCHER, action=MAIN, componentName = new ComponentName(packageName, name) and setFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
-
-//      Finally, context.startActivity(newIntent)
-        return null;
+        PendingIntent pendingIntent = PendingIntent.getActivity(context, 0, launchIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+        return pendingIntent;
     }
 }
