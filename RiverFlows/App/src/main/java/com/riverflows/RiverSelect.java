@@ -58,6 +58,7 @@ public class RiverSelect extends MapItemList {
 		
 		if(state != null) {
             getActionBar().setTitle(state.getText() + " Gauge Sites");
+			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
 		
 		super.onCreate(savedInstanceState);
