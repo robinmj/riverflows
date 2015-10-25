@@ -3,8 +3,7 @@
     android:id="@+id/favorite"
     android:layout_width="fill_parent"
     android:layout_height="45dp"
-    android:layout_margin="1dp"
-    android:background="#66666655">
+    android:layout_margin="1dp">
     <ImageView android:id="@+id/agency_icon"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
