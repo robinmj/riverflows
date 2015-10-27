@@ -89,7 +89,7 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         // text based on the position.
         RemoteViews rv = new RemoteViews(mContext.getPackageName(), R.layout.widget_list_item);
 
-        System.out.println("Loading view " + position);
+        Log.v(Provider.TAG, "Loading view " + position);
 
         updateFavoriteViews(mContext, rv, position);
 
