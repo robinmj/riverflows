@@ -37,12 +37,15 @@ import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.WsSession;
 import com.riverflows.wsclient.WsSessionManager;
 
+import org.apache.commons.lang.ObjectUtils;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Collections;
 import java.util.HashMap;
 
 import roboguice.activity.RoboActionBarActivity;
@@ -154,9 +157,21 @@ public class ViewDestination extends RoboActionBarActivity {
 		//in the off chance that session or user account is null, don't worry about it-
 		// EditDestination will prevent user from saving their changes
 		if(session != null && session.userAccount != null) {
-			if(!session.userAccount.getId().equals(fragment.getDestinationFacet().getUser().getId())) {
-				editItem.setVisible(false);
-			}
+            try {
+                if (!session.userAccount.getId().equals(fragment.getDestinationFacet().getUser().getId())) {
+                    editItem.setVisible(false);
+                }
+            } catch (NullPointerException npe) {
+                Log.e(App.TAG, "id=" + session.userAccount.getId(), npe);
+
+                //TODO remove this once cause of NPE is found
+
+                HashMap<String,String> metadata = new HashMap<String, String>();
+                metadata.put("user id", "" + session.userAccount.getId());
+                metadata.put("destination facet id", "" + fragment.getDestinationFacet().getId());
+                EasyTracker.getTracker().send("debuginfo", metadata);
+                EasyTracker.getTracker().sendException(getClass().getSimpleName(), npe, false);
+            }
 		}
 
         MenuItem otherVarsItem = menu.findItem(R.id.mi_other_variables);
