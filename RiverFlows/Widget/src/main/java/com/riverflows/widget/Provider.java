@@ -97,6 +97,7 @@ public class Provider extends AppWidgetProvider {
             rv.setViewVisibility(R.id.reload_button, View.VISIBLE);
 
             appWidgetManager.updateAppWidget(appWidgetIds[i], rv);
+            appWidgetManager.notifyAppWidgetViewDataChanged(appWidgetIds[i], android.R.id.list);
         }
         super.onUpdate(context, appWidgetManager, appWidgetIds);
 	}
