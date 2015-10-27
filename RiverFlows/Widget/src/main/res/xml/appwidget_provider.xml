@@ -2,9 +2,9 @@
 <appwidget-provider
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:label="Riverflows.net-Widget"
-  android:minResizeWidth="318dp"
+  android:minResizeWidth="303dp"
   android:minResizeHeight="40dp"
-  android:minWidth="318dp"
+  android:minWidth="303dp"
   android:minHeight="222dp"
   android:resizeMode="vertical"
   android:updatePeriodMillis="3600000"
