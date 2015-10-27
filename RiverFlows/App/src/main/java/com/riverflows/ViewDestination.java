@@ -422,8 +422,6 @@ public class ViewDestination extends RoboActionBarActivity {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.graph_menu, menu);
 
-        menu.findItem(R.id.mi_create_destination).setVisible(false);
-
         Boolean zeroYMin = this.destinationFragment.zeroYMin;
 
 		if((zeroYMin == null && this.getVariable().getCommonVariable().isGraphAgainstZeroMinimum()) || (zeroYMin != null && zeroYMin)) {
