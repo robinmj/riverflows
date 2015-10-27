@@ -162,7 +162,14 @@ public class UsgsCsvDataSource implements RESTDataSource {
 
             Favorite fav = favorites.get(a);
 
-            result.add(new FavoriteData(fav, data.get(fav.getSite().getSiteId()), vars[a]));
+			SiteData siteData = data.get(fav.getSite().getSiteId());
+
+			if(siteData == null) {
+				siteData = DataSourceController.dataSourceDownData(fav.getSite(), getVariable(fav.getVariable()));
+				siteData.setDataInfo(getExternalSiteUrl(fav.getSite().getId()));
+			}
+
+            result.add(new FavoriteData(fav, siteData, vars[a]));
         }
 		
 		return result;

@@ -195,7 +195,7 @@ public class HydroGraph extends View {
         legendPadding = (int)(scaledDensity * 10f);
 
         plotPaint.setStrokeWidth(scaledDensity * 1.0f);
-        plotBgPaint.setStrokeWidth(scaledDensity * 2.0f);
+        plotBgPaint.setStrokeWidth(scaledDensity * 3.0f);
         forecastPaint.setStrokeWidth(scaledDensity * 2.0f);
 	}
 	
