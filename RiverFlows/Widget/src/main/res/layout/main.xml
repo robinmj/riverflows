@@ -6,10 +6,10 @@
     android:layout_height="fill_parent"
 	android:background="@drawable/bg_3x3_frame"
 	android:layout_margin="0dp"
-	android:paddingTop="13dp"
-	android:paddingRight="13dp"
-	android:paddingLeft="13dp"
-	android:paddingBottom="17dp">
+	android:paddingTop="@dimen/widget_margin_toprightleft"
+	android:paddingRight="@dimen/widget_margin_toprightleft"
+	android:paddingLeft="@dimen/widget_margin_toprightleft"
+	android:paddingBottom="@dimen/widget_margin_bottom">
 	<RelativeLayout
       android:layout_width="fill_parent"
       android:layout_height="24dp">
