@@ -83,5 +83,8 @@
 		android:authorities="com.riverflows.content.favorites"
         android:exported="true">
 		</provider>
-	</application>
+	    <meta-data
+            android:name="io.fabric.ApiKey"
+            android:value="c800424aeca66f9e98b4b8076e3fe62552a097e1" />
+    </application>
 </manifest> 

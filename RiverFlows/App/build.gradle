@@ -1,11 +1,22 @@
 
 buildscript {
+    dependencies {
+        classpath 'io.fabric.tools:gradle:1.+'
+    }
+
     repositories {
         jcenter()
+        maven { url 'https://maven.fabric.io/public' }
     }
 }
 
 apply plugin: 'com.android.application'
+apply plugin: 'io.fabric'
+
+repositories {
+    maven { url 'https://maven.fabric.io/public' }
+}
+
 
 dependencies {
     compile fileTree(dir: 'libs', include: '*.jar')
@@ -31,6 +42,9 @@ dependencies {
     testCompile 'org.robolectric:shadows-play-services:3.0'
     testCompile files("testlibs/android-20-stripped.jar")
     testCompile files("build/intermediates/exploded-aar/RiverFlows/Datasources/unspecified/classes.jar")
+    compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
+        transitive = true;
+    }
 }
 
 android {
