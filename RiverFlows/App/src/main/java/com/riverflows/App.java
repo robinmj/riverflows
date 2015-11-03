@@ -8,16 +8,17 @@ import android.os.Build;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.riverflows.data.UserAccount;
 import com.riverflows.db.CachingHttpClientWrapper;
 import com.riverflows.wsclient.DataSourceController;
 
-import io.fabric.sdk.android.Fabric;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import io.fabric.sdk.android.Fabric;
 import roboguice.RoboGuice;
 
 /**
@@ -36,10 +37,13 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        // Set up Crashlytics, disabled for debug builds
+        Crashlytics crashlyticsKit = new Crashlytics.Builder()
+                .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
+                .build();
 
-        if((getApplicationContext().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != ApplicationInfo.FLAG_DEBUGGABLE ) {
-            Fabric.with(this, new Crashlytics());
-        }
+        // Initialize Fabric with the debug-disabled crashlytics.
+        Fabric.with(this, crashlyticsKit);
 
         RoboGuice.setUseAnnotationDatabases(false);
 
