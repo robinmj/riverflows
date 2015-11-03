@@ -88,7 +88,9 @@ public class EditDestination extends RoboActionBarActivity {
 
 		showEditBar();
 
-		if(manager.findFragmentByTag("edit_destination") == null) {
+        this.editDestination = (EditDestinationFragment)manager.findFragmentByTag("edit_destination");
+
+		if(this.editDestination == null) {
 
             DestinationFacet destinationFacet = null;
 
