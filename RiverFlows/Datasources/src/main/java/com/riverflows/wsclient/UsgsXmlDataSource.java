@@ -39,7 +39,7 @@ import com.riverflows.data.Variable;
 
 public class UsgsXmlDataSource implements ContentHandler {
 	
-	public static final String SITE_DATA_URL = "http://waterservices.usgs.gov/nwis/iv?format=waterml,1.1&";
+	public static final String SITE_DATA_URL = "http://waterservices.usgs.gov/nwis/iv/?format=waterml,1.1&";
 	
 	private static final Log LOG = LogFactory.getLog(UsgsXmlDataSource.class);
 	
@@ -116,6 +116,16 @@ public class UsgsXmlDataSource implements ContentHandler {
 		null,
 		null,
 		USState.PR,};
+
+	private static HttpClientWrapper httpClientWrapper = new DefaultHttpClientWrapper();
+
+	public static HttpClientWrapper getHttpClientWrapper() {
+		return httpClientWrapper;
+	}
+
+	public static void setHttpClientWrapper(HttpClientWrapper source) {
+		httpClientWrapper = source;
+	}
 	
 	/**
 	 * Retrieve a week's worth of readings for the given variables at the given sites.
@@ -173,10 +183,9 @@ public class UsgsXmlDataSource implements ContentHandler {
 			//URL url = new URL(urlStr);
 			//URLConnection connection = url.openConnection();
 			//InputStream contentInputStream = connection.getInputStream();
-			
-			HttpClient client = new DefaultHttpClient();
+
 			HttpGet getCmd = new HttpGet(urlStr);
-			HttpResponse response = client.execute(getCmd);
+			HttpResponse response = getHttpClientWrapper().doGet(getCmd, true);
 			contentInputStream = response.getEntity().getContent();
 			bufferedStream = new BufferedInputStream(contentInputStream, 8192);
 			
