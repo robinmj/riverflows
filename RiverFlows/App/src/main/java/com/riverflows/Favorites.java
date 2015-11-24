@@ -27,6 +27,7 @@ import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.inject.Inject;
 import com.riverflows.data.DestinationFacet;
@@ -824,7 +825,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
                     Favorites.this.showMessage(v, "Failed to delete favorite: " + getException().getMessage());
                 }
                 Log.e(App.TAG, "Failed to delete favorite: network error", getException());
-                EasyTracker.getTracker().sendException(getClass().getSimpleName(), getException(), false);
+				Crashlytics.logException(getException());
 
                 return;
             }

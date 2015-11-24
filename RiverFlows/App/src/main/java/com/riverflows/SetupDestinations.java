@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.inject.Inject;
 import com.riverflows.data.DestinationFacet;
@@ -79,7 +80,7 @@ public class SetupDestinations extends RoboFragmentActivity implements LoaderMan
 
 			} catch(Exception e) {
 				Log.e(Home.TAG, "", e);
-				EasyTracker.getTracker().sendException(getClass().getSimpleName(), e, false);
+				Crashlytics.logException(e);
 			}
 
 			return null;

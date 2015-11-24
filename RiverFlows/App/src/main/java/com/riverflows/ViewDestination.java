@@ -25,6 +25,7 @@ import android.view.SubMenu;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
 import com.google.inject.Inject;
@@ -167,7 +168,7 @@ public class ViewDestination extends RoboActionBarActivity {
                 metadata.put("user id", "" + session.userAccount.getId());
                 metadata.put("destination facet id", "" + fragment.getDestinationFacet().getId());
                 EasyTracker.getTracker().send("debuginfo", metadata);
-                EasyTracker.getTracker().sendException(getClass().getSimpleName(), npe, false);
+				Crashlytics.logException(npe);
             }
 		}
 
@@ -292,6 +293,8 @@ public class ViewDestination extends RoboActionBarActivity {
 
 	    	Bitmap b = null;
 	    	try {
+				Crashlytics.setString("ViewDestination.FetchHydrographTask.graphUrl", graphUrl);
+
 				b = BitmapFactory.decodeStream((InputStream) new URL(graphUrl).getContent());
 
 				String file_name = "share_hydrograph.png";
@@ -309,9 +312,9 @@ public class ViewDestination extends RoboActionBarActivity {
 
 		            out.flush();
 		        } catch (Exception e) {
-		            Log.e(Home.TAG,"", e);
+		            Log.e(Home.TAG, "", e);
 
-					EasyTracker.getTracker().sendException("saving " + graphUrl, e, false);
+					Crashlytics.logException(e);
 
 		            return null;
 		        } finally {
@@ -324,9 +327,9 @@ public class ViewDestination extends RoboActionBarActivity {
 			} catch (MalformedURLException e) {
 				Log.e(Home.TAG, graphUrl,e);
 			} catch (IOException e) {
-				Log.w(Home.TAG, graphUrl,e);
+				Log.w(Home.TAG, graphUrl, e);
 
-				EasyTracker.getTracker().sendException("downloading " + graphUrl, e, false);
+				Crashlytics.logException(e);
 			}
 	        return null;
 	    }
