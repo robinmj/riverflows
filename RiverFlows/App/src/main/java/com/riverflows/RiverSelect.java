@@ -75,7 +75,7 @@ public class RiverSelect extends MapItemList {
 	
 	@Override
 	protected void onStop() {
-		super.onStart();
+		super.onStop();
 		
 		EasyTracker.getInstance().activityStop(this);
 	}
