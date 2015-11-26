@@ -480,6 +480,8 @@ public abstract class MapItemList extends RoboListActivity {
 
 		boolean loggedIn = (this.wsSessionManager.getSession(this) != null);
 
+		boolean showCreateDest = loggedIn && (mapItem.getSite().getSiteId().getPrimaryKey() != null);
+
 		if(mapItem.isDestination()) {
             if(loggedIn && !FavoritesDaoImpl.isFavorite(getApplicationContext(), mapItem.destinationFacet.getId().intValue())) {
                 MenuItem addFavoriteDest = menu.add(ContextMenu.NONE, supportedVars.length, supportedVars.length, "Add To Favorites");
@@ -487,7 +489,7 @@ public abstract class MapItemList extends RoboListActivity {
             }
 		} else {
             SubMenu submenu = null;
-            if(loggedIn) {
+            if(showCreateDest) {
                 submenu = menu.addSubMenu(ContextMenu.NONE, supportedVars.length, supportedVars.length, "Create Destination");
             } else {
                 submenu = menu.addSubMenu(ContextMenu.NONE, supportedVars.length, supportedVars.length, "Add To Favorites");
@@ -501,7 +503,7 @@ public abstract class MapItemList extends RoboListActivity {
                 addFavoriteItem.setCheckable(true);
                 addFavoriteItem.setChecked(FavoritesDaoImpl.isFavorite(getApplicationContext(), mapItem.getSite().getSiteId(), supportedVars[a]));
 
-                if(loggedIn) {
+                if(showCreateDest) {
                     addFavoriteItem.setOnMenuItemClickListener(new CreateDestinationListener(mapItem.getSite(), supportedVars[a]));
                 } else {
                     addFavoriteItem.setOnMenuItemClickListener(new AddToFavoritesListener(mapItem, supportedVars[a]));

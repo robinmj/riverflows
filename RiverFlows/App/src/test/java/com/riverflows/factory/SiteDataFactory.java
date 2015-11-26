@@ -2,13 +2,17 @@ package com.riverflows.factory;
 
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
+import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
+import com.riverflows.data.USState;
 import com.riverflows.data.Variable;
 import com.riverflows.wsclient.CODWRDataSource;
+import com.riverflows.wsclient.UsgsCsvDataSource;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 
@@ -19,6 +23,7 @@ public final class SiteDataFactory {
 
     private static SiteData clearCreekData = null;
     private static SiteData fountainCreekData = null;
+    private static SiteData apalachicolaData = null;
 
     public static SiteData getClearCreekData() {
 
@@ -115,5 +120,39 @@ public final class SiteDataFactory {
         cfs.getReadings().add(r);
 
         return fountainCreekData = d;
+    }
+
+    public static SiteData getApalachicolaData() {
+
+        if(apalachicolaData != null) return apalachicolaData;
+
+        Site apalachicola = SiteFactory.getApalachicola();
+
+        SiteData d = new SiteData();
+        d.setSite(apalachicola);
+
+        Map<Variable.CommonVariable, Series> datasets = d.getDatasets();
+
+        Series s = new Series();
+        s.setVariable(UsgsCsvDataSource.VTYPE_GAUGE_HEIGHT_FT);
+
+        List<Reading> readings = new ArrayList<Reading>();
+
+        GregorianCalendar cal = new GregorianCalendar();
+        cal.set(2015, 9, 18, 10, 15, 0);
+        cal.set(Calendar.MILLISECOND, 0);
+        cal.setTimeZone(TimeZone.getTimeZone("GMT-05:00"));
+
+        Reading r = new Reading();
+        r.setValue(14.58d);
+        r.setDate(cal.getTime());
+
+        readings.add(r);
+
+        s.setReadings(readings);
+
+        datasets.put(Variable.CommonVariable.GAUGE_HEIGHT_FT, s);
+
+        return apalachicolaData = d;
     }
 }
