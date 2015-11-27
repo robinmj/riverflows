@@ -74,7 +74,7 @@ public class UsgsXmlDataSourceTest extends TestCase {
 		assertEquals(14.58d, recentReading.getValue());
 
 		GregorianCalendar cal = new GregorianCalendar();
-		cal.set(2015, 9, 18, 10, 15, 0);
+		cal.set(2015, 8, 18, 10, 15, 0);
 		cal.set(Calendar.MILLISECOND, 0);
 		cal.setTimeZone(TimeZone.getTimeZone("GMT-05:00"));
 
