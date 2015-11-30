@@ -61,7 +61,7 @@ public class UserAccounts extends WebModel<UserAccount> {
 	}
 
     public UserAccount get(WsSession session) throws Exception {
-        HttpGet getCmd = new HttpGet(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource() + ".json?auth_token=" + session.authToken);
+        HttpGet getCmd = new HttpGet(DataSourceController.RIVERFLOWS_WS_BASEURL + getResource() + ".json?auth_token=" + session.authToken);
         HttpClient client = getHttpClientFactory().getHttpClient();
 
         getCmd.addHeader("Accept", "application/json");
@@ -84,7 +84,7 @@ public class UserAccounts extends WebModel<UserAccount> {
     //TODO remove this- the #update() instance method does the same thing
 	public static void updateUserAccount(WsSession session, UserAccount newUserAccount) throws Exception {
 
-		HttpPut putCmd = new HttpPut(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + "/account/update.json?auth_token=" + session.authToken);
+		HttpPut putCmd = new HttpPut(DataSourceController.RIVERFLOWS_WS_BASEURL + "/account/update.json?auth_token=" + session.authToken);
 		HttpClient client = new DataSourceController.SSLHttpClient();
 
 		JSONObject entity = new JSONObject();

@@ -31,7 +31,7 @@ public class Destinations extends WebModel<Destination> {
     private static final Log LOG = LogFactory.getLog(Destinations.class);
 
     public DestinationFacet saveDestinationWithFacet(WsSession session, DestinationFacet destination) throws Exception {
-		HttpPost postCmd = new HttpPost(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + "/destinations.json?auth_token=" + session.authToken);
+		HttpPost postCmd = new HttpPost(DataSourceController.RIVERFLOWS_WS_BASEURL + "/destinations.json?auth_token=" + session.authToken);
 		HttpClient client = getHttpClientFactory().getHttpClient();
 
 		JSONObject entity = new JSONObject();
