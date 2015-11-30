@@ -25,25 +25,32 @@ public class DestinationsTest extends WebModelTestCase {
         Destination dest = testFacet.getDestination();
 
         assertEquals("lower t box", dest.getName());
+        assertFalse("not shared publicly", dest.isShared());
 
         dest.setName("Lower Taos Box");
 
+        dest.setShared(true);
         destinations.update(session, dest);
 
         testFacet = destinationFacets.get(session, 20);
         dest = testFacet.getDestination();
 
         assertEquals("Lower Taos Box", dest.getName());
+        assertTrue("shared publicly", dest.isShared());
 
         //reverse the change
         dest.setName("lower t box");
+        dest.setShared(false);
         destinations.update(session, dest);
+
+        assertFalse("not shared publicly", dest.isShared());
     }
 
     public void testSaveDestinationWithFacet() throws Throwable {
         recorder.insertTape("testSaveDestinationWithFacet");
 
         DestinationFacet clearCreekKayak = DestinationFacetFactory.getClearCreekKayak();
+        clearCreekKayak.getDestination().setShared(true);
 
         clearCreekKayak = destinations.saveDestinationWithFacet(session, clearCreekKayak);
 
@@ -53,6 +60,10 @@ public class DestinationsTest extends WebModelTestCase {
         assertNotNull(clearCreekKayak.getVariable().getCommonVariable());
         assertNotNull(clearCreekKayak.getVariable().getName());
 
+        assertTrue("shared publicly", clearCreekKayak.getDestination().isShared());
+
         clearCreekKayak = destinationFacets.get(session, clearCreekKayak.getId());
+
+        assertTrue("shared publicly", clearCreekKayak.getDestination().isShared());
     }
 }

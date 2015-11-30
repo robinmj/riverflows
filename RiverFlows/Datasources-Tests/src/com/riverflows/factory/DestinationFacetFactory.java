@@ -25,7 +25,7 @@ public final class DestinationFacetFactory {
         Destination clearCreekDest = new Destination();
         clearCreekDest.setUser(new UserAccount());
         clearCreekDest.setName("Clear Creek");
-
+        clearCreekDest.setShared(true);
         clearCreekDest.setSite(clearCreek);
 
         DestinationFacet clearCreekKayak = new DestinationFacet();

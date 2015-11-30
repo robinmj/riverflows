@@ -1,10 +1,10 @@
 !tape
 name: testUpdateDestination
 interactions:
-- recorded: 2014-11-23T13:24:22.260Z
+- recorded: 2015-11-29T17:57:30.048Z
   request:
     method: GET
-    uri: https://riverflows.net/destination_facets/20.json?auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: http://127.0.0.1:3000/destination_facets/20.json?auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
   response:
@@ -12,38 +12,38 @@ interactions:
     headers:
       Cache-Control: max-age=0, private, must-revalidate
       Content-Type: application/json; charset=utf-8
-      Date: Sun, 23 Nov 2014 13:24:22 GMT
-      Etag: '"fa7e7f8eeadf7f9c7f1d7bfe9682bc76"'
+      Date: Sun, 29 Nov 2015 17:57:29 GMT
+      Etag: '"99a07edb34ed2d6438e01cf9c5226919"'
       Server: WEBrick/1.3.1 (Ruby/1.9.3/2013-05-16)
-      Set-Cookie: _ws_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJTNkYjA5ZDVlZTIyYmIyOTYzMzRmZjViZjg1OTIyZDQ3BjsAVEkiGXdhcmRlbi51c2VyLnVzZXIua2V5BjsAVFsHWwZpB0kiIiQyYSQxMCRGdkF0UjZENkZ1dFRNUHh2VjNKWGtlBjsAVA%3D%3D--935d4693917e1c64794d9068ce7a8d075f67e276; path=/; HttpOnly
-      X-Request-Id: a4041237c7480702a4b936ae80bbd940
-      X-Runtime: '0.209000'
+      Set-Cookie: _ws_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJTBlZTQwYzZlMTJjNDBjZmIyMjM2ZWU1ODlkNGI2ODIyBjsAVEkiGXdhcmRlbi51c2VyLnVzZXIua2V5BjsAVFsHWwZpB0kiIiQyYSQxMCRGdkF0UjZENkZ1dFRNUHh2VjNKWGtlBjsAVA%3D%3D--8adf1e2ba430bcedc825cb76f3191c8ff1d99bda; path=/; HttpOnly
+      X-Request-Id: f90656fc09fc3ddbbe931762b95fb615
+      X-Runtime: '0.385000'
       X-Ua-Compatible: IE=Edge
-    body: '{"created_at":"2013-09-30T15:45:40Z","description":null,"destination_id":33,"facet_type":2,"high":2500.0,"high_difficulty":null,"high_plus":null,"high_port_difficulty":null,"id":20,"low":1000.0,"low_difficulty":null,"low_port_difficulty":null,"med":1500.0,"med_difficulty":null,"med_port_difficulty":null,"quality_high":null,"quality_low":null,"quality_med":null,"site_id":7586,"too_low":null,"updated_at":"2014-11-21T21:49:58Z","user_id":2,"variable_id":"00060","site":{"agency":"USGS","agency_specific_id":"08276500","created_at":"2012-08-30T04:35:06Z","id":7586,"latitude":36.32,"longitude":-105.754,"name":"RIO
-      GRANDE BLW TAOS JUNCTION BRIDGE NEAR TAOS, NM","recent_reading":197.0,"recent_reading_time":"2012-08-30T03:30:00Z","recent_reading_var_id":"00060","state":"NM","supported_var_ids":"00060 00065","updated_at":"2012-08-30T04:35:06Z"},"destination":{"created_at":"2013-09-30T15:45:40Z","description":null,"id":33,"name":"lower
-      t box","updated_at":"2014-11-23T13:22:42Z","user_id":2,"visual_gauge_latitude":null,"visual_gauge_longitude":null}}'
-- recorded: 2014-11-23T13:24:22.517Z
+    body: '{"id":20,"description":null,"destination_id":33,"user_id":2,"too_low":null,"low":1000.0,"med":1500.0,"high":2500.0,"high_plus":null,"low_difficulty":null,"med_difficulty":null,"high_difficulty":null,"created_at":"2013-09-30T15:45:40Z","updated_at":"2014-11-21T21:49:58Z","facet_type":2,"site_id":7586,"variable_id":"00060","low_port_difficulty":null,"med_port_difficulty":null,"high_port_difficulty":null,"quality_low":null,"quality_med":null,"quality_high":null,"destination":{"id":33,"name":"lower
+      t box","description":null,"publicly_visible":false,"user_id":2,"visual_gauge_latitude":null,"visual_gauge_longitude":null,"created_at":"2013-09-30T15:45:40Z","updated_at":"2015-11-29T17:55:52Z"},"site":{"id":7586,"name":"RIO GRANDE BLW TAOS JUNCTION BRIDGE
+      NEAR TAOS, NM","agency":"USGS","agency_specific_id":"08276500","latitude":36.32,"longitude":-105.754,"state":"NM","supported_var_ids":"00060 00065","measurements":["STREAMFLOW_CFS","GAUGE_HEIGHT_FT"],"created_at":"2012-08-30T04:35:06Z","updated_at":"2012-08-30T04:35:06Z"}}'
+- recorded: 2015-11-29T17:57:30.732Z
   request:
     method: PUT
-    uri: https://riverflows.net/destinations/33.json?auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: http://127.0.0.1:3000/destinations/33.json?auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
       Content-Type: application/json
-    body: '{"destination":{"id":33,"name":"Lower Taos Box","user_id":2}}'
+    body: '{"destination":{"id":33,"publicly_visible":true,"name":"Lower Taos Box","user_id":2}}'
   response:
     status: 204
     headers:
       Cache-Control: no-cache
-      Date: Sun, 23 Nov 2014 13:24:22 GMT
+      Date: Sun, 29 Nov 2015 17:57:30 GMT
       Server: WEBrick/1.3.1 (Ruby/1.9.3/2013-05-16)
-      Set-Cookie: _ws_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJTViN2M1MTQ2YjE3ZjFkMTY4YjkwNzIxM2E1YzFiMTlmBjsAVEkiGXdhcmRlbi51c2VyLnVzZXIua2V5BjsAVFsHWwZpB0kiIiQyYSQxMCRGdkF0UjZENkZ1dFRNUHh2VjNKWGtlBjsAVA%3D%3D--4631431d6b6e095dc40264948618cb384ff56cb8; path=/; HttpOnly
-      X-Request-Id: 5757a1b233dfcb7b8404a44378450edf
-      X-Runtime: '0.077000'
+      Set-Cookie: _ws_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJWIxYWQ3MDVjODdjMWJiNzhhZGY4MDViNWZlMGIxYzU2BjsAVEkiGXdhcmRlbi51c2VyLnVzZXIua2V5BjsAVFsHWwZpB0kiIiQyYSQxMCRGdkF0UjZENkZ1dFRNUHh2VjNKWGtlBjsAVA%3D%3D--7d86a27a5bb922548a7fa79340435994ccaaf979; path=/; HttpOnly
+      X-Request-Id: 3a69ab5d74d31a62b723735aa4c1d396
+      X-Runtime: '0.505000'
       X-Ua-Compatible: IE=Edge
-- recorded: 2014-11-23T13:24:22.606Z
+- recorded: 2015-11-29T17:57:31.022Z
   request:
     method: GET
-    uri: https://riverflows.net/destination_facets/20.json?auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: http://127.0.0.1:3000/destination_facets/20.json?auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
   response:
@@ -51,31 +51,31 @@ interactions:
     headers:
       Cache-Control: max-age=0, private, must-revalidate
       Content-Type: application/json; charset=utf-8
-      Date: Sun, 23 Nov 2014 13:24:22 GMT
-      Etag: '"fc0acee8ab90b61d6be0edd63d8e179d"'
+      Date: Sun, 29 Nov 2015 17:57:31 GMT
+      Etag: '"4f99c8fcb5f9b1f6694c4ec80bb5a7fb"'
       Server: WEBrick/1.3.1 (Ruby/1.9.3/2013-05-16)
-      Set-Cookie: _ws_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJTZhMDAwM2FlYmVjZTM4ZTFmMDAzZDViOGQ1NDNlY2M5BjsAVEkiGXdhcmRlbi51c2VyLnVzZXIua2V5BjsAVFsHWwZpB0kiIiQyYSQxMCRGdkF0UjZENkZ1dFRNUHh2VjNKWGtlBjsAVA%3D%3D--7cb03c1965f0f66d64b5dbd3d17db300d352f27b; path=/; HttpOnly
-      X-Request-Id: 559155df2c6834353e7450904e5ad87d
-      X-Runtime: '0.060000'
+      Set-Cookie: _ws_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJTMwMzM0MmU5NGYxMzFhYWUwMGE0NjJkOTFhNzk3MTRiBjsAVEkiGXdhcmRlbi51c2VyLnVzZXIua2V5BjsAVFsHWwZpB0kiIiQyYSQxMCRGdkF0UjZENkZ1dFRNUHh2VjNKWGtlBjsAVA%3D%3D--031ac571b57d0350b553eec3651feed66a3a75f4; path=/; HttpOnly
+      X-Request-Id: f34ef80591b270c7c62f5b85b94ee4bd
+      X-Runtime: '0.246000'
       X-Ua-Compatible: IE=Edge
-    body: '{"created_at":"2013-09-30T15:45:40Z","description":null,"destination_id":33,"facet_type":2,"high":2500.0,"high_difficulty":null,"high_plus":null,"high_port_difficulty":null,"id":20,"low":1000.0,"low_difficulty":null,"low_port_difficulty":null,"med":1500.0,"med_difficulty":null,"med_port_difficulty":null,"quality_high":null,"quality_low":null,"quality_med":null,"site_id":7586,"too_low":null,"updated_at":"2014-11-21T21:49:58Z","user_id":2,"variable_id":"00060","site":{"agency":"USGS","agency_specific_id":"08276500","created_at":"2012-08-30T04:35:06Z","id":7586,"latitude":36.32,"longitude":-105.754,"name":"RIO
-      GRANDE BLW TAOS JUNCTION BRIDGE NEAR TAOS, NM","recent_reading":197.0,"recent_reading_time":"2012-08-30T03:30:00Z","recent_reading_var_id":"00060","state":"NM","supported_var_ids":"00060 00065","updated_at":"2012-08-30T04:35:06Z"},"destination":{"created_at":"2013-09-30T15:45:40Z","description":null,"id":33,"name":"Lower
-      Taos Box","updated_at":"2014-11-23T13:24:22Z","user_id":2,"visual_gauge_latitude":null,"visual_gauge_longitude":null}}'
-- recorded: 2014-11-23T13:24:22.691Z
+    body: '{"id":20,"description":null,"destination_id":33,"user_id":2,"too_low":null,"low":1000.0,"med":1500.0,"high":2500.0,"high_plus":null,"low_difficulty":null,"med_difficulty":null,"high_difficulty":null,"created_at":"2013-09-30T15:45:40Z","updated_at":"2014-11-21T21:49:58Z","facet_type":2,"site_id":7586,"variable_id":"00060","low_port_difficulty":null,"med_port_difficulty":null,"high_port_difficulty":null,"quality_low":null,"quality_med":null,"quality_high":null,"destination":{"id":33,"name":"Lower
+      Taos Box","description":null,"publicly_visible":true,"user_id":2,"visual_gauge_latitude":null,"visual_gauge_longitude":null,"created_at":"2013-09-30T15:45:40Z","updated_at":"2015-11-29T17:57:30Z"},"site":{"id":7586,"name":"RIO GRANDE BLW TAOS JUNCTION
+      BRIDGE NEAR TAOS, NM","agency":"USGS","agency_specific_id":"08276500","latitude":36.32,"longitude":-105.754,"state":"NM","supported_var_ids":"00060 00065","measurements":["STREAMFLOW_CFS","GAUGE_HEIGHT_FT"],"created_at":"2012-08-30T04:35:06Z","updated_at":"2012-08-30T04:35:06Z"}}'
+- recorded: 2015-11-29T17:57:31.532Z
   request:
     method: PUT
-    uri: https://riverflows.net/destinations/33.json?auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: http://127.0.0.1:3000/destinations/33.json?auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
       Content-Type: application/json
-    body: '{"destination":{"id":33,"name":"lower t box","user_id":2}}'
+    body: '{"destination":{"id":33,"publicly_visible":false,"name":"lower t box","user_id":2}}'
   response:
     status: 204
     headers:
       Cache-Control: no-cache
-      Date: Sun, 23 Nov 2014 13:24:22 GMT
+      Date: Sun, 29 Nov 2015 17:57:31 GMT
       Server: WEBrick/1.3.1 (Ruby/1.9.3/2013-05-16)
-      Set-Cookie: _ws_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJWQxODg1YmRmMDE2ZTQ5NDYwNWFlM2EzYmYwMGYxMWE0BjsAVEkiGXdhcmRlbi51c2VyLnVzZXIua2V5BjsAVFsHWwZpB0kiIiQyYSQxMCRGdkF0UjZENkZ1dFRNUHh2VjNKWGtlBjsAVA%3D%3D--f263416001f438f869eab32b4900c105940ee97b; path=/; HttpOnly
-      X-Request-Id: 2e8198d0e6b5b4b58bb9e562a76e4e7e
-      X-Runtime: '0.050000'
+      Set-Cookie: _ws_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJTE5YmVhNzA2YjU3ZDI5YmM4NmE5NjgyYjIyNTgyMWVmBjsAVEkiGXdhcmRlbi51c2VyLnVzZXIua2V5BjsAVFsHWwZpB0kiIiQyYSQxMCRGdkF0UjZENkZ1dFRNUHh2VjNKWGtlBjsAVA%3D%3D--5fcdd267d2c9c3c6bfd51dcbac98e2705f1333e9; path=/; HttpOnly
+      X-Request-Id: f921d2d9c416a084cb02bfc0f10e429c
+      X-Runtime: '0.451000'
       X-Ua-Compatible: IE=Edge

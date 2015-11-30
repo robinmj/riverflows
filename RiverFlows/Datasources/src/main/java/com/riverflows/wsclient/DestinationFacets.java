@@ -226,6 +226,7 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 			facet.getDestination().setName(jsonDestination.getString("name"));
 			facet.getDestination().setCreationDate(getDate(jsonObject, "created_at"));
 			facet.getDestination().setModificationDate(getDate(jsonObject, "updated_at"));
+			facet.getDestination().setShared(jsonDestination.getBoolean("publicly_visible"));
             UserAccount destUser = new UserAccount();
             destUser.setPlaceholderObj(true);
             destUser.setId(jsonDestination.getInt("user_id"));

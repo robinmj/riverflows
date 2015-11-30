@@ -89,6 +89,7 @@ public class Destinations extends WebModel<Destination> {
 		}
         destJson.put("name", destination.getName());
         destJson.put("description", destination.getDescription());
+		destJson.put("publicly_visible", destination.isShared());
         //destJson.put("visual_gauge_latitude",
         //destJson.put("visual_gauge_longitude",
 
@@ -106,6 +107,7 @@ public class Destinations extends WebModel<Destination> {
 		destination.setDescription(destJson.getString("description"));
 		destination.setCreationDate(getDate(destJson, "created_at"));
 		destination.setModificationDate(getDate(destJson, "updated_at"));
+		destination.setShared(destJson.getBoolean("publicly_visible"));
 		return destination;
 	}
 }
