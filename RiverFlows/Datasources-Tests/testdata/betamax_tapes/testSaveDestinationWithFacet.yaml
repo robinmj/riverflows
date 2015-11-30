@@ -4,7 +4,7 @@ interactions:
 - recorded: 2015-11-29T15:33:59.283Z
   request:
     method: POST
-    uri: http://127.0.0.1:3000/destinations.json?auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: https://riverflows.net/destinations.json?auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
       Content-Type: application/json
@@ -29,7 +29,7 @@ interactions:
 - recorded: 2015-11-29T17:37:39.579Z
   request:
     method: GET
-    uri: http://127.0.0.1:3000/destination_facets/26.json?auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: https://riverflows.net/destination_facets/26.json?auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
   response:
