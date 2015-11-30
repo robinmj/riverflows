@@ -1,6 +1,7 @@
 package com.riverflows;
 
 import android.content.Intent;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -27,6 +28,7 @@ import java.util.Date;
 
 import roboguice.RoboGuice;
 
+import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
@@ -106,6 +108,9 @@ public class EditDestinationTest {
 
         //site name should be displayed
         assertThat(((TextView) frag.getView().findViewById(R.id.lbl_dest_gage)).getText().toString(), equalTo(clearCreek.getName()));
+
+        //destination should be shared by default
+        assertTrue(((CheckBox) frag.getView().findViewById(R.id.publicly_visible)).isChecked());
     }
 
     @Test
