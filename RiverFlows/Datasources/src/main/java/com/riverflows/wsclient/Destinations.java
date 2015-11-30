@@ -107,7 +107,9 @@ public class Destinations extends WebModel<Destination> {
 		destination.setDescription(destJson.getString("description"));
 		destination.setCreationDate(getDate(destJson, "created_at"));
 		destination.setModificationDate(getDate(destJson, "updated_at"));
-		destination.setShared(destJson.getBoolean("publicly_visible"));
+		if(!isEmpty(destJson, "publicly_visible")) {
+			destination.setShared(destJson.getBoolean("publicly_visible"));
+		}
 		return destination;
 	}
 }
