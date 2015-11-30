@@ -2,24 +2,25 @@ package com.riverflows;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.widget.CheckBox;
 
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Site;
-import com.riverflows.data.UserAccount;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.factory.DestinationFacetFactory;
 import com.riverflows.factory.SiteDataFactory;
 import com.riverflows.factory.SiteFactory;
 import com.riverflows.wsclient.WsSession;
-import com.riverflows.wsclient.WsSessionManager;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InOrder;
 import org.robolectric.Robolectric;
-import org.robolectric.RobolectricTestRunner;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.annotation.Config;
 import org.robolectric.util.ActivityController;
 
 import roboguice.RoboGuice;
@@ -34,29 +35,31 @@ import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
-import static org.robolectric.Robolectric.clickOn;
+import static org.robolectric.Shadows.shadowOf;
 
 /**
  * Created by robin on 11/14/14.
  */
 
 @RunWith(RobolectricGradleTestRunner.class)
+@Config(constants = BuildConfig.class, sdk = 21)
 public class ViewDestinationTest {
 
     ActivityController<ViewDestination> activityController;
     CheckBox favoriteBtn;
     DestinationFragment destinationFragment;
     MockWsClient wsClient = new MockWsClient();
+    RobinSession testSession = new RobinSession();
 
     @Before
     public void setup() {
-        RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient, new RobinSession());
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, testSession);
     }
 
     public ViewDestination createViewDestination(Intent i) throws Exception {
         this.activityController= Robolectric.buildActivity(ViewDestination.class);
 
-        this.activityController.withIntent(i).create().start().resume().visible();
+        this.activityController.withIntent(i).setup();
 
         ViewDestination activity = activityController.get();
 
@@ -92,7 +95,7 @@ public class ViewDestinationTest {
                 eq(false)))
                 .thenReturn(SiteDataFactory.getClearCreekData());
 
-        Intent i = new Intent(Robolectric.application, ViewDestination.class);
+        Intent i = new Intent(RuntimeEnvironment.application, ViewDestination.class);
 
         i.putExtra(ViewDestination.KEY_DESTINATION_FACET, clearCreekKayak);
 
@@ -117,24 +120,24 @@ public class ViewDestinationTest {
         DestinationFacet fountainCreekKayak = DestinationFacetFactory.getFountainCreekKayak();
         Site fountainCreek = fountainCreekKayak.getDestination().getSite();
 
-        Intent i = new Intent(Robolectric.application, ViewDestination.class);
+        Intent i = new Intent(RuntimeEnvironment.application, ViewDestination.class);
 
         i.putExtra(ViewDestination.KEY_DESTINATION_FACET, fountainCreekKayak);
 
         ViewDestination activity = createViewDestination(i);
 
         assertThat("precondition",
-                !FavoritesDaoImpl.isFavorite(Robolectric.application, fountainCreekKayak.getId()));
+                !FavoritesDaoImpl.isFavorite(RuntimeEnvironment.application, fountainCreekKayak.getId()));
 
         assertThat(favoriteBtn.isChecked(), equalTo(false));
 
-        clickOn(favoriteBtn);//add favorite
+        favoriteBtn.performClick();//add favorite
 
-        assertThat("created favorite", FavoritesDaoImpl.isFavorite(Robolectric.application, fountainCreekKayak.getId()));
+        assertThat("created favorite", FavoritesDaoImpl.isFavorite(RuntimeEnvironment.application, fountainCreekKayak.getId()));
         assertThat(favoriteBtn.isChecked(), equalTo(true));
 
-        clickOn(favoriteBtn);//remove favorite
-        assertThat("removed favorite", !FavoritesDaoImpl.isFavorite(Robolectric.application, fountainCreekKayak.getId()));
+        favoriteBtn.performClick();//remove favorite
+        assertThat("removed favorite", !FavoritesDaoImpl.isFavorite(RuntimeEnvironment.application, fountainCreekKayak.getId()));
 
         InOrder inOrder = inOrder(wsClient.destinationFacetsMock);
 
@@ -144,5 +147,47 @@ public class ViewDestinationTest {
 
         inOrder.verify(wsClient.destinationFacetsMock).saveFavorite(any(WsSession.class), eq(fountainCreekKayak.getId()));
         inOrder.verify(wsClient.destinationFacetsMock).removeFavorite(any(WsSession.class), eq(fountainCreekKayak.getId()));
+    }
+
+    @Test
+    public void shouldNotAllowEditWhenNotFacetOwner() throws Exception {
+        DestinationFacet fountainCreekKayak = DestinationFacetFactory.getFountainCreekKayak();
+        Site fountainCreek = fountainCreekKayak.getDestination().getSite();
+
+        Intent i = new Intent(RuntimeEnvironment.application, ViewDestination.class);
+
+        i.putExtra(ViewDestination.KEY_DESTINATION_FACET, fountainCreekKayak);
+
+        ViewDestination activity = createViewDestination(i);
+
+        Menu menu = shadowOf(activity).getOptionsMenu();
+
+        assertThat("edit function accessible", !menu.findItem(R.id.mi_edit_destination).isVisible());
+        assertThat("edit favorite function accessible", !menu.findItem(R.id.mi_edit_favorite).isVisible());
+
+    }
+
+    @Test
+    public void shouldAllowEditWhenFacetOwner() throws Exception {
+        DestinationFacet fountainCreekKayak = DestinationFacetFactory.getFountainCreekKayak();
+        Site fountainCreek = fountainCreekKayak.getDestination().getSite();
+
+        fountainCreekKayak.setUser(testSession.wsSessionManager.getSession(null).userAccount);
+
+        Intent i = new Intent(RuntimeEnvironment.application, ViewDestination.class);
+
+        i.putExtra(ViewDestination.KEY_DESTINATION_FACET, fountainCreekKayak);
+
+        ViewDestination activity = createViewDestination(i);
+
+        Menu menu = shadowOf(activity).getOptionsMenu();
+
+        assertThat("edit function not accessible", menu.findItem(R.id.mi_edit_destination).isVisible());
+        assertThat("edit favorite function accessible", !menu.findItem(R.id.mi_edit_favorite).isVisible());
+    }
+
+    @After
+    public void cleanup() {
+        RobolectricGradleTestRunner.resetDbSingleton();
     }
 }

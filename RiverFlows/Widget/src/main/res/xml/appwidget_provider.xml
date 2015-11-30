@@ -1,9 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <appwidget-provider
   xmlns:android="http://schemas.android.com/apk/res/android"
-  android:label="RiverFlows-Widget"
-  android:minWidth="318dp"
+  android:label="Riverflows.net-Widget"
+  android:minResizeWidth="303dp"
+  android:minResizeHeight="40dp"
+  android:minWidth="303dp"
   android:minHeight="222dp"
+  android:resizeMode="vertical"
   android:updatePeriodMillis="3600000"
   android:initialLayout="@layout/main">
   <!-- 

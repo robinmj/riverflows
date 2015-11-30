@@ -18,6 +18,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.inject.Inject;
 import com.riverflows.data.Destination;
@@ -88,7 +89,9 @@ public class EditDestination extends RoboActionBarActivity {
 
 		showEditBar();
 
-		if(manager.findFragmentByTag("edit_destination") == null) {
+        this.editDestination = (EditDestinationFragment)manager.findFragmentByTag("edit_destination");
+
+		if(this.editDestination == null) {
 
             DestinationFacet destinationFacet = null;
 
@@ -456,6 +459,16 @@ public class EditDestination extends RoboActionBarActivity {
             RoboGuice.getInjector(EditDestination.this).injectMembers(this);
 		}
 
+        private SaveDestination(SaveDestination saveDestination) {
+            super(saveDestination);
+            RoboGuice.getInjector(EditDestination.this).injectMembers(this);
+        }
+
+        @Override
+        public SaveDestination clone() {
+            return new SaveDestination(this);
+        }
+
         @Override
         protected DestinationFacet doApiCall(WsSession session, DestinationFacet... params) throws Exception {
 			DestinationFacet facet = params[0];
@@ -513,7 +526,7 @@ public class EditDestination extends RoboActionBarActivity {
                 if(exception.getLocalizedMessage() != null) {
                     Toast.makeText(EditDestination.this, exception.getLocalizedMessage(), Toast.LENGTH_LONG).show();
                 }
-                EasyTracker.getTracker().sendException("SaveDestination", exception, false);
+                Crashlytics.logException(exception);
 				Log.e(Home.TAG,"", exception);
 			}
 

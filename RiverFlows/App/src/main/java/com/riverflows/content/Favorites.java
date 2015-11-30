@@ -1,6 +1,5 @@
 package com.riverflows.content;
 
-import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -11,15 +10,14 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.google.analytics.tracking.android.EasyTracker;
+import com.google.inject.Inject;
 import com.riverflows.Home;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.FavoriteData;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
-import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.ValueConverter;
-import com.riverflows.data.Variable;
 import com.riverflows.data.Variable.CommonVariable;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.db.RiverGaugesDb;
@@ -27,12 +25,13 @@ import com.riverflows.wsclient.DataSourceController;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-public class Favorites extends ContentProvider {
+import roboguice.RoboGuice;
+import roboguice.content.RoboContentProvider;
+
+public class Favorites extends RoboContentProvider {
 	
 	public static final int VERSION = 1;
 	
@@ -87,7 +86,10 @@ public class Favorites extends ContentProvider {
 
 	public static final Uri CONTENT_URI = 
         Uri.parse("content://com.riverflows.content.favorites");
-	
+
+	@Inject
+	private DataSourceController dataSourceController;
+
 	private Map<CommonVariable, CommonVariable> unitConversionMap;
 
 	@Override
@@ -110,6 +112,10 @@ public class Favorites extends ContentProvider {
 
 	@Override
 	public boolean onCreate() {
+
+		RoboGuice.setUseAnnotationDatabases(false);
+
+		super.onCreate();
 		SharedPreferences settings = getContext().getSharedPreferences(Home.PREFS_FILE, Context.MODE_PRIVATE);
     	String tempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
     	
@@ -175,7 +181,7 @@ public class Favorites extends ContentProvider {
             List<FavoriteData> favoriteDataList = null;
 			
 			try {
-				favoriteDataList = DataSourceController.getSiteData(favorites, true);
+				favoriteDataList = this.dataSourceController.getFavoriteData(favorites, true);
 			} catch(UnknownHostException uhe) {
 				result.getExtras().putInt(EXTRA_ERROR_CODE, ERROR_UNKNOWN_HOST);
 				return result;
@@ -222,45 +228,6 @@ public class Favorites extends ContentProvider {
 		}
 		
 		return result;
-	}
-	
-	//TODO need a datatype that contains both the Favorite and SiteData so this is no longer necessary
-	// this code is cut-n-pasted from the Favorites activity to the Favorites content provider
-	private List<SiteData> expandDatasets(List<Favorite> favorites, Map<SiteId,SiteData> siteDataMap) {
-		ArrayList<SiteData> expandedDatasets = new ArrayList<SiteData>(favorites.size());
-		
-		//build a list of SiteData objects corresponding to the list of favorites
-		for(Favorite favorite: favorites) {
-			SiteData current = siteDataMap.get(favorite.getSite().getSiteId());
-			
-			if(current == null) {
-				continue;
-			}
-			
-			Variable favoriteVar = DataSourceController.getVariable(favorite.getSite().getAgency(), favorite.getVariable());
-			
-			if(favoriteVar == null) {
-				throw new NullPointerException("could not find variable: " + favorite.getSite().getAgency() + " " + favorite.getVariable());
-			}
-
-			//use custom name if one is defined
-			if(favorite.getName() != null) {
-				current.getSite().setName(favorite.getName());
-			}
-			
-			if(current.getDatasets().size() <= 1) {
-				expandedDatasets.add(current);
-				continue;
-			}
-			
-			//use the dataset for this favorite's variable
-			Series dataset = current.getDatasets().get(favoriteVar.getCommonVariable());
-			SiteData expandedDataset = new SiteData();
-			expandedDataset.setSite(current.getSite());
-			expandedDataset.getDatasets().put(favoriteVar.getCommonVariable(), dataset);
-			expandedDatasets.add(expandedDataset);
-		}
-		return expandedDatasets;
 	}
 
 	@Override

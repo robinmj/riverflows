@@ -2,18 +2,14 @@ package com.riverflows.view;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.view.View;
 
 import com.riverflows.RobolectricGradleTestRunner;
 import com.riverflows.data.Category;
 import com.riverflows.data.DecoratedCategory;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
-import com.riverflows.data.SiteId;
-import com.riverflows.data.USState;
 import com.riverflows.data.Variable;
 import com.riverflows.factory.SiteFactory;
-import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.UsgsCsvDataSource;
 
 import org.apache.http.HttpResponse;
@@ -25,7 +21,8 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
-import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.shadows.httpclient.FakeHttp;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -93,7 +90,7 @@ public class HydroGraphTest {
 
     @Before
     public void setup() {
-        graph = new HydroGraph(Robolectric.application);
+        graph = new HydroGraph(RuntimeEnvironment.application);
     }
 
     private void initGraphLayout() {
@@ -112,7 +109,7 @@ public class HydroGraphTest {
 
         response.setEntity(new InputStreamEntity(new FileInputStream(responseFile), responseFile.length()));
 
-        Robolectric.addPendingHttpResponse(response);
+        FakeHttp.addPendingHttpResponse(response);
 
         Site vallecito = SiteFactory.getVallecitoCreek();
         Variable[] vars = vallecito.getSupportedVariables();
@@ -142,7 +139,7 @@ public class HydroGraphTest {
 
         response.setEntity(new InputStreamEntity(new FileInputStream(responseFile), responseFile.length()));
 
-        Robolectric.addPendingHttpResponse(response);
+        FakeHttp.addPendingHttpResponse(response);
 
         Site vallecito = SiteFactory.getVallecitoCreek();
         Variable[] vars = vallecito.getSupportedVariables();
@@ -172,7 +169,7 @@ public class HydroGraphTest {
 
         response.setEntity(new InputStreamEntity(new FileInputStream(responseFile), responseFile.length()));
 
-        Robolectric.addPendingHttpResponse(response);
+        FakeHttp.addPendingHttpResponse(response);
 
         Site vallecito = SiteFactory.getVallecitoCreek();
         Variable[] vars = vallecito.getSupportedVariables();
@@ -202,7 +199,7 @@ public class HydroGraphTest {
 
         response.setEntity(new InputStreamEntity(new FileInputStream(responseFile), responseFile.length()));
 
-        Robolectric.addPendingHttpResponse(response);
+        FakeHttp.addPendingHttpResponse(response);
 
         Site vallecito = SiteFactory.getVallecitoCreek();
         Variable[] vars = vallecito.getSupportedVariables();
@@ -233,7 +230,7 @@ public class HydroGraphTest {
 
         response.setEntity(new InputStreamEntity(new FileInputStream(responseFile), responseFile.length()));
 
-        Robolectric.addPendingHttpResponse(response);
+        FakeHttp.addPendingHttpResponse(response);
 
         Site vallecito = SiteFactory.getVallecitoCreek();
         Variable[] vars = vallecito.getSupportedVariables();
@@ -270,7 +267,7 @@ public class HydroGraphTest {
 
         response.setEntity(new InputStreamEntity(new FileInputStream(responseFile), responseFile.length()));
 
-        Robolectric.addPendingHttpResponse(response);
+        FakeHttp.addPendingHttpResponse(response);
 
         Site southPlatte = SiteFactory.getSouthPlatteAtNorthPlatte();
         Variable[] vars = southPlatte.getSupportedVariables();
@@ -309,7 +306,7 @@ public class HydroGraphTest {
 
         response.setEntity(new InputStreamEntity(new FileInputStream(responseFile), responseFile.length()));
 
-        Robolectric.addPendingHttpResponse(response);
+        FakeHttp.addPendingHttpResponse(response);
 
         Site southPlatte = SiteFactory.getSouthPlatteAtNorthPlatte();
         Variable[] vars = southPlatte.getSupportedVariables();
@@ -348,7 +345,7 @@ public class HydroGraphTest {
 
         response.setEntity(new InputStreamEntity(new FileInputStream(responseFile), responseFile.length()));
 
-        Robolectric.addPendingHttpResponse(response);
+        FakeHttp.addPendingHttpResponse(response);
 
         Site verde = SiteFactory.getVerde();
         Variable[] vars = verde.getSupportedVariables();
@@ -377,7 +374,7 @@ public class HydroGraphTest {
 
         response.setEntity(new InputStreamEntity(new FileInputStream(responseFile), responseFile.length()));
 
-        Robolectric.addPendingHttpResponse(response);
+        FakeHttp.addPendingHttpResponse(response);
 
         Site vallecito = SiteFactory.getVallecitoCreek();
         Variable[] vars = vallecito.getSupportedVariables();

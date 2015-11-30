@@ -14,6 +14,7 @@ import org.apache.http.conn.HttpHostConnectException;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.inject.Inject;
 import com.riverflows.data.DestinationFacet;
@@ -58,6 +59,7 @@ public class RiverSelect extends MapItemList {
 		
 		if(state != null) {
             getActionBar().setTitle(state.getText() + " Gauge Sites");
+			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
 		
 		super.onCreate(savedInstanceState);
@@ -73,7 +75,7 @@ public class RiverSelect extends MapItemList {
 	
 	@Override
 	protected void onStop() {
-		super.onStart();
+		super.onStop();
 		
 		EasyTracker.getInstance().activityStop(this);
 	}
@@ -151,17 +153,16 @@ public class RiverSelect extends MapItemList {
 				} catch(HttpHostConnectException hhce) {
 					setLoadErrorMsg("could not reach RiverFlows server");
 					Log.e(TAG, "",hhce);
-					EasyTracker.getTracker().sendException(this.getClass().getName() + " loadSites " + hhce.getMessage(), hhce, false);
+					Crashlytics.logException(hhce);
 					return null;
 				} catch(SocketException se) {
 					setLoadErrorMsg("could not connect to RiverFlows server");
 					Log.e(TAG, "",se);
 					return null;
 				} catch(Exception e) {
+					Crashlytics.logException(e);
 					setLoadErrorMsg(e.getMessage());
 					Log.e(TAG, "", e);
-
-					EasyTracker.getTracker().sendException(this.getClass().getName() + " loadSites", e, true);
 					return null;
 				}
 

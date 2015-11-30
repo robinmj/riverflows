@@ -25,14 +25,18 @@ import android.view.SubMenu;
 import android.view.View;
 import android.widget.ProgressBar;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
+import com.google.inject.Inject;
 import com.riverflows.data.CelsiusFahrenheitConverter;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Site;
 import com.riverflows.data.Variable;
 import com.riverflows.data.Variable.CommonVariable;
 import com.riverflows.wsclient.DataSourceController;
+import com.riverflows.wsclient.WsSession;
+import com.riverflows.wsclient.WsSessionManager;
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -58,6 +62,9 @@ public class ViewDestination extends RoboActionBarActivity {
     HashMap<CommonVariable, CommonVariable> conversionMap = new HashMap<CommonVariable, CommonVariable>();
     FetchHydrographTask runningShareTask = null;
 
+	@Inject
+	private WsSessionManager wsSessionManager;
+
     @Override
     public void onCreate(Bundle icicle) {
         super.onCreate(icicle);
@@ -69,6 +76,7 @@ public class ViewDestination extends RoboActionBarActivity {
         FragmentManager manager = getSupportFragmentManager();
 
         getSupportActionBar().setTitle(destinationFacet.getDestination().getName());
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
 		SharedPreferences settings = getSharedPreferences(Home.PREFS_FILE, MODE_PRIVATE);
     	String tempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
@@ -125,6 +133,7 @@ public class ViewDestination extends RoboActionBarActivity {
     	EasyTracker.getInstance().activityStop(this);
     }
 
+    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         DestinationFragment fragment = this.destinationFragment;
 
@@ -133,7 +142,35 @@ public class ViewDestination extends RoboActionBarActivity {
         }
 
         MenuInflater inflater = getMenuInflater();
-        inflater.inflate(R.menu.standard_menu, menu);
+        inflater.inflate(R.menu.graph_options_menu, menu);
+
+		menu.findItem(R.id.mi_edit_favorite).setVisible(false);
+
+		WsSession session = this.wsSessionManager.getSession(this);
+
+        menu.findItem(R.id.mi_create_destination).setVisible(false);
+
+		MenuItem editItem = menu.findItem(R.id.mi_edit_destination);
+
+		//in the off chance that session or user account is null, don't worry about it-
+		// EditDestination will prevent user from saving their changes
+		if(session != null && session.userAccount != null) {
+            try {
+                if (!session.userAccount.getId().equals(fragment.getDestinationFacet().getUser().getId())) {
+                    editItem.setVisible(false);
+                }
+            } catch (NullPointerException npe) {
+                Log.e(App.TAG, "id=" + session.userAccount.getId(), npe);
+
+                //TODO remove this once cause of NPE is found
+
+                HashMap<String,String> metadata = new HashMap<String, String>();
+                metadata.put("user id", "" + session.userAccount.getId());
+                metadata.put("destination facet id", "" + fragment.getDestinationFacet().getId());
+                EasyTracker.getTracker().send("debuginfo", metadata);
+				Crashlytics.logException(npe);
+            }
+		}
 
         MenuItem otherVarsItem = menu.findItem(R.id.mi_other_variables);
         otherVarsItem.setVisible(true);
@@ -150,7 +187,7 @@ public class ViewDestination extends RoboActionBarActivity {
         shareItem.setVisible(true);
         shareItem.setEnabled(true);
 
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
 
     @Override
@@ -186,8 +223,12 @@ public class ViewDestination extends RoboActionBarActivity {
 	public boolean onOptionsItemSelected(MenuItem item) {
 	    // Handle item selection
 	    switch (item.getItemId()) {
-	    case R.id.mi_home:
-	    	startActivityIfNeeded(new Intent(this, Home.class), -1);
+	    case android.R.id.home:
+			if(isTaskRoot()) {
+				startActivityIfNeeded(new Intent(this, Home.class), -1);
+			} else {
+				finish();
+			}
 	    	return true;
 	    case R.id.mi_share:
 	        ProgressBar progressBar = (ProgressBar)findViewById(R.id.progressBar);
@@ -201,6 +242,9 @@ public class ViewDestination extends RoboActionBarActivity {
 	    case R.id.mi_reload:
 	    	this.destinationFragment.reload();
 	    	return true;
+		case R.id.mi_edit_destination:
+			ViewDestination.this.destinationFragment.editDestination();
+			return true;
 	    case R.id.mi_other_variables:
 	    case R.id.mi_change_units:
 	    	if(this.destinationFragment != null) {
@@ -249,6 +293,8 @@ public class ViewDestination extends RoboActionBarActivity {
 
 	    	Bitmap b = null;
 	    	try {
+				Crashlytics.setString("ViewDestination.FetchHydrographTask.graphUrl", graphUrl);
+
 				b = BitmapFactory.decodeStream((InputStream) new URL(graphUrl).getContent());
 
 				String file_name = "share_hydrograph.png";
@@ -266,9 +312,9 @@ public class ViewDestination extends RoboActionBarActivity {
 
 		            out.flush();
 		        } catch (Exception e) {
-		            Log.e(Home.TAG,"", e);
+		            Log.e(Home.TAG, "", e);
 
-					EasyTracker.getTracker().sendException("saving " + graphUrl, e, false);
+					Crashlytics.logException(e);
 
 		            return null;
 		        } finally {
@@ -281,9 +327,9 @@ public class ViewDestination extends RoboActionBarActivity {
 			} catch (MalformedURLException e) {
 				Log.e(Home.TAG, graphUrl,e);
 			} catch (IOException e) {
-				Log.w(Home.TAG, graphUrl,e);
+				Log.w(Home.TAG, graphUrl, e);
 
-				EasyTracker.getTracker().sendException("downloading " + graphUrl, e, false);
+				Crashlytics.logException(e);
 			}
 	        return null;
 	    }

@@ -4,9 +4,11 @@ import android.app.Activity;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.inject.Inject;
 import com.riverflows.App;
+import com.riverflows.ViewSite;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteData;
 import com.riverflows.data.Variable;
@@ -80,6 +82,9 @@ public class DataSetLoader extends AsyncTaskLoader<SiteData> {
                 }
             }
 
+            Crashlytics.setString(ViewSite.KEY_SITE, site.getId());
+            Crashlytics.setString(ViewSite.KEY_VARIABLE, variables[0].getId());
+
             return this.dataSourceController.getSiteData(site, variables, this.hardRefresh);
         } catch(UnknownHostException uhe) {
             errorMsg = "Lost network connection.";
@@ -87,17 +92,17 @@ public class DataSetLoader extends AsyncTaskLoader<SiteData> {
             errorMsg = "Could not retrieve site data: an I/O error has occurred.";
             Log.e(App.TAG, site.getId(), ioe);
 
-            EasyTracker.getTracker().sendException(getClass().getCanonicalName(), ioe, false);
+            Crashlytics.logException(ioe);
         } catch(DataParseException dpe) {
             errorMsg = "Could not process data from " + site + "; " + dpe.getMessage();
             Log.e(App.TAG, site.toString(), dpe);
 
-            EasyTracker.getTracker().sendException(getClass().getCanonicalName(), dpe, false);
+            Crashlytics.logException(dpe);
         } catch(Exception e) {
             errorMsg = "Error loading data from " + site + "; " + e.getMessage();
             Log.e(App.TAG, site.toString(), e);
 
-            EasyTracker.getTracker().sendException(getClass().getCanonicalName(), e, false);
+            Crashlytics.logException(e);
         }
         this.data = result;
         return result;

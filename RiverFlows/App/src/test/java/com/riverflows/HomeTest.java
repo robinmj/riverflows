@@ -1,39 +1,36 @@
 package com.riverflows;
 
-import android.support.v4.app.Fragment;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.text.SpannableString;
-import android.text.style.ClickableSpan;
+import android.support.v4.app.Fragment;
 import android.view.View;
-import android.widget.TextView;
 
+import com.google.android.gms.common.ConnectionResult;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.FavoriteData;
-import com.riverflows.data.Page;
 import com.riverflows.data.SiteData;
-import com.riverflows.data.SiteId;
-import com.riverflows.data.USState;
 import com.riverflows.data.UserAccount;
+import com.riverflows.db.RiverGaugesDb;
 import com.riverflows.factory.DestinationFacetFactory;
 import com.riverflows.factory.SiteDataFactory;
 import com.riverflows.wsclient.CODWRDataSource;
 import com.riverflows.wsclient.WsSession;
 import com.riverflows.wsclient.WsSessionManager;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
+import org.robolectric.RuntimeEnvironment;
+import org.robolectric.shadows.ShadowApplication;
+import org.robolectric.shadows.gms.ShadowGooglePlayServicesUtil;
 import org.robolectric.util.ActivityController;
 
 import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import roboguice.RoboGuice;
 
@@ -42,11 +39,8 @@ import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyList;
-import static org.mockito.Matchers.argThat;
-import static org.mockito.Matchers.isNull;
-import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.robolectric.Robolectric.shadowOf;
+import static org.robolectric.Shadows.shadowOf;
 
 /**
  * Created by robin on 3/12/15.
@@ -59,7 +53,7 @@ public class HomeTest {
 
     @Before
     public void setup() {
-        RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient, mockSessionManager);
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, mockSessionManager);
     }
 
     public Home createHome(Intent i) throws Exception {
@@ -78,7 +72,7 @@ public class HomeTest {
 
     @Test
     public void shouldSelectFavoritesTab() throws Exception {
-        Intent i = new Intent(Robolectric.application, Home.class);
+        Intent i = new Intent(RuntimeEnvironment.application, Home.class);
 
         Home h = createHome(i);
 
@@ -88,7 +82,9 @@ public class HomeTest {
 
     @Test
     public void testChooseAccount() throws Exception {
-        Intent i = new Intent(Robolectric.application, Home.class);
+        Intent i = new Intent(RuntimeEnvironment.application, Home.class);
+
+        ShadowGooglePlayServicesUtil.setIsGooglePlayServicesAvailable(ConnectionResult.SUCCESS);
 
         Home h = createHome(i);
 
@@ -106,9 +102,9 @@ public class HomeTest {
         account.setFacetTypes(0);
         mockSessionManager.session = new WsSession("robin.m.j", account, "", System.currentTimeMillis() + 10 * 60 * 1000);
 
-        RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient, mockSessionManager);
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, mockSessionManager);
 
-        Intent i = new Intent(Robolectric.application, Home.class);
+        Intent i = new Intent(RuntimeEnvironment.application, Home.class);
 
         Home h = createHome(i);
 
@@ -132,7 +128,7 @@ public class HomeTest {
         account.setFacetTypes(4);
         mockSessionManager.session = new WsSession("robin.m.j", account, "", System.currentTimeMillis() + 10 * 60 * 1000);
 
-        RoboGuice.overrideApplicationInjector(Robolectric.application, wsClient, mockSessionManager);
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, mockSessionManager);
 
         ArrayList<DestinationFacet> mockResults = new ArrayList<DestinationFacet>();
         DestinationFacet clearCreekKayak = DestinationFacetFactory.getClearCreekKayak();
@@ -146,7 +142,7 @@ public class HomeTest {
         mockData.add(clearCreekFavData);
         when(wsClient.dsControllerMock.getFavoriteData(anyList(), anyBoolean())).thenReturn(mockData);
 
-        Intent i = new Intent(Robolectric.application, Home.class);
+        Intent i = new Intent(RuntimeEnvironment.application, Home.class);
 
         Home h = createHome(i);
 
@@ -166,5 +162,10 @@ public class HomeTest {
         assertThat(favorites.getListView().getVisibility(), equalTo(View.VISIBLE));
         assertThat(favorites.getListView().getEmptyView().getVisibility(), equalTo(View.GONE));
 
+    }
+
+    @After
+    public void cleanup() {
+        RobolectricGradleTestRunner.resetDbSingleton();
     }
 }

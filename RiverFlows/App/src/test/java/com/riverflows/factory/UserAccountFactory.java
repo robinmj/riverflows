@@ -14,6 +14,7 @@ public class UserAccountFactory {
         }
 
         UserAccount account = new UserAccount();
+        account.setId(654);
         account.setEmail("robin.m.j@gmail.com");
 
         return robin = account;

@@ -7,6 +7,8 @@ import android.content.pm.ApplicationInfo;
 import android.os.Build;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.riverflows.data.UserAccount;
 import com.riverflows.db.CachingHttpClientWrapper;
@@ -16,6 +18,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import io.fabric.sdk.android.Fabric;
 import roboguice.RoboGuice;
 
 /**
@@ -34,6 +37,13 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
+        // Set up Crashlytics, disabled for debug builds
+        Crashlytics crashlyticsKit = new Crashlytics.Builder()
+                .core(new CrashlyticsCore.Builder().disabled(BuildConfig.DEBUG).build())
+                .build();
+
+        // Initialize Fabric with the debug-disabled crashlytics.
+        Fabric.with(this, crashlyticsKit);
 
         RoboGuice.setUseAnnotationDatabases(false);
 
@@ -51,7 +61,7 @@ public class App extends Application {
 
         //disable Google Analytics when in debug mode
         GoogleAnalytics myInstance = GoogleAnalytics.getInstance(this);
-        myInstance.setAppOptOut((getApplicationContext().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != ApplicationInfo.FLAG_DEBUGGABLE);
+        myInstance.setAppOptOut((getApplicationContext().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) == ApplicationInfo.FLAG_DEBUGGABLE);
 
         // Work around pre-Froyo bugs in HTTP connection reuse.
         if (Integer.parseInt(Build.VERSION.SDK) < Build.VERSION_CODES.FROYO) {

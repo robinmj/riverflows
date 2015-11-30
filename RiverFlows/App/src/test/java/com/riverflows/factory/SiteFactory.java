@@ -1,6 +1,7 @@
 package com.riverflows.factory;
 
 import com.riverflows.data.Site;
+import com.riverflows.data.SiteData;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
 import com.riverflows.data.Variable;
@@ -68,6 +69,19 @@ public class SiteFactory {
     public static Site getVerde() {
         Variable[] vars = { UsgsCsvDataSource.VTYPE_STREAMFLOW_CFS, UsgsCsvDataSource.VTYPE_GAUGE_HEIGHT_FT };
         return new Site(new SiteId("USGS", "09510000"), "VERDE RIVER BELOW BARTLETT DAM, AZ", USState.AZ, vars);
+    }
+
+    public static Site getApalachicola() {
+
+        Site apalachicola = new Site(new SiteId("USGS","02358754"),
+                "APALACHICOLA R.AB CHIPOLA CONR WEWAHITCHKA,FLA",
+                USState.FL,
+                new Variable[]{ UsgsCsvDataSource.VTYPE_GAUGE_HEIGHT_FT });
+        apalachicola.setLatitude(30.13408877d);
+        apalachicola.setLongitude(-85.1440822d);
+        apalachicola.getSiteId().setPrimaryKey(52109);
+
+        return apalachicola;
     }
 
     public static Matcher<Site> matches(final Site s) {

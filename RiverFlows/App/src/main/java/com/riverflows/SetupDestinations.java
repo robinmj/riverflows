@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.inject.Inject;
 import com.riverflows.data.DestinationFacet;
@@ -79,7 +80,7 @@ public class SetupDestinations extends RoboFragmentActivity implements LoaderMan
 
 			} catch(Exception e) {
 				Log.e(Home.TAG, "", e);
-				EasyTracker.getTracker().sendException(getClass().getSimpleName(), e, false);
+				Crashlytics.logException(e);
 			}
 
 			return null;
@@ -102,6 +103,16 @@ public class SetupDestinations extends RoboFragmentActivity implements LoaderMan
 			super(SetupDestinations.this, requestCode, recoveryRequestCode, loginRequired, secondTry);
             getInjector(SetupDestinations.this).injectMembers(this);
 		}
+
+        private FindSimilarDestinations(FindSimilarDestinations findSimilarDestinations) {
+            super(findSimilarDestinations);
+            getInjector(SetupDestinations.this).injectMembers(this);
+        }
+
+        @Override
+        public FindSimilarDestinations clone() {
+            return new FindSimilarDestinations(this);
+        }
 
 		@Override
 		protected List<DestinationFacet> doApiCall(WsSession session, Favorite... favorites) throws Exception {
