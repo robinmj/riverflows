@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -259,8 +260,12 @@ public class EditDestination extends RoboActionBarActivity {
 			ImageView stationAgency = (ImageView)v.findViewById(R.id.agency_icon);
 			stationAgency.setImageResource(Home.getAgencyIconResId(destinationFacet.getDestination().getSite().getAgency()));
 
+            //populate variable name
+            TextView variableName = (TextView)v.findViewById(R.id.var_name);
+            variableName.setText(destinationFacet.getVariable().getName() + ", " + destinationFacet.getVariable().getUnit());
+
 			//populate dropdown menu
-			Spinner spinner = (Spinner)v.findViewById(R.id.select_facet);
+			final Spinner spinner = (Spinner)v.findViewById(R.id.select_facet);
 			ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(getActivity(),
 					R.array.facet_type_names, android.R.layout.simple_spinner_item);
 			adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -277,6 +282,17 @@ public class EditDestination extends RoboActionBarActivity {
             CheckBox publiclyVisible = (CheckBox)v.findViewById(R.id.publicly_visible);
             publiclyVisible.setChecked(destinationFacet.getDestination().isShared());
             publiclyVisible.setEnabled(isDestinationOwner);
+
+            CompoundButton.OnCheckedChangeListener togglePublic = new CompoundButton.OnCheckedChangeListener() {
+                @Override
+                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                    spinner.setVisibility(isChecked ? View.VISIBLE : View.GONE);
+                }
+            };
+
+            publiclyVisible.setOnCheckedChangeListener(togglePublic);
+
+            togglePublic.onCheckedChanged(publiclyVisible, publiclyVisible.isChecked());
 
 			String unit = destinationFacet.getVariable().getUnit();
 
