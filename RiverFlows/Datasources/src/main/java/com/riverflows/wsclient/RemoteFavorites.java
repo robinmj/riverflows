@@ -71,7 +71,7 @@ public class RemoteFavorites extends WebModel<Favorite> {
     }
 
     public List<Favorite> reorderFavorites(WsSession session, int[] destFacetIds) throws Exception {
-        HttpPut putCmd = new HttpPut(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource()
+        HttpPut putCmd = new HttpPut(DataSourceController.RIVERFLOWS_WS_BASEURL + getResource()
                 + "/reorder.json?auth_token=" + session.authToken);
 
         if(destFacetIds.length == 0) {

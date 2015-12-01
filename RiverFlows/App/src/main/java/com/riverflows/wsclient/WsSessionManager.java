@@ -35,7 +35,7 @@ import java.util.concurrent.CopyOnWriteArraySet;
 @Singleton
 public class WsSessionManager {
 
-	public static final String AUTH_APP_URL = DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + "/application/check_mobile_login";
+	public static final String AUTH_APP_URL = DataSourceController.RIVERFLOWS_WS_BASEURL + "/application/check_mobile_login";
 	
 	private static final String TAG = "WsSessionManager";
 

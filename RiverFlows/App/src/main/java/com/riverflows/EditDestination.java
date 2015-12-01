@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Spinner;
@@ -109,6 +110,7 @@ public class EditDestination extends RoboActionBarActivity {
             if(destinationFacet == null) {
                 Destination destination = new Destination();
                 destination.setSite((Site) extras.get(KEY_SITE));
+                destination.setShared(true);
                 destinationFacet = new DestinationFacet();
                 destinationFacet.setDestination(destination);
                 destinationFacet.setVariable((Variable) extras.get(KEY_VARIABLE));
@@ -272,6 +274,10 @@ public class EditDestination extends RoboActionBarActivity {
 				}
 			}
 
+            CheckBox publiclyVisible = (CheckBox)v.findViewById(R.id.publicly_visible);
+            publiclyVisible.setChecked(destinationFacet.getDestination().isShared());
+            publiclyVisible.setEnabled(isDestinationOwner);
+
 			String unit = destinationFacet.getVariable().getUnit();
 
 			//populate level units
@@ -413,6 +419,7 @@ public class EditDestination extends RoboActionBarActivity {
             int[] facetTypes = getResources().getIntArray(R.array.facet_type_values);
 
             destinationFacet.setFacetType(facetTypes[spinner.getSelectedItemPosition()]);
+            destinationFacet.getDestination().setShared(((CheckBox)fragView.findViewById(R.id.publicly_visible)).isChecked());
 
             //destination facet level definitions
 

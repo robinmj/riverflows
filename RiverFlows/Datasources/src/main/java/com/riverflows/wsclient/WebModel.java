@@ -53,11 +53,11 @@ public abstract class WebModel<T extends RemoteObject> {
     }
 
 	public Page<T> get(WsSession session, Map<String, List<String>> params, Integer firstResultIndex, Integer resultCount) throws Exception {
-		return getPage(session, DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource() + ".json", params, firstResultIndex, resultCount);
+		return getPage(session, DataSourceController.RIVERFLOWS_WS_BASEURL + getResource() + ".json", params, firstResultIndex, resultCount);
 	}
 
 	public Page<T> get(WsSession session, String action, Map<String, List<String>> params, Integer firstResultIndex, Integer resultCount) throws Exception {
-		return getPage(session, DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource() + '/' + action + ".json", params, firstResultIndex, resultCount);
+		return getPage(session, DataSourceController.RIVERFLOWS_WS_BASEURL + getResource() + '/' + action + ".json", params, firstResultIndex, resultCount);
 	}
 
 	private final Page<T> getPage(WsSession session, String url, Map<String, List<String>> params, Integer firstResultIndex, Integer resultCount) throws Exception {
@@ -137,7 +137,7 @@ public abstract class WebModel<T extends RemoteObject> {
             throw new NullPointerException();
         }
 
-        HttpGet getCmd = new HttpGet(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource() + '/' + id + ".json?auth_token=" + session.authToken);
+        HttpGet getCmd = new HttpGet(DataSourceController.RIVERFLOWS_WS_BASEURL + getResource() + '/' + id + ".json?auth_token=" + session.authToken);
         HttpClient client = httpClientFactory.getHttpClient();
 
         getCmd.addHeader("Accept", "application/json");
@@ -158,7 +158,7 @@ public abstract class WebModel<T extends RemoteObject> {
     }
 
 	public T create(WsSession session, T obj) throws Exception{
-		HttpPost postCmd = new HttpPost(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource() + ".json?auth_token=" + session.authToken);
+		HttpPost postCmd = new HttpPost(DataSourceController.RIVERFLOWS_WS_BASEURL + getResource() + ".json?auth_token=" + session.authToken);
 		HttpClient client = getHttpClientFactory().getHttpClient();
 
         JSONObject jsonEntity = new JSONObject();
@@ -191,7 +191,7 @@ public abstract class WebModel<T extends RemoteObject> {
             throw new NullPointerException();
         }
 
-        HttpPut putCmd = new HttpPut(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource() + "/" + obj.getId() + ".json?auth_token=" + session.authToken);
+        HttpPut putCmd = new HttpPut(DataSourceController.RIVERFLOWS_WS_BASEURL + getResource() + "/" + obj.getId() + ".json?auth_token=" + session.authToken);
         HttpClient client = getHttpClientFactory().getHttpClient();
 
         JSONObject jsonEntity = new JSONObject();

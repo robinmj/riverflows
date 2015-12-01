@@ -31,7 +31,7 @@ public class Destinations extends WebModel<Destination> {
     private static final Log LOG = LogFactory.getLog(Destinations.class);
 
     public DestinationFacet saveDestinationWithFacet(WsSession session, DestinationFacet destination) throws Exception {
-		HttpPost postCmd = new HttpPost(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + "/destinations.json?auth_token=" + session.authToken);
+		HttpPost postCmd = new HttpPost(DataSourceController.RIVERFLOWS_WS_BASEURL + "/destinations.json?auth_token=" + session.authToken);
 		HttpClient client = getHttpClientFactory().getHttpClient();
 
 		JSONObject entity = new JSONObject();
@@ -89,6 +89,7 @@ public class Destinations extends WebModel<Destination> {
 		}
         destJson.put("name", destination.getName());
         destJson.put("description", destination.getDescription());
+		destJson.put("publicly_visible", destination.isShared());
         //destJson.put("visual_gauge_latitude",
         //destJson.put("visual_gauge_longitude",
 
@@ -106,6 +107,9 @@ public class Destinations extends WebModel<Destination> {
 		destination.setDescription(destJson.getString("description"));
 		destination.setCreationDate(getDate(destJson, "created_at"));
 		destination.setModificationDate(getDate(destJson, "updated_at"));
+		if(!isEmpty(destJson, "publicly_visible")) {
+			destination.setShared(destJson.getBoolean("publicly_visible"));
+		}
 		return destination;
 	}
 }

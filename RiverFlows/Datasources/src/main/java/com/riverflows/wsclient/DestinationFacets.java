@@ -59,7 +59,7 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 	}
 
     public Favorite saveFavorite(WsSession session, int destFacetId) throws Exception {
-        HttpPost postCmd = new HttpPost(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource()
+        HttpPost postCmd = new HttpPost(DataSourceController.RIVERFLOWS_WS_BASEURL + getResource()
                 + "/" + destFacetId + "/save_favorite.json");
 
         postCmd.setEntity(new UrlEncodedFormEntity(Collections.singletonList(new BasicNameValuePair("auth_token", session.authToken))));
@@ -82,7 +82,7 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
     }
 
     public Favorite updateFavorite(WsSession session, int destFacetId, int order) throws Exception {
-        HttpPut putCmd = new HttpPut(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource()
+        HttpPut putCmd = new HttpPut(DataSourceController.RIVERFLOWS_WS_BASEURL + getResource()
                 + "/" + destFacetId + "/update_favorite.json?auth_token=" + session.authToken);
         putCmd.setEntity(new UrlEncodedFormEntity(Collections.singletonList(new BasicNameValuePair("order", order + ""))));
 
@@ -104,7 +104,7 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
     }
 
     public void removeFavorite(WsSession session, int destFacetId) throws Exception {
-        HttpDelete deleteCmd = new HttpDelete(DataSourceController.MY_RIVERFLOWS_WS_BASE_URL + getResource()
+        HttpDelete deleteCmd = new HttpDelete(DataSourceController.RIVERFLOWS_WS_BASEURL + getResource()
                 + "/" + destFacetId + "/remove_favorite.json?auth_token=" + session.authToken);
         HttpClient client = getHttpClientFactory().getHttpClient();
 
@@ -226,6 +226,9 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
 			facet.getDestination().setName(jsonDestination.getString("name"));
 			facet.getDestination().setCreationDate(getDate(jsonObject, "created_at"));
 			facet.getDestination().setModificationDate(getDate(jsonObject, "updated_at"));
+			if(!isEmpty(jsonDestination, "publicly_visible")) {
+				facet.getDestination().setShared(jsonDestination.getBoolean("publicly_visible"));
+			}
             UserAccount destUser = new UserAccount();
             destUser.setPlaceholderObj(true);
             destUser.setId(jsonDestination.getInt("user_id"));

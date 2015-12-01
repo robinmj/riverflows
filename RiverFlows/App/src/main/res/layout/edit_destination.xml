@@ -27,6 +27,11 @@
                 android:textSize="22sp"
                 android:hint="Destination Name"
                 android:id="@+id/fld_dest_name"/>
+        <CheckBox
+            android:id="@+id/publicly_visible"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Public"/>
 
         <TextView
                 android:layout_width="wrap_content"
