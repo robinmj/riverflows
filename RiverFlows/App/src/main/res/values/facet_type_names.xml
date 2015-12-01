@@ -6,5 +6,6 @@
         <item>Rafting</item>
         <item>Fishing</item>
         <item>Motor Boating</item>
+        <item>Other</item>
     </string-array>
 </resources>
