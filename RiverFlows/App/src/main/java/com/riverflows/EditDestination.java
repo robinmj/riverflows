@@ -91,8 +91,6 @@ public class EditDestination extends RoboActionBarActivity {
 
         getSupportActionBar().setTitle("New Destination");
 
-		showEditBar();
-
         this.editDestination = (EditDestinationFragment)manager.findFragmentByTag("edit_destination");
 
 		if(this.editDestination == null) {
@@ -116,6 +114,7 @@ public class EditDestination extends RoboActionBarActivity {
                 destinationFacet.setDestination(destination);
                 destinationFacet.setVariable((Variable) extras.get(KEY_VARIABLE));
 
+                showEditBar();
                 showFragment(destinationFacet, true);
             } else {
                 WsSession session = this.wsSessionManager.getSession(this);
@@ -506,6 +505,7 @@ public class EditDestination extends RoboActionBarActivity {
                     Log.e(Home.TAG, "", exception);
                 }
             } else {
+                showEditBar();
                 showFragment(remoteFacet, this.isDestinationOwner);
             }
         }
@@ -559,7 +559,7 @@ public class EditDestination extends RoboActionBarActivity {
                 }
 
             } else {
-                if(facet.getDestination().getUser().getId().equals(dest.getUser().getId())) {
+                if(session.userAccount.getId().equals(dest.getUser().getId())) {
                     destinations.update(session, dest);
                 }
                 destinationFacets.update(session, facet);

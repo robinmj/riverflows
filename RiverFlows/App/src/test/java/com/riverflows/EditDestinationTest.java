@@ -172,6 +172,48 @@ public class EditDestinationTest {
     }
 
     @Test
+    public void shouldUpdateExistingDest() throws Exception {
+        Intent i = new Intent(RuntimeEnvironment.application, EditFavorite.class);
+
+        UserAccount me = new UserAccount();
+        me.setPlaceholderObj(true);
+        me.setId(sessionContainer.wsSessionManager.getSession(null).userAccount.getId());
+
+        //destination facet must be owned be the
+        DestinationFacet existingDestFacet = DestinationFacetFactory.getClearCreekKayak();
+        existingDestFacet.setUser(me);
+
+        i.putExtra(EditDestination.KEY_DESTINATION_FACET, existingDestFacet);
+
+        assertFalse(existingDestFacet.getDestination().isShared());
+
+        DestinationFacet remoteDestFacet = DestinationFacetFactory.getClearCreekKayak();
+        remoteDestFacet.getDestination().setShared(true);
+
+        when(wsClient.destinationFacetsMock.get(any(WsSession.class), eq(existingDestFacet.getId()))).thenReturn(remoteDestFacet);
+
+        EditDestination activity = createEditDestination(i);
+
+        EditDestination.EditDestinationFragment frag = activity.getEditDestinationFragment();
+
+        assertThat(frag, notNullValue());
+        assertThat(frag.getView(), notNullValue());
+
+        //site name should be displayed
+        assertThat(((TextView) frag.getView().findViewById(R.id.lbl_dest_gage)).getText().toString(), equalTo(remoteDestFacet.getDestination().getSite().getName()));
+
+        //it should not be possible to edit this
+        assertFalse(((CheckBox) frag.getView().findViewById(R.id.publicly_visible)).isEnabled());
+
+        //shouldn't update destination because user doesn't own it
+        doThrow(new RuntimeException()).when(wsClient.destinationsMock).update(any(WsSession.class), any(Destination.class));
+
+        activity.getSupportActionBar().getCustomView().findViewById(R.id.actionbar_done).performClick();
+
+        verify(wsClient.destinationFacetsMock).update(any(WsSession.class), any(DestinationFacet.class));
+    }
+
+    @Test
     public void levelFieldsShouldBeRequired() throws Throwable {
 
         //the WebModels should not be modified
@@ -191,7 +233,7 @@ public class EditDestinationTest {
     @Test
     public void shouldSaveNewDestination() throws Throwable {
 
-        //the WebModels should not be modified
+        //saveDestinationWithFacet() should be called rather than update()
         doThrow(new RuntimeException()).when(wsClient.destinationsMock).update(any(WsSession.class), any(Destination.class));
         doThrow(new RuntimeException()).when(wsClient.destinationFacetsMock).update(any(WsSession.class), any(DestinationFacet.class));
 
