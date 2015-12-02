@@ -11,6 +11,7 @@ import com.riverflows.data.Favorite;
 import com.riverflows.data.Site;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.USState;
+import com.riverflows.data.UserAccount;
 import com.riverflows.data.Variable;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.factory.DestinationFacetFactory;
@@ -20,6 +21,7 @@ import com.riverflows.wsclient.WsSession;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.util.ActivityController;
@@ -28,13 +30,16 @@ import java.util.Date;
 
 import roboguice.RoboGuice;
 
+import static junit.framework.Assert.assertFalse;
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.junit.Assert.assertThat;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyInt;
+import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 /**
@@ -53,10 +58,12 @@ public class EditDestinationTest {
 
     private MockWsClient wsClient = new MockWsClient();
 
+    private RobinSession sessionContainer = new RobinSession();
+
     @Before
     public void setup() {
 
-        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, new RobinSession());
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, sessionContainer);
     }
 
     public EditDestination createEditDestination(Intent i) throws Exception {
@@ -108,6 +115,57 @@ public class EditDestinationTest {
 
         //site name should be displayed
         assertThat(((TextView) frag.getView().findViewById(R.id.lbl_dest_gage)).getText().toString(), equalTo(clearCreek.getName()));
+
+        //destination should be shared by default
+        assertTrue(((CheckBox) frag.getView().findViewById(R.id.publicly_visible)).isChecked());
+    }
+
+    @Test
+    public void shouldForbidEditingOtherUsersDestFacet() throws Exception {
+        Intent i = new Intent(RuntimeEnvironment.application, EditFavorite.class);
+
+        //destination facet must be owned be the
+        DestinationFacet existingDestFacet = DestinationFacetFactory.getClearCreekKayak();
+
+        i.putExtra(EditDestination.KEY_DESTINATION_FACET, existingDestFacet);
+
+        ActivityController<EditDestination> activityController= Robolectric.buildActivity(EditDestination.class);
+
+        activityController.withIntent(i).create().start().resume().visible();
+
+        assertTrue(activityController.get().isFinishing());
+    }
+
+    @Test
+    public void shouldRefreshUsingRemoteDest() throws Exception {
+        Intent i = new Intent(RuntimeEnvironment.application, EditFavorite.class);
+
+        UserAccount me = new UserAccount();
+        me.setPlaceholderObj(true);
+        me.setId(sessionContainer.wsSessionManager.getSession(null).userAccount.getId());
+
+        //destination facet must be owned be the
+        DestinationFacet existingDestFacet = DestinationFacetFactory.getClearCreekKayak();
+        existingDestFacet.setUser(me);
+
+        i.putExtra(EditDestination.KEY_DESTINATION_FACET, existingDestFacet);
+
+        assertFalse(existingDestFacet.getDestination().isShared());
+
+        DestinationFacet remoteDestFacet = DestinationFacetFactory.getClearCreekKayak();
+        remoteDestFacet.getDestination().setShared(true);
+
+        when(wsClient.destinationFacetsMock.get(any(WsSession.class), eq(existingDestFacet.getId()))).thenReturn(remoteDestFacet);
+
+        EditDestination activity = createEditDestination(i);
+
+        EditDestination.EditDestinationFragment frag = activity.getEditDestinationFragment();
+
+        assertThat(frag, notNullValue());
+        assertThat(frag.getView(), notNullValue());
+
+        //site name should be displayed
+        assertThat(((TextView) frag.getView().findViewById(R.id.lbl_dest_gage)).getText().toString(), equalTo(remoteDestFacet.getDestination().getSite().getName()));
 
         //destination should be shared by default
         assertTrue(((CheckBox) frag.getView().findViewById(R.id.publicly_visible)).isChecked());

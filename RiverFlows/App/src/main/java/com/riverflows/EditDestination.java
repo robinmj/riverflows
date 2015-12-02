@@ -34,7 +34,9 @@ import com.riverflows.wsclient.DestinationFacets;
 import com.riverflows.wsclient.Destinations;
 import com.riverflows.wsclient.WsSession;
 import com.riverflows.wsclient.WsSessionManager;
+import com.subalpine.DeferredExceptionAsyncTask;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicReference;
 
 import roboguice.RoboGuice;
@@ -104,8 +106,6 @@ public class EditDestination extends RoboActionBarActivity {
             }
 
 			Bundle extras = getIntent().getExtras();
-
-            boolean isDestinationOwner = true;
             //boolean isDestinationFacetOwner = true;
 
             if(destinationFacet == null) {
@@ -115,6 +115,8 @@ public class EditDestination extends RoboActionBarActivity {
                 destinationFacet = new DestinationFacet();
                 destinationFacet.setDestination(destination);
                 destinationFacet.setVariable((Variable) extras.get(KEY_VARIABLE));
+
+                showFragment(destinationFacet, true);
             } else {
                 WsSession session = this.wsSessionManager.getSession(this);
                 if(session == null || session.userAccount == null) {
@@ -123,6 +125,8 @@ public class EditDestination extends RoboActionBarActivity {
                     finish();
                     return;
                 }
+
+                boolean isDestinationOwner = true;
 
                 if(!session.userAccount.getId().equals(destinationFacet.getDestination().getUser().getId())) {
                     isDestinationOwner = false;
@@ -135,20 +139,24 @@ public class EditDestination extends RoboActionBarActivity {
                     finish();
                     return;
                 }
+
+                new RefreshDestination(destinationFacet,isDestinationOwner).execute(session);
             }
-
-            editDestination = new EditDestinationFragment();
-            Bundle arguments = new Bundle();
-            arguments.putBoolean("isDestinationOwner", isDestinationOwner);
-            //arguments.putBoolean("isDestinationFacetOwner", isDestinationFacetOwner);
-            editDestination.setArguments(arguments);
-			editDestination.setDestinationFacet(destinationFacet);
-
-			FragmentTransaction transaction = manager.beginTransaction();
-			transaction.add(android.R.id.content, editDestination, "edit_destination");
-			transaction.commit();
 		}
 	}
+
+    private void showFragment(DestinationFacet destinationFacet, boolean isDestinationOwner) {
+        editDestination = new EditDestinationFragment();
+        Bundle arguments = new Bundle();
+        arguments.putBoolean("isDestinationOwner", isDestinationOwner);
+        //arguments.putBoolean("isDestinationFacetOwner", isDestinationFacetOwner);
+        editDestination.setArguments(arguments);
+        editDestination.setDestinationFacet(destinationFacet);
+
+        FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
+        transaction.add(android.R.id.content, editDestination, "edit_destination");
+        transaction.commit();
+    }
 
     @Override
     protected void onStart() {
@@ -468,6 +476,40 @@ public class EditDestination extends RoboActionBarActivity {
             this.destinationFacet = destinationFacet;
         }
 	}
+
+    private class RefreshDestination extends DeferredExceptionAsyncTask<WsSession,Integer,DestinationFacet> {
+        private final DestinationFacet facet;
+        private final boolean isDestinationOwner;
+
+        @Inject DestinationFacets destinationFacets;
+
+        public RefreshDestination(DestinationFacet facet, boolean isDestinationOwner) {
+            RoboGuice.getInjector(EditDestination.this).injectMembers(this);
+            this.facet = facet;
+            this.isDestinationOwner = isDestinationOwner;
+        }
+
+        @Override
+        protected DestinationFacet tryInBackground(WsSession... params) throws Exception {
+            return destinationFacets.get(params[0], this.facet.getId());
+        }
+
+        @Override
+        protected void onPostExecute(DestinationFacet remoteFacet) {
+
+            if(exception != null) {
+                if(exception instanceof IOException && exception.getMessage().equals("NetworkError")) {
+                    Toast.makeText(EditDestination.this, "Network Error", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(EditDestination.this, exception.getLocalizedMessage(), Toast.LENGTH_LONG).show();
+                    Crashlytics.logException(exception);
+                    Log.e(Home.TAG, "", exception);
+                }
+            } else {
+                showFragment(remoteFacet, this.isDestinationOwner);
+            }
+        }
+    }
 
     private class SaveDestination extends ApiCallTask<DestinationFacet,Integer,DestinationFacet> {
 
