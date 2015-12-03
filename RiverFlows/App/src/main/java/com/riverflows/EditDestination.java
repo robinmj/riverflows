@@ -89,7 +89,9 @@ public class EditDestination extends RoboActionBarActivity {
 		super.onCreate(savedInstanceState);
 		FragmentManager manager = getSupportFragmentManager();
 
-        getSupportActionBar().setTitle("New Destination");
+        setContentView(R.layout.loading_view);
+
+        getSupportActionBar().setTitle("Edit Destination");
 
         this.editDestination = (EditDestinationFragment)manager.findFragmentByTag("edit_destination");
 
@@ -151,6 +153,8 @@ public class EditDestination extends RoboActionBarActivity {
         //arguments.putBoolean("isDestinationFacetOwner", isDestinationFacetOwner);
         editDestination.setArguments(arguments);
         editDestination.setDestinationFacet(destinationFacet);
+
+        findViewById(R.id.loading_layout).setVisibility(View.GONE);
 
         FragmentTransaction transaction = getSupportFragmentManager().beginTransaction();
         transaction.add(android.R.id.content, editDestination, "edit_destination");
