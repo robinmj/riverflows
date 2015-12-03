@@ -95,9 +95,7 @@ public class DataSetLoader extends AsyncTaskLoader<SiteData> {
             Crashlytics.logException(ioe);
         } catch(DataParseException dpe) {
             errorMsg = "Could not process data from " + site + "; " + dpe.getMessage();
-            Log.e(App.TAG, site.toString(), dpe);
-
-            Crashlytics.logException(dpe);
+            Log.w(App.TAG, site.toString(), dpe);
         } catch(Exception e) {
             errorMsg = "Error loading data from " + site + "; " + e.getMessage();
             Log.e(App.TAG, site.toString(), e);
