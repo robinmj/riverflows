@@ -18,6 +18,7 @@ import com.riverflows.wsclient.DataSourceController;
 import java.io.IOException;
 import java.net.UnknownHostException;
 
+import io.fabric.sdk.android.Fabric;
 import roboguice.RoboGuice;
 
 /**
@@ -82,8 +83,10 @@ public class DataSetLoader extends AsyncTaskLoader<SiteData> {
                 }
             }
 
-            Crashlytics.setString(ViewSite.KEY_SITE, site.getId());
-            Crashlytics.setString(ViewSite.KEY_VARIABLE, variables[0].getId());
+            if(Fabric.isInitialized()) {
+                Crashlytics.setString(ViewSite.KEY_SITE, site.getId());
+                Crashlytics.setString(ViewSite.KEY_VARIABLE, variables[0].getId());
+            }
 
             return this.dataSourceController.getSiteData(site, variables, this.hardRefresh);
         } catch(UnknownHostException uhe) {
