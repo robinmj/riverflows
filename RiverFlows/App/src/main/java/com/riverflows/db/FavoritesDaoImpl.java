@@ -11,6 +11,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.riverflows.Home;
 import com.riverflows.data.Destination;
 import com.riverflows.data.DestinationFacet;
@@ -583,15 +584,30 @@ public class FavoritesDaoImpl {
 		}
     }
 
+	/**
+	 * @param ctx
+	 * @param favorite id attribute will be populated by this function unless the save
+	 *                 attempt was unsuccessful
+	 */
 	public static void createFavorite(Context ctx, Favorite favorite) {
 
 		ContentValues favoriteValues = buildContentValues(favorite);
 
 		RiverGaugesDb helper = RiverGaugesDb.getHelper(ctx);
+
+		int result;
+
 		synchronized(RiverGaugesDb.class) {
 			SQLiteDatabase db = helper.getWritableDatabase();
 
-			db.insert(FavoritesDaoImpl.NAME,null, favoriteValues);
+			result = (int)db.insert(FavoritesDaoImpl.NAME,null, favoriteValues);
+		}
+
+		if(result == -1) {
+			EasyTracker.getInstance().setContext(ctx);
+			EasyTracker.getTracker().sendException("FavoritesDaoImpl createFavorite", false);
+		} else {
+			favorite.setId(result);
 		}
 	}
 
