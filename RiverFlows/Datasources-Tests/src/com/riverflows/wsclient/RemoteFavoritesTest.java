@@ -15,7 +15,7 @@ public class RemoteFavoritesTest extends TestCase {
 
     private DestinationFacets destinationFacets = new DestinationFacets();
 
-    public void testReorderFavorites() throws Throwable {
+    public void reorderFavorites() throws Throwable {
         UserAccount account = new UserAccount();
         account.setEmail("robin.m.j@gmail.com");
         WsSession session = new WsSession("robin.m.j", account, "T9HLJkUvA7JwELEeHjsu", System.currentTimeMillis() + 10 * 60 * 1000);

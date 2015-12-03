@@ -17,7 +17,7 @@ public class UserAccountsTest extends TestCase {
         this.session = new WsSession("robin.m.j", account, "T9HLJkUvA7JwELEeHjsu", System.currentTimeMillis() + 10 * 60 * 1000);
     }
 
-    public void testGetUserAccount() throws Exception {
+    public void getUserAccount() throws Exception {
 
         UserAccount account = UserAccounts.instance.get(this.session);
 
