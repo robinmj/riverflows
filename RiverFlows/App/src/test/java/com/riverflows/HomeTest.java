@@ -37,7 +37,9 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
+import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.argThat;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -140,19 +142,7 @@ public class HomeTest {
         FavoriteData clearCreekFavData = new FavoriteData(clearCreekFav,clearCreekData, CODWRDataSource.VTYPE_STREAMFLOW_CFS);
         mockData.add(clearCreekFavData);
 
-        when(wsClient.dsControllerMock.getFavoriteData(argThat(new ArgumentMatcher<List<Favorite>>() {
-            public boolean matches(Object list) {
-                //favorite should have a non-null local primary key before it is passed int getFavoriteData()
-                //favorite in response is the same as the one in the request
-
-                clearCreekFav.setId(((List<Favorite>)list).get(0).getId());
-
-                return clearCreekFav.getId() != null;
-            }
-            public String toString() {
-                return "[one favorites with a non-null ID]";
-            }
-        }), anyBoolean())).thenReturn(mockData);
+        when(wsClient.dsControllerMock.getFavoriteData(anyList(), anyBoolean())).thenReturn(mockData);
 
         Intent i = new Intent(RuntimeEnvironment.application, Home.class);
 
@@ -170,6 +160,18 @@ public class HomeTest {
                 favorites = (Favorites)f;
             }
         }
+
+        verify(wsClient.dsControllerMock).getFavoriteData(argThat(new ArgumentMatcher<List<Favorite>>() {
+            public boolean matches(Object list) {
+                //favorite should have a non-null local primary key before it is passed into getFavoriteData()
+
+                return ((List<Favorite>) list).get(0).getId() != null;
+            }
+
+            public String toString() {
+                return "[one favorite with a non-null ID]";
+            }
+        }), anyBoolean());
 
         assertThat(favorites.getListView().getVisibility(), equalTo(View.VISIBLE));
         assertThat(favorites.getListView().getEmptyView().getVisibility(), equalTo(View.GONE));
