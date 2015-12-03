@@ -1,6 +1,6 @@
 package com.riverflows.wsclient;
 
-import android.app.Activity;
+import android.content.Context;
 import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
@@ -19,8 +19,8 @@ public abstract class ApiCallLoader<Result> extends AsyncTaskLoader<Result> {
 
     protected final AtomicBoolean wasAborted = new AtomicBoolean(false);
 
-	protected ApiCallLoader(Activity activity, WsSessionUIHelper uiHelper) {
-		super(activity);
+	protected ApiCallLoader(Context context, WsSessionUIHelper uiHelper) {
+		super(context);
 
 		this.uiHelper = uiHelper;
 	}
