@@ -5,16 +5,10 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
-import android.text.SpannableString;
-import android.text.Spanned;
-import android.text.method.LinkMovementMethod;
-import android.text.style.ClickableSpan;
-import android.text.style.URLSpan;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.LayoutInflater;
@@ -28,7 +22,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.analytics.tracking.android.EasyTracker;
 import com.google.inject.Inject;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
@@ -384,7 +377,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 	}
 
 	public static class FavoritesLoader extends ApiCallLoader<List<FavoriteData>> {
-		private static final String PARAM_HARD_REFRESH = "hardRefresh";
+		public static final String PARAM_HARD_REFRESH = "hardRefresh";
 
         @Inject
         private DestinationFacets destinationFacets;
@@ -396,9 +389,9 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		private boolean hardRefresh = false;
 		private String tempUnit = null;
 
-		public FavoritesLoader(Activity activity, WsSessionUIHelper helper, String tempUnit, boolean hardRefresh) {
-			super(activity, helper);
-            getInjector(activity).injectMembers(this);
+		public FavoritesLoader(Context guiceContext, WsSessionUIHelper helper, String tempUnit, boolean hardRefresh) {
+			super(guiceContext, helper);
+            getInjector(guiceContext).injectMembers(this);
 			this.hardRefresh = hardRefresh;
 			this.tempUnit = tempUnit;
 		}
