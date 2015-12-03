@@ -12,7 +12,6 @@ import com.riverflows.data.Favorite;
 import com.riverflows.data.FavoriteData;
 import com.riverflows.data.SiteData;
 import com.riverflows.data.UserAccount;
-import com.riverflows.db.RiverGaugesDb;
 import com.riverflows.factory.DestinationFacetFactory;
 import com.riverflows.factory.SiteDataFactory;
 import com.riverflows.wsclient.CODWRDataSource;
@@ -23,9 +22,9 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatcher;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
-import org.robolectric.shadows.ShadowApplication;
 import org.robolectric.shadows.gms.ShadowGooglePlayServicesUtil;
 import org.robolectric.util.ActivityController;
 
@@ -38,7 +37,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.IsEqual.equalTo;
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
-import static org.mockito.Matchers.anyList;
+import static org.mockito.Matchers.argThat;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
 
@@ -136,11 +135,24 @@ public class HomeTest {
         when(wsClient.destinationFacetsMock.getFavorites(any(WsSession.class))).thenReturn(mockResults);
 
         List<FavoriteData> mockData = new ArrayList<FavoriteData>();
-        Favorite clearCreekFav = new Favorite(clearCreekKayak);
+        final Favorite clearCreekFav = new Favorite(clearCreekKayak);
         SiteData clearCreekData = SiteDataFactory.getClearCreekData();
         FavoriteData clearCreekFavData = new FavoriteData(clearCreekFav,clearCreekData, CODWRDataSource.VTYPE_STREAMFLOW_CFS);
         mockData.add(clearCreekFavData);
-        when(wsClient.dsControllerMock.getFavoriteData(anyList(), anyBoolean())).thenReturn(mockData);
+
+        when(wsClient.dsControllerMock.getFavoriteData(argThat(new ArgumentMatcher<List<Favorite>>() {
+            public boolean matches(Object list) {
+                //favorite should have a non-null local primary key before it is passed int getFavoriteData()
+                //favorite in response is the same as the one in the request
+
+                clearCreekFav.setId(((List<Favorite>)list).get(0).getId());
+
+                return clearCreekFav.getId() != null;
+            }
+            public String toString() {
+                return "[one favorites with a non-null ID]";
+            }
+        }), anyBoolean())).thenReturn(mockData);
 
         Intent i = new Intent(RuntimeEnvironment.application, Home.class);
 
