@@ -75,7 +75,7 @@
 	    <activity android:name="EditFavorite"/>
         <activity android:name=".AccountSettings"/>
         <activity android:name=".MigrateToDestinations"/>
-        <activity android:name=".EditDestination"/>
+        <activity android:name=".EditDestination" android:screenOrientation="portrait"/>
         <activity android:name=".SetupDestinations"/>
         <activity android:name=".ViewDestination"/>
 
