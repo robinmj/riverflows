@@ -71,7 +71,7 @@ public class EditFavorite extends ActionBarActivity {
         	}
         }
 
-        getSupportActionBar().setTitle("Reorder Favorites");
+        getSupportActionBar().setTitle("Edit Favorite");
     	
     	findViewById(R.id.saveButton).setOnClickListener(saveListener);
     	findViewById(R.id.cancelButton).setOnClickListener(cancelListener);
