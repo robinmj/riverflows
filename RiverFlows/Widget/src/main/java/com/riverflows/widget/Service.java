@@ -1,6 +1,5 @@
 package com.riverflows.widget;
 
-import android.app.PendingIntent;
 import android.appwidget.AppWidgetManager;
 import android.content.ContentResolver;
 import android.content.Context;
@@ -13,6 +12,7 @@ import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
@@ -32,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 public class Service extends RemoteViewsService {
 
@@ -337,6 +336,35 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
             return R.drawable.usace;
         }
         return null;
+    }
+
+    public static int getCategoryTextColor(String category) {
+        
+        if(category.equals(DestinationFacet.CN_HIGH_PLUS)) {
+            return R.color.txt_level_too_high;
+        } else if(category.equals(DestinationFacet.CN_HIGH)) {
+            return R.color.txt_level_high;
+        } else if(category.equals(DestinationFacet.CN_MED)) {
+            return R.color.txt_level_medium;
+        } else if(category.equals(DestinationFacet.CN_LOW)) {
+            return R.color.txt_level_low;
+        } else if(category.equals(DestinationFacet.CN_TOO_LOW)) {
+            return R.color.txt_level_too_low;
+        }
+    }
+
+    public static int getCategoryBgColor(String category) {
+        if(category.equals(DestinationFacet.CN_HIGH_PLUS)) {
+            return R.color.bg_level_too_high;
+        } else if(category.equals(DestinationFacet.CN_HIGH)) {
+            return R.color.bg_level_high;
+        } else if(category.equals(DestinationFacet.CN_MED)) {
+            return R.color.bg_level_medium;
+        } else if(category.equals(DestinationFacet.CN_LOW)) {
+            return R.color.bg_level_low;
+        } else if(category.equals(DestinationFacet.CN_TOO_LOW)) {
+            return R.color.bg_level_too_low;
+        }
     }
 
     /**

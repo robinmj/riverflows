@@ -12,6 +12,8 @@ import android.util.Log;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.inject.Inject;
 import com.riverflows.Home;
+import com.riverflows.R;
+import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.FavoriteData;
 import com.riverflows.data.Reading;
@@ -52,6 +54,9 @@ public class Favorites extends RoboContentProvider {
 	public static final String COLUMN_LAST_READING_VALUE = "lastReadingValue";
 	public static final String COLUMN_LAST_READING_QUALIFIERS = "lastReadingQualifiers";
 	public static final String COLUMN_UNIT = "unit";
+	public static final String COLUMN_FAVORITE_ID = "favoriteId";
+	public static final String COLUMN_DESTINATION_FACET_ID = "destFacetId";
+	public static final String COLUMN_LAST_READING_CATEGORY = "lastReadingCategory";
 
 	public static final String EXTRA_PRODUCT = "product";
 	/** This refers to the version of this ContentProvider, not RiverFlows */
@@ -81,7 +86,10 @@ public class Favorites extends RoboContentProvider {
 		COLUMN_LAST_READING_DATE,
 		COLUMN_LAST_READING_VALUE,
 		COLUMN_LAST_READING_QUALIFIERS,
-		COLUMN_UNIT
+		COLUMN_UNIT,
+		COLUMN_FAVORITE_ID,
+		COLUMN_DESTINATION_FACET_ID,
+		COLUMN_LAST_READING_CATEGORY
 		};
 
 	public static final Uri CONTENT_URI = 
@@ -216,6 +224,24 @@ public class Favorites extends RoboContentProvider {
                         row.add(lastReading.getValue());
                         row.add(lastReading.getQualifiers());
                         row.add(series.getVariable().getCommonVariable().getUnit());
+						row.add(currentData.getFavorite().getId());
+
+						DestinationFacet facet = currentData.getFavorite().getDestinationFacet();
+
+						if(facet != null) {
+							row.add(facet.getId());
+
+							Double lastReadingValue = lastReading.getValue();
+
+							if(lastReadingValue != null) {
+
+								String categoryName = facet.getCategoryNameForLevel(lastReadingValue);
+
+								if(categoryName != null) {
+									row.add(categoryName);
+								}
+							}
+						}
                     }
 				} catch(NullPointerException npe) {
 					Log.e(TAG, "",npe);
