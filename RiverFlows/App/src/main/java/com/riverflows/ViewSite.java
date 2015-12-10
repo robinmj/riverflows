@@ -22,6 +22,7 @@ import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.SubMenu;
 import android.view.View;
 import android.widget.ProgressBar;
+import android.widget.Toast;
 
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
@@ -84,6 +85,7 @@ public class ViewSite extends RoboActionBarActivity {
         Variable variable = null;
         
         if(getIntent().getData() == null) {
+			//site supplied using extras
 			
 			Bundle extras = getIntent().getExtras();
 	        
@@ -100,9 +102,15 @@ public class ViewSite extends RoboActionBarActivity {
             }
 
         } else {
+			//site supplied using intent URL
         	SiteId siteId = new SiteId(getIntent().getData().getSchemeSpecificPart());
 			List<Favorite> favorites = FavoritesDaoImpl.getFavorites(getApplicationContext(), siteId, getIntent().getData().getFragment());
 
+			if(favorites.size() == 0) {
+				Toast.makeText(this, "The favorite " + siteId + "|" + getIntent().getData().getFragment() + " no longer exists", Toast.LENGTH_LONG).show();
+				finish();
+				return;
+			}
 			favorite = favorites.get(0);
         	site = favorite.getSite();
 
