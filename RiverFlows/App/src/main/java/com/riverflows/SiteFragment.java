@@ -84,8 +84,13 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
 
             WsSession session = SiteFragment.this.wsSessionManager.getSession(getActivity());
 
-            Favorite f = new Favorite(SiteFragment.this.getSite(),
-                    SiteFragment.this.getVariable().getId());
+            Variable v = SiteFragment.this.getVariable();
+
+            if(v == null) {
+                return;
+            }
+
+            Favorite f = new Favorite(SiteFragment.this.getSite(), v.getId());
 
             if(session == null) {
                 boolean isFavorite = FavoritesDaoImpl.isFavorite(getActivity().getApplicationContext(), f.getSite().getSiteId(), f.getVariable());
