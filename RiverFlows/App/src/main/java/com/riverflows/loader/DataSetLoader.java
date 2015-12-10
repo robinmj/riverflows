@@ -5,7 +5,6 @@ import android.support.v4.content.AsyncTaskLoader;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.analytics.tracking.android.EasyTracker;
 import com.google.inject.Inject;
 import com.riverflows.App;
 import com.riverflows.ViewSite;
@@ -14,6 +13,8 @@ import com.riverflows.data.SiteData;
 import com.riverflows.data.Variable;
 import com.riverflows.wsclient.DataParseException;
 import com.riverflows.wsclient.DataSourceController;
+
+import org.apache.http.NoHttpResponseException;
 
 import java.io.IOException;
 import java.net.UnknownHostException;
@@ -91,6 +92,10 @@ public class DataSetLoader extends AsyncTaskLoader<SiteData> {
             return this.dataSourceController.getSiteData(site, variables, this.hardRefresh);
         } catch(UnknownHostException uhe) {
             errorMsg = "Lost network connection.";
+            Log.w(App.TAG, site.toString(), uhe);
+        } catch(NoHttpResponseException nhre) {
+            errorMsg = "No response from " + site;
+            Log.w(App.TAG, site.toString(), nhre);
         } catch(IOException ioe) {
             errorMsg = "Could not retrieve site data: an I/O error has occurred.";
             Log.e(App.TAG, site.getId(), ioe);
