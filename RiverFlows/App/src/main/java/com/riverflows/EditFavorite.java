@@ -14,12 +14,15 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
+import com.google.analytics.tracking.android.EasyTracker;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.Variable;
 import com.riverflows.db.FavoritesDaoImpl;
 
 public class EditFavorite extends ActionBarActivity {
+
+	public static final int RESULT_NOT_FOUND = RESULT_FIRST_USER;
 
 	public static final String KEY_SITE_ID = "siteId";
 	public static final String KEY_VARIABLE_ID = "variableId";
@@ -38,6 +41,13 @@ public class EditFavorite extends ActionBarActivity {
         String variableId = (String)extras.get(KEY_VARIABLE_ID);
         
         List<Favorite> favorites = FavoritesDaoImpl.getFavorites(getApplicationContext(), siteId, variableId);
+
+		if(favorites.size() == 0) {
+			Toast.makeText(this, "The favorite " + siteId + "|" + variableId + " no longer exists",Toast.LENGTH_LONG).show();
+			setResult(RESULT_NOT_FOUND);
+			finish();
+			return;
+		}
         
         this.favorite = favorites.get(0);
         
@@ -75,6 +85,20 @@ public class EditFavorite extends ActionBarActivity {
     	
     	findViewById(R.id.saveButton).setOnClickListener(saveListener);
     	findViewById(R.id.cancelButton).setOnClickListener(cancelListener);
+	}
+
+	@Override
+	protected void onStart() {
+		super.onStart();
+
+		EasyTracker.getInstance().activityStart(this);
+	}
+
+	@Override
+	protected void onStop() {
+		super.onStop();
+
+		EasyTracker.getInstance().activityStop(this);
 	}
 	
 	private OnClickListener saveListener = new OnClickListener() {
