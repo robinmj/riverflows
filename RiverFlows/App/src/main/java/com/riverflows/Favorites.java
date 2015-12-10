@@ -542,7 +542,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 		FavoriteData favoriteData = adapter.getItem(info.position);
 		
-		if(favoriteData == null) {
+		if(favoriteData == null || favoriteData.getSeries() == null) {
 			return;
 		}
 
