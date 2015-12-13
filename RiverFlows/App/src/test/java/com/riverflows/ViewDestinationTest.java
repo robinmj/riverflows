@@ -162,7 +162,7 @@ public class ViewDestinationTest {
 
         Menu menu = shadowOf(activity).getOptionsMenu();
 
-        assertThat("edit function accessible", !menu.findItem(R.id.mi_edit_destination).isVisible());
+        assertThat("edit function not accessible", !menu.findItem(R.id.mi_edit_destination).isVisible());
         assertThat("edit favorite function accessible", !menu.findItem(R.id.mi_edit_favorite).isVisible());
 
     }
@@ -182,7 +182,7 @@ public class ViewDestinationTest {
 
         Menu menu = shadowOf(activity).getOptionsMenu();
 
-        assertThat("edit function not accessible", menu.findItem(R.id.mi_edit_destination).isVisible());
+        assertThat("edit function not accessible", !menu.findItem(R.id.mi_edit_destination).isVisible());
         assertThat("edit favorite function accessible", !menu.findItem(R.id.mi_edit_favorite).isVisible());
     }
 
