@@ -548,11 +548,11 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 		FavoriteData favoriteData = adapter.getItem(info.position);
 		
-		if(favoriteData == null || favoriteData.getSeries() == null) {
+		if(favoriteData == null) {
 			return;
 		}
 
-		Variable variable = favoriteData.getSeries().getVariable();
+		Variable variable = favoriteData.getVariable();
 		
 		android.view.MenuItem view = menu.add("View");
 		view.setOnMenuItemClickListener(new ViewFavoriteListener(favoriteData.getFavorite().getSite(), variable));
