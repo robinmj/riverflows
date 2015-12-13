@@ -274,7 +274,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 			Log.e(Home.TAG, "failed to get remote favorites: " + loader.getException().getMessage(), loader.getException());
 
 			if(Fabric.isInitialized()) {
-				Crashlytics.logException(loader.getException());
+				Crashlytics.getInstance().core.logException(loader.getException());
 			}
 
 			String detailMsg = loader.getException().getMessage();
