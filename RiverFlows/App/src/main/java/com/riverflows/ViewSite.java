@@ -206,9 +206,7 @@ public class ViewSite extends RoboActionBarActivity {
 
 		menu.findItem(R.id.mi_edit_destination).setVisible(false);
 
-		if(getSite().getSiteId().getPrimaryKey() == null) {
-			menu.findItem(R.id.mi_create_destination).setVisible(false);
-		}
+		menu.findItem(R.id.mi_create_destination).setVisible(false);
 
         if(this.siteFragment == null) {
             return false;

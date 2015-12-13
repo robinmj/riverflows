@@ -129,8 +129,10 @@ public class DestinationFacets extends WebModel<DestinationFacet>{
         if(facet.getDestination() != null) {
             result.put("destination_id", facet.getDestination().getId());
 
-            //TODO maybe site property should be moved to DestinationFacet
-            result.put("site_id", facet.getDestination().getSite().getSiteId().getPrimaryKey());
+            //TODO site property should be moved to DestinationFacet
+			if(facet.getDestination().getSite().getSiteId().getPrimaryKey() != null) {
+				result.put("site_id", facet.getDestination().getSite().getSiteId().getPrimaryKey());
+			}
         }
 
 		if(facet.getUser() != null) {
