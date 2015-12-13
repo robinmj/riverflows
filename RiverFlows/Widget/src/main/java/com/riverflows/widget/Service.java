@@ -12,7 +12,10 @@ import android.view.View;
 import android.widget.RemoteViews;
 import android.widget.RemoteViewsService;
 
+import com.riverflows.data.Destination;
 import com.riverflows.data.DestinationFacet;
+import com.riverflows.data.Favorite;
+import com.riverflows.data.FavoriteData;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
@@ -51,7 +54,7 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     private int favoriteCount = 0;
 
     private long lastUpdated = 0;
-    private List<SiteData> mWidgetItems = null;
+    private List<FavoriteData> mWidgetItems = null;
     private Context mContext;
     private int mAppWidgetId;
     private Exception mException = null;
@@ -71,7 +74,7 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     public void onDestroy() {
         // In onDestroy() you should tear down anything that was setup for your data source,
         // eg. cursors, connections, etc.
-        List<SiteData> tmpWidgetItems = mWidgetItems;
+        List<FavoriteData> tmpWidgetItems = mWidgetItems;
         if(tmpWidgetItems != null) {
             tmpWidgetItems.clear();
         }
@@ -227,21 +230,24 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
             return views;
         }
 
-        Log.d(TAG, "drawing favorite " + mWidgetItems.get(favPosition).getSite().getName());
+        FavoriteData favoriteData = mWidgetItems.get(favPosition);
+        SiteData siteData = favoriteData.getSiteData();
+
+        Log.d(TAG, "drawing favorite " + siteData.getSite().getName());
 
         // Next, we set a fill-intent which will be used to fill-in the pending intent template
         // which is set on the collection view in StackWidgetProvider.
         Bundle extras = new Bundle();
-        extras.putString(Provider.EN_SITE_ID, mWidgetItems.get(favPosition).getSite().getSiteId().toString());
-        extras.putString(Provider.EN_VARIABLE_ID, mWidgetItems.get(favPosition).getDatasets().values().iterator().next().getVariable().getId());
+        extras.putString(Provider.EN_SITE_ID, siteData.getSite().getSiteId().toString());
+        extras.putString(Provider.EN_VARIABLE_ID, siteData.getDatasets().values().iterator().next().getVariable().getId());
         Intent fillInIntent = new Intent();
         fillInIntent.putExtras(extras);
         views.setOnClickFillInIntent(R.id.favorite, fillInIntent);
 
-        views.setTextViewText(R.id.favorite_name, mWidgetItems.get(favPosition).getSite().getName());
+        views.setTextViewText(R.id.favorite_name, siteData.getSite().getName());
 
         //display the last reading for this site, if present
-        Series flowSeries = DataSourceController.getPreferredSeries(mWidgetItems.get(favPosition));
+        Series flowSeries = DataSourceController.getPreferredSeries(siteData);
         Reading lastReading = getLastReading(flowSeries);
 
         Log.d(TAG, "last reading time: " + (lastReading == null ? "null" : lastReading.getDate()));
@@ -255,7 +261,7 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
             views.setTextViewText(R.id.timestamp, getLastReadingTimestamp(lastReading));
         }
 
-        String siteAgency = mWidgetItems.get(favPosition).getSite().getAgency();
+        String siteAgency = siteData.getSite().getAgency();
         Integer agencyIconResId = getAgencyIconResId(siteAgency);
         if(agencyIconResId != null) {
             views.setImageViewResource(R.id.agency_icon, agencyIconResId);
@@ -351,6 +357,7 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         } else if(category.equals(DestinationFacet.CN_TOO_LOW)) {
             return R.color.txt_level_too_low;
         }
+        return android.R.color.primary_text_dark;
     }
 
     public static int getCategoryBgColor(String category) {
@@ -365,6 +372,7 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         } else if(category.equals(DestinationFacet.CN_TOO_LOW)) {
             return R.color.bg_level_too_low;
         }
+        return android.R.color.background_dark;
     }
 
     /**
@@ -372,7 +380,7 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
      * @return null if the Favorites ContentProvider cannot be found
      * @throws LoadFailedException if the favorites could not be loaded for some other reason
      */
-    private List<SiteData> getFavorites(Context context) throws LoadFailedException {
+    private List<FavoriteData> getFavorites(Context context) throws LoadFailedException {
 
         ContentResolver cr = context.getContentResolver();
 
@@ -395,7 +403,7 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
             throw new LoadFailedException(errorCode);
         }
 
-        List<SiteData> favorites = new ArrayList<SiteData>();
+        List<FavoriteData> favorites = new ArrayList<FavoriteData>();
 
         if(favoritesC.getCount() == 0) {
             favoritesC.close();
@@ -408,6 +416,7 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         }
 
         do {
+
             SiteData favoriteData = new SiteData();
 
             Site favoriteSite = new Site();
@@ -415,13 +424,16 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
             SiteId siteId = new SiteId(favoritesC.getString(1), favoritesC.getString(0));
 
             favoriteSite.setSiteId(siteId);
-            favoriteSite.setName(favoritesC.getString(2));
+
+            String name = favoritesC.getString(2);
             //favoriteSite.setLatitude(favoritesC.getDouble(3));
             //favoriteSite.setLongitude(favoritesC.getDouble(4));
             favoriteData.setSite(favoriteSite);
             //favoriteData.setDataInfo(dataInfo);
 
             String variableId = favoritesC.getString(3);
+
+            Favorite favorite = new Favorite(favoriteSite, variableId);
 
             Reading lastReading = new Reading();
             lastReading.setDate(new Date(favoritesC.getLong(4)));
@@ -433,6 +445,15 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
             if(favoritesC.getColumnCount() > 7) {
                 unit = favoritesC.getString(7);
                 //Log.v(TAG, "unit=" + unit);
+                if(favoritesC.getColumnCount() > 8) {
+                    favorite.setId(favoritesC.getInt(8));
+
+                    if(favoritesC.isNull(9)) {
+                        DestinationFacet facet = new DestinationFacet();
+                        facet.setId(favoritesC.getInt(9));
+                        facet.setPlaceholderObj(true);
+                    }
+                }
             }
 
             Variable var = DataSourceController.getVariable(siteId.getAgency(), variableId);
@@ -464,7 +485,7 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
                 Log.e(TAG, "could not find variable: " + siteId.getAgency() + " " + variableId);
                 continue;
             }
-            favorites.add(favoriteData);
+            favorites.add(new FavoriteData(favorite, favoriteData, var));
         } while(favoritesC.moveToNext());
 
         favoritesC.close();

@@ -241,6 +241,9 @@ public class Favorites extends RoboContentProvider {
 									row.add(categoryName);
 								}
 							}
+						} else {
+							row.add(null);
+							row.add(null);
 						}
                     }
 				} catch(NullPointerException npe) {

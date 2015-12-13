@@ -19,6 +19,11 @@ public class Favorite implements Serializable, RemoteObject {
 		this.variableId = variableId;
 	}
 
+	/**
+	 *
+	 * @param destinationFacet MUST NOT be a placeholder object
+	 * @throws NullPointerException if destinationFacet destination or variable is null
+	 */
     public Favorite(DestinationFacet destinationFacet) {
         super();
         this.site = destinationFacet.getDestination().getSite();
