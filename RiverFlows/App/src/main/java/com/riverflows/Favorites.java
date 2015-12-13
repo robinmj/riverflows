@@ -47,6 +47,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import io.fabric.sdk.android.Fabric;
+
 import static roboguice.RoboGuice.getInjector;
 
 public class Favorites extends ListFragment implements LoaderManager.LoaderCallbacks<List<FavoriteData>> {
@@ -270,6 +272,10 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 		if(loader.getException() != null) {
 			Log.e(Home.TAG, "failed to get remote favorites: " + loader.getException().getMessage(), loader.getException());
+
+			if(Fabric.isInitialized()) {
+				Crashlytics.logException(loader.getException());
+			}
 
 			String detailMsg = loader.getException().getMessage();
 
