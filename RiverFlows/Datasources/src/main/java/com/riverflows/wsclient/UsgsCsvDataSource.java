@@ -424,6 +424,8 @@ public class UsgsCsvDataSource implements RESTDataSource {
 				currentDate = valueDateFormat.parse(values[2]);
 			} catch(ParseException pe) {
 				throw new DataParseException("invalid date: " + values[2], pe);
+			} catch(ArrayIndexOutOfBoundsException aioobe) {
+				throw new DataParseException("missing value date column");
 			}
 			
 			dateParseTimeCount += (System.currentTimeMillis() - dateParseStartTime);
@@ -458,6 +460,8 @@ public class UsgsCsvDataSource implements RESTDataSource {
 					if(LOG.isDebugEnabled()) LOG.debug("couldn't parse value: " + values[a]);
 					newReading.setValue(null);
 					newReading.setQualifiers(values[a]);
+				} catch(ArrayIndexOutOfBoundsException aioobe) {
+					throw new DataParseException("missing reading column " + a);
 				}
 				newReading.setDate(currentDate);
 				
