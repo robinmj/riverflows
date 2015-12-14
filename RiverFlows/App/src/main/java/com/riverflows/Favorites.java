@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.inject.Inject;
@@ -48,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 
 import io.fabric.sdk.android.Fabric;
+import io.fabric.sdk.android.services.common.Crash;
 
 import static roboguice.RoboGuice.getInjector;
 
@@ -196,7 +198,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		FavoriteData selectedFavorite = adapter.getItem(position);
 		
 		if(selectedFavorite == null) {
-			Crashlytics.getInstance().core.log(Log.WARN, TAG,"no such data: " + id);
+			Crashlytics.getInstance().core.log(Log.WARN, TAG, "no such data: " + id);
 			return;
 		}
 
@@ -237,7 +239,16 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		case R.id.mi_sign_out:
 			this.wsSessionManager.logOut(getActivity());
 			return true;
-	    default:
+		case R.id.mi_send_report:
+			Crashlytics.getInstance().core.log("progress bar visibility: " +
+					getView().findViewById(R.id.progress_bar).getVisibility());
+			Crashlytics.getInstance().core.log("list empty view visibility: "
+					+ getListView().getEmptyView().getVisibility());
+			Crashlytics.getInstance().core.logException(new RuntimeException());
+			Toast.makeText(getActivity(), "Problem Report Sent- Thank You!", Toast.LENGTH_LONG).show();
+			Log.i(TAG,"sending problem report");
+			return true;
+		default:
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
@@ -326,7 +337,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		hideProgress();
 		if(favoriteData == null) {
 			Crashlytics.getInstance().core.log(Log.ERROR, Home.TAG, "null favorites");
-			Crashlytics.getInstance().core.logException(new RuntimeException("null favorites"));
 			this.softReloadNeeded = true;
             getListView().getEmptyView().setVisibility(View.VISIBLE);
 		} else if(favoriteData.size() == 0) {
@@ -341,6 +351,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
             return;
         }
         getView().findViewById(R.id.register_sign_in_instructions).setVisibility(View.GONE);
+
 
         UserAccount userAccount = session.userAccount;
 
@@ -407,7 +418,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		protected void onStartLoading() {
 			super.onStartLoading();
 			if(this.favorites == null || getException() != null) {
-				Crashlytics.getInstance().core.log(Log.VERBOSE,TAG,"forceLoad");
+				Crashlytics.getInstance().core.log(Log.VERBOSE, TAG, "forceLoad");
 				forceLoad();
 			}
 		}
@@ -486,7 +497,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 			}
 
 			if(this.favorites.size() == 0) {
-				Crashlytics.getInstance().core.logException(new RuntimeException("no favorites found"));
+				Crashlytics.getInstance().core.log("no favorites found");
 				return Collections.emptyList();
 			}
 
