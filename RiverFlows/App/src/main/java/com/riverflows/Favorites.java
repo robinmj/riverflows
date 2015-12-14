@@ -272,7 +272,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 		if(loader.getException() != null) {
 			if(Fabric.isInitialized()) {
-				Crashlytics.logException(loader.getException());
+				Crashlytics.getInstance().core.logException(loader.getException());
 			}
 
 			String detailMsg = loader.getException().getMessage();
