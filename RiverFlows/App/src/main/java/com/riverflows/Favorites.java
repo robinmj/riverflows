@@ -20,7 +20,6 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
 import com.google.inject.Inject;
@@ -29,7 +28,6 @@ import com.riverflows.data.Favorite;
 import com.riverflows.data.FavoriteData;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
-import com.riverflows.data.UserAccount;
 import com.riverflows.data.ValueConverter;
 import com.riverflows.data.Variable;
 import com.riverflows.data.Variable.CommonVariable;
@@ -49,7 +47,6 @@ import java.util.List;
 import java.util.Map;
 
 import io.fabric.sdk.android.Fabric;
-import io.fabric.sdk.android.services.common.Crash;
 
 import static roboguice.RoboGuice.getInjector;
 
@@ -238,15 +235,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 			return true;
 		case R.id.mi_sign_out:
 			this.wsSessionManager.logOut(getActivity());
-			return true;
-		case R.id.mi_send_report:
-			Crashlytics.getInstance().core.log("progress bar visibility: " +
-					getView().findViewById(R.id.progress_bar).getVisibility());
-			Crashlytics.getInstance().core.log("list empty view visibility: "
-					+ getListView().getEmptyView().getVisibility());
-			Crashlytics.getInstance().core.logException(new RuntimeException());
-			Toast.makeText(getActivity(), "Problem Report Sent- Thank You!", Toast.LENGTH_LONG).show();
-			Log.i(TAG,"sending problem report");
 			return true;
 		default:
 	        return super.onOptionsItemSelected(item);
