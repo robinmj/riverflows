@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.Loader;
@@ -39,6 +40,7 @@ import com.riverflows.wsclient.WsSessionManager;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -434,9 +436,21 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
         return this.variable;
     }
 
-    public void setVariable(Variable  variable) {
+    public void setVariable(@NonNull Variable  variable) {
         this.variable = variable;
+
         getArguments().putSerializable(ARG_VARIABLE, this.variable);
+
+        //make sure we have most relevant favorite
+        List<Favorite> favorites = FavoritesDaoImpl.getFavorites(getActivity().getApplicationContext(), site.getSiteId(), variable.getId());
+
+        if (favorites.size() > 0) {
+            this.favorite = favorites.get(0);
+            getArguments().putSerializable(ARG_FAVORITE, this.favorite);
+        } else {
+            this.favorite = null;
+        }
+
         clearData();
         displayData();
     }
