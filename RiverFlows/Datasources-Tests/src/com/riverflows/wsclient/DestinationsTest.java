@@ -66,4 +66,20 @@ public class DestinationsTest extends WebModelTestCase {
 
         assertTrue("shared publicly", clearCreekKayak.getDestination().isShared());
     }
+
+    public void testSaveDestinationWithoutSitePk() throws Throwable {
+        recorder.insertTape("testSaveDestinationWithoutSitePk");
+
+        DestinationFacet clearCreekKayak = DestinationFacetFactory.getClearCreekKayak();
+        clearCreekKayak.getDestination().setShared(true);
+        clearCreekKayak.getDestination().getSite().getSiteId().setPrimaryKey(null);
+
+        clearCreekKayak = destinations.saveDestinationWithFacet(session, clearCreekKayak);
+
+        assertNotNull(clearCreekKayak.getId());
+        assertNotNull(clearCreekKayak.getDestination().getSite().getName());
+        assertNotNull(clearCreekKayak.getDestination().getSite().getSiteId().getPrimaryKey());
+        assertNotNull(clearCreekKayak.getVariable().getCommonVariable());
+        assertNotNull(clearCreekKayak.getVariable().getName());
+    }
 }
