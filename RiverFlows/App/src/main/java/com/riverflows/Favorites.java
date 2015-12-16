@@ -28,6 +28,7 @@ import com.riverflows.data.Favorite;
 import com.riverflows.data.FavoriteData;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
+import com.riverflows.data.UserAccount;
 import com.riverflows.data.ValueConverter;
 import com.riverflows.data.Variable;
 import com.riverflows.data.Variable.CommonVariable;
@@ -331,7 +332,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
             getListView().getEmptyView().setVisibility(View.VISIBLE);
 		}
 
-		/*
         WsSession session = this.wsSessionManager.getSession(activity);
 
         if(session == null) {
@@ -340,13 +340,12 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
         }
         getView().findViewById(R.id.register_sign_in_instructions).setVisibility(View.GONE);
 
-
         UserAccount userAccount = session.userAccount;
 
         if(userAccount != null && userAccount.getFacetTypes() == 0) {
             //set up this user's account
             startActivityForResult(new Intent(Favorites.this.getActivity(), AccountSettings.class), Home.REQUEST_CREATE_ACCOUNT);
-        }*/
+        }
 
 		//needed for Android 3.0+
 		//invalidateOptionsMenu();
