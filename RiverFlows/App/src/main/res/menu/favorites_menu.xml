@@ -17,4 +17,7 @@
     <item android:id="@+id/mi_sign_out"
           android:title="Sign Out"
           android:visible="false"/>
+	<item android:id="@+id/mi_send_report"
+		  android:title="Send Report"
+		  android:visible="true"/>
 </menu>
