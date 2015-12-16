@@ -368,7 +368,7 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
         boolean favoriteIntroShown = settings.getBoolean(Home.PREF_FAVORITE_INTRO, false);
 
         if(!favoriteIntroShown) {
-            if(this.favorite != null) {
+            if(this.favorite == null) {
                 ToolTip toolTip = new ToolTip().setDescription("Hint: touch the star to save this site as a favorite").setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
