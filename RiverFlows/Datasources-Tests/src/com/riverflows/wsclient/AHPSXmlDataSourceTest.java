@@ -277,6 +277,7 @@ public class AHPSXmlDataSourceTest extends TestCase {
 		assertFalse(r instanceof Forecast);
 	}
 
+	//TODO use FavoriteData.exception property to handle this more gracefully
 	public void testHandlePartialResponse() throws Throwable {
 
 		Site sori2 = new Site(new SiteId(AHPSXmlDataSource.AGENCY,"sori2"),

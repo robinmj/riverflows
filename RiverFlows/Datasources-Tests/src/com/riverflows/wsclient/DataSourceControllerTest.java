@@ -118,7 +118,8 @@ public class DataSourceControllerTest extends TestCase {
         FavoriteData sori2Data = favoriteData.get(1);
 
         assertNotNull(sori2Data.getSiteData().getSite());
-        assertEquals("Parse Error", sori2Data.getSiteData().getDatasets().values().iterator().next().getLastObservation().getQualifiers());
+        assertNotNull(sori2Data.getException());
+        assertEquals("Error", sori2Data.getSiteData().getDatasets().values().iterator().next().getLastObservation().getQualifiers());
 
         FavoriteData molg1Data = favoriteData.get(2);
 

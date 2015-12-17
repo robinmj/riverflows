@@ -496,6 +496,10 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 				Crashlytics.getInstance().core.log("currentData=" + currentData.getFavorite().getSite().getSiteId() + " " + currentData.getFavorite().getVariable());
 
+				if(currentData.getException() != null) {
+					Crashlytics.getInstance().core.logException(currentData.getException());
+				}
+
 				//convert °C to °F if that setting is enabled
 				Map<CommonVariable,Series> datasets = currentData.getSiteData().getDatasets();
 				for(Series dataset: datasets.values()) {

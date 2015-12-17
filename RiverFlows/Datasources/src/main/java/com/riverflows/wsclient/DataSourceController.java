@@ -68,6 +68,8 @@ public class DataSourceController {
 	public static final float RIVERFLOWS_WS_API_VERSION = 0.2f;
 	
 	public static final DateFormat RECENT_READING_TIME_FMT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+	public static final String QUALIFIER_UNEXPECTED_DS_ERROR = "Error";
 	
 	private static final Map<String,RESTDataSource> dataSources = new HashMap<String,RESTDataSource>();
 
@@ -633,6 +635,15 @@ public class DataSourceController {
 				LOG.error("could not access agency: " + agency, se);
 			} catch(DataParseException dpe) {
 				LOG.error("failed to parse data from agency: " + agency + " for site " + dpe.getSiteId(), dpe);
+				addDatasourceDownFavoriteData(returnedData, ds, agencySitesMap.get(agency), "Parse Error", dpe);
+			} catch(Exception e) {
+				List<Favorite> agencyFavs = agencySitesMap.get(agency);
+
+				String msg = agencyFavs == null ? "null favorites" : "" + agencyFavs.size();
+
+				LOG.error(agency + " datasource exception for favorites " + msg, e);
+
+				addDatasourceDownFavoriteData(returnedData,ds, agencyFavs, QUALIFIER_UNEXPECTED_DS_ERROR, e);
 			}
 		}
 
@@ -668,6 +679,20 @@ public class DataSourceController {
 		}
 	}
 
+	private static void addDatasourceDownFavoriteData(Map<Favorite, FavoriteData> result, DataSource agencyDataSource, List<Favorite> agencyFavs, String qualifier, Exception e) {
+
+		for(Favorite returnedFav : agencyFavs) {
+
+			Variable var = agencyDataSource.getVariable(returnedFav.getVariable());
+
+			FavoriteData siteDownData = new FavoriteData(returnedFav,
+					dataSourceDownData(returnedFav.getSite(), var, qualifier),
+					var, e);
+
+			result.put(returnedFav, siteDownData);
+		}
+	}
+
     /**
      * generate a response that should be returned when the datasource failed to retreive data
      * for a site and variable
@@ -676,8 +701,20 @@ public class DataSourceController {
      * @return
      */
     public static SiteData dataSourceDownData(Site site, Variable variable) {
-        SiteData current = new SiteData();
-        current.setSite(site);
+        return dataSourceDownData(site, variable, "Datasource Down");
+    }
+
+	/**
+	 * generate a response that should be returned when the datasource failed to retreive data
+	 * for a site and variable
+	 * @param site
+	 * @param variable
+	 * @param qualifier the message to be displayed to the user
+	 * @return
+	 */
+	public static SiteData dataSourceDownData(Site site, Variable variable, String qualifier) {
+		SiteData current = new SiteData();
+		current.setSite(site);
 
         Series nullSeries = new Series();
         nullSeries.setVariable(variable);
