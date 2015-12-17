@@ -32,6 +32,7 @@ import java.net.PasswordAuthentication;
 import java.net.SocketException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.security.KeyStore;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -620,12 +621,14 @@ public class DataSourceController {
 			}
 			
 			try {
-				List<FavoriteData> agencyData= ds.getSiteData(agencySitesMap.get(agency), hardRefresh);
-				
+				List<FavoriteData> agencyData = ds.getSiteData(agencySitesMap.get(agency), hardRefresh);
+
 				//copy results into consolidated map
-                for(FavoriteData returnedFav : agencyData) {
-                    returnedData.put(returnedFav.getFavorite(), returnedFav);
-                }
+				for (FavoriteData returnedFav : agencyData) {
+					returnedData.put(returnedFav.getFavorite(), returnedFav);
+				}
+			} catch(UnknownHostException uhe) {
+				LOG.error("dns lookup failed for " + agency, uhe);
 			} catch(SocketException se) {
 				LOG.error("could not access agency: " + agency, se);
 			} catch(DataParseException dpe) {

@@ -213,4 +213,67 @@ public class AHPSXmlDataSourceTest extends TestCase {
         assertEquals(1740.0d, r.getValue());
         assertFalse(r instanceof Forecast);
     }
+
+	public void testGetMultipleDRGC2() throws Throwable {
+		Site animas = new Site(new SiteId(AHPSXmlDataSource.AGENCY,"drgc2"),
+				"Animas River at Durango", -11.1111d, 11.1111d, USState.CO,
+				AHPSXmlDataSource.ACCEPTED_VARIABLES);
+
+		Favorite animasFav = new Favorite(animas, AHPSXmlDataSource.VTYPE_FLOW.getId());
+		Favorite animasStageFav = new Favorite(animas, AHPSXmlDataSource.VTYPE_STAGE.getId());
+
+		List<Favorite> favorites = new ArrayList<Favorite>();
+		favorites.add(animasFav);
+		favorites.add(animasStageFav);
+
+		List<FavoriteData> favoriteData = ds.getSiteData(favorites, true);
+
+		FavoriteData streamflowData = favoriteData.get(0);
+
+		Series streamflowDataset = streamflowData.getSeries();
+
+		assertNotNull(streamflowData.getSiteData().getSite());
+		assertEquals(animas.getId(), streamflowData.getSiteData().getSite().getId());
+		assertTrue(Arrays.equals(animas.getSupportedVariables(), streamflowData.getSiteData().getSite().getSupportedVariables()));
+		assertEquals(animasFav, streamflowData.getFavorite());
+
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.set(2014, Calendar.JUNE, 22, 2, 30, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		cal.setTimeZone(TimeZone.getTimeZone("GMT-00:00"));
+
+		Reading r = streamflowDataset.getLastObservation();
+		assertEquals(cal.getTime(), r.getDate());
+		assertEquals(1740.0d, r.getValue());
+		assertFalse(r instanceof Forecast);
+
+		r = streamflowDataset.getReadings().get(202);
+		assertEquals(cal.getTime(), r.getDate());
+		assertEquals(1740.0d, r.getValue());
+		assertFalse(r instanceof Forecast);
+
+
+		FavoriteData stageData = favoriteData.get(1);
+		Series stageDataset = stageData.getSeries();
+
+		assertNotNull(stageData.getSiteData().getSite());
+		assertEquals(animas.getId(), stageData.getSiteData().getSite().getId());
+		assertTrue(Arrays.equals(animas.getSupportedVariables(), stageData.getSiteData().getSite().getSupportedVariables()));
+		assertEquals(animasStageFav, stageData.getFavorite());
+
+		cal = new GregorianCalendar();
+		cal.set(2014, Calendar.JUNE, 22, 2, 30, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		cal.setTimeZone(TimeZone.getTimeZone("GMT-00:00"));
+
+		r = stageDataset.getLastObservation();
+		assertEquals(cal.getTime(), r.getDate());
+		assertEquals(4.0d, r.getValue());
+		assertFalse(r instanceof Forecast);
+
+		r = stageDataset.getReadings().get(202);
+		assertEquals(cal.getTime(), r.getDate());
+		assertEquals(4.0d, r.getValue());
+		assertFalse(r instanceof Forecast);
+	}
 }

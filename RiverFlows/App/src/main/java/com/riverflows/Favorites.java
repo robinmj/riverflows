@@ -196,7 +196,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		FavoriteData selectedFavorite = adapter.getItem(position);
 		
 		if(selectedFavorite == null) {
-			Crashlytics.getInstance().core.log(Log.WARN, TAG,"no such data: " + id);
+			Crashlytics.getInstance().core.log(Log.WARN, TAG, "no such data: " + id);
 			return;
 		}
 
@@ -237,7 +237,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		case R.id.mi_sign_out:
 			this.wsSessionManager.logOut(getActivity());
 			return true;
-	    default:
+		default:
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
@@ -326,14 +326,12 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		hideProgress();
 		if(favoriteData == null) {
 			Crashlytics.getInstance().core.log(Log.ERROR, Home.TAG, "null favorites");
-			Crashlytics.getInstance().core.logException(new RuntimeException("null favorites"));
 			this.softReloadNeeded = true;
             getListView().getEmptyView().setVisibility(View.VISIBLE);
 		} else if(favoriteData.size() == 0) {
             getListView().getEmptyView().setVisibility(View.VISIBLE);
 		}
 
-		/*
         WsSession session = this.wsSessionManager.getSession(activity);
 
         if(session == null) {
@@ -347,7 +345,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
         if(userAccount != null && userAccount.getFacetTypes() == 0) {
             //set up this user's account
             startActivityForResult(new Intent(Favorites.this.getActivity(), AccountSettings.class), Home.REQUEST_CREATE_ACCOUNT);
-        }*/
+        }
 
 		//needed for Android 3.0+
 		//invalidateOptionsMenu();
@@ -407,7 +405,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		protected void onStartLoading() {
 			super.onStartLoading();
 			if(this.favorites == null || getException() != null) {
-				Crashlytics.getInstance().core.log(Log.VERBOSE,TAG,"forceLoad");
+				Crashlytics.getInstance().core.log(Log.VERBOSE, TAG, "forceLoad");
 				forceLoad();
 			}
 		}
@@ -486,7 +484,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 			}
 
 			if(this.favorites.size() == 0) {
-				Crashlytics.getInstance().core.logException(new RuntimeException("no favorites found"));
+				Crashlytics.getInstance().core.log("no favorites found");
 				return Collections.emptyList();
 			}
 
