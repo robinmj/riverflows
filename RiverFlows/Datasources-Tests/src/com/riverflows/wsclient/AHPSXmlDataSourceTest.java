@@ -276,4 +276,23 @@ public class AHPSXmlDataSourceTest extends TestCase {
 		assertEquals(4.0d, r.getValue());
 		assertFalse(r instanceof Forecast);
 	}
+
+	public void testHandlePartialResponse() throws Throwable {
+
+		Site sori2 = new Site(new SiteId(AHPSXmlDataSource.AGENCY,"sori2"),
+				"Du Page River  AT Shorewood", -11.1111d, 11.1111d, USState.MI,
+				AHPSXmlDataSource.ACCEPTED_VARIABLES);
+
+		Favorite sori2Fav = new Favorite(sori2, AHPSXmlDataSource.VTYPE_STAGE.getId());
+
+		List<FavoriteData> favoriteData = ds.getSiteData(Collections.singletonList(sori2Fav), true);
+
+		assertEquals(1, favoriteData.size());
+
+		FavoriteData sori2Data = favoriteData.get(0);
+
+		assertNotNull(sori2Data.getSiteData().getSite());
+		assertEquals("Parse Error", sori2Data.getSiteData().getDatasets().values().iterator().next().getLastObservation().getQualifiers());
+
+	}
 }
