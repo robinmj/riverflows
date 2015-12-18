@@ -1,7 +1,7 @@
 !tape
 name: testSaveDestinationWithFacet
 interactions:
-- recorded: 2015-11-29T15:33:59.283Z
+- recorded: 2015-12-18T15:48:23.978Z
   request:
     method: POST
     uri: https://riverflows.net/destinations.json?auth_token=T9HLJkUvA7JwELEeHjsu
@@ -15,21 +15,20 @@ interactions:
     headers:
       Cache-Control: max-age=0, private, must-revalidate
       Content-Type: application/json; charset=utf-8
-      Date: Sun, 29 Nov 2015 15:33:58 GMT
-      Etag: '"3314e954c836cd7646a03cb2f5c094c3"'
-      Location: http://127.0.0.1:3000/destinations/39
-      Server: WEBrick/1.3.1 (Ruby/1.9.3/2013-05-16)
-      Set-Cookie: _ws_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJTAzYzkxMzc2NDYwZjE0YmJhOWIyYjAwNTZjNDc4MDdkBjsAVEkiGXdhcmRlbi51c2VyLnVzZXIua2V5BjsAVFsHWwZpB0kiIiQyYSQxMCRGdkF0UjZENkZ1dFRNUHh2VjNKWGtlBjsAVA%3D%3D--e25e349fcf2ba7f9145f567c1d21de9f1ec0cf56; path=/; HttpOnly
-      X-Betamax: PLAY
-      X-Request-Id: 52f7b2d47dfa7b4edcdc53eee6131f71
-      X-Runtime: '4.044000'
+      Date: Fri, 18 Dec 2015 15:48:23 GMT
+      Etag: '"c4a0edef4bcfec8963e44c4d191ac8aa"'
+      Location: http://127.0.0.1:3000/destinations/5
+      Server: WEBrick/1.3.1 (Ruby/1.9.3/2015-01-29)
+      Set-Cookie: _ws_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJTJhMzFmZTI1MDJjYjlhNWI5NWUxNTI0MmFlYzllOGM1BjsAVEkiGXdhcmRlbi51c2VyLnVzZXIua2V5BjsAVFsHWwZpB0kiIiQyYSQxMCRGdkF0UjZENkZ1dFRNUHh2VjNKWGtlBjsAVA%3D%3D--4c0968efd2938bf4cdc1b4af1976cbb25333353c; path=/; HttpOnly
+      X-Request-Id: 9700fd0bde02ab061a039e88db4ba4c4
+      X-Runtime: '0.158000'
       X-Ua-Compatible: IE=Edge
-    body: '{"destination":{"created_at":"2015-11-29T15:33:58Z","description":null,"id":39,"name":"Clear Creek","publicly_visible":true,"updated_at":"2015-11-29T15:33:58Z","user_id":2,"visual_gauge_latitude":null,"visual_gauge_longitude":null},"destination_facet":{"created_at":"2015-11-29T15:33:58Z","description":null,"destination_id":39,"facet_type":0,"high":800.0,"high_difficulty":null,"high_plus":null,"high_port_difficulty":null,"id":26,"low":400.0,"low_difficulty":null,"low_port_difficulty":null,"med":600.0,"med_difficulty":null,"med_port_difficulty":null,"quality_high":null,"quality_low":null,"quality_med":null,"site_id":20161,"too_low":null,"updated_at":"2015-11-29T15:33:58Z","user_id":2,"variable_id":"DISCHRG","site":{"agency":"CODWR","agency_specific_id":"CCACCRCO","created_at":"2013-02-07T02:12:42Z","id":20161,"latitude":0.0,"longitude":-109.489,"name":"CLEAR
-      CREEK ABOVE CLEAR CREEK RESERVOIR","recent_reading":null,"recent_reading_time":null,"recent_reading_var_id":null,"state":"CO","supported_var_ids":"DISCHRG GAGE_HT","updated_at":"2013-02-07T02:12:42Z"}}}'
-- recorded: 2015-11-29T17:37:39.579Z
+    body: '{"destination":{"created_at":"2015-12-18T15:48:23Z","description":null,"id":5,"name":"Clear Creek","publicly_visible":true,"updated_at":"2015-12-18T15:48:23Z","user_id":2,"visual_gauge_latitude":null,"visual_gauge_longitude":null},"destination_facet":{"created_at":"2015-12-18T15:48:23Z","description":null,"destination_id":5,"facet_type":0,"high":800.0,"high_difficulty":null,"high_plus":null,"high_port_difficulty":null,"id":5,"low":400.0,"low_difficulty":null,"low_port_difficulty":null,"med":600.0,"med_difficulty":null,"med_port_difficulty":null,"quality_high":null,"quality_low":null,"quality_med":null,"site_id":20161,"too_low":null,"updated_at":"2015-12-18T15:48:23Z","user_id":2,"variable_id":"DISCHRG","site":{"agency":"CODWR","agency_specific_id":"CCACCRCO","created_at":"2013-02-07T03:38:52Z","id":20161,"latitude":0.0,"longitude":-109.489,"name":"CLEAR
+      CREEK ABOVE CLEAR CREEK RESERVOIR","recent_reading":null,"recent_reading_time":null,"recent_reading_var_id":null,"state":"CO","supported_var_ids":"DISCHRG GAGE_HT","updated_at":"2013-02-07T03:38:52Z"}}}'
+- recorded: 2015-12-18T15:48:24.159Z
   request:
     method: GET
-    uri: https://riverflows.net/destination_facets/26.json?auth_token=T9HLJkUvA7JwELEeHjsu
+    uri: https://riverflows.net/destination_facets/5.json?auth_token=T9HLJkUvA7JwELEeHjsu
     headers:
       Accept: application/json
   response:
@@ -37,13 +36,13 @@ interactions:
     headers:
       Cache-Control: max-age=0, private, must-revalidate
       Content-Type: application/json; charset=utf-8
-      Date: Sun, 29 Nov 2015 17:37:39 GMT
-      Etag: '"311cf139aa17956cbbe1efae9bf42463"'
-      Server: WEBrick/1.3.1 (Ruby/1.9.3/2013-05-16)
-      Set-Cookie: _ws_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJTIyOTI4MTM0YTA2N2Q3Y2E5YzQ3ZDYxZTEyMzc5MWEzBjsAVEkiGXdhcmRlbi51c2VyLnVzZXIua2V5BjsAVFsHWwZpB0kiIiQyYSQxMCRGdkF0UjZENkZ1dFRNUHh2VjNKWGtlBjsAVA%3D%3D--4ba2fd150b14a4c134ee57f646bfa4875f1fc044; path=/; HttpOnly
-      X-Request-Id: 0aaca06ad18f4e64a7f9a5208f5abd2d
-      X-Runtime: '3.005000'
+      Date: Fri, 18 Dec 2015 15:48:24 GMT
+      Etag: '"a01b2d3038f986e59e4a8dd6dd56adc9"'
+      Server: WEBrick/1.3.1 (Ruby/1.9.3/2015-01-29)
+      Set-Cookie: _ws_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJTNkYzk4N2MzYjEwY2Y5MWRhNWUzYjFmYTVlOWM0YzQ2BjsAVEkiGXdhcmRlbi51c2VyLnVzZXIua2V5BjsAVFsHWwZpB0kiIiQyYSQxMCRGdkF0UjZENkZ1dFRNUHh2VjNKWGtlBjsAVA%3D%3D--e47251aaa78f66bfb5938bc31a624158c0d8f887; path=/; HttpOnly
+      X-Request-Id: 17069535fca54de2047612441d1045fc
+      X-Runtime: '0.140000'
       X-Ua-Compatible: IE=Edge
-    body: '{"id":26,"description":null,"destination_id":39,"user_id":2,"too_low":null,"low":400.0,"med":600.0,"high":800.0,"high_plus":null,"low_difficulty":null,"med_difficulty":null,"high_difficulty":null,"created_at":"2015-11-29T15:33:58Z","updated_at":"2015-11-29T15:33:58Z","facet_type":0,"site_id":20161,"variable_id":"DISCHRG","low_port_difficulty":null,"med_port_difficulty":null,"high_port_difficulty":null,"quality_low":null,"quality_med":null,"quality_high":null,"destination":{"id":39,"name":"Clear
-      Creek","description":null,"publicly_visible":true,"user_id":2,"visual_gauge_latitude":null,"visual_gauge_longitude":null,"created_at":"2015-11-29T15:33:58Z","updated_at":"2015-11-29T15:33:58Z"},"site":{"id":20161,"name":"CLEAR CREEK ABOVE CLEAR CREEK RESERVOIR","agency":"CODWR","agency_specific_id":"CCACCRCO","latitude":0.0,"longitude":-109.489,"state":"CO","supported_var_ids":"DISCHRG
-      GAGE_HT","measurements":["STREAMFLOW_CFS","GAUGE_HEIGHT_FT"],"created_at":"2013-02-07T02:12:42Z","updated_at":"2013-02-07T02:12:42Z"}}'
+    body: '{"id":5,"description":null,"destination_id":5,"user_id":2,"too_low":null,"low":400.0,"med":600.0,"high":800.0,"high_plus":null,"low_difficulty":null,"med_difficulty":null,"high_difficulty":null,"created_at":"2015-12-18T15:48:23Z","updated_at":"2015-12-18T15:48:23Z","facet_type":0,"site_id":20161,"variable_id":"DISCHRG","low_port_difficulty":null,"med_port_difficulty":null,"high_port_difficulty":null,"quality_low":null,"quality_med":null,"quality_high":null,"destination":{"id":5,"name":"Clear
+      Creek","description":null,"publicly_visible":true,"user_id":2,"visual_gauge_latitude":null,"visual_gauge_longitude":null,"created_at":"2015-12-18T15:48:23Z","updated_at":"2015-12-18T15:48:23Z"},"site":{"id":20161,"name":"CLEAR CREEK ABOVE CLEAR CREEK RESERVOIR","agency":"CODWR","agency_specific_id":"CCACCRCO","latitude":0.0,"longitude":-109.489,"state":"CO","supported_var_ids":"DISCHRG
+      GAGE_HT","measurements":["STREAMFLOW_CFS","GAUGE_HEIGHT_FT"],"created_at":"2013-02-07T03:38:52Z","updated_at":"2013-02-07T03:38:52Z"}}'
