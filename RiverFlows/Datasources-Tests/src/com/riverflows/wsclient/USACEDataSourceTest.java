@@ -22,6 +22,12 @@ public class USACEDataSourceTest extends TestCase {
 	static {
 		src.setHttpClientWrapper(new MockUSACEHttpClient());
 	}
+
+	//TODO test these sites
+//	USACE/EFGA4 HG
+//	USACE/QLDI2 HG
+//	USACE/MGOI4 HG
+//	USACE/SORI2 QR
 	
 	public void testGetSiteData() throws Exception {
 		Site genesee = new Site(new SiteId("USACE", "BLBN6"), "Genesee River at Ballantyne Bridge near Mortimer, NY", USState.NY,
