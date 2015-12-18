@@ -68,8 +68,6 @@ public class DataSourceController {
 	public static final float RIVERFLOWS_WS_API_VERSION = 0.2f;
 	
 	public static final DateFormat RECENT_READING_TIME_FMT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-	public static final String QUALIFIER_UNEXPECTED_DS_ERROR = "Error";
 	
 	private static final Map<String,RESTDataSource> dataSources = new HashMap<String,RESTDataSource>();
 
@@ -643,7 +641,7 @@ public class DataSourceController {
 
 				LOG.error(agency + " datasource exception for favorites " + msg, e);
 
-				addDatasourceDownFavoriteData(returnedData,ds, agencyFavs, QUALIFIER_UNEXPECTED_DS_ERROR, e);
+				addDatasourceDownFavoriteData(returnedData,ds, agencyFavs, "Error", e);
 			}
 		}
 
@@ -721,7 +719,7 @@ public class DataSourceController {
 
         Reading placeHolderReading = new Reading();
         placeHolderReading.setDate(new Date());
-        placeHolderReading.setQualifiers("Datasource Down");
+        placeHolderReading.setQualifiers(qualifier);
 
         nullSeries.setReadings(Collections.singletonList(placeHolderReading));
         nullSeries.setSourceUrl("");
