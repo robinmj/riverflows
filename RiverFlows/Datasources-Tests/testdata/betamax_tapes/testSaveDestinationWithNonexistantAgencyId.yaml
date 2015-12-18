@@ -1,0 +1,24 @@
+!tape
+name: testSaveDestinationWithNonexistantAgencyId
+interactions:
+- recorded: 2015-12-18T00:59:46.514Z
+  request:
+    method: POST
+    uri: https://riverflows.net/destinations.json?auth_token=T9HLJkUvA7JwELEeHjsu
+    headers:
+      Accept: application/json
+      Content-Type: application/json
+    body: '{"destination_facet":{"med":600,"quality_high":null,"low_difficulty":null,"facet_type":0,"high_port_difficulty":null,"quality_med":null,"high_plus":null,"med_difficulty":null,"low_port_difficulty":null,"high":800,"variable_id":"DISCHRG","low":400,"high_difficulty":null,"quality_low":null,"med_port_difficulty":null},"agency_specific_id":"invalid
+      agency_specific_id","agency":"CODWR","destination":{"publicly_visible":true,"name":"Clear Creek"}}'
+  response:
+    status: 422
+    headers:
+      Cache-Control: no-cache
+      Content-Type: application/json; charset=utf-8
+      Date: Fri, 18 Dec 2015 00:59:46 GMT
+      Server: WEBrick/1.3.1 (Ruby/1.9.3/2015-01-29)
+      Set-Cookie: _ws_session=BAh7B0kiD3Nlc3Npb25faWQGOgZFRkkiJTNlNWYwMDFmODVkMzMyN2EzMzEzYzQwYWJmYzE5N2YwBjsAVEkiGXdhcmRlbi51c2VyLnVzZXIua2V5BjsAVFsHWwZpB0kiIiQyYSQxMCRGdkF0UjZENkZ1dFRNUHh2VjNKWGtlBjsAVA%3D%3D--78e5ca0f5f8688a7f8232e9cf47045a2560a9852; path=/; HttpOnly
+      X-Request-Id: 453358a72f358c715f668d8ef4ad57ba
+      X-Runtime: '0.070000'
+      X-Ua-Compatible: IE=Edge
+    body: '{"agency_specific_id":["no such gage site: CODWR invalid agency_specific_id"]}'
