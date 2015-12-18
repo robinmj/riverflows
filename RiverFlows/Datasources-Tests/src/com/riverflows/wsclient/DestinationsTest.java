@@ -3,6 +3,7 @@ package com.riverflows.wsclient;
 import com.riverflows.WebModelTestCase;
 import com.riverflows.data.Destination;
 import com.riverflows.data.DestinationFacet;
+import com.riverflows.data.SiteId;
 import com.riverflows.factory.DestinationFacetFactory;
 
 import java.util.Collections;
@@ -81,5 +82,22 @@ public class DestinationsTest extends WebModelTestCase {
         assertNotNull(clearCreekKayak.getDestination().getSite().getSiteId().getPrimaryKey());
         assertNotNull(clearCreekKayak.getVariable().getCommonVariable());
         assertNotNull(clearCreekKayak.getVariable().getName());
+    }
+
+    public void testSaveDestinationWithNonexistantAgencyId() throws Throwable {
+        recorder.insertTape("testSaveDestinationWithNonexistantAgencyId");
+
+        DestinationFacet clearCreekKayak = DestinationFacetFactory.getClearCreekKayak();
+        SiteId oldSiteId = clearCreekKayak.getDestination().getSite().getSiteId();
+
+        clearCreekKayak.getDestination().getSite().setSiteId(new SiteId(oldSiteId.getAgency(), "invalid agency_specific_id"));
+
+        try {
+            destinations.saveDestinationWithFacet(session, clearCreekKayak);
+            throw new RuntimeException("expected UnexpectedResultException");
+        } catch(UnexpectedResultException ure) {
+            assertEquals(422, ure.getStatusCode());
+        }
+
     }
 }
