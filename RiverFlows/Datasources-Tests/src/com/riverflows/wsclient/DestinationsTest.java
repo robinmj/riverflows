@@ -68,6 +68,20 @@ public class DestinationsTest extends WebModelTestCase {
         assertTrue("shared publicly", clearCreekKayak.getDestination().isShared());
     }
 
+    public void testSaveDestinationWithInvalidSitePk() throws Throwable {
+        recorder.insertTape("testSaveDestinationWithInvalidSitePk");
+
+        DestinationFacet clearCreekKayak = DestinationFacetFactory.getClearCreekKayak();
+        clearCreekKayak.getDestination().getSite().getSiteId().setPrimaryKey(999999999);
+
+        try {
+            destinations.saveDestinationWithFacet(session, clearCreekKayak);
+            throw new RuntimeException("expected UnexpectedResultException");
+        } catch(UnexpectedResultException ure) {
+            assertEquals(422,ure.getStatusCode());
+        }
+    }
+
     public void testSaveDestinationWithoutSitePk() throws Throwable {
         recorder.insertTape("testSaveDestinationWithoutSitePk");
 
