@@ -22,12 +22,6 @@ public class USACEDataSourceTest extends TestCase {
 	static {
 		src.setHttpClientWrapper(new MockUSACEHttpClient());
 	}
-
-	//TODO test these sites
-//	USACE/EFGA4 HG
-//	USACE/QLDI2 HG
-//	USACE/MGOI4 HG
-//	USACE/SORI2 QR
 	
 	public void testGetSiteData() throws Exception {
 		Site genesee = new Site(new SiteId("USACE", "BLBN6"), "Genesee River at Ballantyne Bridge near Mortimer, NY", USState.NY,
@@ -160,5 +154,33 @@ public class USACEDataSourceTest extends TestCase {
 		assertEquals(0, elevReadings.size());
 		assertEquals(0, watertempReadings.size());
 		assertEquals(0, flowReadings.size());
+	}
+
+	public void testGetEFGA4() throws Exception {
+		Site efga4 = new Site(new SiteId("USACE", "EFGA4"), "", USState.NY,
+				USACEDataSource.ACCEPTED_VARIABLES);
+
+		SiteData result = src.getSiteData(efga4, new Variable[]{USACEDataSource.STAGE}, true);
+	}
+
+	public void testGetQLDI2() throws Exception {
+		Site qldi2 = new Site(new SiteId("USACE", "QLDI2"), "", USState.NY,
+				USACEDataSource.ACCEPTED_VARIABLES);
+
+		SiteData result = src.getSiteData(qldi2, new Variable[]{USACEDataSource.STAGE}, true);
+	}
+
+	public void testGetMGOI4() throws Exception {
+		Site mgoi4 = new Site(new SiteId("USACE", "MGOI4"), "", USState.NY,
+				USACEDataSource.ACCEPTED_VARIABLES);
+
+		SiteData result = src.getSiteData(mgoi4, new Variable[]{USACEDataSource.STAGE}, true);
+	}
+
+	public void testGetSORI2() throws Exception {
+		Site sori2 = new Site(new SiteId("USACE", "SORI2"), "", USState.NY,
+				USACEDataSource.ACCEPTED_VARIABLES);
+
+		SiteData result = src.getSiteData(sori2, new Variable[]{USACEDataSource.FLOW}, true);
 	}
 }
