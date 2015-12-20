@@ -4,10 +4,14 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
+import com.crashlytics.android.core.CrashlyticsCore;
 import com.google.analytics.tracking.android.GoogleAnalytics;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
+
+import io.fabric.sdk.android.Fabric;
 
 /**
  * This is automatically loaded by Robolectric in place of com.riverflows.App
@@ -20,6 +24,13 @@ public class TestApp extends App {
         //don't call super.onCreate()- instead do any necessary configuration here
 
         Logger.getLogger("").setLevel(Level.ALL);
+
+        Crashlytics crashlyticsKit = new Crashlytics.Builder()
+                .core(new CrashlyticsCore.Builder().disabled(true).build())
+                .build();
+
+        // Initialize Fabric with the debug-disabled crashlytics.
+        Fabric.with(this, crashlyticsKit);
 
         GoogleAnalytics myInstance = GoogleAnalytics.getInstance(this);
         myInstance.setAppOptOut(true);

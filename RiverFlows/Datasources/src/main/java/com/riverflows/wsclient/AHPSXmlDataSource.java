@@ -90,13 +90,13 @@ public class AHPSXmlDataSource implements RESTDataSource {
 	}
 	
 	private class GetFavoriteDataThread extends Thread {
-		public final List<Favorite> favorites;
+		public ArrayList<Favorite> favorites = new ArrayList<>();
 		volatile IOException ioe;
 		volatile SiteData favData;
 		volatile boolean complete = false;
 		
 		public GetFavoriteDataThread(Favorite f) {
-			this.favorites = Collections.singletonList(f);
+			this.favorites.add(f);
 
 			setName("loadfav-" + f.getSite().getId() + "-" + f.getVariable());
 		}
@@ -178,9 +178,9 @@ public class AHPSXmlDataSource implements RESTDataSource {
 						throw currentThread.ioe;
 					}
 
-                    Favorite favorite = currentThread.favorites.get(0);
-					
-                    result.add(new FavoriteData(favorite, currentThread.favData, getVariable(favorite.getVariable())));
+					for(Favorite favorite : currentThread.favorites) {
+						result.add(new FavoriteData(favorite, currentThread.favData, getVariable(favorite.getVariable())));
+					}
 					threadsI.remove();
 				}
 			}
