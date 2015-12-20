@@ -17,6 +17,9 @@ import com.riverflows.factory.DestinationFacetFactory;
 import com.riverflows.factory.SiteDataFactory;
 import com.riverflows.factory.SiteFactory;
 import com.riverflows.wsclient.CODWRDataSource;
+import com.riverflows.wsclient.DataParseException;
+import com.riverflows.wsclient.DataSourceController;
+import com.riverflows.wsclient.UsgsCsvDataSource;
 import com.riverflows.wsclient.WsSession;
 import com.riverflows.wsclient.WsSessionManager;
 
@@ -27,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.shadows.ShadowView;
 import org.robolectric.shadows.gms.ShadowGooglePlayServicesUtil;
 import org.robolectric.util.ActivityController;
 
@@ -235,6 +239,71 @@ public class HomeTest {
         assertThat(favorites.getListView().getVisibility(), equalTo(View.VISIBLE));
         assertThat(favorites.getListView().getEmptyView().getVisibility(), equalTo(View.GONE));
 
+    }
+
+    @Test
+    public void testErrorResponses() throws Exception {
+
+        UserAccount account = new UserAccount();
+        account.setEmail("robin.m.j@gmail.com");
+        account.setFacetTypes(4);
+        mockSessionManager.session = new WsSession("robin.m.j", account, "", System.currentTimeMillis() + 10 * 60 * 1000);
+
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, mockSessionManager);
+
+        when(wsClient.destinationFacetsMock.getFavorites(any(WsSession.class))).thenReturn(new ArrayList<DestinationFacet>());
+
+        List<FavoriteData> mockData = new ArrayList<FavoriteData>();
+        final Favorite clearCreekFav = new Favorite(SiteFactory.getClearCreek(), CODWRDataSource.VTYPE_STREAMFLOW_CFS.getId());
+        clearCreekFav.setName("Custom Name");
+        final Favorite southPlatteFav = new Favorite(SiteFactory.getSouthPlatteAtNorthPlatte(), UsgsCsvDataSource.VTYPE_GAUGE_HEIGHT_FT.getId());
+        southPlatteFav.setName("South Platte");
+
+        FavoritesDaoImpl.createFavorite(RuntimeEnvironment.application, clearCreekFav);
+        FavoritesDaoImpl.createFavorite(RuntimeEnvironment.application, southPlatteFav);
+
+        SiteData clearCreekData = DataSourceController.dataSourceDownData(clearCreekFav.getSite(), CODWRDataSource.VTYPE_STREAMFLOW_CFS, "Error");
+        FavoriteData clearCreekFavData = new FavoriteData(clearCreekFav,clearCreekData, CODWRDataSource.VTYPE_STREAMFLOW_CFS, new DataParseException());
+        mockData.add(clearCreekFavData);
+
+        SiteData southPlatteData = DataSourceController.dataSourceDownData(southPlatteFav.getSite(), CODWRDataSource.VTYPE_GAUGE_HEIGHT_FT);
+        FavoriteData southPlatteFavData = new FavoriteData(southPlatteFav,southPlatteData, CODWRDataSource.VTYPE_GAUGE_HEIGHT_FT, new DataParseException());
+        mockData.add(southPlatteFavData);
+
+        when(wsClient.dsControllerMock.getFavoriteData(anyList(), anyBoolean())).thenReturn(mockData);
+
+        Intent i = new Intent(RuntimeEnvironment.application, Home.class);
+
+        Home h = createHome(i);
+
+        SharedPreferences prefs = h.getSharedPreferences(WsSessionManager.PREFS_FILE_NAME, Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = prefs.edit();
+        editor.putString(WsSessionManager.PREF_ACCOUNT_NAME, "robin.m.j");
+        editor.commit();
+
+        Favorites favorites = null;
+
+        for(Fragment f : h.getSupportFragmentManager().getFragments()) {
+            if(f instanceof Favorites) {
+                favorites = (Favorites)f;
+            }
+        }
+
+        assertThat(favorites.getListView().getVisibility(), equalTo(View.VISIBLE));
+        assertThat(favorites.getListView().getEmptyView().getVisibility(), equalTo(View.GONE));
+
+        View clearCreekView = getListItem(favorites, 0);
+        assertThat(ShadowView.innerText(clearCreekView.findViewById(R.id.list_item_txt)), equalTo(clearCreekFav.getName()));
+        assertThat(ShadowView.innerText(clearCreekView.findViewById(R.id.subtext)), equalTo("Error"));
+
+        View southPlatteView = getListItem(favorites, 1);
+        assertThat(ShadowView.innerText(southPlatteView.findViewById(R.id.list_item_txt)), equalTo(southPlatteFav.getName()));
+        assertThat(ShadowView.innerText(southPlatteView.findViewById(R.id.subtext)), equalTo("Datasource Down"));
+
+    }
+
+    private View getListItem(Favorites favorites, int index) {
+        return favorites.getListAdapter().getView(index, null, null);
     }
 
     @After
