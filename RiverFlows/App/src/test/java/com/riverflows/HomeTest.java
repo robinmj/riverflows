@@ -1,10 +1,17 @@
 package com.riverflows;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.Fragment;
+import android.view.ContextMenu;
+import android.view.KeyEvent;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
+import android.widget.AdapterView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.riverflows.data.DestinationFacet;
@@ -22,6 +29,7 @@ import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.UsgsCsvDataSource;
 import com.riverflows.wsclient.WsSession;
 import com.riverflows.wsclient.WsSessionManager;
+import com.subalpine.RoboContextMenu;
 
 import org.junit.After;
 import org.junit.Before;
@@ -30,6 +38,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.fakes.RoboSubMenu;
 import org.robolectric.shadows.ShadowView;
 import org.robolectric.shadows.gms.ShadowGooglePlayServicesUtil;
 import org.robolectric.util.ActivityController;
@@ -130,12 +139,7 @@ public class HomeTest {
     @Test
     public void testPostLogin() throws Exception {
 
-        UserAccount account = new UserAccount();
-        account.setEmail("robin.m.j@gmail.com");
-        account.setFacetTypes(4);
-        mockSessionManager.session = new WsSession("robin.m.j", account, "", System.currentTimeMillis() + 10 * 60 * 1000);
-
-        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, mockSessionManager);
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, new RobinSession());
 
         ArrayList<DestinationFacet> mockResults = new ArrayList<DestinationFacet>();
         DestinationFacet clearCreekKayak = DestinationFacetFactory.getClearCreekKayak();
@@ -181,6 +185,20 @@ public class HomeTest {
 
         assertThat(favorites.getListView().getVisibility(), equalTo(View.VISIBLE));
         assertThat(favorites.getListView().getEmptyView().getVisibility(), equalTo(View.GONE));
+
+        View clearCreekView = getListItem(favorites, 0);
+        assertThat(ShadowView.innerText(clearCreekView.findViewById(R.id.list_item_txt)), equalTo(clearCreekKayak.getDestination().getName()));
+
+        //this will be the value of the first reading because the algorithm attempts to find the last valid reading
+        assertThat(ShadowView.innerText(clearCreekView.findViewById(R.id.subtext)), equalTo("B"));
+
+        RoboContextMenu contextMenu = new RoboContextMenu();
+
+        favorites.onCreateContextMenu(contextMenu, favorites.getListView(), new AdapterView.AdapterContextMenuInfo(clearCreekView, 0, -1));
+
+        assertThat(contextMenu.getItem(0).getTitle().toString(), equalTo("View"));
+        assertThat(contextMenu.size(), equalTo(2)); //not the owner of this destination facet
+        assertThat(contextMenu.getItem(1).getTitle().toString(), equalTo("Delete"));
 
     }
 
