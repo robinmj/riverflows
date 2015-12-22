@@ -173,9 +173,9 @@ public class ViewSiteTest {
 
         assertThat("created favorite", FavoritesDaoImpl.isFavorite(RuntimeEnvironment.application, fountainCreek.getSiteId(), var.getId()));
         assertThat(favoriteBtn.isChecked(), equalTo(true));
-        //assertThat("edit favorite function is accessible", menu.findItem(R.id.mi_edit_favorite).isVisible());
-        assertThat("edit destination function not accessible", !menu.findItem(R.id.mi_edit_destination).isVisible());
-        assertThat("create  destination function is accessible", menu.findItem(R.id.mi_create_destination).isVisible());
+        assertThat("edit favorite function should be accessible", menu.findItem(R.id.mi_edit_favorite).isVisible());
+        assertThat("edit destination function should not be accessible", !menu.findItem(R.id.mi_edit_destination).isVisible());
+        assertThat("create destination function should be accessible", menu.findItem(R.id.mi_create_destination).isVisible());
 
         favoriteBtn.performClick();//remove favorite
         assertThat("removed favorite", !FavoritesDaoImpl.isFavorite(RuntimeEnvironment.application, fountainCreek.getSiteId(), var.getId()));
@@ -184,8 +184,8 @@ public class ViewSiteTest {
                 argThat(equalTo(fountainCreek.getSupportedVariables())),
                 eq(false));
 
-        assertThat("edit favorite function not accessible", !menu.findItem(R.id.mi_edit_favorite).isVisible());
-        assertThat("edit destination function not accessible", !menu.findItem(R.id.mi_edit_destination).isVisible());
+        assertThat("edit favorite function should not be accessible", !menu.findItem(R.id.mi_edit_favorite).isVisible());
+        assertThat("edit destination function should not be accessible", !menu.findItem(R.id.mi_edit_destination).isVisible());
     }
 
     @Test

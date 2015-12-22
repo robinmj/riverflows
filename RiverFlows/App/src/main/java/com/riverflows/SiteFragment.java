@@ -1,5 +1,6 @@
 package com.riverflows;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -105,10 +106,27 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
                     setFavorite(f);
                 }
 
+                Activity activity = SiteFragment.this.getActivity();
+                if(activity != null) {
+                    activity.invalidateOptionsMenu();
+                }
+
                 getActivity().sendBroadcast(Home.getWidgetUpdateIntent());
                 Favorites.softReloadNeeded = true;
             } else {
-                new ToggleFavoriteTask(getActivity(), false, f).execute();
+                new ToggleFavoriteTask(getActivity(), false, f) {
+                    @Override
+                    protected void onNoUIRequired(Favorite favorite) {
+                        super.onNoUIRequired(favorite);
+
+                        SiteFragment.this.setFavorite(favorite);
+
+                        Activity activity = SiteFragment.this.getActivity();
+                        if(activity != null) {
+                            activity.invalidateOptionsMenu();
+                        }
+                    }
+                }.execute();
             }
         }
     };
