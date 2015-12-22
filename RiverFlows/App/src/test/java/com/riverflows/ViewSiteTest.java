@@ -2,6 +2,7 @@ package com.riverflows;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.Menu;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
@@ -31,6 +32,7 @@ import static org.mockito.Matchers.argThat;
 import static org.mockito.Matchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
+import static org.robolectric.Shadows.shadowOf;
 
 /**
  * Created by robin on 11/14/14.
@@ -47,7 +49,7 @@ public class ViewSiteTest {
     public ViewSite createViewSite(Intent i) throws Exception {
         this.activityController= Robolectric.buildActivity(ViewSite.class);
 
-        this.activityController.withIntent(i).create().start().resume().visible();
+        this.activityController.withIntent(i).setup();
 
         ViewSite activity = activityController.get();
 
@@ -162,10 +164,18 @@ public class ViewSiteTest {
 
         assertThat(favoriteBtn.isChecked(), equalTo(false));
 
+        Menu menu = shadowOf(activity).getOptionsMenu();
+        assertThat("edit favorite function not accessible", !menu.findItem(R.id.mi_edit_favorite).isVisible());
+        assertThat("edit destination function not accessible", !menu.findItem(R.id.mi_edit_destination).isVisible());
+        assertThat("create  destination function is accessible", menu.findItem(R.id.mi_create_destination).isVisible());
+
         favoriteBtn.performClick();//add favorite
 
         assertThat("created favorite", FavoritesDaoImpl.isFavorite(RuntimeEnvironment.application, fountainCreek.getSiteId(), var.getId()));
         assertThat(favoriteBtn.isChecked(), equalTo(true));
+        //assertThat("edit favorite function is accessible", menu.findItem(R.id.mi_edit_favorite).isVisible());
+        assertThat("edit destination function not accessible", !menu.findItem(R.id.mi_edit_destination).isVisible());
+        assertThat("create  destination function is accessible", menu.findItem(R.id.mi_create_destination).isVisible());
 
         favoriteBtn.performClick();//remove favorite
         assertThat("removed favorite", !FavoritesDaoImpl.isFavorite(RuntimeEnvironment.application, fountainCreek.getSiteId(), var.getId()));
@@ -173,6 +183,9 @@ public class ViewSiteTest {
         verify(wsClient.dsControllerMock).getSiteData(argThat(SiteFactory.matches(fountainCreek)),
                 argThat(equalTo(fountainCreek.getSupportedVariables())),
                 eq(false));
+
+        assertThat("edit favorite function not accessible", !menu.findItem(R.id.mi_edit_favorite).isVisible());
+        assertThat("edit destination function not accessible", !menu.findItem(R.id.mi_edit_destination).isVisible());
     }
 
     @Test
