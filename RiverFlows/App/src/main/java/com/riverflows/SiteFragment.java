@@ -106,11 +106,6 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
                     setFavorite(f);
                 }
 
-                Activity activity = SiteFragment.this.getActivity();
-                if(activity != null) {
-                    activity.invalidateOptionsMenu();
-                }
-
                 getActivity().sendBroadcast(Home.getWidgetUpdateIntent());
                 Favorites.softReloadNeeded = true;
             } else {
@@ -120,11 +115,6 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
                         super.onNoUIRequired(favorite);
 
                         SiteFragment.this.setFavorite(favorite);
-
-                        Activity activity = SiteFragment.this.getActivity();
-                        if(activity != null) {
-                            activity.invalidateOptionsMenu();
-                        }
                     }
                 }.execute();
             }
@@ -174,6 +164,11 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
     public void setFavorite(Favorite favorite) {
         this.favorite = favorite;
         getArguments().putSerializable(ARG_FAVORITE, favorite);
+
+        Activity activity = SiteFragment.this.getActivity();
+        if(activity != null) {
+            activity.invalidateOptionsMenu();
+        }
     }
 
     public SiteData getData() {
@@ -223,11 +218,21 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
         this.errorMsg = null;
     }
 
-    private void displayData() {
-        View v = getView();
+    private void displayDoneState(View v) {
+        CheckBox favoriteBtn = (CheckBox) v.findViewById(R.id.favorite_btn);
 
         ProgressBar progressBar = (ProgressBar) v.findViewById(R.id.progressBar);
-        CheckBox favoriteBtn = (CheckBox) v.findViewById(R.id.favorite_btn);
+
+        progressBar.setVisibility(View.GONE);
+
+        favoriteBtn.setChecked(this.favorite != null);
+        favoriteBtn.setOnCheckedChangeListener(this.favoriteButtonListener);
+
+        favoriteBtn.setVisibility(View.VISIBLE);
+    }
+
+    private void displayData() {
+        View v = getView();
 
         if (this.data == null || errorMsg != null) {
             if (errorMsg == null) {
@@ -241,10 +246,8 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
                 }
                 return;
             }
-            progressBar.setVisibility(View.GONE);
 
-            favoriteBtn.setOnCheckedChangeListener(this.favoriteButtonListener);
-            favoriteBtn.setVisibility(View.VISIBLE);
+            displayDoneState(v);
             return;
         }
 
@@ -304,12 +307,7 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
                 }
                 return;
             }
-            progressBar.setVisibility(View.GONE);
-            favoriteBtn.setVisibility(View.VISIBLE);
-
-            favoriteBtn.setOnCheckedChangeListener(this.favoriteButtonListener);
-
-            favoriteBtn.setVisibility(View.VISIBLE);
+            displayDoneState(v);
             return;
         }
 
@@ -378,10 +376,7 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
         //this can't be called until SiteFragment.this.chartView and SiteFragment.this.variable have been initialized
         registerForContextMenu(chartView);
 
-        favoriteBtn.setVisibility(View.VISIBLE);
-        favoriteBtn.setChecked(this.favorite != null);
-        favoriteBtn.setOnCheckedChangeListener(this.favoriteButtonListener);
-        progressBar.setVisibility(View.GONE);
+        displayDoneState(v);
 
         SharedPreferences settings = getActivity().getSharedPreferences(Home.PREFS_FILE, Context.MODE_PRIVATE);
         String tempUnit = settings.getString(Home.PREF_TEMP_UNIT, null);
@@ -407,7 +402,7 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
                         .setPointer(null)
                         .setToolTip(toolTip)
                         .setOverlay(overlay)
-                        .playOn(favoriteBtn);
+                        .playOn(v.findViewById(R.id.favorite_btn));
             }
 
             SharedPreferences.Editor editor = settings.edit();
@@ -462,12 +457,7 @@ public class SiteFragment extends RoboFragment implements LoaderManager.LoaderCa
         //make sure we have most relevant favorite
         List<Favorite> favorites = FavoritesDaoImpl.getFavorites(getActivity().getApplicationContext(), site.getSiteId(), variable.getId());
 
-        if (favorites.size() > 0) {
-            this.favorite = favorites.get(0);
-            getArguments().putSerializable(ARG_FAVORITE, this.favorite);
-        } else {
-            this.favorite = null;
-        }
+        this.setFavorite(favorites.size() > 0 ? favorites.get(0) : null);
 
         clearData();
         displayData();

@@ -7,6 +7,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.riverflows.data.DestinationFacet;
+import com.riverflows.data.Favorite;
 import com.riverflows.data.Site;
 import com.riverflows.data.Variable;
 import com.riverflows.db.FavoritesDaoImpl;
@@ -20,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.fakes.RoboMenuItem;
 import org.robolectric.util.ActivityController;
 
 import roboguice.RoboGuice;
@@ -186,6 +188,102 @@ public class ViewSiteTest {
 
         assertThat("edit favorite function should not be accessible", !menu.findItem(R.id.mi_edit_favorite).isVisible());
         assertThat("edit destination function should not be accessible", !menu.findItem(R.id.mi_edit_destination).isVisible());
+    }
+
+    @Test
+    public void shouldDisplayCorrectFavoriteButtonState() throws Exception {
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, new RobinSession());
+
+        Site fountainCreek = SiteFactory.getFountainCreek();
+        Variable var = UsgsCsvDataSource.VTYPE_STREAMFLOW_CFS;
+
+        FavoritesDaoImpl.createFavorite(RuntimeEnvironment.application,
+                new Favorite(fountainCreek, UsgsCsvDataSource.VTYPE_STREAMFLOW_CFS.getId()));
+
+        when(wsClient.dsControllerMock.getSiteData(argThat(SiteFactory.matches(fountainCreek)),
+                argThat(equalTo(fountainCreek.getSupportedVariables())),
+                eq(false)))
+                .thenReturn(SiteDataFactory.getFountainCreekData());
+
+        Intent i = new Intent(RuntimeEnvironment.application, ViewDestination.class);
+
+        i.putExtra(ViewSite.KEY_SITE, fountainCreek);
+        i.putExtra(ViewSite.KEY_VARIABLE, var);
+
+        ViewSite activity = createViewSite(i);
+
+        Menu menu = shadowOf(activity).getOptionsMenu();
+
+        assertThat(favoriteBtn.isChecked(), equalTo(true));
+        assertThat("edit favorite function should be accessible", menu.findItem(R.id.mi_edit_favorite).isVisible());
+
+        this.siteFragment.setVariable(UsgsCsvDataSource.VTYPE_GAUGE_HEIGHT_FT);
+
+        assertThat(favoriteBtn.isChecked(), equalTo(false));
+        assertThat("edit favorite function not accessible", !menu.findItem(R.id.mi_edit_favorite).isVisible());
+    }
+
+    @Test
+    public void shouldDisplayCorrectStateAfterVariableChange() throws Exception {
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, new RobinSession());
+
+        Site fountainCreek = SiteFactory.getFountainCreek();
+        Variable var = UsgsCsvDataSource.VTYPE_STREAMFLOW_CFS;
+
+        FavoritesDaoImpl.createFavorite(RuntimeEnvironment.application,
+                new Favorite(fountainCreek, UsgsCsvDataSource.VTYPE_GAUGE_HEIGHT_FT.getId()));
+
+        when(wsClient.dsControllerMock.getSiteData(argThat(SiteFactory.matches(fountainCreek)),
+                argThat(equalTo(fountainCreek.getSupportedVariables())),
+                eq(false)))
+                .thenReturn(SiteDataFactory.getFountainCreekData());
+
+        Intent i = new Intent(RuntimeEnvironment.application, ViewDestination.class);
+
+        i.putExtra(ViewSite.KEY_SITE, fountainCreek);
+        i.putExtra(ViewSite.KEY_VARIABLE, var);
+
+        ViewSite activity = createViewSite(i);
+
+        assertThat(favoriteBtn.isChecked(), equalTo(false));
+
+        Menu menu = shadowOf(activity).getOptionsMenu();
+        assertThat("edit favorite function not accessible", !menu.findItem(R.id.mi_edit_favorite).isVisible());
+
+        this.siteFragment.setVariable(UsgsCsvDataSource.VTYPE_GAUGE_HEIGHT_FT);
+
+        assertThat(favoriteBtn.isChecked(), equalTo(true));
+
+        assertThat("edit favorite function should be accessible", menu.findItem(R.id.mi_edit_favorite).isVisible());
+    }
+
+    @Test
+    public void shouldDisplayCorrectStateAfterVariableChangeAndFailedResponse() throws Exception {
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, new RobinSession());
+
+        Site fountainCreek = SiteFactory.getFountainCreek();
+        Variable var = UsgsCsvDataSource.VTYPE_STREAMFLOW_CFS;
+
+        FavoritesDaoImpl.createFavorite(RuntimeEnvironment.application,
+                new Favorite(fountainCreek, UsgsCsvDataSource.VTYPE_GAUGE_HEIGHT_FT.getId()));
+
+        Intent i = new Intent(RuntimeEnvironment.application, ViewDestination.class);
+
+        i.putExtra(ViewSite.KEY_SITE, fountainCreek);
+        i.putExtra(ViewSite.KEY_VARIABLE, var);
+
+        ViewSite activity = createViewSite(i);
+
+        assertThat(favoriteBtn.isChecked(), equalTo(false));
+
+        Menu menu = shadowOf(activity).getOptionsMenu();
+        assertThat("edit favorite function not accessible", !menu.findItem(R.id.mi_edit_favorite).isVisible());
+
+        this.siteFragment.setVariable(UsgsCsvDataSource.VTYPE_GAUGE_HEIGHT_FT);
+
+        assertThat(favoriteBtn.isChecked(), equalTo(true));
+
+        assertThat("edit favorite function should be accessible", menu.findItem(R.id.mi_edit_favorite).isVisible());
     }
 
     @Test
