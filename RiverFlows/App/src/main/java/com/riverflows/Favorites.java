@@ -413,7 +413,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		@Override
 		protected List<FavoriteData> doApiCall(WsSession session) throws Exception {
             Crashlytics.getInstance().core.log(Log.VERBOSE, TAG, "doApiCall()");
-			Crashlytics.getInstance().core.log("doApiCall()");
 
 			this.favorites = FavoritesDaoImpl.getFavorites(FavoritesLoader.this.getContext(), null, null);
 
