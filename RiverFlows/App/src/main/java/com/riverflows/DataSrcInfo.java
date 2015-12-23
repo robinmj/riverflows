@@ -1,6 +1,5 @@
 package com.riverflows;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
@@ -9,7 +8,10 @@ import android.view.MenuItem;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 
-public class DataSrcInfo extends Activity {
+import roboguice.activity.RoboActionBarActivity;
+import roboguice.activity.RoboActivity;
+
+public class DataSrcInfo extends RoboActionBarActivity {
 	
 	public static final String KEY_INFO = "info";
 	
@@ -22,6 +24,13 @@ public class DataSrcInfo extends Activity {
 		setTitle("Data Source Info");
 
 		Bundle extras = getIntent().getExtras();
+
+		if(extras == null) {
+			finish();
+			return;
+		}
+
+		getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 		
         String info = (String)extras.get(KEY_INFO);
 		
@@ -46,7 +55,11 @@ public class DataSrcInfo extends Activity {
 	    // Handle item selection
 	    switch (item.getItemId()) {
 	    case android.R.id.home:
-	    	startActivityIfNeeded(new Intent(this, Home.class), -1);
+			if(isTaskRoot()) {
+				startActivityIfNeeded(new Intent(this, Home.class), -1);
+			} else {
+				finish();
+			}
 	    	return true;
 	    case R.id.mi_about:
 			Intent i = new Intent(this, About.class);
