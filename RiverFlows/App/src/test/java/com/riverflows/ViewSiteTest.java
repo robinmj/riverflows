@@ -148,6 +148,38 @@ public class ViewSiteTest {
     }
 
     @Test
+    public void shouldHandleException() throws Exception {
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, new RobinSession());
+
+        DestinationFacet clearCreekKayak = DestinationFacetFactory.getClearCreekKayak();
+        Site clearCreek = clearCreekKayak.getDestination().getSite();
+
+        when(wsClient.dsControllerMock.getSiteData(argThat(SiteFactory.matches(clearCreek)),
+                argThat(equalTo(clearCreek.getSupportedVariables())),
+                eq(false)))
+                .thenThrow(new RuntimeException("Misc Error"));
+
+        Intent i = new Intent(RuntimeEnvironment.application, ViewDestination.class);
+
+        i.putExtra(ViewSite.KEY_SITE, clearCreek);
+        i.putExtra(ViewSite.KEY_VARIABLE, clearCreek.getSupportedVariables()[0]);
+
+        ViewSite activity = createViewSite(i);
+
+        assertThat(this.siteFragment.getData(), nullValue());
+        assertThat(this.siteFragment.errorMsg, equalTo("Error loading data from " + clearCreek + "; Misc Error"));
+
+        activity = simulateConfigurationChange(activity);
+        loadExaminedViews(activity);
+
+        assertThat(this.siteFragment.getData(), nullValue());
+        assertThat(this.siteFragment.errorMsg, equalTo("Error loading data from " + clearCreek + "; Misc Error"));
+
+        assertThat(((TextView) activity.findViewById(R.id.title)).getText().toString(),
+                equalTo(clearCreek.getSupportedVariables()[0].getName()));
+    }
+
+    @Test
     public void shouldSaveFavorite() throws Exception {
         RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, new RobinSession());
 
@@ -219,6 +251,13 @@ public class ViewSiteTest {
 
         this.siteFragment.setVariable(UsgsCsvDataSource.VTYPE_GAUGE_HEIGHT_FT);
 
+        assertThat(favoriteBtn.isChecked(), equalTo(false));
+        assertThat("edit favorite function not accessible", !menu.findItem(R.id.mi_edit_favorite).isVisible());
+
+        activity = simulateConfigurationChange(activity);
+        loadExaminedViews(activity);
+
+        //should retain state after configuration change
         assertThat(favoriteBtn.isChecked(), equalTo(false));
         assertThat("edit favorite function not accessible", !menu.findItem(R.id.mi_edit_favorite).isVisible());
     }
