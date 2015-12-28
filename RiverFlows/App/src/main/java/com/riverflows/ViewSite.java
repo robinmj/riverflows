@@ -196,7 +196,7 @@ public class ViewSite extends RoboActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.graph_options_menu, menu);
-        
+
         MenuItem otherVarsItem = menu.findItem(R.id.mi_other_variables);
         otherVarsItem.setVisible(true);
 		otherVarsItem.setEnabled(ViewSite.this.getSite().getSupportedVariables().length > 1);
@@ -205,8 +205,6 @@ public class ViewSite extends RoboActionBarActivity {
         unitsItem.setVisible(true);
 
 		menu.findItem(R.id.mi_edit_destination).setVisible(false);
-
-		menu.findItem(R.id.mi_create_destination).setVisible(false);
 
         if(this.siteFragment == null) {
             return false;
@@ -217,7 +215,7 @@ public class ViewSite extends RoboActionBarActivity {
         	unitsItem.setEnabled(true);
         }
         
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
     
     @Override
