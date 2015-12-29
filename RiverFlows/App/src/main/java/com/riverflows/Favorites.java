@@ -694,11 +694,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
                     return;
                 }
 
-                FavoriteData changedFavorite = adapter.update(updatedFacet);
-
-                if(changedFavorite != null) {
-                    FavoritesDaoImpl.updateFavorite(this.getActivity(), changedFavorite.getFavorite());
-                }
+                adapter.update(updatedFacet);
             }
 		case REQUEST_REORDER_FAVORITES:
 			if(resultCode == Activity.RESULT_OK) {
@@ -769,6 +765,11 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
             Intent i = new Intent(Favorites.this.getActivity(), EditDestination.class);
             i.putExtra(EditDestination.KEY_DESTINATION_FACET, this.favorite.getDestinationFacet());
+
+			if (this.favorite.getDestinationFacet().getVariable() == null) {
+				//crashlytics #17 (and similar)
+				Crashlytics.getInstance().core.log(Log.ERROR, App.TAG, "Favorites missing variable");
+			}
 
             startActivityForResult(i, REQUEST_EDIT_DESTINATION);
             return true;

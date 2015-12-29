@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.inject.Inject;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
@@ -460,6 +461,11 @@ public abstract class MapItemList extends RoboListActivity {
 			Intent i = new Intent(MapItemList.this, EditDestination.class);
 			i.putExtra(EditDestination.KEY_SITE, selectedStation);
 			i.putExtra(EditDestination.KEY_VARIABLE, selectedVariable);
+
+			if (selectedVariable == null) {
+				//crashlytics #17 (and similar)
+				Crashlytics.getInstance().core.log(Log.ERROR, App.TAG, "MapItemList missing variable");
+			}
 
 			startActivityForResult(i, REQUEST_CREATE_DESTINATION);
 

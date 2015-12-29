@@ -71,8 +71,8 @@ public class CODWRDataSource implements RESTDataSource {
 		VTYPE_ATM_PRESSURE_MB,
 		VTYPE_HUMIDITY_PCT};
 	
-	private static final SimpleDateFormat valueDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-	private static final SimpleDateFormat rangeDateFormat = new SimpleDateFormat("MM/dd/yy");
+	static final SimpleDateFormat valueDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+	static final SimpleDateFormat rangeDateFormat = new SimpleDateFormat("MM/dd/yy");
 	
 	private HttpClientWrapper httpClientWrapper = new DefaultHttpClientWrapper();
 	
@@ -111,7 +111,12 @@ public class CODWRDataSource implements RESTDataSource {
 	@Override
 	public List<FavoriteData> getSiteData(List<Favorite> favorites, boolean hardRefresh)
 			throws ClientProtocolException, IOException {
-        List<FavoriteData> result = new ArrayList<FavoriteData>();
+		return getSiteData(favorites, hardRefresh, new Date());
+	}
+
+	List<FavoriteData> getSiteData(List<Favorite> favorites, boolean hardRefresh, Date endDate)
+			throws ClientProtocolException, IOException {
+		List<FavoriteData> result = new ArrayList<FavoriteData>();
         HashMap<SiteId, SiteData> siteData = new HashMap<SiteId, SiteData>(favorites.size());
 		Variable[] variables = new Variable[1];
 		for(Favorite favorite: favorites) {
@@ -121,7 +126,7 @@ public class CODWRDataSource implements RESTDataSource {
 				continue;
 			}
 			
-			SiteData newdata = getSiteData(favorite.getSite(), variables, hardRefresh);
+			SiteData newdata = getSiteData(favorite.getSite(), variables, hardRefresh, endDate);
 			
 			SiteData existingData = siteData.get(favorite.getSite().getSiteId());
 
@@ -139,17 +144,27 @@ public class CODWRDataSource implements RESTDataSource {
         }
 		return result;
 	}
-	
+
+	Date getStartDate(Date endDate) {
+		GregorianCalendar startDate = new GregorianCalendar();
+		startDate.setTime(endDate);
+
+		//set the start date to one week ago
+		startDate.roll(Calendar.DAY_OF_YEAR, -7);
+
+		startDate.setTimeZone(codwrTimeZone);
+
+		return startDate.getTime();
+	}
+
+	@Override
 	public SiteData getSiteData(Site site, Variable[] variableTypes, boolean hardRefresh) throws ClientProtocolException, IOException {
 
-		GregorianCalendar startDate = new GregorianCalendar();
-		startDate.setTime(new Date());
-		
-		//set the start date to one week ago
-		startDate.set(Calendar.WEEK_OF_YEAR, startDate.get(Calendar.WEEK_OF_YEAR) - 1);
-		
-		startDate.setTimeZone(codwrTimeZone);
-		
+        return getSiteData(site, variableTypes,hardRefresh, new Date());
+	}
+
+	SiteData getSiteData(Site site, Variable[] variableTypes, boolean hardRefresh, Date endDate) throws ClientProtocolException, IOException {
+
 		if(variableTypes.length > 2) {
 			if(LOG.isDebugEnabled()) {
 				LOG.debug("CODWR doesn't accept more than 2 variables at a time- trimming variable list to " + variableTypes[0].getId() + "," + variableTypes[1].getId());
@@ -158,12 +173,12 @@ public class CODWRDataSource implements RESTDataSource {
 			System.arraycopy(variableTypes, 0, trimmedVarTypes, 0, trimmedVarTypes.length);
 			variableTypes = trimmedVarTypes;
 		}
-		
-		SiteData siteData = getSiteData(site, variableTypes, 1, startDate.getTime(), new Date(), hardRefresh);
 
-        siteData.setComplete(site.getSupportedVariables().length == variableTypes.length);
+		SiteData siteData = getSiteData(site, variableTypes, 1, getStartDate(endDate), endDate, hardRefresh);
 
-        return siteData;
+		siteData.setComplete(site.getSupportedVariables().length == variableTypes.length);
+
+		return siteData;
 	}
 
 	private SiteData getSiteData(Site site, Variable[] variableTypes, int interval, Date startDate, Date endDate, boolean hardRefresh) throws ClientProtocolException, IOException {

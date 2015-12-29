@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
 import com.google.inject.Inject;
@@ -276,6 +277,12 @@ public class ViewSite extends RoboActionBarActivity {
             Intent createDestIntent = new Intent(this, EditDestination.class);
             createDestIntent.putExtra(EditDestination.KEY_SITE, getSite());
             createDestIntent.putExtra(EditDestination.KEY_VARIABLE, getVariable());
+
+			if (getVariable() == null) {
+				//crashlytics #17 (and similar)
+				Crashlytics.getInstance().core.log(Log.ERROR, App.TAG, "ViewSite missing variable");
+			}
+
             createDestIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
             startActivityForResult(createDestIntent, REQUEST_CREATE_DESTINATION);

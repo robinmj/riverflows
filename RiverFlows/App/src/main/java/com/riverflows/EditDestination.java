@@ -37,6 +37,7 @@ import com.riverflows.wsclient.WsSessionManager;
 import com.subalpine.DeferredExceptionAsyncTask;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 
 import roboguice.RoboGuice;
@@ -77,10 +78,6 @@ public class EditDestination extends RoboActionBarActivity {
 				SaveDestination saveDestTask = new SaveDestination(false);
 				EditDestination.this.saveDestTask = saveDestTask;
 				saveDestTask.execute(destinationFacet);
-
-                //if creating a favorite {
-                //  sendBroadcast(Home.getWidgetUpdateIntent());
-                //}
             }
         }
     };
@@ -111,6 +108,9 @@ public class EditDestination extends RoboActionBarActivity {
             if(destinationFacet == null) {
                 Destination destination = new Destination();
                 destination.setSite((Site) extras.get(KEY_SITE));
+
+                Crashlytics.getInstance().core.log(Log.DEBUG, App.TAG, "EditDestination site pk=" + destination.getSite().getSiteId().getPrimaryKey());
+
                 destination.setShared(true);
                 destinationFacet = new DestinationFacet();
                 destinationFacet.setDestination(destination);
@@ -567,6 +567,19 @@ public class EditDestination extends RoboActionBarActivity {
                     destinations.update(session, dest);
                 }
                 destinationFacets.update(session, facet);
+
+                //update local favorite
+                List<Favorite> existingFavorites = FavoritesDaoImpl.getFavorites(EditDestination.this, dest.getSite().getSiteId(), facet.getVariable().getId());
+
+                for(Favorite fav : existingFavorites) {
+                    if(fav.getDestinationFacet() != null && facet.getId().equals(fav.getDestinationFacet().getId())) {
+
+                        Favorite updatedFavorite = new Favorite(facet);
+                        updatedFavorite.setId(fav.getId());
+
+                        FavoritesDaoImpl.updateFavorite(EditDestination.this, updatedFavorite);
+                    }
+                }
             }
 
             return facet;
