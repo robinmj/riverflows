@@ -19,6 +19,7 @@ import org.apache.http.message.BasicStatusLine;
 import android.content.Context;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.riverflows.Home;
 import com.riverflows.data.CachedDataset;
 import com.riverflows.wsclient.HttpClientWrapper;
@@ -49,8 +50,17 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
 		File cacheFile = null;
 		
 		String requestUrl = getCmd.getURI().toString();
+
+		boolean databaseError = false;
 		
-		CachedDataset cacheEntry = DatasetsDaoImpl.getDataset(dbContext, requestUrl);
+		CachedDataset cacheEntry = null;
+		try {
+			// crashlytics #27
+			cacheEntry = DatasetsDaoImpl.getDataset(dbContext, requestUrl);
+		} catch (IllegalStateException ise) {
+			Crashlytics.getInstance().core.logException(ise);
+			databaseError = true;
+		}
 		
 		if(cacheEntry != null) {
 			cacheFile = new File(cacheDir, cacheEntry.getCacheFileName());
@@ -86,6 +96,11 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
 		//no cached response found- make a new request
 		HttpClient client = new DefaultHttpClient();
 		response = client.execute(getCmd);
+
+		if (databaseError) {
+			//don't even try to use cache
+			return response;
+		}
 
 		String url = getCmd.getURI().toString();
 		
