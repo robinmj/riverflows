@@ -13,6 +13,7 @@ import com.riverflows.data.Variable.CommonVariable;
 
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.TimeZone;
@@ -29,6 +30,16 @@ public class CODWRDataSourceTest extends DataSourceTestCase {
         src.setHttpClientWrapper(httpClientWrapper);
     }
 
+	public void testGetStartDate() {
+
+		Date endDate = new Date(1451395259233l);
+		Date startDate = src.getStartDate(endDate);
+
+		assertEquals("12/29/15", CODWRDataSource.rangeDateFormat.format(endDate));
+		assertEquals(7, (endDate.getTime() - startDate.getTime()) / (long)(24 * 60 * 60 * 1000));
+		assertEquals("12/22/15", CODWRDataSource.rangeDateFormat.format(startDate));
+	}
+
     public void testGetSites() throws Throwable {
         recorder.insertTape("codwr_getSites", Collections.singletonMap("mode", TapeMode.READ_SEQUENTIAL));
 
@@ -38,7 +49,7 @@ public class CODWRDataSourceTest extends DataSourceTestCase {
 		clearCreek.setState(USState.CO);
 		clearCreek.setSupportedVariables(new Variable[]{CODWRDataSource.VTYPE_STREAMFLOW_CFS, CODWRDataSource.VTYPE_GAUGE_HEIGHT_FT});
 		
-		SiteData result = src.getSiteData(clearCreek, new Variable[]{CODWRDataSource.VTYPE_STREAMFLOW_CFS, CODWRDataSource.VTYPE_GAUGE_HEIGHT_FT}, true);
+		SiteData result = src.getSiteData(clearCreek, new Variable[]{CODWRDataSource.VTYPE_STREAMFLOW_CFS, CODWRDataSource.VTYPE_GAUGE_HEIGHT_FT}, true, new GregorianCalendar(2015, 2, 30).getTime());
 		
 		System.out.println(result.getDataInfo());
 		
@@ -100,7 +111,7 @@ public class CODWRDataSourceTest extends DataSourceTestCase {
 
         List<Favorite> favs = Collections.singletonList(new Favorite(lakeCreek, CODWRDataSource.VTYPE_STREAMFLOW_CFS.getId()));
 
-        List<FavoriteData> result = src.getSiteData(favs, true);
+        List<FavoriteData> result = src.getSiteData(favs, true, new GregorianCalendar(2015, 2, 30).getTime());
 
         Reading r = result.get(0).getSeries().getLastObservation();
 
