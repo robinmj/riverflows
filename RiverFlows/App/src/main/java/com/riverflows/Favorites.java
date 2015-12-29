@@ -694,11 +694,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
                     return;
                 }
 
-                FavoriteData changedFavorite = adapter.update(updatedFacet);
-
-                if(changedFavorite != null) {
-                    FavoritesDaoImpl.updateFavorite(this.getActivity(), changedFavorite.getFavorite());
-                }
+                adapter.update(updatedFacet);
             }
 		case REQUEST_REORDER_FAVORITES:
 			if(resultCode == Activity.RESULT_OK) {
