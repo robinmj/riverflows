@@ -770,6 +770,11 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
             Intent i = new Intent(Favorites.this.getActivity(), EditDestination.class);
             i.putExtra(EditDestination.KEY_DESTINATION_FACET, this.favorite.getDestinationFacet());
 
+			if (this.favorite.getDestinationFacet().getVariable() == null) {
+				//crashlytics #17 (and similar)
+				Crashlytics.getInstance().core.log(Log.ERROR, App.TAG, "Favorites missing variable");
+			}
+
             startActivityForResult(i, REQUEST_EDIT_DESTINATION);
             return true;
         }
