@@ -116,15 +116,15 @@ public class USACEDataSource implements RESTDataSource {
 			//TODO if this is slow, we may have to fork each request off into its own thread, like AHPSXmlDataSource
 			List<FavoriteData> result = new ArrayList<FavoriteData>();
             HashMap<SiteId, SiteData> siteData = new HashMap<SiteId, SiteData>(favorites.size());
-			Variable[] variables = new Variable[1];
+			Variable variable = null;
 			for(Favorite favorite: favorites) {
-				variables[0] = getVariable(favorite.getVariable());
-				if(variables[0] == null) {
+				variable = getVariable(favorite.getVariable());
+				if(variable == null) {
 					LOG.error("unknown variable: " + favorite.getVariable());
 					continue;
 				}
 				
-				SiteData newdata = getSiteData(favorite.getSite(), variables[0], getSiteDataUrl(favorite.getSite().getId(), variables[0], 1), hardRefresh);
+				SiteData newdata = getSiteData(favorite.getSite(), variable, getSiteDataUrl(favorite.getSite().getId(), variable, 1), hardRefresh);
 				
 				SiteData existingData = siteData.get(favorite.getSite().getSiteId());
 
@@ -134,11 +134,12 @@ public class USACEDataSource implements RESTDataSource {
 					Map<CommonVariable, Series> newDataSets = newdata.getDatasets();
 					existingData.getDatasets().putAll(newDataSets);
 				} else {
-                    existingData = newdata;
-					siteData.put(favorite.getSite().getSiteId(), newdata);
+					existingData = (newdata != null) ? newdata
+						: DataSourceController.dataSourceDownData(favorite.getSite(), variable);
+					siteData.put(favorite.getSite().getSiteId(), existingData);
 				}
 
-                result.add(new FavoriteData(favorite, existingData, variables[0]));
+                result.add(new FavoriteData(favorite, existingData, variable));
 			}
 			return result;
 	}
