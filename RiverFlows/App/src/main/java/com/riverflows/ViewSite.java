@@ -227,7 +227,9 @@ public class ViewSite extends RoboActionBarActivity {
 		SiteFragment fragment = this.siteFragment;
 
 		if(fragment != null) {
-			editItem.setVisible(fragment.getFavorite() != null);
+			//prevent user from editing raw favorite for destination
+			// TODO send them to EditDestination instead, if possible
+			editItem.setVisible(fragment.getFavorite() != null && fragment.getFavorite().getDestinationFacet() == null);
 		}
     	
     	MenuItem otherVariablesItem = menu.findItem(R.id.mi_other_variables);

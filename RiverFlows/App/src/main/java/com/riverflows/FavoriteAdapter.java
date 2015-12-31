@@ -37,6 +37,8 @@ public class FavoriteAdapter extends BaseAdapter implements Filterable {
     private List<FavoriteData> favorites;
     private List<FavoriteData> displayedFavorites;
 	private Context context;
+    private Integer defaultBgColor = null;
+    private Integer defaultTextColor = null;
 
     public FavoriteAdapter(Context context, List<FavoriteData> favorites) {
         // Cache the LayoutInflate to avoid asking for a new one each time.
@@ -98,6 +100,10 @@ public class FavoriteAdapter extends BaseAdapter implements Filterable {
             holder = new ViewHolder();
             holder.text = (TextView) convertView.findViewById(R.id.list_item_txt);
             holder.subtext = (TextView) convertView.findViewById(R.id.subtext);
+
+            defaultBgColor = holder.subtext.getDrawingCacheBackgroundColor();
+            defaultTextColor = holder.subtext.getCurrentTextColor();
+
             holder.agencyIcon = (ImageView)convertView.findViewById(R.id.agencyIcon);
 
             convertView.setTag(holder);
@@ -124,7 +130,12 @@ public class FavoriteAdapter extends BaseAdapter implements Filterable {
         //display the last reading for this site, if present
         Series flowSeries = holder.data.getSeries();
     	Reading lastReading = getLastReadingValue(flowSeries);
-    	
+
+        if(defaultBgColor != null) {
+            holder.subtext.setBackgroundColor(defaultBgColor);
+            holder.subtext.setTextColor(defaultTextColor);
+        }
+
         if(lastReading == null) {
         	holder.subtext.setText("");
         } else {
