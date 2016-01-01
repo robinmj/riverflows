@@ -123,8 +123,14 @@ public class USACEDataSource implements RESTDataSource {
 					LOG.error("unknown variable: " + favorite.getVariable());
 					continue;
 				}
-				
-				SiteData newdata = getSiteData(favorite.getSite(), variable, getSiteDataUrl(favorite.getSite().getId(), variable, 1), hardRefresh);
+
+				SiteData newdata = null;
+
+				try {
+					newdata = getSiteData(favorite.getSite(), variable, getSiteDataUrl(favorite.getSite().getId(), variable, 1), hardRefresh);
+				} catch(Exception e) {
+					newdata = DataSourceController.dataSourceDownData(favorite.getSite(), variable);
+				}
 				
 				SiteData existingData = siteData.get(favorite.getSite().getSiteId());
 

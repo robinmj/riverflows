@@ -43,6 +43,9 @@ public class USACEDataSourceTest extends TestCase {
 
 		List<FavoriteData> result = src.getSiteData(favs, true);
 
+		assertEquals(favs.get(0), result.get(0).getFavorite());
+		assertEquals(favs.get(1), result.get(1).getFavorite());
+
 		assertEquals("Datasource Down", result.get(0).getSiteData().getDatasets().get(USACEDataSource.STAGE.getCommonVariable()).getLastObservation().getQualifiers());
 
 		Reading mgoi4LastFlowObs = result.get(1).getSiteData().getDatasets().get(USACEDataSource.FLOW.getCommonVariable()).getLastObservation();
