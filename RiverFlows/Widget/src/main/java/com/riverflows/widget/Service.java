@@ -5,6 +5,7 @@ import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
+import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
@@ -233,7 +234,7 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         FavoriteData favoriteData = mWidgetItems.get(favPosition);
         SiteData siteData = favoriteData.getSiteData();
 
-        Log.d(TAG, "drawing favorite " + siteData.getSite().getName());
+        Log.d(TAG, "drawing favorite " + favoriteData.getName());
 
         // Next, we set a fill-intent which will be used to fill-in the pending intent template
         // which is set on the collection view in StackWidgetProvider.
@@ -244,7 +245,7 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         fillInIntent.putExtras(extras);
         views.setOnClickFillInIntent(R.id.favorite, fillInIntent);
 
-        views.setTextViewText(R.id.favorite_name, siteData.getSite().getName());
+        views.setTextViewText(R.id.favorite_name, favoriteData.getName());
 
         //display the last reading for this site, if present
         Series flowSeries = DataSourceController.getPreferredSeries(siteData);
@@ -255,6 +256,25 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         //only show the reading if it is less than 6 hours old
         if(lastReading != null && lastReading.getValue() != null &&
                 (lastReading.getDate().getTime() + (6 * 60 * 60 * 1000)) > System.currentTimeMillis()) {
+
+            DestinationFacet facet = favoriteData.getFavorite().getDestinationFacet();
+
+            if(facet != null) {
+                String categoryName = facet.getCategoryNameForLevel(lastReading.getValue());
+
+                Log.d(TAG, "last reading category: " + categoryName);
+
+                if(categoryName != null) {
+                    
+                    Integer categoryColor = getCategoryTextColor(categoryName);
+
+                    if(categoryColor != null) {
+                        views.setTextColor(R.id.subtext, categoryColor);
+                        views.setTextColor(R.id.timestamp, categoryColor);
+                    }
+                    views.setImageViewResource(R.id.subtext_background, getCategoryBgColor(categoryName));
+                }
+            }
 
             views.setTextViewText(R.id.subtext, getLastReadingText(lastReading, flowSeries.getVariable().getUnit()));
 
@@ -344,20 +364,26 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         return null;
     }
 
-    public static int getCategoryTextColor(String category) {
+    public static final int color_txt_level_too_high = Color.parseColor("#ffffff");
+    public static final int color_txt_level_high = Color.parseColor("#ffffff");
+    public static final int color_txt_level_medium = Color.parseColor("#ffffff");
+    public static final int color_txt_level_low = Color.parseColor("#333333");
+    public static final int color_txt_level_too_low = Color.parseColor("#ffffff");
+
+    public static Integer getCategoryTextColor(String category) {
         
         if(category.equals(DestinationFacet.CN_HIGH_PLUS)) {
-            return R.color.txt_level_too_high;
+            return color_txt_level_too_high;
         } else if(category.equals(DestinationFacet.CN_HIGH)) {
-            return R.color.txt_level_high;
+            return color_txt_level_high;
         } else if(category.equals(DestinationFacet.CN_MED)) {
-            return R.color.txt_level_medium;
+            return color_txt_level_medium;
         } else if(category.equals(DestinationFacet.CN_LOW)) {
-            return R.color.txt_level_low;
+            return color_txt_level_low;
         } else if(category.equals(DestinationFacet.CN_TOO_LOW)) {
-            return R.color.txt_level_too_low;
+            return color_txt_level_too_low;
         }
-        return android.R.color.primary_text_dark;
+        return null;
     }
 
     public static int getCategoryBgColor(String category) {
@@ -434,6 +460,7 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
             String variableId = favoritesC.getString(3);
 
             Favorite favorite = new Favorite(favoriteSite, variableId);
+            favorite.setName(name);
 
             Reading lastReading = new Reading();
             lastReading.setDate(new Date(favoritesC.getLong(4)));
@@ -448,10 +475,15 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
                 if(favoritesC.getColumnCount() > 8) {
                     favorite.setId(favoritesC.getInt(8));
 
-                    if(favoritesC.isNull(9)) {
+                    if(!favoritesC.isNull(9)) {
                         DestinationFacet facet = new DestinationFacet();
                         facet.setId(favoritesC.getInt(9));
                         facet.setPlaceholderObj(true);
+                        facet.setLow(favoritesC.getDouble(10));
+                        facet.setMed(favoritesC.getDouble(11));
+                        facet.setHigh(favoritesC.getDouble(12));
+                        facet.setHighPlus(favoritesC.getDouble(13));
+                        favorite.setDestinationFacet(facet);
                     }
                 }
             }
