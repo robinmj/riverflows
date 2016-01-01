@@ -17,6 +17,7 @@ import com.riverflows.wsclient.DataSourceController;
 import org.apache.http.NoHttpResponseException;
 
 import java.io.IOException;
+import java.net.SocketException;
 import java.net.UnknownHostException;
 
 import io.fabric.sdk.android.Fabric;
@@ -96,6 +97,8 @@ public class DataSetLoader extends AsyncTaskLoader<SiteData> {
         } catch(NoHttpResponseException nhre) {
             errorMsg = "No response from " + site;
             Log.w(App.TAG, site.toString(), nhre);
+        } catch(SocketException se) {
+            errorMsg = "Connection Timed Out";
         } catch(IOException ioe) {
             errorMsg = "Could not retrieve site data: an I/O error has occurred.";
             Log.e(App.TAG, site.getId(), ioe);

@@ -10,6 +10,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.LoaderManager;
 import android.util.Log;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.android.gms.auth.GoogleAuthUtil;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.AccountPicker;
@@ -58,6 +59,7 @@ public class WsSessionUIHelper {
 
             WsSession updatedSession = this.wsSessionManager.loadUserAccount();
             if(updatedSession != null) {
+				Crashlytics.getInstance().core.log("WsSessionUIHelper using updatedSession");
                 return updatedSession;
             }
 
@@ -68,6 +70,7 @@ public class WsSessionUIHelper {
 		if(accountName == null) {
 
 			if(this.loginRequired || !this.wsSessionManager.wasPromptedToLogin()) {
+				Crashlytics.getInstance().core.log("WsSessionUIHelper sendToLoginScreen");
 				this.sendToLoginScreen = true;
 				return null;
 			}
@@ -75,8 +78,10 @@ public class WsSessionUIHelper {
 			//login anonymously
 			currentSession = this.wsSessionManager.getWsAuthToken("anonymous", null, null);
 			this.wsSessionManager.setPromptedToLogin();
+			Crashlytics.getInstance().core.log("WsSessionUIHelper logging in anonymously");
 		} else {
 			currentSession = this.wsSessionManager.loginWithGoogleOAuth2(this.activity, accountName);
+			Crashlytics.getInstance().core.log("WsSessionUIHelper loginWithGoogleOAuth2");
 		}
 
 		this.wsSessionManager.notifyAccountSessionChange(currentSession, null);

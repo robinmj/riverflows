@@ -3,6 +3,7 @@ package com.riverflows.wsclient;
 import com.riverflows.WebModelTestCase;
 import com.riverflows.data.Destination;
 import com.riverflows.data.DestinationFacet;
+import com.riverflows.data.SiteId;
 import com.riverflows.factory.DestinationFacetFactory;
 
 import java.util.Collections;
@@ -65,5 +66,52 @@ public class DestinationsTest extends WebModelTestCase {
         clearCreekKayak = destinationFacets.get(session, clearCreekKayak.getId());
 
         assertTrue("shared publicly", clearCreekKayak.getDestination().isShared());
+    }
+
+    public void testSaveDestinationWithInvalidSitePk() throws Throwable {
+        recorder.insertTape("testSaveDestinationWithInvalidSitePk");
+
+        DestinationFacet clearCreekKayak = DestinationFacetFactory.getClearCreekKayak();
+        clearCreekKayak.getDestination().getSite().getSiteId().setPrimaryKey(999999999);
+
+        try {
+            destinations.saveDestinationWithFacet(session, clearCreekKayak);
+            throw new RuntimeException("expected UnexpectedResultException");
+        } catch(UnexpectedResultException ure) {
+            assertEquals(422,ure.getStatusCode());
+        }
+    }
+
+    public void testSaveDestinationWithoutSitePk() throws Throwable {
+        recorder.insertTape("testSaveDestinationWithoutSitePk");
+
+        DestinationFacet clearCreekKayak = DestinationFacetFactory.getClearCreekKayak();
+        clearCreekKayak.getDestination().setShared(true);
+        clearCreekKayak.getDestination().getSite().getSiteId().setPrimaryKey(null);
+
+        clearCreekKayak = destinations.saveDestinationWithFacet(session, clearCreekKayak);
+
+        assertNotNull(clearCreekKayak.getId());
+        assertNotNull(clearCreekKayak.getDestination().getSite().getName());
+        assertNotNull(clearCreekKayak.getDestination().getSite().getSiteId().getPrimaryKey());
+        assertNotNull(clearCreekKayak.getVariable().getCommonVariable());
+        assertNotNull(clearCreekKayak.getVariable().getName());
+    }
+
+    public void testSaveDestinationWithNonexistantAgencyId() throws Throwable {
+        recorder.insertTape("testSaveDestinationWithNonexistantAgencyId");
+
+        DestinationFacet clearCreekKayak = DestinationFacetFactory.getClearCreekKayak();
+        SiteId oldSiteId = clearCreekKayak.getDestination().getSite().getSiteId();
+
+        clearCreekKayak.getDestination().getSite().setSiteId(new SiteId(oldSiteId.getAgency(), "invalid agency_specific_id"));
+
+        try {
+            destinations.saveDestinationWithFacet(session, clearCreekKayak);
+            throw new RuntimeException("expected UnexpectedResultException");
+        } catch(UnexpectedResultException ure) {
+            assertEquals(422, ure.getStatusCode());
+        }
+
     }
 }

@@ -36,6 +36,11 @@ public class Destinations extends WebModel<Destination> {
 
 		JSONObject entity = new JSONObject();
 
+		if(destination.getDestination().getSite().getSiteId().getPrimaryKey() == null) {
+			entity.put("agency", destination.getDestination().getSite().getSiteId().getAgency());
+			entity.put("agency_specific_id", destination.getDestination().getSite().getId());
+		}
+
 		entity.put("destination", destinationAsJson(destination.getDestination()));
 		entity.put("destination_facet", destinationFacets.toJson(destination));
 

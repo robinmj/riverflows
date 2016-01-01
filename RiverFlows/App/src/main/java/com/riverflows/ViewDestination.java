@@ -71,6 +71,12 @@ public class ViewDestination extends RoboActionBarActivity {
 
         Bundle extras = getIntent().getExtras();
 
+		if(extras == null) {
+			// Crashlytics #11
+			finish();
+			return;
+		}
+
         DestinationFacet destinationFacet = (DestinationFacet)extras.get(KEY_DESTINATION_FACET);
 
         FragmentManager manager = getSupportFragmentManager();
@@ -395,6 +401,7 @@ public class ViewDestination extends RoboActionBarActivity {
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
 		
 		if(requestCode == REQUEST_SHARE) {
 

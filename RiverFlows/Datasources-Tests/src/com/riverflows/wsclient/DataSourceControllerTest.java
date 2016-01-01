@@ -76,4 +76,55 @@ public class DataSourceControllerTest extends TestCase {
         assertEquals(AHPSXmlDataSource.VTYPE_STAGE, data.get(1).getSeries().getVariable());
         assertEquals(2, data.size());
     }
+
+
+    public void testHandlePartialResponse() throws Throwable {
+        Site fsso3 = new Site(new SiteId(AHPSXmlDataSource.AGENCY,"fsso3"),
+                "Nehalem River  AT Foss", -11.1111d, 11.1111d, USState.WA,
+                AHPSXmlDataSource.ACCEPTED_VARIABLES);
+
+        List<Favorite> favorites = new ArrayList<Favorite>();
+
+        Favorite fsso3Fav = new Favorite(fsso3, AHPSXmlDataSource.VTYPE_FLOW.getId());
+
+        favorites.add(fsso3Fav);
+
+        Site sori2 = new Site(new SiteId(AHPSXmlDataSource.AGENCY,"sori2"),
+                "Du Page River  AT Shorewood", -11.1111d, 11.1111d, USState.MI,
+                AHPSXmlDataSource.ACCEPTED_VARIABLES);
+
+        Favorite sori2Fav = new Favorite(sori2, AHPSXmlDataSource.VTYPE_STAGE.getId());
+
+        favorites.add(sori2Fav);
+
+        Site molg1 = new Site(new SiteId(AHPSXmlDataSource.AGENCY,"molg1"),
+                "Flint River 3 NW Molena", -11.1111d, 11.1111d, USState.MI,
+                AHPSXmlDataSource.ACCEPTED_VARIABLES);
+
+        Favorite molg1Fav = new Favorite(molg1, AHPSXmlDataSource.VTYPE_STAGE.getId());
+
+        favorites.add(molg1Fav);
+
+        List<FavoriteData> favoriteData = DataSourceController.getSiteData(favorites, true);
+
+        assertEquals(3, favoriteData.size());
+
+        FavoriteData fssoData = favoriteData.get(0);
+
+        assertNotNull(fssoData.getSiteData().getSite());
+
+        //Series streamflowDataset = fssoData.getSeries();
+
+        FavoriteData sori2Data = favoriteData.get(1);
+
+        assertNotNull(sori2Data.getSiteData().getSite());
+        assertNotNull(sori2Data.getException());
+        assertEquals("Error", sori2Data.getSiteData().getDatasets().values().iterator().next().getLastObservation().getQualifiers());
+
+        FavoriteData molg1Data = favoriteData.get(2);
+
+        assertNotNull(molg1Data.getSiteData().getSite());
+
+        //streamflowDataset = molg1Data.getSeries();
+    }
 }

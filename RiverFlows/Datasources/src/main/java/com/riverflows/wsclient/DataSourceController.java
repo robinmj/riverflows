@@ -32,6 +32,7 @@ import java.net.PasswordAuthentication;
 import java.net.SocketException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.security.KeyStore;
 import java.text.DateFormat;
 import java.text.ParseException;
@@ -620,16 +621,27 @@ public class DataSourceController {
 			}
 			
 			try {
-				List<FavoriteData> agencyData= ds.getSiteData(agencySitesMap.get(agency), hardRefresh);
-				
+				List<FavoriteData> agencyData = ds.getSiteData(agencySitesMap.get(agency), hardRefresh);
+
 				//copy results into consolidated map
-                for(FavoriteData returnedFav : agencyData) {
-                    returnedData.put(returnedFav.getFavorite(), returnedFav);
-                }
+				for (FavoriteData returnedFav : agencyData) {
+					returnedData.put(returnedFav.getFavorite(), returnedFav);
+				}
+			} catch(UnknownHostException uhe) {
+				LOG.error("dns lookup failed for " + agency, uhe);
 			} catch(SocketException se) {
 				LOG.error("could not access agency: " + agency, se);
 			} catch(DataParseException dpe) {
 				LOG.error("failed to parse data from agency: " + agency + " for site " + dpe.getSiteId(), dpe);
+				addDatasourceDownFavoriteData(returnedData, ds, agencySitesMap.get(agency), "Parse Error", dpe);
+			} catch(Exception e) {
+				List<Favorite> agencyFavs = agencySitesMap.get(agency);
+
+				String msg = agencyFavs == null ? "null favorites" : "" + agencyFavs.size();
+
+				LOG.error(agency + " datasource exception for favorites " + msg, e);
+
+				addDatasourceDownFavoriteData(returnedData,ds, agencyFavs, "Error", e);
 			}
 		}
 
@@ -665,6 +677,20 @@ public class DataSourceController {
 		}
 	}
 
+	private static void addDatasourceDownFavoriteData(Map<Favorite, FavoriteData> result, DataSource agencyDataSource, List<Favorite> agencyFavs, String qualifier, Exception e) {
+
+		for(Favorite returnedFav : agencyFavs) {
+
+			Variable var = agencyDataSource.getVariable(returnedFav.getVariable());
+
+			FavoriteData siteDownData = new FavoriteData(returnedFav,
+					dataSourceDownData(returnedFav.getSite(), var, qualifier),
+					var, e);
+
+			result.put(returnedFav, siteDownData);
+		}
+	}
+
     /**
      * generate a response that should be returned when the datasource failed to retreive data
      * for a site and variable
@@ -673,15 +699,27 @@ public class DataSourceController {
      * @return
      */
     public static SiteData dataSourceDownData(Site site, Variable variable) {
-        SiteData current = new SiteData();
-        current.setSite(site);
+        return dataSourceDownData(site, variable, "Datasource Down");
+    }
+
+	/**
+	 * generate a response that should be returned when the datasource failed to retreive data
+	 * for a site and variable
+	 * @param site
+	 * @param variable
+	 * @param qualifier the message to be displayed to the user
+	 * @return
+	 */
+	public static SiteData dataSourceDownData(Site site, Variable variable, String qualifier) {
+		SiteData current = new SiteData();
+		current.setSite(site);
 
         Series nullSeries = new Series();
         nullSeries.setVariable(variable);
 
         Reading placeHolderReading = new Reading();
         placeHolderReading.setDate(new Date());
-        placeHolderReading.setQualifiers("Datasource Down");
+        placeHolderReading.setQualifiers(qualifier);
 
         nullSeries.setReadings(Collections.singletonList(placeHolderReading));
         nullSeries.setSourceUrl("");

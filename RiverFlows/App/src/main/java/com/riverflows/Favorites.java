@@ -47,6 +47,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 
+import io.fabric.sdk.android.Fabric;
+
 import static roboguice.RoboGuice.getInjector;
 
 public class Favorites extends ListFragment implements LoaderManager.LoaderCallbacks<List<FavoriteData>> {
@@ -139,7 +141,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		args.putBoolean(FavoritesLoader.PARAM_HARD_REFRESH, false);
 
 		getActivity().getSupportLoaderManager().initLoader(FAVORITES_LOADER_ID, args, this);
-        Log.v(TAG, "initLoader()");
+        Crashlytics.getInstance().core.log(Log.VERBOSE, TAG, "initLoader()");
 
 		//getActivity().registerReceiver(this.favChangedReceiver, new IntentFilter(Home.ACTION_FAVORITES_CHANGED));
 	}
@@ -148,7 +150,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 	public void onResume() {
 		super.onResume();
 
-        Log.v(App.TAG, "Favorites.onResume()");
+        Crashlytics.getInstance().core.log(Log.VERBOSE, App.TAG, "Favorites.onResume()");
 
 		Date lastLoadTime = this.lastLoadTime;
 
@@ -194,7 +196,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		FavoriteData selectedFavorite = adapter.getItem(position);
 		
 		if(selectedFavorite == null) {
-			Log.w(TAG,"no such data: " + id);
+			Crashlytics.getInstance().core.log(Log.WARN, TAG, "no such data: " + id);
 			return;
 		}
 
@@ -235,14 +237,14 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		case R.id.mi_sign_out:
 			this.wsSessionManager.logOut(getActivity());
 			return true;
-	    default:
+		default:
 	        return super.onOptionsItemSelected(item);
 	    }
 	}
 
 	@Override
 	public Loader<List<FavoriteData>> onCreateLoader(int i, Bundle bundle) {
-        Log.v(TAG, "onCreateLoader()");
+        Crashlytics.getInstance().core.log(Log.VERBOSE, TAG, "onCreateLoader()");
         showProgress();
 		return new FavoritesLoader(getActivity(), getWsSessionUIHelper(), this.tempUnit, bundle.getBoolean(FavoritesLoader.PARAM_HARD_REFRESH));
 	}
@@ -261,7 +263,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 	@Override
 	public void onLoadFinished(Loader<List<FavoriteData>> listLoader, List<FavoriteData> favoriteData) {
 
-        Log.v(TAG, "onLoadFinished()");
+        Crashlytics.getInstance().core.log(Log.VERBOSE, TAG, "onLoadFinished()");
 		FavoritesLoader loader = (FavoritesLoader)listLoader;
 
 		hideProgress();
@@ -269,7 +271,9 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
         View v = getView();
 
 		if(loader.getException() != null) {
-			Log.e(Home.TAG, "failed to get remote favorites: " + loader.getException().getMessage(), loader.getException());
+			if(Fabric.isInitialized()) {
+				Crashlytics.getInstance().core.logException(loader.getException());
+			}
 
 			String detailMsg = loader.getException().getMessage();
 
@@ -307,6 +311,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 //				}
 //
 
+			Crashlytics.getInstance().core.log(Log.VERBOSE, Home.TAG, "successfully set FavoriteAdapter");
 			setListAdapter(new FavoriteAdapter(activity, favoriteData));
             this.lastLoadTime = new Date();
 
@@ -320,8 +325,8 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		}
 		hideProgress();
 		if(favoriteData == null) {
-			Log.e(Home.TAG, "null favorites");
-            this.softReloadNeeded = true;
+			Crashlytics.getInstance().core.log(Log.ERROR, Home.TAG, "null favorites");
+			this.softReloadNeeded = true;
             getListView().getEmptyView().setVisibility(View.VISIBLE);
 		} else if(favoriteData.size() == 0) {
             getListView().getEmptyView().setVisibility(View.VISIBLE);
@@ -348,7 +353,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 	@Override
 	public void onLoaderReset(Loader<List<FavoriteData>> listLoader) {
-        Log.v(App.TAG, "Favorites.onLoaderReset()");
+		Crashlytics.getInstance().core.log(Log.VERBOSE, App.TAG, "Favorites.onLoaderReset()");
 	}
 
 	/**
@@ -399,15 +404,15 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		@Override
 		protected void onStartLoading() {
 			super.onStartLoading();
-			if(this.favorites == null) {
-                Log.v(TAG, "forceLoad()");
+			if(this.favorites == null || getException() != null) {
+				Crashlytics.getInstance().core.log(Log.VERBOSE, TAG, "forceLoad");
 				forceLoad();
 			}
 		}
 
 		@Override
 		protected List<FavoriteData> doApiCall(WsSession session) throws Exception {
-            Log.v(TAG, "doApiCall()");
+            Crashlytics.getInstance().core.log(Log.VERBOSE, TAG, "doApiCall()");
 
 			this.favorites = FavoritesDaoImpl.getFavorites(FavoritesLoader.this.getContext(), null, null);
 
@@ -415,8 +420,10 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
             if(session == null) {
                 destinationFacets = Collections.emptyList();
+				Crashlytics.getInstance().core.log("not loading destinations; not logged in");
             } else {
                 destinationFacets = this.destinationFacets.getFavorites(session);
+				Crashlytics.getInstance().core.log(destinationFacets.size() + " destinations found");
             }
 
 			HashSet<Integer> localDestFacetIds = new HashSet<Integer>(this.favorites.size());
@@ -426,11 +433,13 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 				
 				Favorite currentFav = this.favorites.get(a);
 
+				Crashlytics.getInstance().core.log("currentFav=" + currentFav.getSite().getSiteId() + " " + currentFav.getVariable());
+
 				if(currentFav.getDestinationFacet() == null) {
 					//TODO send favorite to remote server
 
 					//EasyTracker.getTracker().sendException("favorite is not synced", new Exception(), false);
-					Log.e(getClass().getName(), "favorite is not synced: " + currentFav.getId());
+					Crashlytics.getInstance().core.log(Log.ERROR, getClass().getName(), "favorite is not synced: " + currentFav.getId());
 				} else {
 					localDestFacetIds.add(currentFav.getDestinationFacet().getId());
 
@@ -474,6 +483,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 			}
 
 			if(this.favorites.size() == 0) {
+				Crashlytics.getInstance().core.log("no favorites found");
 				return Collections.emptyList();
 			}
 
@@ -482,6 +492,12 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 			Map<CommonVariable, CommonVariable> unitConversionMap = CommonVariable.temperatureConversionMap(this.tempUnit);
 
 			for(FavoriteData currentData: favoriteData) {
+
+				Crashlytics.getInstance().core.log("currentData=" + currentData.getFavorite().getSite().getSiteId() + " " + currentData.getFavorite().getVariable());
+
+				if(currentData.getException() != null) {
+					Crashlytics.getInstance().core.logException(currentData.getException());
+				}
 
 				//convert °C to °F if that setting is enabled
 				Map<CommonVariable,Series> datasets = currentData.getSiteData().getDatasets();
@@ -542,11 +558,11 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
 		FavoriteData favoriteData = adapter.getItem(info.position);
 		
-		if(favoriteData == null || favoriteData.getSeries() == null) {
+		if(favoriteData == null) {
 			return;
 		}
 
-		Variable variable = favoriteData.getSeries().getVariable();
+		Variable variable = favoriteData.getVariable();
 		
 		android.view.MenuItem view = menu.add("View");
 		view.setOnMenuItemClickListener(new ViewFavoriteListener(favoriteData.getFavorite().getSite(), variable));
@@ -578,13 +594,13 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
 
-        Log.d(App.TAG, "Favorites.onActivityResult(" + requestCode + "," + resultCode);
+        Crashlytics.getInstance().core.log(Log.DEBUG, App.TAG, "Favorites.onActivityResult(" + requestCode + "," + resultCode);
 
 		if(requestCode == REQUEST_GET_FAVORITES || requestCode == REQUEST_GET_FAVORITES_RECOVER) {
 			WsSessionUIHelper helper = this.wsSessionUIHelper;
 
 			if(helper == null) {
-				Log.e(Home.TAG, "handling result from requestCode " + requestCode + " without session");
+				Crashlytics.getInstance().core.log(Log.ERROR, Home.TAG, "handling result from requestCode " + requestCode + " without session");
 				return;
 			}
 
@@ -616,7 +632,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 	        	try {
 	        		favoriteId = Integer.parseInt(intentPath.substring(FAVORITES_PATH.length(), intentPath.length()));
 	        	} catch(Exception e) {
-	        		Log.e(TAG, "could not find favorite ID", e);
+	        		Crashlytics.getInstance().core.logException(e);
     				loadSites(false);
 	        		return;
 	        	}
@@ -656,7 +672,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		        		}
 		        	}
 	        	} catch(Exception e) {
-	        		Log.e(TAG, "error updating favorite", e);
+	        		Crashlytics.getInstance().core.logException(e);
     				loadSites(false);
 	        	}
 			}
@@ -678,11 +694,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
                     return;
                 }
 
-                FavoriteData changedFavorite = adapter.update(updatedFacet);
-
-                if(changedFavorite != null) {
-                    FavoritesDaoImpl.updateFavorite(this.getActivity(), changedFavorite.getFavorite());
-                }
+                adapter.update(updatedFacet);
             }
 		case REQUEST_REORDER_FAVORITES:
 			if(resultCode == Activity.RESULT_OK) {
@@ -754,6 +766,11 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
             Intent i = new Intent(Favorites.this.getActivity(), EditDestination.class);
             i.putExtra(EditDestination.KEY_DESTINATION_FACET, this.favorite.getDestinationFacet());
 
+			if (this.favorite.getDestinationFacet().getVariable() == null) {
+				//crashlytics #17 (and similar)
+				Crashlytics.getInstance().core.log(Log.ERROR, App.TAG, "Favorites missing variable");
+			}
+
             startActivityForResult(i, REQUEST_EDIT_DESTINATION);
             return true;
         }
@@ -806,7 +823,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
             if(v != null) {
                 Favorites.this.showMessage(v, "Failed to delete favorite: network error");
             }
-            Log.w(App.TAG, "Failed to delete favorite: network error", getException());
         }
 
         @Override
@@ -817,7 +833,6 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
                 if(v != null) {
                     Favorites.this.showMessage(v, "Failed to delete favorite: " + getException().getMessage());
                 }
-                Log.e(App.TAG, "Failed to delete favorite: network error", getException());
 				Crashlytics.logException(getException());
 
                 return;

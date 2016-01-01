@@ -24,6 +24,7 @@ import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.crashlytics.android.Crashlytics;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.analytics.tracking.android.Tracker;
 import com.google.inject.Inject;
@@ -196,7 +197,7 @@ public class ViewSite extends RoboActionBarActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.graph_options_menu, menu);
-        
+
         MenuItem otherVarsItem = menu.findItem(R.id.mi_other_variables);
         otherVarsItem.setVisible(true);
 		otherVarsItem.setEnabled(ViewSite.this.getSite().getSupportedVariables().length > 1);
@@ -205,10 +206,6 @@ public class ViewSite extends RoboActionBarActivity {
         unitsItem.setVisible(true);
 
 		menu.findItem(R.id.mi_edit_destination).setVisible(false);
-
-		if(getSite().getSiteId().getPrimaryKey() == null) {
-			menu.findItem(R.id.mi_create_destination).setVisible(false);
-		}
 
         if(this.siteFragment == null) {
             return false;
@@ -219,7 +216,7 @@ public class ViewSite extends RoboActionBarActivity {
         	unitsItem.setEnabled(true);
         }
         
-        return true;
+        return super.onCreateOptionsMenu(menu);
     }
     
     @Override
@@ -278,6 +275,12 @@ public class ViewSite extends RoboActionBarActivity {
             Intent createDestIntent = new Intent(this, EditDestination.class);
             createDestIntent.putExtra(EditDestination.KEY_SITE, getSite());
             createDestIntent.putExtra(EditDestination.KEY_VARIABLE, getVariable());
+
+			if (getVariable() == null) {
+				//crashlytics #17 (and similar)
+				Crashlytics.getInstance().core.log(Log.ERROR, App.TAG, "ViewSite missing variable");
+			}
+
             createDestIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
             startActivityForResult(createDestIntent, REQUEST_CREATE_DESTINATION);

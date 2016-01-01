@@ -48,12 +48,16 @@ public class RiverSelect extends MapItemList {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
         RoboGuice.getInjector(RiverSelect.this).injectMembers(this);
 
 		Bundle extras = getIntent().getExtras();
-		
-		if(extras == null)
+
+		if(extras == null) {
+			finish();
 			return;
+		}
 
 		state = (USState)extras.get(KEY_STATE);
 		
@@ -61,8 +65,6 @@ public class RiverSelect extends MapItemList {
             getActionBar().setTitle(state.getText() + " Gauge Sites");
 			getActionBar().setDisplayHomeAsUpEnabled(true);
 		}
-		
-		super.onCreate(savedInstanceState);
 	}
 	
 	@Override

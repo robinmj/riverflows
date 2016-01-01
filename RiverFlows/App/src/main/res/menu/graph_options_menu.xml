@@ -23,8 +23,7 @@
         android:title="Create Destination">
     </item>
 	<item android:id="@+id/mi_edit_destination"
-		android:title="Edit Destination"
-        android:visible="false">
+		android:title="Edit Destination">
 	</item>
 	<item android:id="@+id/mi_edit_favorite"
 		android:title="Edit Favorite"

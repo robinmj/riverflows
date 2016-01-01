@@ -1,5 +1,6 @@
 package com.riverflows;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -20,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.crashlytics.android.Crashlytics;
 import com.riverflows.data.Category;
 import com.riverflows.data.DecoratedCategory;
 import com.riverflows.data.DestinationFacet;
@@ -105,6 +107,22 @@ public class DestinationFragment extends RoboFragment implements LoaderManager.L
     }
 
     @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == DestinationFragment.REQUEST_EDIT_DESTINATION) {
+            if(resultCode == Activity.RESULT_OK) {
+                DestinationFacet updatedDest = (DestinationFacet)data.getSerializableExtra(EditDestination.KEY_DESTINATION_FACET);
+
+                ViewDestination activity = (ViewDestination)getActivity();
+
+                if(activity != null) {
+                    activity.getSupportActionBar().setTitle(updatedDest.getDestination().getName());
+                }
+                setDestinationFacet(updatedDest);
+            }
+        }
+    }
+
+    @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
 
         return inflater.inflate(R.layout.view_destination, container, false);
@@ -163,6 +181,8 @@ public class DestinationFragment extends RoboFragment implements LoaderManager.L
 
     public void setDestinationFacet(DestinationFacet destinationFacet) {
         this.destinationFacet = destinationFacet;
+        getArguments().putSerializable(ARG_DESTINATION_FACET, destinationFacet);
+        displayData();
     }
 
     public SiteData getData() {
@@ -432,6 +452,11 @@ public class DestinationFragment extends RoboFragment implements LoaderManager.L
 
         Intent i = new Intent(getActivity(), EditDestination.class);
         i.putExtra(EditDestination.KEY_DESTINATION_FACET, getDestinationFacet());
+
+        if (getDestinationFacet().getVariable() == null) {
+            //crashlytics #17 (and similar)
+            Crashlytics.getInstance().core.log(Log.ERROR, App.TAG, "DestinationFragment missing variable");
+        }
 
         startActivityForResult(i, REQUEST_EDIT_DESTINATION);
     }
