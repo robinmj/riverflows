@@ -263,6 +263,35 @@ public class ViewSiteTest {
     }
 
     @Test
+    public void shouldPreventEditingRawFavForDestination() throws Exception {
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, new RobinSession());
+
+        DestinationFacet facet = DestinationFacetFactory.getFountainCreekKayak();
+
+        Site fountainCreek = facet.getDestination().getSite();
+
+        FavoritesDaoImpl.createFavorite(RuntimeEnvironment.application,
+                new Favorite(facet));
+
+        when(wsClient.dsControllerMock.getSiteData(argThat(SiteFactory.matches(fountainCreek)),
+                argThat(equalTo(fountainCreek.getSupportedVariables())),
+                eq(false)))
+                .thenReturn(SiteDataFactory.getFountainCreekData());
+
+        Intent i = new Intent(RuntimeEnvironment.application, ViewDestination.class);
+
+        i.putExtra(ViewSite.KEY_SITE, fountainCreek);
+        i.putExtra(ViewSite.KEY_VARIABLE, facet.getVariable());
+
+        ViewSite activity = createViewSite(i);
+
+        Menu menu = shadowOf(activity).getOptionsMenu();
+
+        assertThat(favoriteBtn.isChecked(), equalTo(true));
+        assertThat("edit favorite function should not be accessible", !menu.findItem(R.id.mi_edit_favorite).isVisible());
+    }
+
+    @Test
     public void shouldDisplayCorrectStateAfterVariableChange() throws Exception {
         RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, new RobinSession());
 

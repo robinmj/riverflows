@@ -164,35 +164,44 @@ public class CDECDataSource implements RESTDataSource {
 	public List<FavoriteData> getSiteData(List<Favorite> favorites,
 			boolean hardRefresh) throws ClientProtocolException, IOException {
 		//TODO if this is slow, we may have to fork each request off into its own thread, like AHPSXmlDataSource
-        List<FavoriteData> result = new ArrayList<FavoriteData>();
-        HashMap<SiteId, SiteData> siteData = new HashMap<SiteId, SiteData>(favorites.size());
-        Variable[] variables = new Variable[1];
-        for(Favorite favorite: favorites) {
-            variables[0] = getVariable(favorite.getVariable());
-            if(variables[0] == null) {
-                LOG.error("unknown variable: " + favorite.getVariable());
-                continue;
-            }
+		List<FavoriteData> result = new ArrayList<FavoriteData>();
+		HashMap<SiteId, SiteData> siteData = new HashMap<SiteId, SiteData>(favorites.size());
+		Variable variable = null;
+		for (Favorite favorite : favorites) {
+			variable = getVariable(favorite.getVariable());
+			if (variable == null) {
+				LOG.error("unknown variable: " + favorite.getVariable());
+				continue;
+			}
 
-            SiteData newdata = getSiteData(favorite.getSite(), true, hardRefresh);
+			SiteData newdata = null;
 
-            SiteData existingData = siteData.get(favorite.getSite().getSiteId());
+			SiteData existingData = null;
 
-            //each FavoriteData object returned should contain data for other favorite
-            // variables at the same site, if there are any
-            if(existingData != null) {
-                Map<CommonVariable, Series> newDataSets = newdata.getDatasets();
-                existingData.getDatasets().putAll(newDataSets);
-            } else {
-                existingData = newdata;
-                siteData.put(favorite.getSite().getSiteId(), newdata);
-            }
+			try {
+				newdata = getSiteData(favorite.getSite(), true, hardRefresh);
+			} catch (Exception e) {
+				newdata = DataSourceController.dataSourceDownData(favorite.getSite(), variable);
+			}
 
-            result.add(new FavoriteData(favorite, existingData, variables[0]));
-        }
+			existingData = siteData.get(favorite.getSite().getSiteId());
+
+			//each FavoriteData object returned should contain data for other favorite
+			// variables at the same site, if there are any
+			if (existingData != null) {
+				Map<CommonVariable, Series> newDataSets = newdata.getDatasets();
+				existingData.getDatasets().putAll(newDataSets);
+			} else {
+				existingData = (newdata != null) ? newdata
+						: DataSourceController.dataSourceDownData(favorite.getSite(), variable);
+				siteData.put(favorite.getSite().getSiteId(), existingData);
+			}
+
+			result.add(new FavoriteData(favorite, existingData, variable));
+		}
 		return result;
 	}
-	
+
 	@Override
 	public SiteData getSiteData(Site site, Variable[] variableTypes,
 			boolean hardRefresh) throws ClientProtocolException, IOException {

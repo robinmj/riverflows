@@ -179,7 +179,13 @@ public class AHPSXmlDataSource implements RESTDataSource {
 					}
 
 					for(Favorite favorite : currentThread.favorites) {
-						result.add(new FavoriteData(favorite, currentThread.favData, getVariable(favorite.getVariable())));
+						Variable var = getVariable(favorite.getVariable());
+
+						if(currentThread.favData == null) {
+							result.add(new FavoriteData(favorite, DataSourceController.dataSourceDownData(favorite.getSite(), var), var));
+						} else {
+							result.add(new FavoriteData(favorite, currentThread.favData, var));
+						}
 					}
 					threadsI.remove();
 				}

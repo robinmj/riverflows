@@ -200,6 +200,11 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 			return;
 		}
 
+		viewFavorite(selectedFavorite);
+	}
+
+	private void viewFavorite(FavoriteData selectedFavorite) {
+
         DestinationFacet destinationFacet = selectedFavorite.getFavorite().getDestinationFacet();
 
         if(destinationFacet != null) {
@@ -210,7 +215,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
         }
 
         Intent i = new Intent(getActivity(), ViewSite.class);
-		
+
         i.putExtra(ViewSite.KEY_SITE, selectedFavorite.getFavorite().getSite());
         i.putExtra(ViewSite.KEY_VARIABLE, selectedFavorite.getVariable());
         startActivity(i);
@@ -565,7 +570,7 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 		Variable variable = favoriteData.getVariable();
 		
 		android.view.MenuItem view = menu.add("View");
-		view.setOnMenuItemClickListener(new ViewFavoriteListener(favoriteData.getFavorite().getSite(), variable));
+		view.setOnMenuItemClickListener(new ViewFavoriteListener(favoriteData));
 
         boolean allowEdit = true;
 
@@ -721,22 +726,17 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 	}
 	
 	private class ViewFavoriteListener implements android.view.MenuItem.OnMenuItemClickListener {
+
+		private FavoriteData favoriteData;
 		
-		private Site site;
-		private Variable variable;
-		
-		public ViewFavoriteListener(Site site, Variable variable) {
+		public ViewFavoriteListener(FavoriteData favoriteData) {
 			super();
-			this.site = site;
-			this.variable = variable;
+			this.favoriteData = favoriteData;
 		}
 
 		@Override
 		public boolean onMenuItemClick(android.view.MenuItem item) {
-			Intent i = new Intent(Favorites.this.getActivity(), ViewSite.class);
-	        i.putExtra(ViewSite.KEY_SITE, site);
-	        i.putExtra(ViewSite.KEY_VARIABLE, variable);
-	        startActivity(i);
+			Favorites.this.viewFavorite(this.favoriteData);
 			return true;
 		}
 	};

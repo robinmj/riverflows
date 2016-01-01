@@ -1,10 +1,19 @@
 package com.riverflows;
 
+import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.ColorDrawable;
+import android.graphics.drawable.Drawable;
 import android.support.v4.app.Fragment;
+import android.view.ContextMenu;
+import android.view.KeyEvent;
+import android.view.MenuItem;
+import android.view.SubMenu;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.TextView;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.riverflows.data.DestinationFacet;
@@ -22,7 +31,9 @@ import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.UsgsCsvDataSource;
 import com.riverflows.wsclient.WsSession;
 import com.riverflows.wsclient.WsSessionManager;
+import com.subalpine.RoboContextMenu;
 
+import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -30,6 +41,8 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatcher;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
+import org.robolectric.fakes.RoboSubMenu;
+import org.robolectric.shadows.ShadowTextView;
 import org.robolectric.shadows.ShadowView;
 import org.robolectric.shadows.gms.ShadowGooglePlayServicesUtil;
 import org.robolectric.util.ActivityController;
@@ -45,6 +58,7 @@ import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.anyBoolean;
 import static org.mockito.Matchers.anyList;
 import static org.mockito.Matchers.argThat;
+import static org.mockito.Matchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 import static org.robolectric.Shadows.shadowOf;
@@ -130,23 +144,31 @@ public class HomeTest {
     @Test
     public void testPostLogin() throws Exception {
 
-        UserAccount account = new UserAccount();
-        account.setEmail("robin.m.j@gmail.com");
-        account.setFacetTypes(4);
-        mockSessionManager.session = new WsSession("robin.m.j", account, "", System.currentTimeMillis() + 10 * 60 * 1000);
-
-        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, mockSessionManager);
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient, new RobinSession());
 
         ArrayList<DestinationFacet> mockResults = new ArrayList<DestinationFacet>();
         DestinationFacet clearCreekKayak = DestinationFacetFactory.getClearCreekKayak();
         mockResults.add(clearCreekKayak);
+        DestinationFacet fountainCreekKayak = DestinationFacetFactory.getFountainCreekKayak();
+        mockResults.add(fountainCreekKayak);
         when(wsClient.destinationFacetsMock.getFavorites(any(WsSession.class))).thenReturn(mockResults);
+
+        SiteData apalachicolaData = SiteDataFactory.getApalachicolaData();
 
         List<FavoriteData> mockData = new ArrayList<FavoriteData>();
         final Favorite clearCreekFav = new Favorite(clearCreekKayak);
+        final Favorite fountainCreekFav = new Favorite(fountainCreekKayak);
+        final Favorite apalachicolaFav = new Favorite(apalachicolaData.getSite(), UsgsCsvDataSource.VTYPE_GAUGE_HEIGHT_FT.getId());
+
         SiteData clearCreekData = SiteDataFactory.getClearCreekData();
         FavoriteData clearCreekFavData = new FavoriteData(clearCreekFav,clearCreekData, CODWRDataSource.VTYPE_STREAMFLOW_CFS);
         mockData.add(clearCreekFavData);
+
+        SiteData fountainCreekData = SiteDataFactory.getFountainCreekData();
+        FavoriteData fountainCreekFavData = new FavoriteData(fountainCreekFav, fountainCreekData, CODWRDataSource.VTYPE_STREAMFLOW_CFS);
+        mockData.add(fountainCreekFavData);
+
+        mockData.add(new FavoriteData(apalachicolaFav, apalachicolaData, UsgsCsvDataSource.VTYPE_GAUGE_HEIGHT_FT));
 
         when(wsClient.dsControllerMock.getFavoriteData(anyList(), anyBoolean())).thenReturn(mockData);
 
@@ -182,6 +204,52 @@ public class HomeTest {
         assertThat(favorites.getListView().getVisibility(), equalTo(View.VISIBLE));
         assertThat(favorites.getListView().getEmptyView().getVisibility(), equalTo(View.GONE));
 
+        View clearCreekView = getListItem(favorites, 0);
+        assertThat(ShadowView.innerText(clearCreekView.findViewById(R.id.list_item_txt)), equalTo(clearCreekKayak.getDestination().getName()));
+
+        //this will be the value of the first reading because the algorithm attempts to find the last valid reading
+        assertThat(ShadowView.innerText(clearCreekView.findViewById(R.id.subtext)), equalTo("B"));
+
+        View fountainCreekView = getListItem(favorites, 1);
+        assertThat(ShadowView.innerText(fountainCreekView.findViewById(R.id.list_item_txt)), equalTo(fountainCreekKayak.getDestination().getName()));
+        assertThat(ShadowView.innerText(fountainCreekView.findViewById(R.id.subtext)), equalTo("50.0 cfs"));
+
+        //Assertions.assertThat(fountainCreekView.findViewById(R.id.subtext)).hasBackground(RuntimeEnvironment.application.getResources().getDrawable(R.color.bg_level_too_high));
+        //this will throw an NPE if the default background is being used
+        assertThat(((ColorDrawable)fountainCreekView.findViewById(R.id.subtext).getBackground()).getColor(), equalTo(RuntimeEnvironment.application.getResources().getColor(R.color.bg_level_high)));
+
+        View apalachicolaView = getListItem(favorites, 2);
+        assertThat(ShadowView.innerText(apalachicolaView .findViewById(R.id.list_item_txt)), equalTo(apalachicolaData.getSite().getName()));
+        assertThat(ShadowView.innerText(apalachicolaView .findViewById(R.id.subtext)), equalTo("14.58 ft"));
+        assertThat("should have default background", hasDefaultBackground(apalachicolaView.findViewById(R.id.subtext)));
+
+        RoboContextMenu contextMenu = new RoboContextMenu();
+
+        favorites.onCreateContextMenu(contextMenu, favorites.getListView(), new AdapterView.AdapterContextMenuInfo(clearCreekView, 0, -1));
+
+        assertThat(contextMenu.getItem(0).getTitle().toString(), equalTo("View"));
+        assertThat(contextMenu.size(), equalTo(2)); //not the owner of this destination facet
+        assertThat(contextMenu.getItem(1).getTitle().toString(), equalTo("Delete"));
+
+    }
+
+    private boolean hasDefaultBackground(View view) {
+
+        if(view.getBackground() == null) {
+            return true;
+        }
+
+        int viewBgColor = ((ColorDrawable)view.getBackground()).getColor();
+
+        return !(viewBgColor == RuntimeEnvironment.application.getResources().getColor(R.color.bg_level_too_low)
+                || viewBgColor ==
+                RuntimeEnvironment.application.getResources().getColor(R.color.bg_level_low)
+                || viewBgColor ==
+                RuntimeEnvironment.application.getResources().getColor(R.color.bg_level_medium)
+                || viewBgColor ==
+                RuntimeEnvironment.application.getResources().getColor(R.color.bg_level_high)
+                || viewBgColor ==
+                RuntimeEnvironment.application.getResources().getColor(R.color.bg_level_too_high));
     }
 
     @Test
@@ -295,10 +363,12 @@ public class HomeTest {
         View clearCreekView = getListItem(favorites, 0);
         assertThat(ShadowView.innerText(clearCreekView.findViewById(R.id.list_item_txt)), equalTo(clearCreekFav.getName()));
         assertThat(ShadowView.innerText(clearCreekView.findViewById(R.id.subtext)), equalTo("Error"));
+        assertThat("should have default background", hasDefaultBackground(clearCreekView.findViewById(R.id.subtext)));
 
         View southPlatteView = getListItem(favorites, 1);
         assertThat(ShadowView.innerText(southPlatteView.findViewById(R.id.list_item_txt)), equalTo(southPlatteFav.getName()));
         assertThat(ShadowView.innerText(southPlatteView.findViewById(R.id.subtext)), equalTo("Datasource Down"));
+        assertThat("should have default background", hasDefaultBackground(southPlatteView.findViewById(R.id.subtext)));
 
     }
 
