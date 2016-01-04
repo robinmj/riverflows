@@ -713,6 +713,7 @@ public class DataSourceController {
 	public static SiteData dataSourceDownData(Site site, Variable variable, String qualifier) {
 		SiteData current = new SiteData();
 		current.setSite(site);
+		current.setComplete(false);
 
         Series nullSeries = new Series();
         nullSeries.setVariable(variable);
