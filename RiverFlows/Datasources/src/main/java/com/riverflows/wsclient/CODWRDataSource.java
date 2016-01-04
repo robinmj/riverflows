@@ -125,8 +125,14 @@ public class CODWRDataSource implements RESTDataSource {
 				LOG.error("unknown variable: " + favorite.getVariable());
 				continue;
 			}
-			
-			SiteData newdata = getSiteData(favorite.getSite(), variables, hardRefresh, endDate);
+
+			SiteData newdata = null;
+
+			try {
+				newdata = getSiteData(favorite.getSite(), variables, hardRefresh, endDate);
+			} catch(Exception e) {
+				newdata = DataSourceController.dataSourceDownData(favorite.getSite(), variables[0]);
+			}
 			
 			SiteData existingData = siteData.get(favorite.getSite().getSiteId());
 
@@ -147,10 +153,7 @@ public class CODWRDataSource implements RESTDataSource {
 
 	Date getStartDate(Date endDate) {
 		GregorianCalendar startDate = new GregorianCalendar();
-		startDate.setTime(endDate);
-
-		//set the start date to one week ago
-		startDate.roll(Calendar.DAY_OF_YEAR, -7);
+		startDate.setTime(new Date(endDate.getTime() - (long)(7 * 24 * 60 * 60 * 1000)));
 
 		startDate.setTimeZone(codwrTimeZone);
 

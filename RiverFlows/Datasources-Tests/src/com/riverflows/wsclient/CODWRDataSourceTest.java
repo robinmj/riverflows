@@ -11,6 +11,10 @@ import com.riverflows.data.USState;
 import com.riverflows.data.Variable;
 import com.riverflows.data.Variable.CommonVariable;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -21,6 +25,8 @@ import java.util.TimeZone;
 import co.freeside.betamax.TapeMode;
 
 public class CODWRDataSourceTest extends DataSourceTestCase {
+
+	private static final Log LOG = LogFactory.getLog(CODWRDataSourceTest.class);
 
 	private final CODWRDataSource src = new CODWRDataSource();
 
@@ -35,9 +41,17 @@ public class CODWRDataSourceTest extends DataSourceTestCase {
 		Date endDate = new Date(1451395259233l);
 		Date startDate = src.getStartDate(endDate);
 
+		assertTrue(endDate.compareTo(startDate) > 0);
+
 		assertEquals("12/29/15", CODWRDataSource.rangeDateFormat.format(endDate));
-		assertEquals(7, (endDate.getTime() - startDate.getTime()) / (long)(24 * 60 * 60 * 1000));
+		assertEquals(7, (endDate.getTime() - startDate.getTime()) / (long) (24 * 60 * 60 * 1000));
 		assertEquals("12/22/15", CODWRDataSource.rangeDateFormat.format(startDate));
+
+		endDate = new Date(1451867198872l);
+		startDate = src.getStartDate(endDate);
+
+		assertTrue(endDate.compareTo(startDate) > 0);
+		assertEquals("12/27/15", CODWRDataSource.rangeDateFormat.format(startDate));
 	}
 
     public void testGetSites() throws Throwable {
@@ -125,4 +139,76 @@ public class CODWRDataSourceTest extends DataSourceTestCase {
         assertNull(r.getQualifiers());
         assertEquals(favs.get(0), result.get(0).getFavorite());
     }
+	public void testGetNonexistantFavorites() throws Throwable {
+		recorder.insertTape("codwr_getNonexistantFavorites", Collections.singletonMap("mode", TapeMode.READ_ONLY));
+		Site nonExistentSite = new Site();
+		nonExistentSite.setSiteId(new SiteId(CODWRDataSource.AGENCY, "NHJBDSCO"));
+		nonExistentSite.setName("doesn't exist");
+		nonExistentSite.setState(USState.CO);
+		nonExistentSite.setSupportedVariables(new Variable[]{CODWRDataSource.VTYPE_STREAMFLOW_CFS_2, CODWRDataSource.VTYPE_GAUGE_HEIGHT_FT_2});
+
+		Site plache = new Site();
+		plache.setSiteId(new SiteId(CODWRDataSource.AGENCY, "PLACHECO"));
+		plache.setName("SOUTH PLATTE RIVER BELOW CHEESMAN RESERVOIR");
+		plache.setState(USState.CO);
+		plache.setSupportedVariables(new Variable[]{CODWRDataSource.VTYPE_STREAMFLOW_CFS, CODWRDataSource.VTYPE_GAUGE_HEIGHT_FT});
+
+		Site claftc = new Site();
+		claftc.setSiteId(new SiteId(CODWRDataSource.AGENCY, "CLAFTCCO"));
+		claftc.setName("CACHE LA POUDRE AT CANYON MOUTH NEAR FORT COLLINS");
+		claftc.setState(USState.CO);
+		claftc.setSupportedVariables(new Variable[]{CODWRDataSource.VTYPE_AIRTEMP, CODWRDataSource.VTYPE_STREAMFLOW_CFS, CODWRDataSource.VTYPE_GAUGE_HEIGHT_FT});
+
+		Site lakeCreek = new Site();
+		lakeCreek.setSiteId(new SiteId(CODWRDataSource.AGENCY, "LAKATLCO"));
+		lakeCreek.setName("LAKE CREEK ABOVE TWIN LAKES");
+		lakeCreek.setState(USState.CO);
+		lakeCreek.setSupportedVariables(new Variable[]{CODWRDataSource.VTYPE_STREAMFLOW_CFS, CODWRDataSource.VTYPE_AIRTEMP});
+
+		List<Favorite> favs = new ArrayList<Favorite>();
+		favs.add(new Favorite(nonExistentSite, CODWRDataSource.VTYPE_GAUGE_HEIGHT_FT_2.getId()));
+		favs.add(new Favorite(plache, CODWRDataSource.VTYPE_STREAMFLOW_CFS.getId()));
+		favs.add(new Favorite(claftc, CODWRDataSource.VTYPE_STREAMFLOW_CFS.getId()));
+		favs.add(new Favorite(lakeCreek, CODWRDataSource.VTYPE_STREAMFLOW_CFS.getId()));
+
+		List<FavoriteData> result = src.getSiteData(favs, true, new GregorianCalendar(2016, 0, 2).getTime());
+
+		assertEquals(4, result.size());
+
+		assertEquals(favs.get(0), result.get(0).getFavorite());
+		assertEquals(favs.get(1), result.get(1).getFavorite());
+		assertEquals(favs.get(2), result.get(2).getFavorite());
+		assertEquals(favs.get(3), result.get(3).getFavorite());
+
+		Reading r = result.get(0).getSeries().getLastObservation();
+
+		//CODWR returns valid headers, but no data for nonexistant site
+		assertNull(r);
+
+		r = result.get(1).getSeries().getLastObservation();
+
+		assertEquals("Datasource Down", r.getQualifiers());
+		assertNull(r.getValue());
+
+		LOG.info("datasource down exception", result.get(0).getException());
+
+		r = result.get(2).getSeries().getLastObservation();
+
+		GregorianCalendar cal = new GregorianCalendar();
+		cal.set(2016, Calendar.JANUARY, 2, 23, 45, 0);
+		cal.set(Calendar.MILLISECOND, 0);
+		cal.setTimeZone(TimeZone.getTimeZone("GMT-07:00"));
+
+		assertEquals(cal.getTime(), r.getDate());
+		assertEquals(0.0d, r.getValue());
+		assertNull(r.getQualifiers());
+
+		r = result.get(3).getSeries().getLastObservation();
+
+		assertEquals("Datasource Down", r.getQualifiers());
+		assertNull(r.getValue());
+
+		LOG.info("datasource down exception", result.get(3).getException());
+
+	}
 }
