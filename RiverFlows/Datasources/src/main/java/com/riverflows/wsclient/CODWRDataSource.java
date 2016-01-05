@@ -127,11 +127,13 @@ public class CODWRDataSource implements RESTDataSource {
 			}
 
 			SiteData newdata = null;
+			Exception exception = null;
 
 			try {
 				newdata = getSiteData(favorite.getSite(), variables, hardRefresh, endDate);
 			} catch(Exception e) {
 				newdata = DataSourceController.dataSourceDownData(favorite.getSite(), variables[0]);
+				exception = e;
 			}
 			
 			SiteData existingData = siteData.get(favorite.getSite().getSiteId());
@@ -146,7 +148,7 @@ public class CODWRDataSource implements RESTDataSource {
 				siteData.put(favorite.getSite().getSiteId(), newdata);
 			}
 
-            result.add(new FavoriteData(favorite, existingData, variables[0]));
+            result.add(new FavoriteData(favorite, existingData, variables[0], exception));
         }
 		return result;
 	}

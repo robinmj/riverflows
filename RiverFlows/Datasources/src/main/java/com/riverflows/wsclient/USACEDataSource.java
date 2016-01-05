@@ -125,11 +125,13 @@ public class USACEDataSource implements RESTDataSource {
 				}
 
 				SiteData newdata = null;
+				Exception exception = null;
 
 				try {
 					newdata = getSiteData(favorite.getSite(), variable, getSiteDataUrl(favorite.getSite().getId(), variable, 1), hardRefresh);
 				} catch(Exception e) {
 					newdata = DataSourceController.dataSourceDownData(favorite.getSite(), variable);
+					exception = e;
 				}
 				
 				SiteData existingData = siteData.get(favorite.getSite().getSiteId());
@@ -145,7 +147,7 @@ public class USACEDataSource implements RESTDataSource {
 					siteData.put(favorite.getSite().getSiteId(), existingData);
 				}
 
-                result.add(new FavoriteData(favorite, existingData, variable));
+                result.add(new FavoriteData(favorite, existingData, variable, exception));
 			}
 			return result;
 	}

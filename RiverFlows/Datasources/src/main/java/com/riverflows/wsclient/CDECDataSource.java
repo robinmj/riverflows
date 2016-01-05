@@ -177,11 +177,13 @@ public class CDECDataSource implements RESTDataSource {
 			SiteData newdata = null;
 
 			SiteData existingData = null;
+			Exception exception = null;
 
 			try {
 				newdata = getSiteData(favorite.getSite(), true, hardRefresh);
 			} catch (Exception e) {
 				newdata = DataSourceController.dataSourceDownData(favorite.getSite(), variable);
+				exception = e;
 			}
 
 			existingData = siteData.get(favorite.getSite().getSiteId());
@@ -197,7 +199,7 @@ public class CDECDataSource implements RESTDataSource {
 				siteData.put(favorite.getSite().getSiteId(), existingData);
 			}
 
-			result.add(new FavoriteData(favorite, existingData, variable));
+			result.add(new FavoriteData(favorite, existingData, variable, exception));
 		}
 		return result;
 	}
