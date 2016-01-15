@@ -27,7 +27,6 @@ import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.FavoriteData;
 import com.riverflows.data.Series;
-import com.riverflows.data.Site;
 import com.riverflows.data.UserAccount;
 import com.riverflows.data.ValueConverter;
 import com.riverflows.data.Variable;
@@ -810,9 +809,9 @@ public class Favorites extends ListFragment implements LoaderManager.LoaderCallb
 
         @Override
         protected FavoriteData doApiCall(WsSession session, FavoriteData... params) throws Exception {
-            destinationFacets.removeFavorite(session, params[0].getFavorite().getDestinationFacet().getId());
+			FavoritesDaoImpl.deleteFavorite(Favorites.this.getActivity(), params[0].getFavorite().getSite().getSiteId(), params[0].getVariable());
 
-            FavoritesDaoImpl.deleteFavorite(Favorites.this.getActivity(), params[0].getFavorite().getSite().getSiteId(), params[0].getVariable());
+            destinationFacets.removeFavorite(session, params[0].getFavorite().getDestinationFacet().getId());
             return params[0];
         }
 
