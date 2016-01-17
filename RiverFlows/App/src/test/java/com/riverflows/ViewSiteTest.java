@@ -2,6 +2,7 @@ package com.riverflows;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Environment;
 import android.view.Menu;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -14,15 +15,24 @@ import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.factory.DestinationFacetFactory;
 import com.riverflows.factory.SiteDataFactory;
 import com.riverflows.factory.SiteFactory;
+import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.UsgsCsvDataSource;
 
 import org.junit.After;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mockito;
 import org.robolectric.Robolectric;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.fakes.RoboMenuItem;
+import org.robolectric.shadows.ShadowEnvironment;
+import org.robolectric.shadows.httpclient.FakeHttp;
+import org.robolectric.shadows.httpclient.TestHttpResponse;
 import org.robolectric.util.ActivityController;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.net.URL;
 
 import roboguice.RoboGuice;
 
@@ -384,6 +394,43 @@ public class ViewSiteTest {
         verify(wsClient.dsControllerMock).getSiteData(argThat(SiteFactory.matches(fountainCreek)),
                 argThat(equalTo(fountainCreek.getSupportedVariables())),
                 eq(false));
+    }
+
+    @Test
+    public void shouldDownloadHydrographForSharing() throws Exception {
+        RoboGuice.overrideApplicationInjector(RuntimeEnvironment.application, wsClient);
+
+        //ensure we can write to Pictures directory
+        new File(ShadowEnvironment.getExternalStorageDirectory(), "Pictures").mkdir();
+
+        Site fountainCreek = SiteFactory.getFountainCreek();
+        Variable var = UsgsCsvDataSource.VTYPE_STREAMFLOW_CFS;
+
+        when(wsClient.dsControllerMock.getSiteData(argThat(SiteFactory.matches(fountainCreek)),
+                argThat(equalTo(fountainCreek.getSupportedVariables())),
+                eq(false)))
+                .thenReturn(SiteDataFactory.getFountainCreekData());
+
+        String graphUrl = DataSourceController.getDataSource(UsgsCsvDataSource.AGENCY).getExternalGraphUrl(fountainCreek.getId(), var.getId());
+
+        byte[] imageData = FileUtils.getFileData("testdata/fountainCreek.png");
+
+        FakeHttp.addHttpResponseRule(graphUrl, new TestHttpResponse(200, imageData));
+
+        Intent i = new Intent(RuntimeEnvironment.application, ViewDestination.class);
+
+        i.putExtra(ViewSite.KEY_SITE, fountainCreek);
+        i.putExtra(ViewSite.KEY_VARIABLE, var);
+
+        ViewSite activity = createViewSite(i);
+
+        activity.onOptionsItemSelected(new RoboMenuItem(R.id.mi_share));
+
+        assertThat("downloaded image", FakeHttp.httpRequestWasMade(graphUrl), equalTo(true));
+
+        Intent nextIntent = shadowOf(activity).getNextStartedActivity();
+
+        System.out.println("share launched " + nextIntent.toString());
     }
 
     @After

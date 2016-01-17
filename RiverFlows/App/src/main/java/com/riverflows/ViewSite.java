@@ -37,11 +37,19 @@ import com.riverflows.data.Variable;
 import com.riverflows.data.Variable.CommonVariable;
 import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.wsclient.DataSourceController;
+import com.riverflows.wsclient.UnexpectedResultException;
+
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.DefaultHttpClient;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
@@ -156,7 +164,7 @@ public class ViewSite extends RoboActionBarActivity {
             transaction.commit();
         }
     }
-    
+
     @Override
     protected void onStart() {
     	super.onStart();
@@ -342,7 +350,21 @@ public class ViewSite extends RoboActionBarActivity {
 	    	
 	    	Bitmap b = null;
 	    	try {
-				b = BitmapFactory.decodeStream((InputStream) new URL(graphUrl).getContent());
+
+				HttpClient client = new DefaultHttpClient();
+				HttpGet graphRequest = new HttpGet(graphUrl);
+				HttpResponse graphResponse= client.execute(graphRequest);
+
+				StatusLine status = graphResponse.getStatusLine();
+
+				if(status.getStatusCode() >= 300 || status.getStatusCode() < 200) {
+					EasyTracker.getTracker().sendException("loading " + graphUrl,
+							new UnexpectedResultException(status.getReasonPhrase(),
+									status.getStatusCode()), false);
+					return null;
+				}
+
+				b = BitmapFactory.decodeStream(graphResponse.getEntity().getContent());
 				
 				String file_name = "share_hydrograph.png";
 
