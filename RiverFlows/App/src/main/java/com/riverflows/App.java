@@ -45,8 +45,6 @@ public class App extends Application {
         // Initialize Fabric with the debug-disabled crashlytics.
         Fabric.with(this, crashlyticsKit);
 
-        RoboGuice.setUseAnnotationDatabases(false);
-
         try {
             DataSourceController.useKeyStore(getResources().getAssets().open("trusted.keystore"));
         } catch (IOException ioe) {

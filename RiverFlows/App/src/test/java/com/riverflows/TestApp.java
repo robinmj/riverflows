@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import io.fabric.sdk.android.Fabric;
+import roboguice.RoboGuice;
 
 /**
  * This is automatically loaded by Robolectric in place of com.riverflows.App
@@ -31,6 +32,8 @@ public class TestApp extends App {
 
         // Initialize Fabric with the debug-disabled crashlytics.
         Fabric.with(this, crashlyticsKit);
+
+        RoboGuice.setUseAnnotationDatabases(false);
 
         GoogleAnalytics myInstance = GoogleAnalytics.getInstance(this);
         myInstance.setAppOptOut(true);
