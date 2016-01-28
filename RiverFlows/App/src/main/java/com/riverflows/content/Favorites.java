@@ -221,16 +221,20 @@ public class Favorites extends RoboContentProvider {
 					row.add(currentData.getSiteData().getSite().getSiteId().getAgency()); //1
 					row.add(currentData.getName()); //2
 
-                    Series series = currentData.getSeries();
+                    row.add(currentData.getVariable().getId()); //3
 
-                    row.add(series.getVariable().getId()); //3
+                    Reading lastReading = null;
 
-                    Reading lastReading = series.getLastObservation();
+					Series series = currentData.getSeries();
+
+					if(series != null) {
+						lastReading = series.getLastObservation();
+					}
                     if(lastReading != null) {
                         row.add(lastReading.getDate().getTime()); //4
                         row.add(lastReading.getValue()); //5
                         row.add(lastReading.getQualifiers()); //6
-                        row.add(series.getVariable().getCommonVariable().getUnit()); //7
+                        row.add(currentData.getVariable().getCommonVariable().getUnit()); //7
 						row.add(currentData.getFavorite().getId()); //8
                     } else {
 						for(int a = 0; a < 5; a++) {
