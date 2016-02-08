@@ -11,6 +11,13 @@
         android:layout_alignParentTop="true"
         android:paddingTop="4dp"
         android:paddingLeft="6dp"/>
+
+    <ImageView android:id="@+id/subtext_background"
+        android:layout_width="100dp"
+        android:layout_height="fill_parent"
+        android:layout_alignParentRight="true"
+        android:paddingTop="4dp"
+        android:paddingLeft="6dp"/>
     <TextView android:id="@+id/subtext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

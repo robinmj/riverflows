@@ -12,6 +12,9 @@ import android.util.Log;
 import com.google.analytics.tracking.android.EasyTracker;
 import com.google.inject.Inject;
 import com.riverflows.Home;
+import com.riverflows.R;
+import com.riverflows.data.Category;
+import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.FavoriteData;
 import com.riverflows.data.Reading;
@@ -52,6 +55,12 @@ public class Favorites extends RoboContentProvider {
 	public static final String COLUMN_LAST_READING_VALUE = "lastReadingValue";
 	public static final String COLUMN_LAST_READING_QUALIFIERS = "lastReadingQualifiers";
 	public static final String COLUMN_UNIT = "unit";
+	public static final String COLUMN_FAVORITE_ID = "favoriteId";
+	public static final String COLUMN_DESTINATION_FACET_ID = "destFacetId";
+	public static final String COLUMN_TOO_HIGH = "tooHighLevel";
+	public static final String COLUMN_HIGH = "highLevel";
+	public static final String COLUMN_MED = "medLevel";
+	public static final String COLUMN_LOW = "lowLevel";
 
 	public static final String EXTRA_PRODUCT = "product";
 	/** This refers to the version of this ContentProvider, not RiverFlows */
@@ -81,7 +90,13 @@ public class Favorites extends RoboContentProvider {
 		COLUMN_LAST_READING_DATE,
 		COLUMN_LAST_READING_VALUE,
 		COLUMN_LAST_READING_QUALIFIERS,
-		COLUMN_UNIT
+		COLUMN_UNIT,
+		COLUMN_FAVORITE_ID,
+		COLUMN_DESTINATION_FACET_ID,
+		COLUMN_TOO_HIGH,
+		COLUMN_HIGH,
+		COLUMN_MED,
+		COLUMN_LOW
 		};
 
 	public static final Uri CONTENT_URI = 
@@ -202,21 +217,46 @@ public class Favorites extends RoboContentProvider {
 				try {
 					MatrixCursor.RowBuilder row = result.newRow();
 					
-					row.add(currentData.getSiteData().getSite().getSiteId().getId());
-					row.add(currentData.getSiteData().getSite().getSiteId().getAgency());
-					row.add(currentData.getName());
+					row.add(currentData.getSiteData().getSite().getSiteId().getId()); //0
+					row.add(currentData.getSiteData().getSite().getSiteId().getAgency()); //1
+					row.add(currentData.getName()); //2
 
-                    Series series = currentData.getSeries();
+                    row.add(currentData.getVariable().getId()); //3
 
-                    row.add(series.getVariable().getId());
+                    Reading lastReading = null;
 
-                    Reading lastReading = series.getLastObservation();
+					Series series = currentData.getSeries();
+
+					if(series != null) {
+						lastReading = series.getLastObservation();
+					}
                     if(lastReading != null) {
-                        row.add(lastReading.getDate().getTime());
-                        row.add(lastReading.getValue());
-                        row.add(lastReading.getQualifiers());
-                        row.add(series.getVariable().getCommonVariable().getUnit());
-                    }
+                        row.add(lastReading.getDate().getTime()); //4
+                        row.add(lastReading.getValue()); //5
+                        row.add(lastReading.getQualifiers()); //6
+                        row.add(currentData.getVariable().getCommonVariable().getUnit()); //7
+						row.add(currentData.getFavorite().getId()); //8
+                    } else {
+						for(int a = 0; a < 5; a++) {
+							//prevent variable column counts
+							row.add(null);
+						}
+					}
+
+					DestinationFacet facet = currentData.getFavorite().getDestinationFacet();
+
+					if(facet != null) {
+						row.add(facet.getId()); //9
+						row.add(facet.getLow()); //10
+						row.add(facet.getMed()); //11
+						row.add(facet.getHigh()); //12
+						row.add(facet.getHighPlus()); //13
+					} else {
+						for(int a = 0; a < 5; a++) {
+							//prevent variable column counts
+							row.add(null);
+						}
+					}
 				} catch(NullPointerException npe) {
 					Log.e(TAG, "",npe);
 				}

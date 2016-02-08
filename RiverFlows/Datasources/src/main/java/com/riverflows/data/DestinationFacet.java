@@ -239,4 +239,25 @@ public class DestinationFacet implements Serializable, RemoteObject {
 
         return result;
     }
+
+	public String getCategoryNameForLevel(double readingValue) {
+
+		if(this.getLow() != null && readingValue < this.getLow()) {
+			//too low
+			return DestinationFacet.CN_TOO_LOW;
+		} else if(this.getMed() != null && readingValue < this.getMed()) {
+			//low
+			return DestinationFacet.CN_LOW;
+		} else if(this.getHigh() != null && readingValue < this.getHigh()) {
+			//medium
+			return DestinationFacet.CN_MED;
+		} else if(this.getHighPlus() != null && readingValue > this.getHighPlus()) {
+			//too high
+			return DestinationFacet.CN_HIGH_PLUS;
+		} else if(this.getHigh() != null) {
+			//high
+			return DestinationFacet.CN_HIGH;
+		}
+		return null;
+	}
 }
