@@ -128,7 +128,11 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
         // in its current state while work is being done here, so you don't need to worry about
         // locking up the widget.
         try {
-            mWidgetItems = getFavorites(mContext);
+            Log.v(TAG, "Service application context: " + mContext);
+
+
+            Log.v(TAG, "Service ContentResolver: " + mContext.getContentResolver());
+            mWidgetItems = getFavorites(mContext.getContentResolver());
             lastUpdated = System.currentTimeMillis();
             mException = null;
         } catch (Exception e) {
@@ -402,13 +406,11 @@ class WidgetViewsFactory implements RemoteViewsService.RemoteViewsFactory {
     }
 
     /**
-     * @param context
+     * @param cr
      * @return null if the Favorites ContentProvider cannot be found
      * @throws LoadFailedException if the favorites could not be loaded for some other reason
      */
-    private List<FavoriteData> getFavorites(Context context) throws LoadFailedException {
-
-        ContentResolver cr = context.getContentResolver();
+    private List<FavoriteData> getFavorites(ContentResolver cr) throws LoadFailedException {
 
         Log.v(TAG,"testing for content provider");
 
