@@ -296,4 +296,17 @@ public class AHPSXmlDataSourceTest extends TestCase {
 		assertEquals("Parse Error", sori2Data.getSiteData().getDatasets().values().iterator().next().getLastObservation().getQualifiers());
 
 	}
+
+
+	public void testGetCncc2() throws Throwable {
+		// test data is from an AHPS outage where no data was returned
+		Site canonCity = new Site(new SiteId(AHPSXmlDataSource.AGENCY, "cncc2"),
+				"Arkansas River  AT Canon City", -11.1111d, 11.1111d, USState.CO,
+				AHPSXmlDataSource.ACCEPTED_VARIABLES);
+		SiteData result = ds.getSiteData(canonCity,
+				null, true);
+
+		assertNull(result.getDatasets().get(CommonVariable.STREAMFLOW_CFS));
+		assertNull(result.getDatasets().get(CommonVariable.GAUGE_HEIGHT_FT));
+	}
 }
