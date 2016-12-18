@@ -281,7 +281,7 @@ public class CDECDataSource implements RESTDataSource {
 	
 
 	private static final Pattern readingLinePattern = Pattern.compile("<tr><td.*?>(\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2})</td>(.*)</tr>");
-	private static final Pattern readingValuePattern = Pattern.compile("<td.*?>\\s*(\\S+)</td><td.*?><a.*?></a></td>");
+	private static final Pattern readingValuePattern = Pattern.compile("<td.*?>\\s*(\\S+)</td><td.*?><a.*?>\\s*</a></td>");
 	
 	/**
 	 * CDEC's data is in HTML, but it is so badly-formed that I parse it as plaintext
@@ -379,7 +379,7 @@ public class CDECDataSource implements RESTDataSource {
 				r.setDate(readingDate);
 				
 				if(!readingValueMatcher.find()) {
-					LOG.error("missing column " + colIndex + " on line " + lineNum);
+					LOG.error("missing column " + colIndex + " on line " + lineNum + " in " + valuesStr);
 					break;
 				}
 				
