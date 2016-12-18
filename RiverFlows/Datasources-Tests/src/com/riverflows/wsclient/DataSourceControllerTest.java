@@ -16,8 +16,8 @@ public class DataSourceControllerTest extends TestCase {
 
     static {
 
-        DataSourceController.getDataSource("USGS").setHttpClientWrapper(new MockUsgsCsvHttpClient());
-        DataSourceController.getDataSource("AHPS").setHttpClientWrapper(new MockAHPSHttpClient());
+        DataSourceController.getDataSource("USGS").setHttpClientWrapper(new FileHttpClientWrapper("testdata/usgs/csv/", UsgsCsvDataSource.SITE_DATA_URL));
+        DataSourceController.getDataSource("AHPS").setHttpClientWrapper(new FileHttpClientWrapper("testdata/ahps/", AHPSXmlDataSource.SITE_DATA_URL));
     }
 
 	public void testGetFavorites() throws Throwable {

@@ -1,7 +1,8 @@
 package com.riverflows.wsclient;
 
+import com.riverflows.data.WrappedHttpResponse;
+
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
 
 import java.io.IOException;
@@ -21,7 +22,13 @@ public class BetamaxHttpClientWrapper implements HttpClientWrapper {
     }
 
     @Override
-    public HttpResponse doGet(HttpGet getCmd, boolean hardRefresh) throws IOException {
-        return this.client.execute(getCmd);
+    public WrappedHttpResponse doGet(String requestUrl, boolean hardRefresh) throws IOException {
+        HttpGet getCmd = new HttpGet(requestUrl);
+        HttpResponse response = this.client.execute(getCmd);
+
+        return new WrappedHttpResponse(response.getEntity().getContent(),
+                null,
+                response.getStatusLine().getStatusCode(),
+                response.getStatusLine().getReasonPhrase());
     }
 }

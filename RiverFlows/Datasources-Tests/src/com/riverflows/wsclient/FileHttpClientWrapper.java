@@ -1,19 +1,16 @@
 package com.riverflows.wsclient;
 
+import com.riverflows.data.WrappedHttpResponse;
+
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpResponse;
-import org.apache.http.ProtocolVersion;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.entity.StringEntity;
-import org.apache.http.message.BasicHttpResponse;
-import org.apache.http.message.BasicStatusLine;
 
 public class FileHttpClientWrapper implements HttpClientWrapper {
 	
@@ -29,29 +26,20 @@ public class FileHttpClientWrapper implements HttpClientWrapper {
 	}
 	
 	@Override
-	public HttpResponse doGet(HttpGet getCmd, boolean hardRefresh) throws ClientProtocolException,
+	public WrappedHttpResponse doGet(String requestUrl, boolean hardRefresh) throws ClientProtocolException,
 			IOException {
-		String requestUrl = getCmd.getURI().toString();
 		
 		File responseFile = new File(sourceDir, getFileName(requestUrl));
 		
 		if(!responseFile.exists()) {
 			LOG.error("no such file: " + responseFile);
-			HttpResponse response = new BasicHttpResponse(new BasicStatusLine(
-		    		  new ProtocolVersion("HTTP", 1, 1), 404, ""));
-			response.setStatusCode(404);
-			response.setEntity(new StringEntity("<html><head><title>No Such File</title></head><body>No Such File</body></html>"));
-			
-			return response;
+
+			InputStream responseStream = new ByteArrayInputStream("<html><head><title>No Such File</title></head><body>No Such File</body></html>".getBytes());
+
+			return new WrappedHttpResponse(responseStream, null, 404, "no such file: " + responseFile);
 		}
-		
-		HttpResponse response = new BasicHttpResponse(new BasicStatusLine(
-	    		  new ProtocolVersion("HTTP", 1, 1), 200, ""));
-		response.setStatusCode(200);
-		
-		response.setEntity(new InputStreamEntity(new FileInputStream(responseFile), responseFile.length()));
-		
-		return response;
+
+		return new WrappedHttpResponse(new FileInputStream(responseFile), null, 200, null);
 	}
 	
 	public String getFileName(String requestUrl) {

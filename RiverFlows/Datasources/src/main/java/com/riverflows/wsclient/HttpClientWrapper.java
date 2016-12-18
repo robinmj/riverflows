@@ -1,14 +1,10 @@
 package com.riverflows.wsclient;
 
-import java.io.IOException;
+import com.riverflows.data.WrappedHttpResponse;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
+import java.io.IOException;
 
 public interface HttpClientWrapper {
 	
-	public static final String PN_CACHE_FILE = "cacheFile";
-	
-	public HttpResponse doGet(HttpGet getCmd, boolean hardRefresh) throws ClientProtocolException, IOException;
+	WrappedHttpResponse doGet(String url, boolean hardRefresh) throws IOException;
 }

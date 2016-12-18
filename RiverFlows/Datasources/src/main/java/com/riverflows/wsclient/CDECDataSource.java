@@ -2,6 +2,7 @@ package com.riverflows.wsclient;
 
 import com.riverflows.data.Favorite;
 import com.riverflows.data.FavoriteData;
+import com.riverflows.data.WrappedHttpResponse;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
@@ -14,14 +15,10 @@ import com.riverflows.data.Variable.CommonVariable;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
@@ -254,18 +251,14 @@ public class CDECDataSource implements RESTDataSource {
 		
 		try {
 			long startTime = System.currentTimeMillis();
-			
-			HttpGet getCmd = new HttpGet(urlStr);
-			HttpResponse response = httpClientWrapper.doGet(getCmd, hardRefresh);
-			contentInputStream = response.getEntity().getContent();
 
-			Header cacheFileHeader = response.getLastHeader(HttpClientWrapper.PN_CACHE_FILE);
-			
-			if(cacheFileHeader == null) {
+			WrappedHttpResponse response = httpClientWrapper.doGet(urlStr, hardRefresh);
+			contentInputStream = response.responseStream;
+
+			if(response.cacheFile == null) {
 				bufferedStream = new BufferedInputStream(contentInputStream, 8192);
 			} else {
-				File cacheFile = new File(cacheFileHeader.getValue());
-				bufferedStream = new CachingBufferedInputStream(contentInputStream, 8192, cacheFile);
+				bufferedStream = new CachingBufferedInputStream(contentInputStream, 8192, response.cacheFile);
 			}
 			
 			data = parse(site, bufferedStream, urlStr);

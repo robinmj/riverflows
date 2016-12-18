@@ -26,7 +26,7 @@ public class AHPSXmlDataSourceTest extends TestCase {
 	private AHPSXmlDataSource ds = new AHPSXmlDataSource();
 	
 	public void setUp() {
-		ds.setHttpClientWrapper(new MockAHPSHttpClient());
+		ds.setHttpClientWrapper(new FileHttpClientWrapper("testdata/ahps/", AHPSXmlDataSource.SITE_DATA_URL));
 	}
 	
 	public void testGetARGGP4() throws Throwable {

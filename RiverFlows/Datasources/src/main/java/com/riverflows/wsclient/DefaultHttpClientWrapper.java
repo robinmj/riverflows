@@ -1,21 +1,26 @@
 package com.riverflows.wsclient;
 
-import java.io.IOException;
+import com.riverflows.data.WrappedHttpResponse;
 
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 
 public class DefaultHttpClientWrapper implements HttpClientWrapper {
 
 	@Override
-	public HttpResponse doGet(HttpGet getCmd, boolean hardRefresh) throws ClientProtocolException, IOException {
-		HttpClient client = new DefaultHttpClient();
-		client.getParams().setParameter("http.socket.timeout", new Integer(5000));
-		HttpResponse response = client.execute(getCmd);
-		return response;
+	public WrappedHttpResponse doGet(String requestUrl, boolean hardRefresh) throws IOException {
+		URL url = new URL(requestUrl);
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setReadTimeout(10000);
+		conn.setConnectTimeout(15000);
+		conn.setRequestMethod("GET");
+		conn.setDoInput(true);
+		conn.connect();
+		InputStream responseStream = conn.getInputStream();
+
+		return new WrappedHttpResponse(responseStream, null, conn.getResponseCode(), conn.getResponseMessage());
 	}
 
 }

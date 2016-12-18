@@ -21,7 +21,7 @@ public class UsgsCsvDataSourceTest extends TestCase {
 	private static final UsgsCsvDataSource src = new UsgsCsvDataSource();
 	
 	static {
-		src.setHttpClientWrapper(new MockUsgsCsvHttpClient());
+		src.setHttpClientWrapper(new FileHttpClientWrapper("testdata/usgs/csv/", UsgsCsvDataSource.SITE_DATA_URL));
 	}
 	
 	public void testGetSiteData() throws Throwable {

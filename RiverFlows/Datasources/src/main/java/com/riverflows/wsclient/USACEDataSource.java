@@ -2,6 +2,7 @@ package com.riverflows.wsclient;
 
 import com.riverflows.data.Favorite;
 import com.riverflows.data.FavoriteData;
+import com.riverflows.data.WrappedHttpResponse;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
@@ -12,10 +13,7 @@ import com.riverflows.data.Variable.CommonVariable;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -24,7 +22,6 @@ import org.jsoup.select.Elements;
 import org.xml.sax.SAXException;
 
 import java.io.BufferedInputStream;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.text.ParseException;
@@ -203,23 +200,19 @@ public class USACEDataSource implements RESTDataSource {
 		
 		try {
 			long startTime = System.currentTimeMillis();
+
+			WrappedHttpResponse response = httpClientWrapper.doGet(urlStr, hardRefresh);
 			
-			HttpGet getCmd = new HttpGet(urlStr);
-			HttpResponse response = httpClientWrapper.doGet(getCmd, hardRefresh);
-			
-			if(response.getStatusLine().getStatusCode() != 200) {
-				throw new IOException(response.getStatusLine() + " response from " + urlStr);
+			if(response.statusCode != 200) {
+				throw new IOException(response.statusCode + " " + response.message + " response from " + urlStr);
 			}
 			
-			contentInputStream = response.getEntity().getContent();
-
-			Header cacheFileHeader = response.getLastHeader(HttpClientWrapper.PN_CACHE_FILE);
+			contentInputStream = response.responseStream;
 			
-			if(cacheFileHeader == null) {
+			if(response.cacheFile == null) {
 				bufferedStream = new BufferedInputStream(contentInputStream, 8192);
 			} else {
-				File cacheFile = new File(cacheFileHeader.getValue());
-				bufferedStream = new CachingBufferedInputStream(contentInputStream, 8192, cacheFile);
+				bufferedStream = new CachingBufferedInputStream(contentInputStream, 8192, response.cacheFile);
 			}
 			
 			data = parse(sites, variable, bufferedStream, urlStr);

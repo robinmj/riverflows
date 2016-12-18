@@ -18,13 +18,12 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import com.riverflows.data.WrappedHttpResponse;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
@@ -66,13 +65,8 @@ public class AhpsKmlSiteSource {
 			reader = factory.newSAXParser().getXMLReader();
 			reader.setContentHandler(parser);
 
-			//URL url = new URL(urlStr);
-			//URLConnection connection = url.openConnection();
-			//InputStream contentInputStream = connection.getInputStream();
-			
-			HttpGet getCmd = new HttpGet(SITE_LIST_URL);
-			HttpResponse response = httpClientWrapper.doGet(getCmd, true);
-			contentInputStream = response.getEntity().getContent();
+			WrappedHttpResponse response = httpClientWrapper.doGet(SITE_LIST_URL, true);
+			contentInputStream = response.responseStream;
 			zipStream = new ZipInputStream(contentInputStream);
 			ZipEntry currentEntry = null;
 			while(true) {
