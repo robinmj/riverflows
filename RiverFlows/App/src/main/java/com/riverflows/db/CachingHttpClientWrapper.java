@@ -1,28 +1,22 @@
 package com.riverflows.db;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Date;
-import java.util.Random;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.ProtocolVersion;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.entity.InputStreamEntity;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicHttpResponse;
-import org.apache.http.message.BasicStatusLine;
-
 import android.content.Context;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.riverflows.Home;
 import com.riverflows.data.CachedDataset;
+import com.riverflows.data.WrappedHttpResponse;
 import com.riverflows.wsclient.HttpClientWrapper;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.Date;
+import java.util.Random;
 
 public class CachingHttpClientWrapper implements HttpClientWrapper {
 	private static final String TAG = Home.TAG;
@@ -42,14 +36,11 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
 	}
 	
 	@Override
-	public HttpResponse doGet(HttpGet getCmd, boolean hardRefresh) throws ClientProtocolException,
-			IOException {
+	public WrappedHttpResponse doGet(String requestUrl, boolean hardRefresh) throws IOException {
 
-		HttpResponse response;
+		InputStream responseStream;
 		
 		File cacheFile = null;
-		
-		String requestUrl = getCmd.getURI().toString();
 
 		boolean databaseError = false;
 		
@@ -72,16 +63,7 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
 					if(cacheFile.exists()) {
 						Log.i(TAG,"cache hit");
 						
-						response = new BasicHttpResponse(new BasicStatusLine(
-					    		  new ProtocolVersion("HTTP", 1, 1), 200, ""));
-						response.setStatusCode(200);
-						response.setEntity(new InputStreamEntity(new FileInputStream(cacheFile), cacheFile.length()));
-						
-						if(contentType != null) {
-							response.setHeader("Content-Type", contentType);
-						}
-						
-						return response;
+						return new WrappedHttpResponse(new FileInputStream(cacheFile), null, 200, null);
 					} else {
 						Log.e(TAG, "could not find cache file: " + cacheFile);
 					}
@@ -93,30 +75,32 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
 			Log.d(TAG, "cache miss");
 		}
 
-		//no cached response found- make a new request
-		HttpClient client = new DefaultHttpClient();
-		response = client.execute(getCmd);
+		URL url = new URL(requestUrl);
+		HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+		conn.setReadTimeout(10000 /* milliseconds */);
+		conn.setConnectTimeout(15000 /* milliseconds */);
+		conn.setRequestMethod("GET");
+		conn.setDoInput(true);
+		// Start the query
+		conn.connect();
+		responseStream = conn.getInputStream();
 
 		if (databaseError) {
 			//don't even try to use cache
-			return response;
-		}
 
-		String url = getCmd.getURI().toString();
+			return new WrappedHttpResponse(responseStream, null, conn.getResponseCode(), conn.getResponseMessage());
+		}
 		
 		if(cacheFile == null) {
 			cacheFile = new File(cacheDir, "" + filenameGenerator.nextLong());
 			
-			DatasetsDaoImpl.saveDataset(dbContext, url, cacheFile.getName());
+			DatasetsDaoImpl.saveDataset(dbContext, requestUrl, cacheFile.getName());
 		} else {
-			DatasetsDaoImpl.updateDatasetTimestamp(dbContext, url, cacheEntry.getCacheFileName());
+			DatasetsDaoImpl.updateDatasetTimestamp(dbContext, requestUrl, cacheEntry.getCacheFileName());
 		}
 		
-		response.addHeader(PN_CACHE_FILE, cacheFile.getAbsolutePath());
-		
-		Log.i(TAG, "caching " + url + " to " + cacheFile.getAbsolutePath());
-		
-		return response;
-	}
+		Log.i(TAG, "caching " + requestUrl + " to " + cacheFile.getAbsolutePath());
 
+		return new WrappedHttpResponse(responseStream, cacheFile, conn.getResponseCode(), conn.getResponseMessage());
+	}
 }

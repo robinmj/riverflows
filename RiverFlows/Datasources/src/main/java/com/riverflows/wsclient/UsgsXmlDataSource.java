@@ -17,11 +17,7 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.xml.sax.Attributes;
 import org.xml.sax.ContentHandler;
 import org.xml.sax.InputSource;
@@ -29,6 +25,7 @@ import org.xml.sax.Locator;
 import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 
+import com.riverflows.data.WrappedHttpResponse;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
@@ -184,9 +181,8 @@ public class UsgsXmlDataSource implements ContentHandler {
 			//URLConnection connection = url.openConnection();
 			//InputStream contentInputStream = connection.getInputStream();
 
-			HttpGet getCmd = new HttpGet(urlStr);
-			HttpResponse response = getHttpClientWrapper().doGet(getCmd, true);
-			contentInputStream = response.getEntity().getContent();
+			WrappedHttpResponse response = getHttpClientWrapper().doGet(urlStr, true);
+			contentInputStream = response.responseStream;
 			bufferedStream = new BufferedInputStream(contentInputStream, 8192);
 			
 			reader.parse(new InputSource(bufferedStream));

@@ -119,19 +119,19 @@ public class CDECDataSourceTest extends TestCase {
 		
 		Reading lastObs = streamflow.getLastObservation();
 		
-		DateFormat pdtFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG);
-		pdtFormat.setTimeZone(USTimeZone.PDT.getTimeZone());
+		DateFormat pstFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG);
+		pstFormat.setTimeZone(USTimeZone.PST.getTimeZone());
 		
-		assertEquals("4/17/12 12:00:00 PM GMT-07:00", pdtFormat.format(lastObs.getDate()));
-		assertEquals(2551.0d, lastObs.getValue());
+		assertEquals("12/17/16 2:00:00 PM GMT-08:00", pstFormat.format(lastObs.getDate()));
+		assertEquals(3346.0d, lastObs.getValue());
 		
-		assertEquals(167, streamflow.getReadings().size());
+		assertEquals(168, streamflow.getReadings().size());
 		
 		Series gauge_height = data.getDatasets().get(CommonVariable.GAUGE_HEIGHT_FT);
 		
 		Reading firstObs = gauge_height.getReadings().get(0);
-		assertEquals("4/10/12 2:00:00 PM GMT-07:00", pdtFormat.format(firstObs.getDate()));
-		assertEquals(4.14d, firstObs.getValue());
+		assertEquals("12/10/16 5:00:00 PM GMT-08:00", pstFormat.format(firstObs.getDate()));
+		assertEquals(9.69d, firstObs.getValue());
 
 		Site ads = new Site(new SiteId("CDEC","ADS"), null, null, null);
 		data = ds.getSiteData(ads, new Variable[] { CDECDataSource.VTYPE_WIND_DR }, true);
