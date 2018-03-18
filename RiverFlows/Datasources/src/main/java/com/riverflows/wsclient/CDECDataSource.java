@@ -42,7 +42,7 @@ public class CDECDataSource implements RESTDataSource {
 	public static final String AGENCY = "CDEC";
 
 	public static final String AGENCY_URL = "http://cdec.water.ca.gov";
-	public static final String SITE_DATA_URL = AGENCY_URL + "/cgi-progs/queryF";
+	public static final String SITE_DATA_URL = AGENCY_URL + "/dynamicapp/QueryF";
 	
 	public static final Variable VTYPE_BAT_VOL = new Variable(CommonVariable.DCP_BATTERY_VOLTAGE,"BAT%20VOL", -99999d); //BATTERY VOLTAGE,volts
 	public static final Variable VTYPE_FUEL_MS = new Variable(CommonVariable.FUEL_MOISTURE_WOOD_PCT,"FUEL%20MS", -99999d); //FUEL MOISTURE, WOOD, %
@@ -105,6 +105,8 @@ public class CDECDataSource implements RESTDataSource {
 //	public static final Variable VTYPE_EVAP = new Variable(CommonVariable.,"EVAP", -99999d); //EVAPORATION, LAKE COMPUTED, cfs
 //	public static final Variable VTYPE_PPT_INC = new Variable(CommonVariable.,"PPT%20INC", -99999d); //PRECIPITATION, INCREMENTAL, inches
 //	public static final Variable VTYPE_SOIL_MOI = new Variable(CommonVariable.,"SOIL%20MOI", -99999d); //SOIL MOISTURE, %
+	public static final Variable VTYPE_TEMP_F = new Variable(CommonVariable.AIRTEMP_F,"TEMP", -99999d); //WATER TEMPERATURE, F
+	public static final Variable VTYPE_WATERTEMP_F = new Variable(CommonVariable.WATERTEMP_F,"TEMP%20W", -99999d); //WATER TEMPERATURE, F
 	
 	public Variable[] ACCEPTED_VARIABLES = new Variable[]{
 		VTYPE_FLOW,
@@ -137,7 +139,9 @@ public class CDECDataSource implements RESTDataSource {
 		VTYPE_PEAK_WS,
 		VTYPE_WIND_SP,
 		VTYPE_FUEL_MS,
-		VTYPE_BAT_VOL
+		VTYPE_BAT_VOL,
+		VTYPE_TEMP_F,
+		VTYPE_WATERTEMP_F
 	};
 
 	private HttpClientWrapper httpClientWrapper = new DefaultHttpClientWrapper();
@@ -217,7 +221,7 @@ public class CDECDataSource implements RESTDataSource {
 	 */
 	private static TimeZone cdecTimeZone = TimeZone.getTimeZone("America/Los_Angeles");
 	
-	private static SimpleDateFormat startDateFormat = new SimpleDateFormat("MM/dd/yyyy+HH:mm");
+	private static SimpleDateFormat startDateFormat = new SimpleDateFormat("dd-MMM-yyyy+HH:mm");
 	
 	static {		
 		startDateFormat.setTimeZone(cdecTimeZone);
@@ -241,7 +245,6 @@ public class CDECDataSource implements RESTDataSource {
 		String urlStr = SITE_DATA_URL + "?s=" + site.getSiteId().getId();
 		urlStr += "&d=" + startDateFormat.format(endDate.getTime());
 		urlStr += "&span=" + timespan;
-		urlStr += "&download=y";
 		
 		if(LOG.isInfoEnabled()) LOG.info("site data URL: " + urlStr);
 		
@@ -280,8 +283,8 @@ public class CDECDataSource implements RESTDataSource {
 	}
 	
 
-	private static final Pattern readingLinePattern = Pattern.compile("<tr><td.*?>(\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2})</td>(.*)</tr>");
-	private static final Pattern readingValuePattern = Pattern.compile("<td.*?>\\s*(\\S+)</td><td.*?><a.*?>\\s*</a></td>");
+	private static final Pattern readingDatePattern = Pattern.compile("<td.*?>(\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2})</td>");
+	private static final Pattern readingValuePattern = Pattern.compile("<td.*?><font.*?>\\s*(\\S+)</font></td><td.*?><a.*?>(.+)</a></td>");
 	
 	/**
 	 * CDEC's data is in HTML, but it is so badly-formed that I parse it as plaintext
@@ -312,7 +315,7 @@ public class CDECDataSource implements RESTDataSource {
 		SiteData data = new SiteData();
 		data.setSite(site);
 		
-		StringBuilder dataInfo = new StringBuilder("<h2>" + StringEscapeUtils.escapeHtml(site.getName()) + " (<a href=\"http://cdec.water.ca.gov/cgi-progs/staMeta?station_id=" + site.getId() + "\">" + site.getId() + "</a>)</h2><div>");
+		StringBuilder dataInfo = new StringBuilder("<h2>" + StringEscapeUtils.escapeHtml(site.getName()) + " (<a href=\"http://cdec.water.ca.gov/dynamicapp/staMeta?station_id=" + site.getId() + "\">" + site.getId() + "</a>)</h2><div>");
 		
 		//find the table header
 		 while(true) {
@@ -324,31 +327,32 @@ public class CDECDataSource implements RESTDataSource {
 			
 			line = line.trim();
 			
-			if(line.trim().startsWith("<tr><td")) {
+			if(line.trim().startsWith("<hr><h3>Hourly Data</h3><p")) {
 				break;
 			}
 		}
 		
 		data.setDataInfo(dataInfo.toString());
 
+		int[] lineCounter = new int[] { lineNum };
+
 		SimpleDateFormat readingDateFormat = new SimpleDateFormat("MM/dd/yyyy HH:mm");
-		CommonVariable[] columns = parseHeader(line, ds.readLine(), data, readingDateFormat);
+		CommonVariable[] columns = parseHeader(ds, data, readingDateFormat, lineCounter);
+
+		seekRow(ds, lineCounter);
 		
-		lineNum++;
-		
-		while((line = ds.readLine()) != null) {
-			lineNum++;
+		while(true) {
+
+			lineNum = lineCounter[0];
+
+			String[] dateArr = readColumn(readingDatePattern, 1, ds, lineCounter);
 			
-			line = line.trim();
-			
-			Matcher readingMatcher = readingLinePattern.matcher(line);
-			
-			if(!readingMatcher.matches()) {
-				LOG.info("stopped collecting readings at " + line + " " + lineNum);
+			if(dateArr == null) {
+				LOG.info("stopped collecting readings after " + lineNum);
 				break;
 			}
 			
-			String dateStr = readingMatcher.group(1);
+			String dateStr = dateArr[0];
 
 			Date readingDate = null;
 			
@@ -356,44 +360,67 @@ public class CDECDataSource implements RESTDataSource {
 				try {
 					readingDate = readingDateFormat.parse(dateStr);
 				} catch(ParseException pe) {
-					LOG.error("invalid date: " + dateStr + " " + lineNum);
+					LOG.error("invalid date: " + dateStr + " after " + lineNum);
 					continue;
 				}
 			} else {
-				LOG.error("missing date " + lineNum);
+				LOG.error("missing date after " + lineNum);
 				continue;
 			}
 
-			String valuesStr = readingMatcher.group(2);
+			lineNum = lineCounter[0];
 
-			if(valuesStr == null) {
-				LOG.error("missing values " + lineNum);
-				continue;
+			List<String[]> values = readRow(readingValuePattern, 2, ds, lineCounter);
+
+			if(values == null) {
+				break;
 			}
-			
-			Matcher readingValueMatcher = readingValuePattern.matcher(valuesStr);
 
 			for(int colIndex = 0; colIndex < columns.length; colIndex++) {
+
+				if(columns[colIndex] == null) {
+					// Reading for unsupported variable
+					continue;
+				}
+
+				if(values.size() <= colIndex) {
+					LOG.error("missing col " + colIndex + " after " + lineNum);
+					break;
+				}
+
+				String[] valueArr = values.get(colIndex);
+
+				if (valueArr[0] == null) {
+					LOG.error("missing value for col " + colIndex + " after " + lineNum);
+					continue;
+				}
 
 				Reading r = new Reading();
 				r.setDate(readingDate);
 				
-				if(!readingValueMatcher.find()) {
-					LOG.error("missing column " + colIndex + " on line " + lineNum + " in " + valuesStr);
-					break;
+				StringBuilder valueFiltered = new StringBuilder(valueArr[0].length());
+
+				for(char c : valueArr[0].trim().toCharArray()) {
+					if(c == ',') {
+						continue;
+					}
+					valueFiltered.append(c);
 				}
 				
-				String valueStr = readingValueMatcher.group(1);
-				
 				try {
-					r.setValue(Double.valueOf(valueStr));
+					r.setValue(Double.valueOf(valueFiltered.toString()));
 				} catch(NumberFormatException nfe) {
-					if(valueStr.trim().length() != 0) {
-						r.setQualifiers(valueStr);
+					if(valueFiltered.length() != 0) {
+						r.setQualifiers(valueFiltered.toString());
 					}
-				} catch(NullPointerException npe) {
-					LOG.error("missing value for col " + colIndex + " on line " + lineNum);
-					continue;
+				}
+
+				if(valueArr[1] != null) {
+					String qualifiers = valueArr[1].trim();
+					if(qualifiers.length() > 0) {
+						r.setQualifiers(qualifiers);
+						r.setValue(null);
+					}
 				}
 				
 				data.getDatasets().get(columns[colIndex]).getReadings().add(r);
@@ -408,53 +435,45 @@ public class CDECDataSource implements RESTDataSource {
 			if(readings.isEmpty()) {
 				continue;
 			}
-			
-			String q = readings.get(readings.size() - 1).getQualifiers();
-			if(q == null) {
-				continue;
-			}
-			if(q.equals("--")) {
-				readings.remove(readings.size() - 1);
+
+			for(int index = readings.size() - 1; index >=0; index--) {
+				String q = readings.get(index).getQualifiers();
+				if (q == null) {
+					continue;
+				}
+				if (q.equals("--")) {
+					readings.remove(index);
+				} else {
+					break;
+				}
 			}
 		}
 		
 		return data;
 	}
-	
-	private Pattern headerLine1Pat = Pattern.compile("<tr><td.*?><font.*?> ?Date &nbsp; / &nbsp; Time &nbsp; </font></td>(.*)");
-	private Pattern headerLine1VarPat = Pattern.compile("<td.*?><font.*?><i><a href=(.*?)>(.*?)</a> &nbsp</i></font></td><td.*?> &nbsp; </td>(.*)");
-	private Pattern headerLine2Pat = Pattern.compile("<tr><td.*?><font.*?>\\((\\w+)\\)</font></td>.*");
+
+	private Pattern headerVarPat = Pattern.compile("<td.*?><font.*?><i><a href=\"(.*?)\">(.*?)</a> &nbsp</i></font></td>");
+	private Pattern headerLine2Pat = Pattern.compile("<td.*?><font.*?>\\((\\w+)\\)</font></td>");
+
 	/**
 	 * Populate SiteData object from table headers.
-	 * @param line1
 	 * @return
 	 */
-	private CommonVariable[] parseHeader(String line1, String line2, SiteData data, SimpleDateFormat readingDateFormat) {
+	private CommonVariable[] parseHeader(DataInputStream inputStream, SiteData data, SimpleDateFormat readingDateFormat, int[] lineCounter) throws IOException {
 		
 		ArrayList<CommonVariable> result = new ArrayList<CommonVariable>();
-		
-		Matcher l1Matcher = headerLine1Pat.matcher(line1);
-		if(!l1Matcher.matches()) {
-			throw new DataParseException("header line 1 does not fit expected format: " + line1);
-		}
-		line1 = l1Matcher.group(1);
-		
-		while(true) {
+
+		List<String[]> headerLine1 = readRow(headerVarPat, 2, inputStream, lineCounter);
+
+		for(String[] values : headerLine1) {
 			
-			l1Matcher = headerLine1VarPat.matcher(line1);
-			
-			if(!l1Matcher.matches()) {
-				break;
-			}
-			
-			String plotUrl = l1Matcher.group(1);
-			String varName = l1Matcher.group(2);
-			
-			line1 = l1Matcher.group(3);
+			String plotUrl = values[0];
+			String varName = values[1];
 			
 			Variable var = getVariable(varName.replace(" ", "%20"));
 			if(var == null) {
 				LOG.warn("unsupported variable: " + varName);
+				result.add(null);
 				continue;
 			}
 			
@@ -481,10 +500,10 @@ public class CDECDataSource implements RESTDataSource {
 		
 		data.setDataInfo(data.getDataInfo() + "</div>");
 		
-		Matcher l2Matcher = headerLine2Pat.matcher(line2);
+		String[] headerLine2 = readColumn(headerLine2Pat, 1, inputStream, lineCounter);
 		
-		if(l2Matcher.matches()) {
-			String tzStr = l2Matcher.group(1);
+		if(headerLine2 != null) {
+			String tzStr = headerLine2[0];
 			try {
 				USTimeZone tz = USTimeZone.valueOf(tzStr);
 				readingDateFormat.setTimeZone(tz.getTimeZone());
@@ -502,6 +521,69 @@ public class CDECDataSource implements RESTDataSource {
 		
 		return columns;
 	}
+
+	private void seekRow(DataInputStream inputStream, int[] lineCounter) throws IOException {
+		while(true) {
+			String line = inputStream.readLine();
+			if (line == null) {
+				return;
+			}
+			lineCounter[0]++;
+
+			if (line.contains("<tr>")) {
+				break;
+			}
+		}
+	}
+
+	private String[] readColumn(Pattern matchingPattern, int count, DataInputStream inputStream, int[] lineCounter) throws IOException {
+		List<String[]> result = readRowHelper(matchingPattern, count, inputStream, lineCounter, true);
+
+		if(result.size() > 0) {
+			return result.get(0);
+		}
+		return null;
+	}
+
+	private List<String[]> readRow(Pattern matchingPattern, int count, DataInputStream inputStream, int[] lineCounter) throws IOException {
+		return readRowHelper(matchingPattern, count, inputStream, lineCounter, false);
+	}
+
+	private List<String[]> readRowHelper(Pattern matchingPattern, int count, DataInputStream inputStream, int[] lineCounter, boolean single) throws IOException {
+		ArrayList<String[]> result = new ArrayList<>();
+
+		while(true) {
+			String line = inputStream.readLine();
+			if(line == null) {
+				return result;
+			}
+			line = line.trim();
+			lineCounter[0]++;
+
+			if (line.contains("</tr>")) {
+				break;
+			}
+
+			Matcher matcher = matchingPattern.matcher(line);
+
+			if (!matcher.matches()) {
+				continue;
+			}
+
+			String[] columnValues = new String[count];
+
+			for(int a = 1; a <= count; a++) {
+				columnValues[a - 1] = matcher.group(a);
+			}
+
+			result.add(columnValues);
+
+			if(single) {
+				break;
+			}
+		}
+		return result;
+	}
 	
 	@Override
 	public String getExternalGraphUrl(String siteId, String variableId) {
@@ -510,6 +592,6 @@ public class CDECDataSource implements RESTDataSource {
 	
 	@Override
 	public String getExternalSiteUrl(String siteId) {
-		return "http://cdec.water.ca.gov/cgi-progs/staMeta?station_id=" + siteId;
+		return "http://cdec.water.ca.gov/dynamicapp/staMeta?station_id=" + siteId;
 	}
 }
