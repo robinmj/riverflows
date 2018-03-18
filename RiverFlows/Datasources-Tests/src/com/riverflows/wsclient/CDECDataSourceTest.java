@@ -26,7 +26,7 @@ public class CDECDataSourceTest extends TestCase {
 	}
 
 	public void testGetFavorites() throws Throwable {
-		Site cbr = new Site(new SiteId("CDEC","CBR"), null, null, null);
+		Site cbr = new Site(new SiteId("CDEC", "CBR"), null, null, null);
 
 		List<Favorite> favs = new ArrayList<Favorite>();
 		favs.add(new Favorite(cbr, CDECDataSource.VTYPE_FLOW.getId()));
@@ -43,22 +43,25 @@ public class CDECDataSourceTest extends TestCase {
 
 		Reading lastObs = streamflow.getLastObservation();
 
-		DateFormat pdtFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG);
-		pdtFormat.setTimeZone(USTimeZone.PDT.getTimeZone());
+		DateFormat pstFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG);
+		pstFormat.setTimeZone(USTimeZone.PST.getTimeZone());
 
-		assertEquals("4/17/12 12:00:00 PM GMT-07:00", pdtFormat.format(lastObs.getDate()));
-		assertEquals(2551.0d, lastObs.getValue());
+		assertEquals("3/15/18 4:00:00 AM GMT-08:00", pstFormat.format(lastObs.getDate()));
+		assertEquals(2344.0d, lastObs.getValue());
 
-		assertEquals(167, streamflow.getReadings().size());
+		assertEquals(165, streamflow.getReadings().size());
 
 		Series gauge_height = data.getDatasets().get(CommonVariable.GAUGE_HEIGHT_FT);
 
 		Reading firstObs = gauge_height.getReadings().get(0);
-		assertEquals("4/10/12 2:00:00 PM GMT-07:00", pdtFormat.format(firstObs.getDate()));
-		assertEquals(4.14d, firstObs.getValue());
+		assertEquals("3/8/18 6:00:00 AM GMT-08:00", pstFormat.format(firstObs.getDate()));
+		assertEquals(1.85d, firstObs.getValue());
+	}
+
+	public void testGetDataInfo() throws Throwable {
 
 		Site ads = new Site(new SiteId("CDEC","ADS"), null, null, null);
-		data = ds.getSiteData(ads, new Variable[] { CDECDataSource.VTYPE_WIND_DR }, true);
+		SiteData data = ds.getSiteData(ads, new Variable[] { CDECDataSource.VTYPE_WIND_DR }, true);
 
 		System.out.println("dataInfo:\n" + data.getDataInfo());
 	}
@@ -89,53 +92,69 @@ public class CDECDataSourceTest extends TestCase {
 
 		Reading lastObs = streamflow.getLastObservation();
 
-		DateFormat pdtFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG);
-		pdtFormat.setTimeZone(USTimeZone.PDT.getTimeZone());
+		DateFormat pstFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG);
+		pstFormat.setTimeZone(USTimeZone.PST.getTimeZone());
 
-		assertEquals("4/17/12 12:00:00 PM GMT-07:00", pdtFormat.format(lastObs.getDate()));
-		assertEquals(2551.0d, lastObs.getValue());
+		assertEquals("3/15/18 4:00:00 AM GMT-08:00", pstFormat.format(lastObs.getDate()));
+		assertEquals(2344.0d, lastObs.getValue());
 
-		assertEquals(167, streamflow.getReadings().size());
+		assertEquals(165, streamflow.getReadings().size());
 
 		Series gauge_height = data.getDatasets().get(CommonVariable.GAUGE_HEIGHT_FT);
 
 		Reading firstObs = gauge_height.getReadings().get(0);
-		assertEquals("4/10/12 2:00:00 PM GMT-07:00", pdtFormat.format(firstObs.getDate()));
-		assertEquals(4.14d, firstObs.getValue());
-
-		Site ads = new Site(new SiteId("CDEC","ADS"), null, null, null);
-		data = ds.getSiteData(ads, new Variable[] { CDECDataSource.VTYPE_WIND_DR }, true);
-
-		System.out.println("dataInfo:\n" + data.getDataInfo());
+		assertEquals("3/8/18 6:00:00 AM GMT-08:00", pstFormat.format(firstObs.getDate()));
+		assertEquals(1.85d, firstObs.getValue());
 	}
 	
 	public void testGetSiteData() throws Throwable {
 		Site cbr = new Site(new SiteId("CDEC","CBR"), null, null, null);
 		SiteData data = ds.getSiteData(cbr, new Variable[] { CDECDataSource.VTYPE_FLOW }, true);
-		
+
 		System.out.println("dataInfo:\n" + data.getDataInfo());
-		
+
 		Series streamflow = data.getDatasets().get(CommonVariable.STREAMFLOW_CFS);
-		
+
 		Reading lastObs = streamflow.getLastObservation();
-		
+
 		DateFormat pstFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG);
 		pstFormat.setTimeZone(USTimeZone.PST.getTimeZone());
-		
-		assertEquals("12/17/16 2:00:00 PM GMT-08:00", pstFormat.format(lastObs.getDate()));
-		assertEquals(3346.0d, lastObs.getValue());
-		
-		assertEquals(168, streamflow.getReadings().size());
-		
-		Series gauge_height = data.getDatasets().get(CommonVariable.GAUGE_HEIGHT_FT);
-		
-		Reading firstObs = gauge_height.getReadings().get(0);
-		assertEquals("12/10/16 5:00:00 PM GMT-08:00", pstFormat.format(firstObs.getDate()));
-		assertEquals(9.69d, firstObs.getValue());
 
-		Site ads = new Site(new SiteId("CDEC","ADS"), null, null, null);
-		data = ds.getSiteData(ads, new Variable[] { CDECDataSource.VTYPE_WIND_DR }, true);
-		
+		assertEquals("3/15/18 4:00:00 AM GMT-08:00", pstFormat.format(lastObs.getDate()));
+		assertEquals(2344.0d, lastObs.getValue());
+
+		assertEquals(165, streamflow.getReadings().size());
+
+		Series gauge_height = data.getDatasets().get(CommonVariable.GAUGE_HEIGHT_FT);
+
+		Reading firstObs = gauge_height.getReadings().get(0);
+		assertEquals("3/8/18 6:00:00 AM GMT-08:00", pstFormat.format(firstObs.getDate()));
+		assertEquals(1.85d, firstObs.getValue());
+	}
+
+	public void testGetGVOData() throws Throwable {
+		Site cbr = new Site(new SiteId("CDEC","GVO"), null, null, null);
+		SiteData data = ds.getSiteData(cbr, new Variable[] { CDECDataSource.VTYPE_FLOW }, true);
+
 		System.out.println("dataInfo:\n" + data.getDataInfo());
+
+		Series gaugeHeight = data.getDatasets().get(CommonVariable.GAUGE_HEIGHT_FT);
+
+		Reading lastObs = gaugeHeight.getLastObservation();
+
+		DateFormat pstFormat = SimpleDateFormat.getDateTimeInstance(DateFormat.SHORT, DateFormat.LONG);
+		pstFormat.setTimeZone(USTimeZone.PST.getTimeZone());
+
+		assertEquals("3/16/18 9:00:00 AM GMT-08:00", pstFormat.format(lastObs.getDate()));
+		assertEquals(0.38d, lastObs.getValue());
+
+		for(Reading r : gaugeHeight.getReadings()) {
+			if(r.getValue() == null) {
+				assertEquals("N", r.getQualifiers());
+			} else {
+				assertTrue("" + r.getValue(), r.getValue() < 1.0);
+				assertTrue("" + r.getValue(), r.getValue() > 0.0);
+			}
+		}
 	}
 }
