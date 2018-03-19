@@ -51,7 +51,7 @@ public class AHPSXmlDataSource implements RESTDataSource {
 	public static final Variable VTYPE_FLOW = new Variable(CommonVariable.STREAMFLOW_CFS, "Flow", -999000.0d);
 	public static final Variable VTYPE_STAGE = new Variable(CommonVariable.GAUGE_HEIGHT_FT, "Stage", -999000.0d);
 	
-	public static final String SITE_DATA_URL = "http://water.weather.gov/ahps2/hydrograph_to_xml.php?";
+	public static final String SITE_DATA_URL = "https://water.weather.gov/ahps2/hydrograph_to_xml.php?";
 	
 	public static Variable[] ACCEPTED_VARIABLES = new Variable[] {VTYPE_FLOW, VTYPE_STAGE};
 
