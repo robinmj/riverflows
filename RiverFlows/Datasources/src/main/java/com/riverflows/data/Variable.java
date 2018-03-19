@@ -65,7 +65,8 @@ public class Variable implements Serializable {
 		RES_INFLOW_CFS("Reservoir Inflow","cfs", false), //RESERVOIR INFLOW, cfs
 		RIVER_STAGE_ELEV_FT("River Stage above NAVD88", "ft", false), //RIVER STAGE NAVD88, feet
 		CONTROL_REGULATING_DISCHARGE("Discharge, Control Regulating", "cfs", false),  //DISCHARGE,CONTROL REGULATING, cfs
-		BOTTOM_ELECTRICAL_CONDUCTIVITY_MICROS_CM("Electrical Conductivity on Bottom","µS/cm", false); //ELECTRICAL COND BOTTOM MICRO S, us/cm
+		BOTTOM_ELECTRICAL_CONDUCTIVITY_MICROS_CM("Electrical Conductivity on Bottom","µS/cm", false), //ELECTRICAL COND BOTTOM MICRO S, us/cm
+		STREAM_ELEVATION_FT("Stream water elevation", "ft", false);
 		
 		private final String name;
 		private final String unit;

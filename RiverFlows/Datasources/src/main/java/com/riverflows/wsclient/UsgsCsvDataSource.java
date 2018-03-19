@@ -41,12 +41,14 @@ public class UsgsCsvDataSource implements RESTDataSource {
 	public static final Variable VTYPE_STREAMFLOW_CFS = new Variable(CommonVariable.STREAMFLOW_CFS, "00060", -99999d);
 	public static final Variable VTYPE_GAUGE_HEIGHT_FT = new Variable(CommonVariable.GAUGE_HEIGHT_FT, "00065", -99999d);
 	public static final Variable VTYPE_GAUGE_HEIGHT_ABOVE_DATUM_M = new Variable(CommonVariable.GAUGE_HEIGHT_ABOVE_DATUM_M, "99065", -99999d);//Gage height, above datum, m
+	public static final Variable VTYPE_STREAM_ELEVATION_FT = new Variable(CommonVariable.STREAM_ELEVATION_FT, "63158", -99999d);//Stream elevation above NGVD 1929
 	public static final Variable VTYPE_DEPTH_TO_WATER_LEVEL_FT = new Variable(CommonVariable.GAUGE_DEPTH_TO_WATER_LEVEL_FT, "72019", -99999d);
 	public static final Variable VTYPE_OBSERVED_DEPTH_FT = new Variable(CommonVariable.OBSERVED_DEPTH_FT, "50415", -99999d);
 	public static final Variable VTYPE_STREAM_VELOCITY_FPS = new Variable(CommonVariable.STREAM_VELOCITY_FPS,"00055" , -99999d);
 	public static final Variable VTYPE_RES_ELEVATION = new Variable(CommonVariable.RES_ELEVATION_FT, "72020",-99999d);
 	public static final Variable VTYPE_RES_ELEVATION_2 = new Variable(CommonVariable.RES_ELEVATION_FT, "62614",-99999d);
 	public static final Variable VTYPE_RES_ELEVATION_3 = new Variable(CommonVariable.RES_ELEVATION_FT, "00062", -99999d); //Elevation of reservoir water surface above datum, ft
+	public static final Variable VTYPE_RES_ELEVATION_4 = new Variable(CommonVariable.RES_ELEVATION_FT, "62615",-99999d); //Lake or reservoir water surface elevation above NAVD 1988
 	public static final Variable VTYPE_WATER_TEMP_F = new Variable(CommonVariable.WATERTEMP_F,"00011" , -99999d);
 	public static final Variable VTYPE_WATER_TEMP_C = new Variable(CommonVariable.WATERTEMP_C,"00010" , -99999d);
 	public static final Variable VTYPE_PRECIPITATION_TOTAL_IN = new Variable(CommonVariable.PRECIPITATION_TOTAL_IN,"00045" , -99999d);
@@ -112,7 +114,10 @@ public class UsgsCsvDataSource implements RESTDataSource {
 		VTYPE_NUMBER_OF_SAMPLING_POINTS,
 		VTYPE_ACOUSTIC_DOPPLER_VELOCITY_METER_SIGNAL_NOISE_RATIO,
 		VTYPE_DCP_BATTERY_VOLTAGE,
-		VTYPE_DCP_SIGNAL_MODULATION_INDEX_DB};
+		VTYPE_DCP_SIGNAL_MODULATION_INDEX_DB,
+		VTYPE_STREAM_ELEVATION_FT,
+		VTYPE_RES_ELEVATION_4
+	};
 	
 	public String getAgency() {
 		return AGENCY;
