@@ -41,6 +41,7 @@ public class UsgsCsvDataSource implements RESTDataSource {
 	public static final Variable VTYPE_STREAMFLOW_CFS = new Variable(CommonVariable.STREAMFLOW_CFS, "00060", -99999d);
 	public static final Variable VTYPE_GAUGE_HEIGHT_FT = new Variable(CommonVariable.GAUGE_HEIGHT_FT, "00065", -99999d);
 	public static final Variable VTYPE_GAUGE_HEIGHT_ABOVE_DATUM_M = new Variable(CommonVariable.GAUGE_HEIGHT_ABOVE_DATUM_M, "99065", -99999d);//Gage height, above datum, m
+	public static final Variable VTYPE_STREAM_ELEV_ABOVE_NGVD_1929 = new Variable(CommonVariable.STREAM_ELEV_FT, "63158", -99999d);//Gage height, above datum, m
 	public static final Variable VTYPE_DEPTH_TO_WATER_LEVEL_FT = new Variable(CommonVariable.GAUGE_DEPTH_TO_WATER_LEVEL_FT, "72019", -99999d);
 	public static final Variable VTYPE_OBSERVED_DEPTH_FT = new Variable(CommonVariable.OBSERVED_DEPTH_FT, "50415", -99999d);
 	public static final Variable VTYPE_STREAM_VELOCITY_FPS = new Variable(CommonVariable.STREAM_VELOCITY_FPS,"00055" , -99999d);
