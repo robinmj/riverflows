@@ -33,7 +33,7 @@ public class CODWRDataSourceTest extends DataSourceTestCase {
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        src.setHttpClientWrapper(httpClientWrapper);
+        src.setHttpClientWrapper(new MockCODWRHttpClient());
     }
 
 	public void testGetStartDate() {
@@ -55,7 +55,7 @@ public class CODWRDataSourceTest extends DataSourceTestCase {
 	}
 
     public void testGetSites() throws Throwable {
-        recorder.insertTape("codwr_getSites", Collections.singletonMap("mode", TapeMode.READ_SEQUENTIAL));
+        recorder.insertTape("codwr_getSites", Collections.singletonMap("mode", TapeMode.READ_WRITE));
 
 		Site clearCreek = new Site();
 		clearCreek.setSiteId(new SiteId(CODWRDataSource.AGENCY, "CCACCRCO"));

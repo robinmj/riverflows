@@ -4,7 +4,7 @@ interactions:
 - recorded: 2015-03-30T20:05:40.240Z
   request:
     method: GET
-    uri: http://www.dwr.state.co.us/SurfaceWater/data/export_tabular.aspx?ID=CCACCRCO&MTYPE=DISCHRG,GAGE_HT&INTERVAL=1&START=03/23/15&END=03/30/15
+    uri: https://www.dwr.state.co.us/surfacewater/data/detail_tabular.aspx?ID=CCACCRCO&MTYPE=DISCHRG,GAGE_HT&INTERVAL=1&START=03/23/15&END=03/30/15
   response:
     status: 200
     headers:
