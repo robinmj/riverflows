@@ -95,8 +95,7 @@ public class CODWRDataSource implements RESTDataSource {
 	public Variable[] getAcceptedVariables() {
 		return ACCEPTED_VARIABLES;
 	}
-	
-	public static final String SITE_DATA_URL = "http://www.dwr.state.co.us/SurfaceWater/data/export_tabular.aspx?";
+	public static final String SITE_DATA_URL = "https://dwr.state.co.us/surfacewater/data/export_tabular.aspx?";
 	
 	public void populateDataSets(SiteData site) {
 		if(!site.getSite().getAgency().equals(getAgency())) {
