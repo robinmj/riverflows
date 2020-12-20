@@ -36,7 +36,7 @@ import com.riverflows.data.Variable;
 
 public class UsgsXmlDataSource implements ContentHandler {
 	
-	public static final String SITE_DATA_URL = "http://waterservices.usgs.gov/nwis/iv/?format=waterml,1.1&";
+	public static final String SITE_DATA_URL = "https://waterservices.usgs.gov/nwis/iv/?format=waterml,1.1&";
 	
 	private static final Log LOG = LogFactory.getLog(UsgsXmlDataSource.class);
 	

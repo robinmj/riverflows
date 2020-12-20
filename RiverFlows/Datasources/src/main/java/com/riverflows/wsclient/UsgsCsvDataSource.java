@@ -538,11 +538,11 @@ public class UsgsCsvDataSource implements RESTDataSource {
 	
 	@Override
 	public String getExternalGraphUrl(String siteId, String variableId) {
-		return "http://waterdata.usgs.gov/nwisweb/graph?agency_cd=USGS&site_no=" + siteId + "&parm_cd=" + variableId + "&period=7";
+		return "https://waterdata.usgs.gov/nwisweb/graph?agency_cd=USGS&site_no=" + siteId + "&parm_cd=" + variableId + "&period=7";
 	}
 	
 	@Override
 	public String getExternalSiteUrl(String siteId) {
-		return "http://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&site_no=" + siteId;
+		return "https://waterdata.usgs.gov/nwis/inventory?agency_code=USGS&site_no=" + siteId;
 	}
 }
