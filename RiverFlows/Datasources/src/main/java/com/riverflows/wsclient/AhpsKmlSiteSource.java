@@ -39,7 +39,7 @@ public class AhpsKmlSiteSource {
 	
 	private static final Log LOG = LogFactory.getLog(AhpsKmlSiteSource.class);
 
-	 public static final String SITE_LIST_URL = "http://water.weather.gov/ahps/worldfiles/ahps_national_fcst.kmz";
+	 public static final String SITE_LIST_URL = "https://water.weather.gov/ahps/worldfiles/ahps_national_fcst.kmz";
 
 	 private HttpClientWrapper httpClientWrapper = new DefaultHttpClientWrapper();
 	 

@@ -547,7 +547,7 @@ public class AHPSXmlDataSource implements RESTDataSource {
 	private String getDataInfo(Site site, String srcUrl, String standing) {
 		StringBuilder info = new StringBuilder();
 		info.append("<h2> <a href=\"" + srcUrl + "\">" + site.getName() + " (" + site.getId() + ")</a></h2>");
-		info.append("<h4>Source: <a href=\"http://water.weather.gov/ahps/\">NOAA Advanced Hydrologic Prediction Service</a></h4>");
+		info.append("<h4>Source: <a href=\"https://water.weather.gov/ahps/\">NOAA Advanced Hydrologic Prediction Service</a></h4>");
 		if(standing != null) {
 			info.append("<p><b>" + standing + "</b></p>");
 		}
@@ -556,11 +556,11 @@ public class AHPSXmlDataSource implements RESTDataSource {
 	
 	@Override
 	public String getExternalGraphUrl(String siteId, String variableId) {
-		return "http://water.weather.gov/resources/hydrographs/" + siteId.toLowerCase() + "_hg.png";
+		return "https://water.weather.gov/resources/hydrographs/" + siteId.toLowerCase() + "_hg.png";
 	}
 	
 	@Override
 	public String getExternalSiteUrl(String siteId) {
-		return "http://water.weather.gov/ahps2/hydrograph.php?gage=" + siteId;
+		return "https://water.weather.gov/ahps2/hydrograph.php?gage=" + siteId;
 	}
 }
