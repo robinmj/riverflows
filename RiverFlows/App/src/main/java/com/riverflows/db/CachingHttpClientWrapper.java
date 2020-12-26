@@ -81,6 +81,8 @@ public class CachingHttpClientWrapper implements HttpClientWrapper {
 		conn.setConnectTimeout(15000 /* milliseconds */);
 		conn.setRequestMethod("GET");
 		conn.setDoInput(true);
+		String existingAgent = System.getProperty("http.agent");
+		conn.setRequestProperty("User-Agent","riverflows.net/2.0 " + existingAgent);
 		// Start the query
 		conn.connect();
 		responseStream = conn.getInputStream();
