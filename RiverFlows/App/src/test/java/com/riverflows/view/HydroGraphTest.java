@@ -37,6 +37,9 @@ import static org.mockito.Mockito.atLeast;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
+/*
+The current usage of FakeHttp requires that these tests be executed serially
+ */
 @RunWith(RobolectricGradleTestRunner.class)
 public class HydroGraphTest {
     class YAxisLabelMatcher extends ArgumentMatcher<String> {

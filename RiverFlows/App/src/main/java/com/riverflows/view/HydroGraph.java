@@ -315,9 +315,11 @@ public class HydroGraph extends View {
 		}
 
         drawLineGraph(startingPoint, plotCoords, canvas, plotBgPaint);
-        drawLineGraph(startingPoint, forecastCoords, canvas, plotBgPaint);
         drawLineGraph(startingPoint, plotCoords, canvas, plotPaint);
-        drawLineGraph(startingPoint, forecastCoords, canvas, forecastPaint);
+		if (forecastCoords.size() > 0) {
+			drawLineGraph(startingPoint, forecastCoords, canvas, plotBgPaint);
+			drawLineGraph(startingPoint, forecastCoords, canvas, forecastPaint);
+		}
 	}
 
     private void drawLineGraph(Reading startingPoint, ArrayList<PointF> coords, Canvas canvas, Paint paint) {
