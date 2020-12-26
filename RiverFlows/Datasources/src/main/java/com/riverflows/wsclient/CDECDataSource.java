@@ -2,7 +2,6 @@ package com.riverflows.wsclient;
 
 import com.riverflows.data.Favorite;
 import com.riverflows.data.FavoriteData;
-import com.riverflows.data.WrappedHttpResponse;
 import com.riverflows.data.Reading;
 import com.riverflows.data.Series;
 import com.riverflows.data.Site;
@@ -11,6 +10,7 @@ import com.riverflows.data.SiteId;
 import com.riverflows.data.USTimeZone;
 import com.riverflows.data.Variable;
 import com.riverflows.data.Variable.CommonVariable;
+import com.riverflows.data.WrappedHttpResponse;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
@@ -18,9 +18,10 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.http.client.ClientProtocolException;
 
 import java.io.BufferedInputStream;
-import java.io.DataInputStream;
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class CDECDataSource implements RESTDataSource {
 	
 	public static final String AGENCY = "CDEC";
 
-	public static final String AGENCY_URL = "http://cdec.water.ca.gov";
+	public static final String AGENCY_URL = "https://cdec.water.ca.gov";
 	public static final String SITE_DATA_URL = AGENCY_URL + "/dynamicapp/QueryF";
 	
 	public static final Variable VTYPE_BAT_VOL = new Variable(CommonVariable.DCP_BATTERY_VOLTAGE,"BAT%20VOL", -99999d); //BATTERY VOLTAGE,volts
@@ -295,7 +296,7 @@ public class CDECDataSource implements RESTDataSource {
 	
 
 	private static final Pattern readingDatePattern = Pattern.compile("<td.*?>(\\d{2}/\\d{2}/\\d{4} \\d{2}:\\d{2})</td>");
-	private static final Pattern readingValuePattern = Pattern.compile("<td.*?><font.*?>\\s*(\\S+)</font></td><td.*?><a.*?>(.+)</a></td>");
+	private static final Pattern readingValuePattern = Pattern.compile("<td.*?><font.*?>\\s*(\\S+)</font> <a.*?>(.+)</a></td>");
 	
 	/**
 	 * CDEC's data is in HTML, but it is so badly-formed that I parse it as plaintext
@@ -317,8 +318,8 @@ public class CDECDataSource implements RESTDataSource {
 	 * @throws IOException
 	 */
 	private SiteData parse(Site site, InputStream s, String url) throws IOException {
-		
-		DataInputStream ds = new DataInputStream(s);
+
+		BufferedReader ds = new BufferedReader(new InputStreamReader(s));
 		
 		String line;
 		int lineNum = -1;
@@ -326,14 +327,14 @@ public class CDECDataSource implements RESTDataSource {
 		SiteData data = new SiteData();
 		data.setSite(site);
 		
-		StringBuilder dataInfo = new StringBuilder("<h2>" + StringEscapeUtils.escapeHtml(site.getName()) + " (<a href=\"http://cdec.water.ca.gov/dynamicapp/staMeta?station_id=" + site.getId() + "\">" + site.getId() + "</a>)</h2><div>");
+		StringBuilder dataInfo = new StringBuilder("<h2>" + StringEscapeUtils.escapeHtml(site.getName()) + " (<a href=\"" + AGENCY_URL + "/dynamicapp/staMeta?station_id=" + site.getId() + "\">" + site.getId() + "</a>)</h2><div>");
 		
 		//find the table header
 		 while(true) {
 			line = ds.readLine();
 			lineNum++;
 			if(line == null) {
-				throw new RuntimeException("unexpected EOF");
+				throw new RuntimeException("unexpected EOF at " + lineNum);
 			}
 			
 			line = line.trim();
@@ -463,16 +464,31 @@ public class CDECDataSource implements RESTDataSource {
 		return data;
 	}
 
-	private Pattern headerVarPat = Pattern.compile("<td.*?><font.*?><i><a href=\"(.*?)\">(.*?)</a> &nbsp</i></font></td>");
-	private Pattern headerLine2Pat = Pattern.compile("<td.*?><font.*?>\\((\\w+)\\)</font></td>");
+	private final Pattern headerVarPat = Pattern.compile("<th.*?><i><a href=\"(.*?)\">(.*?)</a> </i>.*?</th>");
+	private final Pattern tzPattern = Pattern.compile("<th.*?>DATE / TIME <br>(\\w+)</th>");
 
 	/**
 	 * Populate SiteData object from table headers.
 	 * @return
 	 */
-	private CommonVariable[] parseHeader(DataInputStream inputStream, SiteData data, SimpleDateFormat readingDateFormat, int[] lineCounter) throws IOException {
+	private CommonVariable[] parseHeader(BufferedReader inputStream, SiteData data, SimpleDateFormat readingDateFormat, int[] lineCounter) throws IOException {
 		
 		ArrayList<CommonVariable> result = new ArrayList<CommonVariable>();
+
+		String[] headerLine2 = readColumn(tzPattern, 1, inputStream, lineCounter);
+
+		if(headerLine2 != null) {
+			String tzStr = headerLine2[0];
+			try {
+				USTimeZone tz = USTimeZone.valueOf(tzStr);
+				readingDateFormat.setTimeZone(tz.getTimeZone());
+			} catch(NullPointerException npe) {
+				LOG.error("error determining timezone", npe);
+			}
+		} else {
+			readingDateFormat.setTimeZone(USTimeZone.PDT.getTimeZone());
+			LOG.error("could not find timezone");
+		}
 
 		List<String[]> headerLine1 = readRow(headerVarPat, 2, inputStream, lineCounter);
 
@@ -511,21 +527,6 @@ public class CDECDataSource implements RESTDataSource {
 		
 		data.setDataInfo(data.getDataInfo() + "</div>");
 		
-		String[] headerLine2 = readColumn(headerLine2Pat, 1, inputStream, lineCounter);
-		
-		if(headerLine2 != null) {
-			String tzStr = headerLine2[0];
-			try {
-				USTimeZone tz = USTimeZone.valueOf(tzStr);
-				readingDateFormat.setTimeZone(tz.getTimeZone());
-			} catch(NullPointerException npe) {
-				LOG.error("error determining timezone", npe);
-			}
-		} else {
-			readingDateFormat.setTimeZone(USTimeZone.PDT.getTimeZone());
-			LOG.error("could not find timezone");
-		}
-		
 		CommonVariable[] columns = new CommonVariable[result.size()];
 		
 		result.toArray(columns);
@@ -533,7 +534,7 @@ public class CDECDataSource implements RESTDataSource {
 		return columns;
 	}
 
-	private void seekRow(DataInputStream inputStream, int[] lineCounter) throws IOException {
+	private void seekRow(BufferedReader inputStream, int[] lineCounter) throws IOException {
 		while(true) {
 			String line = inputStream.readLine();
 			if (line == null) {
@@ -547,7 +548,7 @@ public class CDECDataSource implements RESTDataSource {
 		}
 	}
 
-	private String[] readColumn(Pattern matchingPattern, int count, DataInputStream inputStream, int[] lineCounter) throws IOException {
+	private String[] readColumn(Pattern matchingPattern, int count, BufferedReader inputStream, int[] lineCounter) throws IOException {
 		List<String[]> result = readRowHelper(matchingPattern, count, inputStream, lineCounter, true);
 
 		if(result.size() > 0) {
@@ -556,11 +557,11 @@ public class CDECDataSource implements RESTDataSource {
 		return null;
 	}
 
-	private List<String[]> readRow(Pattern matchingPattern, int count, DataInputStream inputStream, int[] lineCounter) throws IOException {
+	private List<String[]> readRow(Pattern matchingPattern, int count, BufferedReader inputStream, int[] lineCounter) throws IOException {
 		return readRowHelper(matchingPattern, count, inputStream, lineCounter, false);
 	}
 
-	private List<String[]> readRowHelper(Pattern matchingPattern, int count, DataInputStream inputStream, int[] lineCounter, boolean single) throws IOException {
+	private List<String[]> readRowHelper(Pattern matchingPattern, int count, BufferedReader inputStream, int[] lineCounter, boolean single) throws IOException {
 		ArrayList<String[]> result = new ArrayList<>();
 
 		while(true) {
@@ -603,6 +604,6 @@ public class CDECDataSource implements RESTDataSource {
 	
 	@Override
 	public String getExternalSiteUrl(String siteId) {
-		return "http://cdec.water.ca.gov/dynamicapp/staMeta?station_id=" + siteId;
+		return AGENCY_URL + "/dynamicapp/staMeta?station_id=" + siteId;
 	}
 }
