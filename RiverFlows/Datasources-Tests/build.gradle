@@ -12,7 +12,7 @@ sourceSets {
     test {
         //The IntelliJ JUnit plugin doesn't include the resources dir in the classpath. This little
         // hack fixes it.
-        output.resourcesDir = output.classesDir
+        //output.resourcesDir = output.classesDir
 
         java {
             srcDir 'src'

@@ -6,7 +6,6 @@ import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
-import com.google.analytics.tracking.android.GoogleAnalytics;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -35,8 +34,8 @@ public class TestApp extends App {
 
         RoboGuice.setUseAnnotationDatabases(false);
 
-        GoogleAnalytics myInstance = GoogleAnalytics.getInstance(this);
-        myInstance.setAppOptOut(true);
+//        GoogleAnalytics myInstance = GoogleAnalytics.getInstance(this);
+//        myInstance.setAppOptOut(true);
 
         Log.d(App.TAG, "TestApp.onCreate exit");
     }

@@ -3,8 +3,7 @@
       package="com.riverflows"
       android:versionCode="36"
       android:versionName="2.0.11">
-    
-    <uses-sdk android:minSdkVersion="11" android:targetSdkVersion="17"/>
+
 	<uses-permission android:name="android.permission.INTERNET" />
 	<uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 	<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
@@ -83,8 +82,5 @@
 		android:authorities="com.riverflows.content.favorites"
         android:exported="true">
 		</provider>
-	    <meta-data
-            android:name="io.fabric.ApiKey"
-            android:value="c800424aeca66f9e98b4b8076e3fe62552a097e1" />
     </application>
 </manifest> 

@@ -26,8 +26,6 @@ import android.view.View;
 import android.widget.ProgressBar;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.Tracker;
 import com.google.inject.Inject;
 import com.riverflows.data.CelsiusFahrenheitConverter;
 import com.riverflows.data.DestinationFacet;
@@ -111,17 +109,17 @@ public class ViewDestination extends RoboActionBarActivity {
     protected void onStart() {
     	super.onStart();
 
-    	EasyTracker.getInstance().activityStart(this);
-
-    	Tracker tracker =  EasyTracker.getTracker();
-
-        Site site = this.getSite();
-
-		tracker.setCustomDimension(1, "" + site.getState());
-    	tracker.setCustomDimension(2, site.getAgency());
-    	tracker.setCustomDimension(3, site.getId());
-    	tracker.setCustomDimension(4, this.getVariable().getId());
-    	tracker.setCustomDimension(5, this.getVariable().getCommonVariable().name());
+//    	EasyTracker.getInstance().activityStart(this);
+//
+//    	Tracker tracker =  EasyTracker.getTracker();
+//
+//        Site site = this.getSite();
+//
+//		tracker.setCustomDimension(1, "" + site.getState());
+//    	tracker.setCustomDimension(2, site.getAgency());
+//    	tracker.setCustomDimension(3, site.getId());
+//    	tracker.setCustomDimension(4, this.getVariable().getId());
+//    	tracker.setCustomDimension(5, this.getVariable().getCommonVariable().name());
     }
 
     public Site getSite() {
@@ -136,7 +134,7 @@ public class ViewDestination extends RoboActionBarActivity {
     protected void onStop() {
     	super.onStop();
 
-    	EasyTracker.getInstance().activityStop(this);
+//    	EasyTracker.getInstance().activityStop(this);
     }
 
     @Override
@@ -168,12 +166,12 @@ public class ViewDestination extends RoboActionBarActivity {
             } catch (NullPointerException npe) {
                 Log.e(App.TAG, "id=" + session.userAccount.getId(), npe);
 
-                //TODO remove this once cause of NPE is found
-
-                HashMap<String,String> metadata = new HashMap<String, String>();
-                metadata.put("user id", "" + session.userAccount.getId());
-                metadata.put("destination facet id", "" + fragment.getDestinationFacet().getId());
-                EasyTracker.getTracker().send("debuginfo", metadata);
+//                //TODO remove this once cause of NPE is found
+//
+//                HashMap<String,String> metadata = new HashMap<String, String>();
+//                metadata.put("user id", "" + session.userAccount.getId());
+//                metadata.put("destination facet id", "" + fragment.getDestinationFacet().getId());
+//                EasyTracker.getTracker().send("debuginfo", metadata);
 				Crashlytics.logException(npe);
             }
 		}
@@ -280,7 +278,7 @@ public class ViewDestination extends RoboActionBarActivity {
             this.destinationFacet = fragment.getDestinationFacet();
             this.variable = fragment.getDestinationFacet().getVariable();
 
-			EasyTracker.getTracker().sendSocial("ACTION_SEND", "start", this.site.getAgency() + ":" + this.site.getId());
+//			EasyTracker.getTracker().sendSocial("ACTION_SEND", "start", this.site.getAgency() + ":" + this.site.getId());
 
 			graphUrl = DataSourceController.getDataSource(this.site.getAgency()).getExternalGraphUrl(this.site.getId(), this.variable.getId());
 			this.activity = activity;
@@ -369,7 +367,7 @@ public class ViewDestination extends RoboActionBarActivity {
 				intent.putExtra(Intent.EXTRA_STREAM, graphUri);
 				activity.startActivityForResult(Intent.createChooser(intent, "Share Hydrograph"), REQUEST_SHARE);
 
-				EasyTracker.getTracker().sendSocial("ACTION_SEND", "image", this.site.getAgency() + ":" + this.site.getId());
+//				EasyTracker.getTracker().sendSocial("ACTION_SEND", "image", this.site.getAgency() + ":" + this.site.getId());
 		    	
 		    	/*
 		    	 * decided not to use this because it doesn't look very good in email and doesn't include RiverFlows branding
@@ -394,7 +392,7 @@ public class ViewDestination extends RoboActionBarActivity {
 				intent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(graphLink + activity.getString(R.string.email_share_footer)));
 				activity.startActivityForResult(Intent.createChooser(intent, "Email Link"), REQUEST_SHARE);
 
-				EasyTracker.getTracker().sendSocial("ACTION_SEND", "email", this.site.getAgency() + ":" + this.site.getId());
+//				EasyTracker.getTracker().sendSocial("ACTION_SEND", "email", this.site.getAgency() + ":" + this.site.getId());
 			}
 	    }
 	}
@@ -405,7 +403,7 @@ public class ViewDestination extends RoboActionBarActivity {
 		
 		if(requestCode == REQUEST_SHARE) {
 
-			EasyTracker.getTracker().sendSocial("ACTION_SEND", "completed", getSite().getAgency() + ":" + getSite().getId());
+//			EasyTracker.getTracker().sendSocial("ACTION_SEND", "completed", getSite().getAgency() + ":" + getSite().getId());
 			
 			if(this.runningShareTask == null) {
 				return;

@@ -16,7 +16,6 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.riverflows.data.UserAccount;
 import com.riverflows.db.DatasetsDaoImpl;
 import com.riverflows.db.DbMaintenance;
@@ -121,7 +120,7 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 	protected void onStart() {
 		super.onStart();
 
-	    EasyTracker.getInstance().activityStart(this);
+//	    EasyTracker.getInstance().activityStart(this);
 	}
 	
 	static final int REQUEST_CHOOSE_ACCOUNT = 2154;
@@ -213,7 +212,7 @@ public class Home extends RoboActionBarActivity implements ActionBar.TabListener
 	protected void onStop() {
 		super.onStop();
 
-	    EasyTracker.getInstance().activityStop(this);
+//	    EasyTracker.getInstance().activityStop(this);
 	}
 
 	protected void onActivityResult(final int requestCode, final int resultCode,

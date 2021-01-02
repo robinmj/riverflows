@@ -1,19 +1,15 @@
 buildscript {
-    dependencies {
-        classpath 'io.fabric.tools:gradle:1.27.1'
-    }
 
     repositories {
+        google()
         jcenter()
-        maven { url 'https://maven.fabric.io/public' }
     }
 }
 
 apply plugin: 'com.android.application'
-apply plugin: 'io.fabric'
 
 repositories {
-    maven { url 'https://maven.fabric.io/public' }
+    google()
 }
 
 
@@ -41,17 +37,16 @@ dependencies {
     testCompile 'org.robolectric:shadows-play-services:3.0'
     testCompile files('testlibs/android-20-stripped.jar')
     testCompile files('build/intermediates/exploded-aar/RiverFlows/Datasources/unspecified/classes.jar')
-    compile('com.crashlytics.sdk.android:crashlytics:2.5.2@aar') {
-        transitive = true;
-    }
 }
 
 android {
-    compileSdkVersion 23
-    buildToolsVersion '25.0.0'
+    compileSdkVersion 30
+    buildToolsVersion '30.0.3'
     useLibrary 'org.apache.http.legacy'
     defaultConfig {
         applicationId "com.riverflows"
+        targetSdkVersion 30
+        minSdkVersion 16
     }
     packagingOptions {
         exclude 'META-INF/LICENSE.txt'

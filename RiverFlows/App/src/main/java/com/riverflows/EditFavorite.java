@@ -14,7 +14,6 @@ import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.Toast;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.riverflows.data.Favorite;
 import com.riverflows.data.SiteId;
 import com.riverflows.data.Variable;
@@ -91,14 +90,14 @@ public class EditFavorite extends ActionBarActivity {
 	protected void onStart() {
 		super.onStart();
 
-		EasyTracker.getInstance().activityStart(this);
+//		EasyTracker.getInstance().activityStart(this);
 	}
 
 	@Override
 	protected void onStop() {
 		super.onStop();
 
-		EasyTracker.getInstance().activityStop(this);
+//		EasyTracker.getInstance().activityStop(this);
 	}
 	
 	private OnClickListener saveListener = new OnClickListener() {

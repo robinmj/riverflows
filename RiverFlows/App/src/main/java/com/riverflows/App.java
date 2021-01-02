@@ -3,13 +3,12 @@ package com.riverflows;
 import android.app.Activity;
 import android.app.Application;
 import android.content.SharedPreferences;
-import android.content.pm.ApplicationInfo;
 import android.os.Build;
+import android.support.v7.appcompat.BuildConfig;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
 import com.crashlytics.android.core.CrashlyticsCore;
-import com.google.analytics.tracking.android.GoogleAnalytics;
 import com.riverflows.data.UserAccount;
 import com.riverflows.db.CachingHttpClientWrapper;
 import com.riverflows.wsclient.DataSourceController;
@@ -19,7 +18,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import io.fabric.sdk.android.Fabric;
-import roboguice.RoboGuice;
 
 /**
  * Created by robin on 9/29/14.
@@ -58,8 +56,8 @@ public class App extends Application {
         DataSourceController.initCache(getCacheDir());
 
         //disable Google Analytics when in debug mode
-        GoogleAnalytics myInstance = GoogleAnalytics.getInstance(this);
-        myInstance.setAppOptOut((getApplicationContext().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) == ApplicationInfo.FLAG_DEBUGGABLE);
+//        GoogleAnalytics myInstance = GoogleAnalytics.getInstance(this);
+//        myInstance.setAppOptOut((getApplicationContext().getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) == ApplicationInfo.FLAG_DEBUGGABLE);
 
         // Work around pre-Froyo bugs in HTTP connection reuse.
         if (Integer.parseInt(Build.VERSION.SDK) < Build.VERSION_CODES.FROYO) {

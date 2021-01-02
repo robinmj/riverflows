@@ -25,8 +25,6 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.analytics.tracking.android.EasyTracker;
-import com.google.analytics.tracking.android.Tracker;
 import com.google.inject.Inject;
 import com.riverflows.data.CelsiusFahrenheitConverter;
 import com.riverflows.data.DestinationFacet;
@@ -48,10 +46,7 @@ import org.apache.http.impl.client.DefaultHttpClient;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.List;
 
@@ -169,22 +164,22 @@ public class ViewSite extends RoboActionBarActivity {
     protected void onStart() {
     	super.onStart();
     	
-    	EasyTracker.getInstance().activityStart(this);
-
-    	Tracker tracker =  EasyTracker.getTracker();
-
-        Site site = this.getSite();
-
-        tracker.setCustomDimension(1, "" + site.getState());
-        tracker.setCustomDimension(2, site.getAgency());
-        tracker.setCustomDimension(3, site.getId());
-        if(this.getVariable() == null) {
-            tracker.setCustomDimension(4, null);
-            tracker.setCustomDimension(5, null);
-        } else {
-            tracker.setCustomDimension(4, this.getVariable().getId());
-            tracker.setCustomDimension(5, this.getVariable().getCommonVariable().name());
-        }
+//    	EasyTracker.getInstance().activityStart(this);
+//
+//    	Tracker tracker =  EasyTracker.getTracker();
+//
+//        Site site = this.getSite();
+//
+//        tracker.setCustomDimension(1, "" + site.getState());
+//        tracker.setCustomDimension(2, site.getAgency());
+//        tracker.setCustomDimension(3, site.getId());
+//        if(this.getVariable() == null) {
+//            tracker.setCustomDimension(4, null);
+//            tracker.setCustomDimension(5, null);
+//        } else {
+//            tracker.setCustomDimension(4, this.getVariable().getId());
+//            tracker.setCustomDimension(5, this.getVariable().getCommonVariable().name());
+//        }
     }
 
     public Site getSite() {
@@ -199,7 +194,7 @@ public class ViewSite extends RoboActionBarActivity {
     protected void onStop() {
     	super.onStop();
     	
-    	EasyTracker.getInstance().activityStop(this);
+//    	EasyTracker.getInstance().activityStop(this);
     }
     
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -329,7 +324,7 @@ public class ViewSite extends RoboActionBarActivity {
             this.site = activity.siteFragment.getSite();
             this.variable = activity.siteFragment.getVariable();
 
-			EasyTracker.getTracker().sendSocial("ACTION_SEND", "start", this.site.getAgency() + ":" + this.site.getId());
+//			EasyTracker.getTracker().sendSocial("ACTION_SEND", "start", this.site.getAgency() + ":" + this.site.getId());
 			
 			if(this.variable != null) {
 				graphUrl = DataSourceController.getDataSource(this.site.getAgency()).getExternalGraphUrl(activity.getSite().getId(), this.variable.getId());
@@ -358,9 +353,9 @@ public class ViewSite extends RoboActionBarActivity {
 				StatusLine status = graphResponse.getStatusLine();
 
 				if(status.getStatusCode() >= 300 || status.getStatusCode() < 200) {
-					EasyTracker.getTracker().sendException("loading " + graphUrl,
-							new UnexpectedResultException(status.getReasonPhrase(),
-									status.getStatusCode()), false);
+//					EasyTracker.getTracker().sendException("loading " + graphUrl,
+//							new UnexpectedResultException(status.getReasonPhrase(),
+//									status.getStatusCode()), false);
 					return null;
 				}
 
@@ -383,7 +378,7 @@ public class ViewSite extends RoboActionBarActivity {
 		        } catch (Exception e) {
 		            Log.e(Home.TAG,"", e);
 		            
-					EasyTracker.getTracker().sendException("saving " + graphUrl, e, false);
+//					EasyTracker.getTracker().sendException("saving " + graphUrl, e, false);
 					
 		            return null;
 		        } finally {
@@ -398,7 +393,7 @@ public class ViewSite extends RoboActionBarActivity {
 			} catch (IOException e) {
 				Log.w(Home.TAG, graphUrl,e);
 				
-				EasyTracker.getTracker().sendException("downloading " + graphUrl, e, false);
+//				EasyTracker.getTracker().sendException("downloading " + graphUrl, e, false);
 			} 
 	        return null;
 	    }
@@ -434,7 +429,7 @@ public class ViewSite extends RoboActionBarActivity {
 				intent.putExtra(android.content.Intent.EXTRA_STREAM, graphUri);
 				activity.startActivityForResult(Intent.createChooser(intent, "Share Hydrograph"), REQUEST_SHARE);
 
-				EasyTracker.getTracker().sendSocial("ACTION_SEND", "image", this.site.getAgency() + ":" + this.site.getId());
+//				EasyTracker.getTracker().sendSocial("ACTION_SEND", "image", this.site.getAgency() + ":" + this.site.getId());
 		    	
 		    	/*
 		    	 * decided not to use this because it doesn't look very good in email and doesn't include RiverFlows branding
@@ -459,7 +454,7 @@ public class ViewSite extends RoboActionBarActivity {
 				intent.putExtra(Intent.EXTRA_TEXT, Html.fromHtml(graphLink + activity.getString(R.string.email_share_footer)));
 				activity.startActivityForResult(Intent.createChooser(intent, "Email Link"), REQUEST_SHARE);
 
-				EasyTracker.getTracker().sendSocial("ACTION_SEND", "email", this.site.getAgency() + ":" + this.site.getId());
+//				EasyTracker.getTracker().sendSocial("ACTION_SEND", "email", this.site.getAgency() + ":" + this.site.getId());
 			}
 	    }
 	}
@@ -469,7 +464,7 @@ public class ViewSite extends RoboActionBarActivity {
 		
 		if(requestCode == REQUEST_SHARE) {
 
-			EasyTracker.getTracker().sendSocial("ACTION_SEND", "completed", getSite().getAgency() + ":" + getSite().getId());
+//			EasyTracker.getTracker().sendSocial("ACTION_SEND", "completed", getSite().getAgency() + ":" + getSite().getId());
 			
 			if(this.runningShareTask == null) {
 				return;

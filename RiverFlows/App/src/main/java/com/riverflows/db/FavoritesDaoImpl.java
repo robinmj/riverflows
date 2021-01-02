@@ -11,7 +11,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.google.analytics.tracking.android.EasyTracker;
 import com.riverflows.Home;
 import com.riverflows.data.Destination;
 import com.riverflows.data.DestinationFacet;
@@ -604,8 +603,8 @@ public class FavoritesDaoImpl {
 		}
 
 		if(result == -1) {
-			EasyTracker.getInstance().setContext(ctx);
-			EasyTracker.getTracker().sendException("FavoritesDaoImpl createFavorite", false);
+//			EasyTracker.getInstance().setContext(ctx);
+//			EasyTracker.getTracker().sendException("FavoritesDaoImpl createFavorite", false);
 		} else {
 			favorite.setId(result);
 		}

@@ -15,7 +15,6 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.crashlytics.android.Crashlytics;
-import com.google.analytics.tracking.android.EasyTracker;
 import com.google.inject.Inject;
 import com.riverflows.data.DestinationFacet;
 import com.riverflows.data.Favorite;
@@ -28,7 +27,6 @@ import com.riverflows.db.FavoritesDaoImpl;
 import com.riverflows.wsclient.DataSourceController;
 import com.riverflows.wsclient.DestinationFacets;
 import com.riverflows.wsclient.WsSession;
-import com.riverflows.wsclient.WsSessionManager;
 
 import roboguice.RoboGuice;
 
@@ -72,15 +70,15 @@ public class RiverSelect extends MapItemList {
 	protected void onStart() {
 		super.onStart();
 		
-		EasyTracker.getInstance().activityStart(this);
-		EasyTracker.getTracker().setCustomDimension(1, "" + state);
+//		EasyTracker.getInstance().activityStart(this);
+//		EasyTracker.getTracker().setCustomDimension(1, "" + state);
 	}
 	
 	@Override
 	protected void onStop() {
 		super.onStop();
 		
-		EasyTracker.getInstance().activityStop(this);
+//		EasyTracker.getInstance().activityStop(this);
 	}
 	
 	@Override
