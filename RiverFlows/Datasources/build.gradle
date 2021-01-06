@@ -5,7 +5,7 @@ dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'], exclude: 'commons-logging*')
     compile fileTree(dir: 'androidlibs', include: '*.jar')
     //httpclient 4.2 or higher is needed, otherwise the Betamax unit tests will break
-    compile 'org.apache.httpcomponents:httpclient:4.2.1'
+    compile 'org.apache.httpcomponents:httpclient:4.5.6'
     compile 'org.roboguice:roboguice:3.0.1'
 }
 

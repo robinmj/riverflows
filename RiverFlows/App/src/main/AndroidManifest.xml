@@ -82,5 +82,7 @@
 		android:authorities="com.riverflows.content.favorites"
         android:exported="true">
 		</provider>
+
+		<uses-library android:name="org.apache.http.legacy" android:required="false"/>
     </application>
 </manifest> 
